@@ -1,7 +1,10 @@
 # Schema
 
+![GitHub](https://img.shields.io/github/license/MeltyPlayer/Schema)
 [![Nuget](https://img.shields.io/nuget/v/schema)](https://www.nuget.org/packages/schema)
 ![Nuget](https://img.shields.io/nuget/dt/schema)
+![Unit tests](https://github.com/MeltyPlayer/Schema/actions/workflows/dotnet.yml/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/MeltyPlayer/Schema/badge.svg?service=github)](https://coveralls.io/github/MeltyPlayer/Schema)
 
 ## Overview
 
