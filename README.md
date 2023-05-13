@@ -1,5 +1,10 @@
 # Schema
 
+[![Nuget](https://img.shields.io/nuget/v/schema)](https://www.nuget.org/packages/schema)
+![Nuget](https://img.shields.io/nuget/dt/schema)
+
+## Overview
+
 Library for converting classes to and from binary. Provides a C# Roslyn generator that automatically implements conversion logic for simple classes.
 
 ## Credits

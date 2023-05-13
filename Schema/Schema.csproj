@@ -6,11 +6,21 @@
     <RootNamespace>schema</RootNamespace>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PackageProjectUrl>https://github.com/MeltyPlayer/Schema</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Description>Library for converting classes to and from binary. Provides a C# Roslyn generator that automatically implements conversion logic for simple classes.</Description>
     <Version>0.0.1</Version>
+    <PackageId>schema</PackageId>
+    <Title>schema</Title>
+    <Authors>MeltyPlayer</Authors>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="lib\system\io\FileSize.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
   <ItemGroup>
