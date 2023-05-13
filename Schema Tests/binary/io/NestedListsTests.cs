@@ -5,7 +5,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Text;
 
-using Asserts = asserts.Asserts;
+using schema.binary.util;
 
 
 namespace schema.binary.io {
