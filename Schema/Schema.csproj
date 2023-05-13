@@ -13,6 +13,9 @@
     <PackageId>schema</PackageId>
     <Title>schema</Title>
     <Authors>MeltyPlayer</Authors>
+
+    <!-- Do not include the dll into the NuGet package, we'll add it manually at the right location -->
+    <IncludeBuildOutput>false</IncludeBuildOutput>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,7 +24,9 @@
 
   <ItemGroup>
     <None Include="..\README.md" Pack="true" PackagePath="\" />
-    <None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+
+    <!-- Include the netstandard2.0 DLL into the package -->
+    <None Include="$(OutputPath)$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 
   <ItemGroup>
