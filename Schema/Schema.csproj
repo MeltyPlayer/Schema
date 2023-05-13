@@ -9,13 +9,10 @@
     <PackageProjectUrl>https://github.com/MeltyPlayer/Schema</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Description>Library for converting classes to and from binary. Provides a C# Roslyn generator that automatically implements conversion logic for simple classes.</Description>
-    <Version>0.0.2</Version>
+    <Version>0.0.3</Version>
     <PackageId>schema</PackageId>
     <Title>schema</Title>
     <Authors>MeltyPlayer</Authors>
-
-    <!-- Do not include the dll into the NuGet package, we'll add it manually at the right location -->
-    <IncludeBuildOutput>false</IncludeBuildOutput>
   </PropertyGroup>
 
   <ItemGroup>
