@@ -8,7 +8,7 @@
 
 ## Overview
 
-Library for converting classes to and from binary. Provides a C# Roslyn generator that automatically implements conversion logic for simple classes.
+WIP library for converting classes to and from binary. Provides a C# Roslyn generator that automatically implements conversion logic for simple classes.
 
 ## Credits
 
