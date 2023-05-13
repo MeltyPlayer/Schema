@@ -17,16 +17,6 @@ Library for converting classes to and from binary. Provides a C# Roslyn generato
 
 ## Usage
 
-### Setting up a project
-
-Copy this project into your solution, and then add the following into any other projects that you wish to automatically generate code for:
-
-```
-<ItemGroup>
-  <ProjectReference Include="../Schema/Schema.csproj" PrivateAssets="all" OutputItemType="Analyzer" />
-</ItemGroup>
-```
-
 ### Implementing binary schema classes
 
 To write a binary schema class, you must first do the following steps:
