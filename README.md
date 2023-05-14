@@ -152,7 +152,7 @@ public int ignoredField;
 public int IgnoredProperty { get; set; }
 ```
 
-This can be used to encapsulate boolean logic within properties, such as in the following examples:
+This can be used to encapsulate logic within properties, such as in the following examples:
 
 1) **Value conversion**
 ```cs
@@ -205,21 +205,39 @@ TODO
 
 #### Strings
 
+*Note: At the moment, only ASCII is fully supported.*
+
 ##### StringLengthSource/RStringLengthSource
 
-Designates the length of a string field or property, via one of three methods:
+Designates the length of a string field or property via one of three cases. 
+
+*Note: Any trailing null terminators will be ignored at read time.*
 
 1) **Constant length**
 
-TODO
+If a constant is passed into `StringLengthSource`, that many characters will be read/written.
+```cs
+[StringLengthSource(8)]
+public string Text { get; set; }
+```
 
 2) **Preceding value**
 
-TODO
+If a `SchemaIntegerType` is passed into `StringLengthSource`, an integer of that type will first be read and used as the length of the string, or the length of the string will first be written before writing the string itself.
+```cs
+[StringLengthSource(SchemaIntegerType.BYTE)]
+public string TextWithByteLength { get; set; }
+```
 
 3) **Another field or property**
 
-TODO
+If the name of another field or property is passed into `RStringLengthSource`, that other value will be used as the length of the string when reading.
+```cs
+public byte TextLength { get; set; }
+
+[StringLengthSource(nameof(this.TextLength))]
+public string Text { get; set; }
+```
 
 ##### NullTerminatedString
 
@@ -231,7 +249,7 @@ public string Text { get; set; }
 
 #### Sequences
 
-*("Sequence" is the term used within Schema to refer to an array/list of elements.)*
+*Note: "Sequence" is the term used within Schema to refer to an array/list of elements.*
 
 ##### SequenceLengthSource/RSequenceLengthSource
 
