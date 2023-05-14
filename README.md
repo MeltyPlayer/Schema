@@ -10,10 +10,14 @@
 
 WIP library for converting classes to and from binary. Provides a C# Roslyn generator that automatically implements conversion logic for simple classes.
 
+**Warning: The design of this library is still in flux, so you should plan to make changes when upgrading to future versions.**
+
 ## Credits
 
-- [@jefffhaynes](https://github.com/jefffhaynes), as their [BinarySerializer](https://github.com/jefffhaynes/BinarySerializer) attribute library inspired the schema attributes for configuring how binary data is read.
-- [@Sergio0694](https://github.com/Sergio0694), as their [BinaryPack](https://github.com/Sergio0694/BinaryPack) generator inspired the schema source generator used to generate read/write methods.
+- [@connorhaigh](https://github.com/connorhaigh), whose [SubstreamSharp](https://github.com/connorhaigh/SubstreamSharp) library was pulled in for reading substreams.
+- [@jefffhaynes](https://github.com/jefffhaynes), whose [BinarySerializer](https://github.com/jefffhaynes/BinarySerializer) attribute library inspired the schema attributes for configuring how binary data is read.
+- [@Kermalis](https://github.com/Kermalis), whose [EndianBinaryIO](https://github.com/Kermalis/EndianBinaryIO) library inspired Span-based performance improvements.
+- [@Sergio0694](https://github.com/Sergio0694), whose [BinaryPack](https://github.com/Sergio0694/BinaryPack) generator inspired the schema source generator used to generate read/write methods.
 
 ## Usage
 
