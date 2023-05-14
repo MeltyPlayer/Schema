@@ -66,15 +66,22 @@ The following attributes are currently supported in this library **when automati
 
 #### Align
 
-TODO
+Specifies how a field or property's offset (relative to the start of the stream) should be aligned when reading/writing. If misaligned, the `EndianBinaryReader`/`EndianBinaryWriter` will automatically insert the remaining bytes of padding. For example, `[Align(4)]` would force a field/property's starting offset to be a multiple of 4 (0, 4, 8, 12, 16, etc.).
+```cs
+[Align(4)]
+public int alignedField;
+
+[Align(4)]
+public int AlignedProperty { get; set; }
+```
 
 #### Endianness
 
-Forces a type, field, or property to be read with a given [endianness](https://en.wikipedia.org/wiki/Endianness) (big-endian or little-endian). Tracked via a stack within the `EndianBinaryReader`/`EndianBinaryWriter`. If unspecified, will use whatever endianness was last specified in the stack (or the system endianness by default).
+Forces a type, field, or property to be read/written with a given [endianness](https://en.wikipedia.org/wiki/Endianness) (big-endian or little-endian). Tracked via a stack within the `EndianBinaryReader`/`EndianBinaryWriter`. If unspecified, will use whatever endianness was last specified in the stack (or the system endianness by default).
 ```cs
 [BinarySchema]
 [Endianness(Endianness.BigEndian)]
-public partial class BigEndianType {
+public partial class BigEndianType : IBinaryConvertible {
   ...
   
   [Endianness(Endianness.LittleEndian)]
@@ -82,6 +89,17 @@ public partial class BigEndianType {
   
   ...
 }
+```
+
+#### IfBoolean
+
+Marks that a nullable field or property will only be read/written if some other boolean field or property is true.
+```cs
+[IntegerFormat(SchemaIntegerType.BYTE)]
+public bool HasValue { get; set; }
+
+[IfBoolean(nameof(this.HasValue))]
+public int? Value { get; set; }
 ```
 
 #### IChildOf&lt;TParent&gt;
@@ -187,20 +205,33 @@ TODO
 
 #### Strings
 
+##### StringLengthSource/RStringLengthSource
+
+Designates the length of a string field or property, via one of three methods:
+
+1) **Constant length**
+
 TODO
 
-##### StringLengthSource/RStringLengthSource
+2) **Preceding value**
+
+TODO
+
+3) **Another field or property**
 
 TODO
 
 ##### NullTerminatedString
 
-TODO
-
+Designates that a string field or property will be read until a null terminator is reached, and written with a null terminator affixed to the end.
+```cs
+[NullTerminatedString]
+public string Text { get; set; }
+```
 
 #### Sequences
 
-"Sequences" are the term used within Schema to refer to arrays/lists of elements. Multiple attributes are supported for specifying how many elements to read in the list.
+*("Sequence" is the term used within Schema to refer to an array/list of elements.)*
 
 ##### SequenceLengthSource/RSequenceLengthSource
 
