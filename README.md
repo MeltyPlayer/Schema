@@ -74,7 +74,18 @@ TODO
 
 #### IChildOf&lt;TParent&gt;
 
-This pseudo-attribute marks a type as a "child" of some "parent" type—that it is contained as one of the members of the "parent type"—and passes the parent down to the child so it can be referenced in Schema logic. A child can be stored directly in the parent type, or as a member of a sequence (array/list).
+This pseudo-attribute marks a type as a "child" of some "parent" type—that it is contained as one of the members of the "parent type"—and passes the parent down to the child so it can be referenced in Schema logic.
+
+Used by having the child type implement the `IChildOf<TParent>` interface, where `TParent` stores the child type in a field or as a member of a sequence (array/list):
+
+```
+[BinarySchema]
+public partial class ChildType : IBinaryConvertible, IChildOf<ParentType> {
+  public ParentType Parent { get; set; }
+  
+  ...
+}
+```
 
 Below is a simple example where a boolean from the parent is used to decide when to read a value in the child:
 
@@ -89,6 +100,7 @@ public partial class ParentType : IBinaryConvertible {
 
 [BinarySchema]
 public partial class ChildType : IBinaryConvertible, IChildOf<ParentType> {
+  // This is automatically ignored while reading/writing.
   public ParentType Parent { get; set; }
 
   [Ignore]
@@ -101,8 +113,57 @@ public partial class ChildType : IBinaryConvertible, IChildOf<ParentType> {
 
 #### Ignore
 
-TODO
+Designates that a field or property should be ignored while reading/writing.
 
+*Note: `IChildOf<TParent>.Parent` is automatically ignored.*
+
+```
+[Ignore]
+public int ignoredField;
+
+[Ignore]
+public int IgnoredProperty { get; set; }
+```
+
+This can be used to encapsulate boolean logic within properties, such as in the following examples:
+
+1) **Value conversion**
+```
+[StringLengthSource(4)]
+public string Magic { get; set; }
+
+[Ignore]
+public MagicType Type => this.Magic switch {
+  "IMGE" => MagicType.IMAGE,
+  "SOND" => MagicType.SOUND,
+  "TEXT" => MagicType.TEXT,
+};
+```
+
+2) **"Switch" cases**
+```
+[NullTerminatedString]
+public string Magic { get; set; }
+
+[Ignore]
+public ISection? Section => this.imageSection_ ?? this.soundSection_ ?? this.textSection_;
+
+[Ignore]
+private bool IsImage_ => this.Magic == "IMAGE";
+[Ignore]
+private bool IsSound_ => this.Magic == "SOUND";
+[Ignore]
+private bool IsText_ => this.Magic == "TEXT";
+
+[IfBoolean(nameof(this.IsImage))]
+private ImageSection? imageSection_ { get; set; }
+
+[IfBoolean(nameof(this.IsSound_))]
+private SoundSection? soundSection_ { get; set; }
+
+[IfBoolean(nameof(this.IsText_))]
+private TextSection? textSection_ { get; set; }
+```
 
 #### Numbers/Enums
 
@@ -120,6 +181,10 @@ TODO
 TODO
 
 ##### StringLengthSource/RStringLengthSource
+
+TODO
+
+##### NullTerminatedString
 
 TODO
 
