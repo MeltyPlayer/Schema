@@ -16,7 +16,7 @@ WIP library for converting classes to and from binary. Provides a C# Roslyn gene
 
 - [@connorhaigh](https://github.com/connorhaigh), whose [SubstreamSharp](https://github.com/connorhaigh/SubstreamSharp) library was pulled in for reading substreams.
 - [@jefffhaynes](https://github.com/jefffhaynes), whose [BinarySerializer](https://github.com/jefffhaynes/BinarySerializer) attribute library inspired the schema attributes for configuring how binary data is read.
-- [@Kermalis](https://github.com/Kermalis), whose [EndianBinaryIO](https://github.com/Kermalis/EndianBinaryIO) library inspired Span-based performance improvements.
+- [@Kermalis](https://github.com/Kermalis), whose [EndianBinaryIO](https://github.com/Kermalis/EndianBinaryIO) library inspired [Span](https://learn.microsoft.com/en-us/archive/msdn-magazine/2018/january/csharp-all-about-span-exploring-a-new-net-mainstay)-based performance improvements.
 - [@Sergio0694](https://github.com/Sergio0694), whose [BinaryPack](https://github.com/Sergio0694/BinaryPack) generator inspired the schema source generator used to generate read/write methods.
 
 ## Usage
@@ -60,7 +60,7 @@ You must use the `EndianBinaryReader`/`EndianBinaryWriter` defined within this p
 
 ### Supported Attributes
 
-The following attributes are currently supported in this library. Some attributes are only used at read or write time—these are prefixed with an R or W respectively.
+The following attributes are currently supported in this library **when automatically generating code**. Some attributes are only used at read or write time—these are prefixed with an R or W respectively.
 
 **Warning: These names are not final, so they may change in future versions.**
 
@@ -70,15 +70,26 @@ TODO
 
 #### Endianness
 
-TODO
+Forces a type, field, or property to be read with a given [endianness](https://en.wikipedia.org/wiki/Endianness) (big-endian or little-endian). Tracked via a stack within the `EndianBinaryReader`/`EndianBinaryWriter`. If unspecified, will use whatever endianness was last specified in the stack (or the system endianness by default).
+```cs
+[BinarySchema]
+[Endianness(Endianness.BigEndian)]
+public partial class BigEndianType {
+  ...
+  
+  [Endianness(Endianness.LittleEndian)]
+  public int LittleEndianProperty { get; set; }
+  
+  ...
+}
+```
 
 #### IChildOf&lt;TParent&gt;
 
 This pseudo-attribute marks a type as a "child" of some "parent" type—that it is contained as one of the members of the "parent type"—and passes the parent down to the child so it can be referenced in Schema logic.
 
-Used by having the child type implement the `IChildOf<TParent>` interface, where `TParent` stores the child type in a field or as a member of a sequence (array/list):
-
-```
+Used by having the child type implement the `IChildOf<TParent>` interface, where `TParent` stores the child type in a field/property or as a member of a sequence (array/list):
+```cs
 [BinarySchema]
 public partial class ChildType : IBinaryConvertible, IChildOf<ParentType> {
   public ParentType Parent { get; set; }
@@ -88,8 +99,7 @@ public partial class ChildType : IBinaryConvertible, IChildOf<ParentType> {
 ```
 
 Below is a simple example where a boolean from the parent is used to decide when to read a value in the child:
-
-```
+```cs
 [BinarySchema]
 public partial class ParentType : IBinaryConvertible {
   [IntegerFormat(SchemaIntegerType.BYTE)]
@@ -116,8 +126,7 @@ public partial class ChildType : IBinaryConvertible, IChildOf<ParentType> {
 Designates that a field or property should be ignored while reading/writing.
 
 *Note: `IChildOf<TParent>.Parent` is automatically ignored.*
-
-```
+```cs
 [Ignore]
 public int ignoredField;
 
@@ -128,7 +137,7 @@ public int IgnoredProperty { get; set; }
 This can be used to encapsulate boolean logic within properties, such as in the following examples:
 
 1) **Value conversion**
-```
+```cs
 [StringLengthSource(4)]
 public string Magic { get; set; }
 
@@ -141,7 +150,7 @@ public MagicType Type => this.Magic switch {
 ```
 
 2) **"Switch" cases**
-```
+```cs
 [NullTerminatedString]
 public string Magic { get; set; }
 
