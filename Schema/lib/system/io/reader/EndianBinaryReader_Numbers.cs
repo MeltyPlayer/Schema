@@ -11,13 +11,15 @@ namespace System.IO {
       => (byte) this.BufferedStream_.BaseStream.ReadByte();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte[] ReadBytes(long count) => this.ReadBytes(new byte[count]);
+    public byte[] ReadBytes(long count) {
+      var newArray = new byte[count];
+      this.ReadBytes(newArray);
+      return newArray;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte[] ReadBytes(byte[] dst) {
-      this.BufferedStream_.BaseStream.Read(dst, 0, dst.Length);
-      return dst;
-    }
+    public void ReadBytes(byte[] dst)
+      => this.BufferedStream_.BaseStream.Read(dst, 0, dst.Length);
 
 
     public void AssertSByte(sbyte expectedValue)
@@ -25,12 +27,14 @@ namespace System.IO {
 
     public sbyte ReadSByte() => (sbyte) this.ReadByte();
 
-    public sbyte[] ReadSBytes(long count) => this.ReadSBytes(new sbyte[count]);
+    public sbyte[] ReadSBytes(long count) {
+      var newArray = new sbyte[count];
+      this.ReadSBytes(newArray);
+      return newArray;
+    } 
 
-    public sbyte[] ReadSBytes(sbyte[] dst) {
-      this.BufferedStream_.FillBuffer(dst, dst.Length);
-      return dst;
-    }
+    public void ReadSBytes(sbyte[] dst)
+      => this.BufferedStream_.FillBuffer(dst, dst.Length);
 
 
     public void AssertInt16(short expectedValue)
@@ -38,12 +42,14 @@ namespace System.IO {
 
     public short ReadInt16() => this.BufferedStream_.Read<short>();
 
-    public short[] ReadInt16s(long count) => this.ReadInt16s(new short[count]);
-
-    public short[] ReadInt16s(short[] dst) {
-      this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
-      return dst;
+    public short[] ReadInt16s(long count) {
+      var newArray = new short[count];
+      this.ReadInt16s(newArray);
+      return newArray;
     }
+
+    public void ReadInt16s(short[] dst)
+      => this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
 
 
     public void AssertUInt16(ushort expectedValue)
@@ -51,13 +57,14 @@ namespace System.IO {
 
     public ushort ReadUInt16() => this.BufferedStream_.Read<ushort>();
 
-    public ushort[] ReadUInt16s(long count)
-      => this.ReadUInt16s(new ushort[count]);
-
-    public ushort[] ReadUInt16s(ushort[] dst) {
-      this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
-      return dst;
+    public ushort[] ReadUInt16s(long count) {
+      var newArray = new ushort[count];
+      this.ReadUInt16s(newArray);
+      return newArray;
     }
+
+    public void ReadUInt16s(ushort[] dst)
+      => this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
 
 
     public void AssertInt24(int expectedValue)
@@ -68,17 +75,19 @@ namespace System.IO {
       return EndianBinaryReader.ConvertInt24_(this.BufferedStream_.Buffer, 0);
     }
 
-    public int[] ReadInt24s(long count) => this.ReadInt24s(new int[count]);
+    public int[] ReadInt24s(long count) {
+      var newArray = new int[count];
+      this.ReadInt24s(newArray);
+      return newArray;
+    }
 
-    public int[] ReadInt24s(int[] dst) {
+    public void ReadInt24s(int[] dst) {
       const int size = 3;
       this.FillBuffer_(size * dst.Length, size);
       for (var i = 0; i < dst.Length; ++i) {
         dst[i] =
             EndianBinaryReader.ConvertInt24_(this.BufferedStream_.Buffer, i);
       }
-
-      return dst;
     }
 
 
@@ -90,17 +99,19 @@ namespace System.IO {
       return EndianBinaryReader.ConvertUInt24_(this.BufferedStream_.Buffer, 0);
     }
 
-    public uint[] ReadUInt24s(long count) => this.ReadUInt24s(new uint[count]);
+    public uint[] ReadUInt24s(long count) {
+      var newArray = new uint[count];
+      this.ReadUInt24s(newArray);
+      return newArray;
+    }
 
-    public uint[] ReadUInt24s(uint[] dst) {
+    public void ReadUInt24s(uint[] dst) {
       const int size = 3;
       this.FillBuffer_(size * dst.Length, size);
       for (var i = 0; i < dst.Length; ++i) {
         dst[i] =
             EndianBinaryReader.ConvertUInt24_(this.BufferedStream_.Buffer, i);
       }
-
-      return dst;
     }
 
 
@@ -109,12 +120,14 @@ namespace System.IO {
 
     public int ReadInt32() => this.BufferedStream_.Read<int>();
 
-    public int[] ReadInt32s(long count) => this.ReadInt32s(new int[count]);
-
-    public int[] ReadInt32s(int[] dst) {
-      this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
-      return dst;
+    public int[] ReadInt32s(long count) {
+      var newArray = new int[count];
+      this.ReadInt32s(newArray);
+      return newArray;
     }
+
+    public void ReadInt32s(int[] dst)
+      => this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
 
 
     public void AssertUInt32(uint expectedValue)
@@ -122,12 +135,14 @@ namespace System.IO {
 
     public uint ReadUInt32() => this.BufferedStream_.Read<uint>();
 
-    public uint[] ReadUInt32s(long count) => this.ReadUInt32s(new uint[count]);
-
-    public uint[] ReadUInt32s(uint[] dst) {
-      this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
-      return dst;
+    public uint[] ReadUInt32s(long count) {
+      var newArray = new uint[count];
+      this.ReadUInt32s(newArray);
+      return newArray;
     }
+
+    public void ReadUInt32s(uint[] dst)
+      => this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
 
 
     public void AssertInt64(long expectedValue)
@@ -135,12 +150,14 @@ namespace System.IO {
 
     public long ReadInt64() => this.BufferedStream_.Read<long>();
 
-    public long[] ReadInt64s(long count) => this.ReadInt64s(new long[count]);
+    public long[] ReadInt64s(long count) {
+      var newArray = new long[count];
+      this.ReadInt64s(newArray);
+      return newArray;
+    } 
 
-    public long[] ReadInt64s(long[] dst) {
-      this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
-      return dst;
-    }
+    public void ReadInt64s(long[] dst)
+      => this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
 
 
     public void AssertUInt64(ulong expectedValue)
@@ -148,13 +165,13 @@ namespace System.IO {
 
     public ulong ReadUInt64() => this.BufferedStream_.Read<ulong>();
 
-    public ulong[] ReadUInt64s(long count) =>
-        this.ReadUInt64s(new ulong[count]);
-
-    public ulong[] ReadUInt64s(ulong[] dst) {
-      this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
-      return dst;
+    public ulong[] ReadUInt64s(long count) {
+      var newArray = new ulong[count];
+      this.ReadUInt64s(newArray);
+      return newArray;
     }
+
+    public void ReadUInt64s(ulong[] dst) => this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
 
 
     public void AssertHalf(float expectedValue)
@@ -165,17 +182,19 @@ namespace System.IO {
       return EndianBinaryReader.ConvertHalf_(this.BufferedStream_.Buffer, 0);
     }
 
-    public float[] ReadHalfs(long count) => this.ReadHalfs(new float[count]);
+    public float[] ReadHalfs(long count) {
+      var newArray = new float[count];
+      this.ReadHalfs(newArray);
+      return newArray;
+    }
 
-    public float[] ReadHalfs(float[] dst) {
+    public void ReadHalfs(float[] dst) {
       const int size = 2;
       this.FillBuffer_(size * dst.Length, size);
       for (var i = 0; i < dst.Length; ++i) {
         dst[i] =
             EndianBinaryReader.ConvertHalf_(this.BufferedStream_.Buffer, i);
       }
-
-      return dst;
     }
 
 
@@ -184,13 +203,14 @@ namespace System.IO {
 
     public float ReadSingle() => this.BufferedStream_.Read<float>();
 
-    public float[] ReadSingles(long count) =>
-        this.ReadSingles(new float[count]);
-
-    public float[] ReadSingles(float[] dst) {
-      this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
-      return dst;
+    public float[] ReadSingles(long count) {
+      var newArray = new float[count];
+      this.ReadSingles(newArray);
+      return newArray;
     }
+
+    public void ReadSingles(float[] dst)
+      => this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
 
 
     public void AssertDouble(double expectedValue)
@@ -198,13 +218,14 @@ namespace System.IO {
 
     public double ReadDouble() => this.BufferedStream_.Read<double>();
 
-    public double[] ReadDoubles(long count)
-      => this.ReadDoubles(new double[count]);
-
-    public double[] ReadDoubles(double[] dst) {
-      this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
-      return dst;
+    public double[] ReadDoubles(long count) {
+      var newArray = new double[count];
+      this.ReadDoubles(newArray);
+      return newArray;
     }
+
+    public void ReadDoubles(double[] dst)
+      => this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
 
 
     public void AssertSn8(float expectedValue)
@@ -215,17 +236,19 @@ namespace System.IO {
       return EndianBinaryReader.ConvertSn8_(this.BufferedStream_.Buffer, 0);
     }
 
-    public float[] ReadSn8s(long count) => this.ReadSn8s(new float[count]);
+    public float[] ReadSn8s(long count) {
+      var newArray = new float[count];
+      this.ReadSn8s(newArray);
+      return newArray;
+    }
 
-    public float[] ReadSn8s(float[] dst) {
+    public void ReadSn8s(float[] dst) {
       const int size = sizeof(byte);
       this.FillBuffer_(size * dst.Length, size);
       for (var i = 0; i < dst.Length; ++i) {
         dst[i] =
             EndianBinaryReader.ConvertSn8_(this.BufferedStream_.Buffer, i);
       }
-
-      return dst;
     }
 
 
@@ -237,17 +260,19 @@ namespace System.IO {
       return EndianBinaryReader.ConvertUn8_(this.BufferedStream_.Buffer, 0);
     }
 
-    public float[] ReadUn8s(long count) => this.ReadUn8s(new float[count]);
+    public float[] ReadUn8s(long count) {
+      var newArray = new float[count];
+      this.ReadUn8s(newArray);
+      return newArray;
+    } 
 
-    public float[] ReadUn8s(float[] dst) {
+    public void ReadUn8s(float[] dst) {
       const int size = sizeof(byte);
       this.FillBuffer_(size * dst.Length, size);
       for (var i = 0; i < dst.Length; ++i) {
         dst[i] =
             EndianBinaryReader.ConvertUn8_(this.BufferedStream_.Buffer, i);
       }
-
-      return dst;
     }
 
 
@@ -259,17 +284,19 @@ namespace System.IO {
       return EndianBinaryReader.ConvertSn16_(this.BufferedStream_.Buffer, 0);
     }
 
-    public float[] ReadSn16s(long count) => this.ReadSn16s(new float[count]);
+    public float[] ReadSn16s(long count) {
+      var newArray = new float[count];
+      this.ReadSn16s(newArray);
+      return newArray;
+    }
 
-    public float[] ReadSn16s(float[] dst) {
+    public void ReadSn16s(float[] dst) {
       const int size = sizeof(short);
       this.FillBuffer_(size * dst.Length, size);
       for (var i = 0; i < dst.Length; ++i) {
         dst[i] =
             EndianBinaryReader.ConvertSn16_(this.BufferedStream_.Buffer, i);
       }
-
-      return dst;
     }
 
 
@@ -281,17 +308,19 @@ namespace System.IO {
       return EndianBinaryReader.ConvertUn16_(this.BufferedStream_.Buffer, 0);
     }
 
-    public float[] ReadUn16s(long count) => this.ReadUn16s(new float[count]);
+    public float[] ReadUn16s(long count) {
+      var newArray = new float[count];
+      this.ReadUn16s(newArray);
+      return newArray;
+    }
 
-    public float[] ReadUn16s(float[] dst) {
+    public void ReadUn16s(float[] dst) {
       const int size = sizeof(ushort);
       this.FillBuffer_(size * dst.Length, size);
       for (var i = 0; i < dst.Length; ++i) {
         dst[i] =
             EndianBinaryReader.ConvertUn16_(this.BufferedStream_.Buffer, i);
       }
-
-      return dst;
     }
   }
 }

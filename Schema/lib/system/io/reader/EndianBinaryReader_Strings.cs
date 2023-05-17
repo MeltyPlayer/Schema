@@ -12,7 +12,7 @@ namespace System.IO {
     public char[] ReadChars(long count)
       => this.ReadChars(Encoding.ASCII, count);
 
-    public char[] ReadChars(char[] dst) => this.ReadChars(Encoding.ASCII, dst);
+    public void ReadChars(char[] dst) => this.ReadChars(Encoding.ASCII, dst);
 
 
     public void AssertChar(Encoding encoding, char expectedValue)
@@ -34,10 +34,13 @@ namespace System.IO {
       return cBuffer[0];
     }
 
-    public char[] ReadChars(Encoding encoding, long count)
-      => this.ReadChars(encoding, new char[count]);
+    public char[] ReadChars(Encoding encoding, long count) {
+      var newArray = new char[count];
+      this.ReadChars(encoding, newArray);
+      return newArray;
+    }
 
-    public char[] ReadChars(Encoding encoding, char[] dst) {
+    public void ReadChars(Encoding encoding, char[] dst) {
       var encodingSize = EndianBinaryReader.GetEncodingSize_(encoding);
       this.BufferedStream_.FillBuffer(encodingSize * dst.Length, encodingSize);
       encoding.GetChars(this.BufferedStream_.Buffer,
@@ -45,7 +48,6 @@ namespace System.IO {
                         encodingSize * dst.Length,
                         dst,
                         0);
-      return dst;
     }
 
     private static int GetEncodingSize_(Encoding encoding) {

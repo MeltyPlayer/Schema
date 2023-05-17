@@ -9,14 +9,17 @@ namespace System.IO {
       => Asserts.Equal(expectedValue, this.ReadChar());
 
     public char ReadChar() => (char) this.baseStream_.ReadByte();
-    public char[] ReadChars(long count) => ReadChars(new char[count]);
 
-    public char[] ReadChars(char[] dst) {
+    public char[] ReadChars(long count) {
+      var newArray = new char[count];
+      ReadChars(newArray);
+      return newArray;
+    } 
+
+    public void ReadChars(char[] dst) {
       for (var i = 0; i < dst.Length; ++i) {
         dst[i] = ReadChar();
       }
-
-      return dst;
     }
 
 
