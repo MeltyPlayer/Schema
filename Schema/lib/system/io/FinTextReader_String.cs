@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using System.Text;
 
+using CommunityToolkit.HighPerformance;
+
 using schema.binary.util;
 
 namespace System.IO {
@@ -8,19 +10,21 @@ namespace System.IO {
     public void AssertChar(char expectedValue)
       => Asserts.Equal(expectedValue, this.ReadChar());
 
+    // TODO: Handle other encodings besides ASCII
     public char ReadChar() => (char) this.baseStream_.ReadByte();
 
     public char[] ReadChars(long count) {
       var newArray = new char[count];
-      ReadChars(newArray);
+      this.ReadChars(newArray);
       return newArray;
-    } 
-
-    public void ReadChars(char[] dst) {
-      for (var i = 0; i < dst.Length; ++i) {
-        dst[i] = ReadChar();
-      }
     }
+
+    public void ReadChars(char[] dst, int start, int length)
+      => this.ReadChars(dst.AsSpan(start, length));
+
+    // TODO: Handle other encodings besides ASCII
+    public void ReadChars(Span<char> dst)
+      => this.baseStream_.Read(dst.AsBytes());
 
 
     public void AssertString(string expectedValue)

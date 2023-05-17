@@ -1,5 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 
+using CommunityToolkit.HighPerformance;
+
 
 namespace System.IO {
   public sealed partial class EndianBinaryReader {
@@ -18,8 +20,12 @@ namespace System.IO {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadBytes(byte[] dst)
-      => this.BufferedStream_.BaseStream.Read(dst, 0, dst.Length);
+    public void ReadBytes(byte[] dst, int start, int length)
+      => this.ReadBytes(dst.AsSpan(start, length));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ReadBytes(Span<byte> dst)
+      => this.BufferedStream_.BaseStream.Read(dst);
 
 
     public void AssertSByte(sbyte expectedValue)
@@ -33,8 +39,11 @@ namespace System.IO {
       return newArray;
     } 
 
-    public void ReadSBytes(sbyte[] dst)
+    public void ReadSBytes(sbyte[] dst, int start, int length)
       => this.BufferedStream_.FillBuffer(dst, dst.Length);
+
+    public void ReadSBytes(Span<sbyte> dst)
+      => this.BufferedStream_.FillBuffer(dst);
 
 
     public void AssertInt16(short expectedValue)
@@ -48,8 +57,11 @@ namespace System.IO {
       return newArray;
     }
 
-    public void ReadInt16s(short[] dst)
-      => this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
+    public void ReadInt16s(short[] dst, int start, int length)
+      => this.ReadInt16s(dst.AsSpan(start, length));
+
+    public void ReadInt16s(Span<short> dst)
+      => this.BufferedStream_.FillBufferAndReverse(dst);
 
 
     public void AssertUInt16(ushort expectedValue)
@@ -63,8 +75,11 @@ namespace System.IO {
       return newArray;
     }
 
-    public void ReadUInt16s(ushort[] dst)
-      => this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
+    public void ReadUInt16s(ushort[] dst, int start, int length)
+      => this.ReadUInt16s(dst.AsSpan(start, length));
+
+    public void ReadUInt16s(Span<ushort> dst)
+      => this.BufferedStream_.FillBufferAndReverse(dst);
 
 
     public void AssertInt24(int expectedValue)
@@ -81,7 +96,10 @@ namespace System.IO {
       return newArray;
     }
 
-    public void ReadInt24s(int[] dst) {
+    public void ReadInt24s(int[] dst, int start, int length)
+      => this.ReadInt24s(dst.AsSpan(start, length));
+
+    public void ReadInt24s(Span<int> dst) {
       const int size = 3;
       this.FillBuffer_(size * dst.Length, size);
       for (var i = 0; i < dst.Length; ++i) {
@@ -89,6 +107,7 @@ namespace System.IO {
             EndianBinaryReader.ConvertInt24_(this.BufferedStream_.Buffer, i);
       }
     }
+
 
 
     public void AssertUInt24(uint expectedValue)
@@ -105,7 +124,10 @@ namespace System.IO {
       return newArray;
     }
 
-    public void ReadUInt24s(uint[] dst) {
+    public void ReadUInt24s(uint[] dst, int start, int length)
+      => this.ReadUInt24s(dst.AsSpan(start, length));
+
+    public void ReadUInt24s(Span<uint> dst) {
       const int size = 3;
       this.FillBuffer_(size * dst.Length, size);
       for (var i = 0; i < dst.Length; ++i) {
@@ -126,8 +148,11 @@ namespace System.IO {
       return newArray;
     }
 
-    public void ReadInt32s(int[] dst)
-      => this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
+    public void ReadInt32s(int[] dst, int start, int length)
+      => this.ReadInt32s(dst.AsSpan(start, length));
+
+    public void ReadInt32s(Span<int> dst)
+      => this.BufferedStream_.FillBufferAndReverse(dst);
 
 
     public void AssertUInt32(uint expectedValue)
@@ -141,8 +166,11 @@ namespace System.IO {
       return newArray;
     }
 
-    public void ReadUInt32s(uint[] dst)
-      => this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
+    public void ReadUInt32s(uint[] dst, int start, int length)
+      => this.ReadUInt32s(dst.AsSpan(start, length));
+
+    public void ReadUInt32s(Span<uint> dst)
+      => this.BufferedStream_.FillBufferAndReverse(dst);
 
 
     public void AssertInt64(long expectedValue)
@@ -156,8 +184,11 @@ namespace System.IO {
       return newArray;
     } 
 
-    public void ReadInt64s(long[] dst)
-      => this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
+    public void ReadInt64s(long[] dst, int start, int length)
+      => this.ReadInt64s(dst.AsSpan(start, length));
+
+    public void ReadInt64s(Span<long> dst)
+      => this.BufferedStream_.FillBufferAndReverse(dst);
 
 
     public void AssertUInt64(ulong expectedValue)
@@ -171,7 +202,11 @@ namespace System.IO {
       return newArray;
     }
 
-    public void ReadUInt64s(ulong[] dst) => this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
+    public void ReadUInt64s(ulong[] dst, int start, int length)
+      => this.ReadUInt64s(dst.AsSpan(start, length));
+
+    public void ReadUInt64s(Span<ulong> dst)
+      => this.BufferedStream_.FillBufferAndReverse(dst);
 
 
     public void AssertHalf(float expectedValue)
@@ -188,7 +223,10 @@ namespace System.IO {
       return newArray;
     }
 
-    public void ReadHalfs(float[] dst) {
+    public void ReadHalfs(float[] dst, int start, int length)
+      => this.ReadHalfs(dst.AsSpan(start, length));
+
+    public void ReadHalfs(Span<float> dst) {
       const int size = 2;
       this.FillBuffer_(size * dst.Length, size);
       for (var i = 0; i < dst.Length; ++i) {
@@ -196,6 +234,7 @@ namespace System.IO {
             EndianBinaryReader.ConvertHalf_(this.BufferedStream_.Buffer, i);
       }
     }
+
 
 
     public void AssertSingle(float expectedValue)
@@ -209,8 +248,11 @@ namespace System.IO {
       return newArray;
     }
 
-    public void ReadSingles(float[] dst)
-      => this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
+    public void ReadSingles(float[] dst, int start, int length)
+      => this.ReadSingles(dst.AsSpan(start, length));
+
+    public void ReadSingles(Span<float> dst)
+      => this.BufferedStream_.FillBufferAndReverse(dst);
 
 
     public void AssertDouble(double expectedValue)
@@ -224,8 +266,11 @@ namespace System.IO {
       return newArray;
     }
 
-    public void ReadDoubles(double[] dst)
-      => this.BufferedStream_.FillBufferAndReverse(dst, dst.Length);
+    public void ReadDoubles(double[] dst, int start, int length)
+      => this.ReadDoubles(dst.AsSpan(start, length));
+
+    public void ReadDoubles(Span<double> dst)
+      => this.BufferedStream_.FillBufferAndReverse(dst);
 
 
     public void AssertSn8(float expectedValue)
@@ -242,7 +287,10 @@ namespace System.IO {
       return newArray;
     }
 
-    public void ReadSn8s(float[] dst) {
+    public void ReadSn8s(float[] dst, int start, int length)
+      => this.ReadSn8s(dst.AsSpan(start, length));
+
+    public void ReadSn8s(Span<float> dst) {
       const int size = sizeof(byte);
       this.FillBuffer_(size * dst.Length, size);
       for (var i = 0; i < dst.Length; ++i) {
@@ -250,6 +298,7 @@ namespace System.IO {
             EndianBinaryReader.ConvertSn8_(this.BufferedStream_.Buffer, i);
       }
     }
+
 
 
     public void AssertUn8(float expectedValue)
@@ -264,9 +313,12 @@ namespace System.IO {
       var newArray = new float[count];
       this.ReadUn8s(newArray);
       return newArray;
-    } 
+    }
 
-    public void ReadUn8s(float[] dst) {
+    public void ReadUn8s(float[] dst, int start, int length)
+      => this.ReadUn8s(dst.AsSpan(start, length));
+
+    public void ReadUn8s(Span<float> dst) {
       const int size = sizeof(byte);
       this.FillBuffer_(size * dst.Length, size);
       for (var i = 0; i < dst.Length; ++i) {
@@ -290,7 +342,10 @@ namespace System.IO {
       return newArray;
     }
 
-    public void ReadSn16s(float[] dst) {
+    public void ReadSn16s(float[] dst, int start, int length)
+      => this.ReadSn16s(dst.AsSpan(start, length));
+
+    public void ReadSn16s(Span<float> dst) {
       const int size = sizeof(short);
       this.FillBuffer_(size * dst.Length, size);
       for (var i = 0; i < dst.Length; ++i) {
@@ -314,7 +369,10 @@ namespace System.IO {
       return newArray;
     }
 
-    public void ReadUn16s(float[] dst) {
+    public void ReadUn16s(float[] dst, int start, int length)
+      => this.ReadUn16s(dst.AsSpan(start, length));
+
+    public void ReadUn16s(Span<float> dst) {
       const int size = sizeof(ushort);
       this.FillBuffer_(size * dst.Length, size);
       for (var i = 0; i < dst.Length; ++i) {

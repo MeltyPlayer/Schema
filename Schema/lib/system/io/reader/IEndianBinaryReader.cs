@@ -24,74 +24,74 @@ namespace System.IO {
     void Subread(long position, Action<IEndianBinaryReader> subread);
 
     byte[] ReadBytes(long count);
-    void ReadBytes(byte[] dst);
+    void ReadBytes(byte[] dst, int start, int length);
 
     sbyte[] ReadSBytes(long count);
-    void ReadSBytes(sbyte[] dst);
+    void ReadSBytes(sbyte[] dst, int start, int length);
 
     short[] ReadInt16s(long count);
-    void ReadInt16s(short[] dst);
+    void ReadInt16s(short[] dst, int start, int length);
 
     ushort[] ReadUInt16s(long count);
-    void ReadUInt16s(ushort[] dst);
+    void ReadUInt16s(ushort[] dst, int start, int length);
 
     void AssertInt24(int expectedValue);
     int ReadInt24();
     int[] ReadInt24s(long count);
-    void ReadInt24s(int[] dst);
+    void ReadInt24s(int[] dst, int start, int length);
 
     void AssertUInt24(uint expectedValue);
     uint ReadUInt24();
     uint[] ReadUInt24s(long count);
-    void ReadUInt24s(uint[] dst);
+    void ReadUInt24s(uint[] dst, int start, int length);
 
     int[] ReadInt32s(long count);
-    void ReadInt32s(int[] dst);
+    void ReadInt32s(int[] dst, int start, int length);
 
     uint[] ReadUInt32s(long count);
-    void ReadUInt32s(uint[] dst);
+    void ReadUInt32s(uint[] dst, int start, int length);
 
     long[] ReadInt64s(long count);
-    void ReadInt64s(long[] dst);
+    void ReadInt64s(long[] dst, int start, int length);
 
     ulong[] ReadUInt64s(long count);
-    void ReadUInt64s(ulong[] dst);
+    void ReadUInt64s(ulong[] dst, int start, int length);
 
     void AssertHalf(float expectedValue);
     float ReadHalf();
     float[] ReadHalfs(long count);
-    void ReadHalfs(float[] dst);
+    void ReadHalfs(float[] dst, int start, int length);
 
     float[] ReadSingles(long count);
-    void ReadSingles(float[] dst);
+    void ReadSingles(float[] dst, int start, int length);
 
     double[] ReadDoubles(long count);
-    void ReadDoubles(double[] dst);
+    void ReadDoubles(double[] dst, int start, int length);
 
     void AssertSn8(float expectedValue);
     float ReadSn8();
     float[] ReadSn8s(long count);
-    void ReadSn8s(float[] dst);
+    void ReadSn8s(float[] dst, int start, int length);
 
     void AssertUn8(float expectedValue);
     float ReadUn8();
     float[] ReadUn8s(long count);
-    void ReadUn8s(float[] dst);
+    void ReadUn8s(float[] dst, int start, int length);
 
     void AssertSn16(float expectedValue);
     float ReadSn16();
     float[] ReadSn16s(long count);
-    void ReadSn16s(float[] dst);
+    void ReadSn16s(float[] dst, int start, int length);
 
     void AssertUn16(float expectedValue);
     float ReadUn16();
     float[] ReadUn16s(long count);
-    void ReadUn16s(float[] dst);
+    void ReadUn16s(float[] dst, int start, int length);
 
     void AssertChar(Encoding encoding, char expectedValue);
     char ReadChar(Encoding encoding);
     char[] ReadChars(Encoding encoding, long count);
-    void ReadChars(Encoding encoding, char[] dst);
+    void ReadChars(Encoding encoding, char[] dst, int start, int length);
 
     string ReadUpTo(char endToken);
     string ReadUpTo(Encoding encoding, char endToken);

@@ -37,7 +37,8 @@
     void AssertChar(char expectedValue);
     char ReadChar();
     char[] ReadChars(long count);
-    void ReadChars(char[] dst);
+    void ReadChars(char[] dst, int start, int length);
+    void ReadChars(Span<char> dst);
 
     void AssertString(string expectedValue);
     string ReadString(long count);

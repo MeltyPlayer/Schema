@@ -3,6 +3,8 @@ using System.Text;
 
 namespace System.IO {
   public sealed partial class EndianBinaryReader {
+    // TODO: Handle other encodings besides ASCII
+
     public void AssertChar(char expectedValue)
       => Assert(expectedValue, this.ReadChar());
 
@@ -12,7 +14,11 @@ namespace System.IO {
     public char[] ReadChars(long count)
       => this.ReadChars(Encoding.ASCII, count);
 
-    public void ReadChars(char[] dst) => this.ReadChars(Encoding.ASCII, dst);
+    public void ReadChars(char[] dst, int start, int length)
+      => this.ReadChars(dst.AsSpan(start, length));
+
+    public void ReadChars(Span<char> dst)
+      => this.ReadChars(Encoding.ASCII, dst);
 
 
     public void AssertChar(Encoding encoding, char expectedValue)
@@ -40,14 +46,16 @@ namespace System.IO {
       return newArray;
     }
 
-    public void ReadChars(Encoding encoding, char[] dst) {
+    public void ReadChars(Encoding encoding,
+                          char[] dst,
+                          int start,
+                          int length)
+      => this.ReadChars(encoding, dst.AsSpan(start, length));
+
+    public void ReadChars(Encoding encoding, Span<char> dst) {
       var encodingSize = EndianBinaryReader.GetEncodingSize_(encoding);
       this.BufferedStream_.FillBuffer(encodingSize * dst.Length, encodingSize);
-      encoding.GetChars(this.BufferedStream_.Buffer,
-                        0,
-                        encodingSize * dst.Length,
-                        dst,
-                        0);
+      encoding.GetChars(this.BufferedStream_.Buffer, dst);
     }
 
     private static int GetEncodingSize_(Encoding encoding) {

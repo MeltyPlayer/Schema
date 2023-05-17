@@ -34,26 +34,27 @@ namespace System.IO {
       }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public unsafe void FillBufferAndReverse<T>(T[] buffer, int count)
-        where T : unmanaged
-      => FillBufferAndReverse(buffer, count, sizeof(T));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public unsafe void FillBufferAndReverse<T>(T[] buffer, int count, int sizeOf)
-    where T : unmanaged {
-      fixed (T* tPtr = buffer) {
-        this.BaseStream.Read(new Span<byte>(tPtr, sizeOf * count));
+    public void FillBuffer<T>(Span<T> buffer) where T : unmanaged
+      => this.BaseStream.Read(buffer.AsBytes());
 
-        if (sizeOf == 1 || !this.IsOppositeEndiannessOfSystem) {
-          return;
-        }
 
-        for (var i = 0; i < count; ++i) {
-          new Span<byte>(tPtr + i, sizeOf).Reverse();
-        }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public unsafe void FillBufferAndReverse<T>(Span<T> buffer)
+        where T : unmanaged {
+      this.BaseStream.Read(buffer.AsBytes());
+
+      var sizeOf = sizeof(T);
+      if (sizeOf == 1 || !this.IsOppositeEndiannessOfSystem) {
+        return;
+      }
+
+      for (var i = 0; i < buffer.Length; ++i) {
+        buffer.Slice(i, 1).AsBytes().Reverse();
       }
     }
+
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FillBuffer(Span<byte> buffer, int? optStride = null) {
