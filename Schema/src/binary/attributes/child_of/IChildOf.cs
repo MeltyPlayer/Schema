@@ -13,10 +13,8 @@
   ///   <code>
   ///     [BinarySchema]
   ///     public partial class ParentType : IBinaryConvertible {
-  ///       [NumberFormat(SchemaIntegerType.BYTE)]
+  ///       [IntegerFormat(SchemaIntegerType.BYTE)]
   ///       public bool ChildHasSomeField { get; set; }
-  ///
-  ///       public uint BaseOffset { get; set; }
   /// 
   ///       public ChildType Child1 { get; } = new();
   ///
@@ -34,14 +32,6 @@
   /// 
   ///       [IfBoolean(nameof(HasSomeField))]
   ///       public int? SomeField { get; set; }
-  ///
-  ///       [Ignore]
-  ///       private bool BaseOffset => Parent.BaseOffset;
-  ///
-  ///       public uint ChildOffset { get; set; }
-  ///
-  ///       [Offset(nameof(BaseOffset), nameof(ChildOffset))]
-  ///       public int SomeData { get; set; }
   ///     }
   ///   </code>
   /// </summary>
