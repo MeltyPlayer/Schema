@@ -2,7 +2,32 @@ using NUnit.Framework;
 
 
 namespace System.IO {
-  public class EndianBinaryReaderNumbersTests {
+  public class EndianBinaryReaderReadNumberTests {
+    [Test]
+    [TestCase(new byte[] { 0x00 }, byte.MinValue)]
+    [TestCase(new byte[] { 0xFF }, byte.MaxValue)]
+    [TestCase(new byte[] { 0x7F }, (byte) 127)]
+    [TestCase(new byte[] { 0x80 }, (byte) 128)]
+    public void TestReadByte(byte[] bytes, byte expectedValue) {
+      using var ms = new MemoryStream(bytes);
+      using var er = new EndianBinaryReader(ms, Endianness.LittleEndian);
+      Assert.AreEqual(expectedValue, er.ReadByte());
+      Assert.AreEqual(1, ms.Position);
+    }
+
+    [Test]
+    [TestCase(new byte[] { 0x00 }, 0)]
+    [TestCase(new byte[] { 0xFF }, -1)]
+    [TestCase(new byte[] { 0x7F }, sbyte.MaxValue)]
+    [TestCase(new byte[] { 0x80 }, sbyte.MinValue)]
+    public void TestReadSByte(byte[] bytes, sbyte expectedValue) {
+      using var ms = new MemoryStream(bytes);
+      using var er = new EndianBinaryReader(ms, Endianness.LittleEndian);
+      Assert.AreEqual(expectedValue, er.ReadSByte());
+      Assert.AreEqual(1, ms.Position);
+    }
+
+
     [Test]
     [TestCase(new byte[] { 0x00, 0x00 }, 0)]
     [TestCase(new byte[] { 0xFF, 0xFF }, -1)]
