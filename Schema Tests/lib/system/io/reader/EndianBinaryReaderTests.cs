@@ -1,7 +1,9 @@
+using System.IO;
+
 using NUnit.Framework;
 
 
-namespace System.IO {
+namespace schema.lib.system.io.reader {
   public class EndianBinaryReaderTests {
     [Test]
     public void TestReadNT() {
@@ -42,7 +44,7 @@ namespace System.IO {
 
     [Test]
     public void TestReadInt24() {
-      using var zeroStream = new MemoryStream(new byte[] {0x00, 0x00, 0x00});
+      using var zeroStream = new MemoryStream(new byte[] { 0x00, 0x00, 0x00 });
       using var zeroEr = new EndianBinaryReader(zeroStream, Endianness.LittleEndian);
       Assert.AreEqual(0, zeroEr.ReadInt24());
 
