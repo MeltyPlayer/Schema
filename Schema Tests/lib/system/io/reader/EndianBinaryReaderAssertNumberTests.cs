@@ -2,7 +2,7 @@ using NUnit.Framework;
 
 
 namespace System.IO {
-  public class EndianBinaryReaderReadNumberTests {
+  public class EndianBinaryReaderAssertNumberTests {
     [Test]
     [TestCase(Endianness.LittleEndian, new byte[] { 0x00 }, byte.MinValue)]
     [TestCase(Endianness.LittleEndian, new byte[] { 0xFF }, byte.MaxValue)]
@@ -15,8 +15,12 @@ namespace System.IO {
     public void TestReadByte(Endianness endianness, byte[] bytes, byte expectedValue) {
       using var ms = new MemoryStream(bytes);
       using var er = new EndianBinaryReader(ms, endianness);
-      Assert.AreEqual(expectedValue, er.ReadByte());
+      
+      Assert.DoesNotThrow(() => er.AssertByte(expectedValue));
       Assert.AreEqual(sizeof(byte), ms.Position);
+
+      er.Position = 0;
+      Assert.Throws<Exception>(() => er.AssertByte((byte) (~expectedValue)));
     }
 
     [Test]
@@ -31,8 +35,12 @@ namespace System.IO {
     public void TestReadSByte(Endianness endianness, byte[] bytes, sbyte expectedValue) {
       using var ms = new MemoryStream(bytes);
       using var er = new EndianBinaryReader(ms, endianness);
-      Assert.AreEqual(expectedValue, er.ReadSByte());
+
+      Assert.DoesNotThrow(() => er.AssertSByte(expectedValue));
       Assert.AreEqual(sizeof(sbyte), ms.Position);
+
+      er.Position = 0;
+      Assert.Throws<Exception>(() => er.AssertSByte((sbyte) (~expectedValue)));
     }
 
 
@@ -48,8 +56,12 @@ namespace System.IO {
     public void TestReadInt16(Endianness endianness, byte[] bytes, short expectedValue) {
       using var ms = new MemoryStream(bytes);
       using var er = new EndianBinaryReader(ms, endianness);
-      Assert.AreEqual(expectedValue, er.ReadInt16());
+
+      Assert.DoesNotThrow(() => er.AssertInt16(expectedValue));
       Assert.AreEqual(sizeof(short), ms.Position);
+
+      er.Position = 0;
+      Assert.Throws<Exception>(() => er.AssertInt16((short) (~expectedValue)));
     }
 
     [Test]
@@ -64,8 +76,12 @@ namespace System.IO {
     public void TestReadUInt16(Endianness endianness, byte[] bytes, ushort expectedValue) {
       using var ms = new MemoryStream(bytes);
       using var er = new EndianBinaryReader(ms, endianness);
-      Assert.AreEqual(expectedValue, er.ReadUInt16());
+
+      Assert.DoesNotThrow(() => er.AssertUInt16(expectedValue));
       Assert.AreEqual(sizeof(ushort), ms.Position);
+
+      er.Position = 0;
+      Assert.Throws<Exception>(() => er.AssertUInt16((ushort) (~expectedValue)));
     }
 
 
@@ -81,8 +97,12 @@ namespace System.IO {
     public void TestReadInt24(Endianness endianness, byte[] bytes, int expectedValue) {
       using var ms = new MemoryStream(bytes);
       using var er = new EndianBinaryReader(ms, endianness);
-      Assert.AreEqual(expectedValue, er.ReadInt24());
+
+      Assert.DoesNotThrow(() => er.AssertInt24(expectedValue));
       Assert.AreEqual(3, ms.Position);
+
+      er.Position = 0;
+      Assert.Throws<Exception>(() => er.AssertInt24((int) (~expectedValue)));
     }
 
     [Test]
@@ -97,8 +117,12 @@ namespace System.IO {
     public void TestReadUInt24(Endianness endianness, byte[] bytes, uint expectedValue) {
       using var ms = new MemoryStream(bytes);
       using var er = new EndianBinaryReader(ms, endianness);
-      Assert.AreEqual(expectedValue, er.ReadUInt24());
+
+      Assert.DoesNotThrow(() => er.AssertUInt24(expectedValue));
       Assert.AreEqual(3, ms.Position);
+
+      er.Position = 0;
+      Assert.Throws<Exception>(() => er.AssertUInt24((uint) (~expectedValue)));
     }
 
 
@@ -114,8 +138,12 @@ namespace System.IO {
     public void TestReadInt32(Endianness endianness, byte[] bytes, int expectedValue) {
       using var ms = new MemoryStream(bytes);
       using var er = new EndianBinaryReader(ms, endianness);
-      Assert.AreEqual(expectedValue, er.ReadInt32());
+
+      Assert.DoesNotThrow(() => er.AssertInt32(expectedValue));
       Assert.AreEqual(sizeof(int), ms.Position);
+
+      er.Position = 0;
+      Assert.Throws<Exception>(() => er.AssertInt32((int) (~expectedValue)));
     }
 
     [Test]
@@ -130,8 +158,12 @@ namespace System.IO {
     public void TestReadUInt32(Endianness endianness, byte[] bytes, uint expectedValue) {
       using var ms = new MemoryStream(bytes);
       using var er = new EndianBinaryReader(ms, endianness);
-      Assert.AreEqual(expectedValue, er.ReadUInt32());
+
+      Assert.DoesNotThrow(() => er.AssertUInt32(expectedValue));
       Assert.AreEqual(sizeof(uint), ms.Position);
+
+      er.Position = 0;
+      Assert.Throws<Exception>(() => er.AssertUInt32((uint) (~expectedValue)));
     }
 
 
@@ -147,8 +179,12 @@ namespace System.IO {
     public void TestReadInt64(Endianness endianness, byte[] bytes, long expectedValue) {
       using var ms = new MemoryStream(bytes);
       using var er = new EndianBinaryReader(ms, endianness);
-      Assert.AreEqual(expectedValue, er.ReadInt64());
+
+      Assert.DoesNotThrow(() => er.AssertInt64(expectedValue));
       Assert.AreEqual(sizeof(long), ms.Position);
+
+      er.Position = 0;
+      Assert.Throws<Exception>(() => er.AssertInt64((long) (~expectedValue)));
     }
 
     [Test]
@@ -163,8 +199,12 @@ namespace System.IO {
     public void TestReadUInt64(Endianness endianness, byte[] bytes, ulong expectedValue) {
       using var ms = new MemoryStream(bytes);
       using var er = new EndianBinaryReader(ms, endianness);
-      Assert.AreEqual(expectedValue, er.ReadUInt64());
+
+      Assert.DoesNotThrow(() => er.AssertUInt64(expectedValue));
       Assert.AreEqual(sizeof(ulong), ms.Position);
+
+      er.Position = 0;
+      Assert.Throws<Exception>(() => er.AssertUInt64((ulong) (~expectedValue)));
     }
   }
 }
