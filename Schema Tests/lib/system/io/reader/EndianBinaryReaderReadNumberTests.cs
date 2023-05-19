@@ -169,6 +169,43 @@ namespace System.IO {
 
 
     [Test]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0x00 }, 0)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0x3C }, 1)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x00, 0x00 }, 0)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x3C, 0x00 }, 1)]
+    public void TestReadHalf(Endianness endianness, byte[] bytes, float expectedValue) {
+      using var ms = new MemoryStream(bytes);
+      using var er = new EndianBinaryReader(ms, endianness);
+      Assert.AreEqual(expectedValue, er.ReadHalf(), .0001);
+      Assert.AreEqual(2, ms.Position);
+    }
+
+    [Test]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0x00, 0x00, 0x00 }, 0)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0x00, 0x80, 0x3F }, 1)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x00, 0x00, 0x00, 0x00 }, 0)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x3F, 0x80, 0x00, 0x00 }, 1)]
+    public void TestReadSingle(Endianness endianness, byte[] bytes, float expectedValue) {
+      using var ms = new MemoryStream(bytes);
+      using var er = new EndianBinaryReader(ms, endianness);
+      Assert.AreEqual(expectedValue, er.ReadSingle(), .0001);
+      Assert.AreEqual(sizeof(float), ms.Position);
+    }
+
+    [Test]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 0)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x3F }, 1)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 0)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x3F, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 1)]
+    public void TestReadDouble(Endianness endianness, byte[] bytes, double expectedValue) {
+      using var ms = new MemoryStream(bytes);
+      using var er = new EndianBinaryReader(ms, endianness);
+      Assert.AreEqual(expectedValue, er.ReadDouble(), .0001);
+      Assert.AreEqual(sizeof(double), ms.Position);
+    }
+
+
+    [Test]
     [TestCase(Endianness.LittleEndian, new byte[] { 0x00 }, 0f)]
     [TestCase(Endianness.LittleEndian, new byte[] { 0x20 }, .25f)]
     [TestCase(Endianness.LittleEndian, new byte[] { 0x40 }, .5f)]

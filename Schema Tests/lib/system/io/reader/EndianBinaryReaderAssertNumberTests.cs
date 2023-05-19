@@ -209,6 +209,55 @@ namespace System.IO {
 
 
     [Test]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0x00 }, 0)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0x3C }, 1)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x00, 0x00 }, 0)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x3C, 0x00 }, 1)]
+    public void TestAssertHalf(Endianness endianness, byte[] bytes, float expectedValue) {
+      using var ms = new MemoryStream(bytes);
+      using var er = new EndianBinaryReader(ms, endianness);
+
+      Assert.DoesNotThrow(() => er.AssertHalf(expectedValue));
+      Assert.AreEqual(2, ms.Position);
+
+      er.Position = 0;
+      Assert.Throws<Exception>(() => er.AssertHalf(10 + expectedValue));
+    }
+
+    [Test]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0x00, 0x00, 0x00 }, 0)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0x00, 0x80, 0x3F }, 1)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x00, 0x00, 0x00, 0x00 }, 0)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x3F, 0x80, 0x00, 0x00 }, 1)]
+    public void TestAssertSingle(Endianness endianness, byte[] bytes, float expectedValue) {
+      using var ms = new MemoryStream(bytes);
+      using var er = new EndianBinaryReader(ms, endianness);
+
+      Assert.DoesNotThrow(() => er.AssertSingle(expectedValue));
+      Assert.AreEqual(sizeof(float), ms.Position);
+
+      er.Position = 0;
+      Assert.Throws<Exception>(() => er.AssertSingle(10 + expectedValue));
+    }
+
+    [Test]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 0)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x3F }, 1)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 0)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x3F, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 1)]
+    public void TestAssertDouble(Endianness endianness, byte[] bytes, double expectedValue) {
+      using var ms = new MemoryStream(bytes);
+      using var er = new EndianBinaryReader(ms, endianness);
+
+      Assert.DoesNotThrow(() => er.AssertDouble(expectedValue));
+      Assert.AreEqual(sizeof(double), ms.Position);
+
+      er.Position = 0;
+      Assert.Throws<Exception>(() => er.AssertDouble(10 + expectedValue));
+    }
+
+
+    [Test]
     [TestCase(Endianness.LittleEndian, new byte[] { 0x00 }, 0f)]
     [TestCase(Endianness.LittleEndian, new byte[] { 0x20 }, .25f)]
     [TestCase(Endianness.LittleEndian, new byte[] { 0x40 }, .5f)]
