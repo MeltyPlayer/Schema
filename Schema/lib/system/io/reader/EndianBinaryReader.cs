@@ -72,7 +72,7 @@ namespace System.IO {
     }
 
     public void AssertPosition(long expectedPosition) {
-      EndianBinaryReader.Assert(expectedPosition, this.Position);
+      EndianBinaryReader.Assert_(expectedPosition, this.Position);
     }
 
     public long Length {
@@ -159,12 +159,22 @@ namespace System.IO {
     }
 
 
-    private static void Assert<T>(T expectedValue, T actualValue) {
+    private static void Assert_<T>(T expectedValue, T actualValue) {
       if (!expectedValue.Equals(actualValue)) {
         throw new Exception(
             "Expected " + actualValue + " to be " + expectedValue);
       }
     }
+
+    private static void AssertAlmost_(double expectedValue,
+                                      double actualValue,
+                                      double delta = .01) {
+      if (Math.Abs(expectedValue - actualValue) > delta) {
+        throw new Exception(
+            "Expected " + actualValue + " to be " + expectedValue);
+      }
+    }
+
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void FillBuffer_(long count, int? optStride = null)

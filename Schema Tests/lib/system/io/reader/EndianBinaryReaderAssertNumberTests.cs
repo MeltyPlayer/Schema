@@ -12,7 +12,7 @@ namespace System.IO {
     [TestCase(Endianness.BigEndian, new byte[] { 0xFF }, byte.MaxValue)]
     [TestCase(Endianness.BigEndian, new byte[] { 0x7F }, (byte) 127)]
     [TestCase(Endianness.BigEndian, new byte[] { 0x80 }, (byte) 128)]
-    public void TestReadByte(Endianness endianness, byte[] bytes, byte expectedValue) {
+    public void TestAssertByte(Endianness endianness, byte[] bytes, byte expectedValue) {
       using var ms = new MemoryStream(bytes);
       using var er = new EndianBinaryReader(ms, endianness);
       
@@ -32,7 +32,7 @@ namespace System.IO {
     [TestCase(Endianness.BigEndian, new byte[] { 0xFF }, -1)]
     [TestCase(Endianness.BigEndian, new byte[] { 0x7F }, sbyte.MaxValue)]
     [TestCase(Endianness.BigEndian, new byte[] { 0x80 }, sbyte.MinValue)]
-    public void TestReadSByte(Endianness endianness, byte[] bytes, sbyte expectedValue) {
+    public void TestAssertSByte(Endianness endianness, byte[] bytes, sbyte expectedValue) {
       using var ms = new MemoryStream(bytes);
       using var er = new EndianBinaryReader(ms, endianness);
 
@@ -53,7 +53,7 @@ namespace System.IO {
     [TestCase(Endianness.BigEndian, new byte[] { 0xFF, 0xFF }, -1)]
     [TestCase(Endianness.BigEndian, new byte[] { 0x7F, 0xFF }, short.MaxValue)]
     [TestCase(Endianness.BigEndian, new byte[] { 0x80, 0x00 }, short.MinValue)]
-    public void TestReadInt16(Endianness endianness, byte[] bytes, short expectedValue) {
+    public void TestAssertInt16(Endianness endianness, byte[] bytes, short expectedValue) {
       using var ms = new MemoryStream(bytes);
       using var er = new EndianBinaryReader(ms, endianness);
 
@@ -73,7 +73,7 @@ namespace System.IO {
     [TestCase(Endianness.BigEndian, new byte[] { 0xFF, 0xFF }, ushort.MaxValue)]
     [TestCase(Endianness.BigEndian, new byte[] { 0x7F, 0xFF }, (ushort) 32767)]
     [TestCase(Endianness.BigEndian, new byte[] { 0x80, 0x00 }, (ushort) 32768)]
-    public void TestReadUInt16(Endianness endianness, byte[] bytes, ushort expectedValue) {
+    public void TestAssertUInt16(Endianness endianness, byte[] bytes, ushort expectedValue) {
       using var ms = new MemoryStream(bytes);
       using var er = new EndianBinaryReader(ms, endianness);
 
@@ -94,7 +94,7 @@ namespace System.IO {
     [TestCase(Endianness.BigEndian, new byte[] { 0xFF, 0xFF, 0xFF }, -1)]
     [TestCase(Endianness.BigEndian, new byte[] { 0x7F, 0xFF, 0xFF }, 8388607)]
     [TestCase(Endianness.BigEndian, new byte[] { 0x80, 0x00, 0x00 }, -8388608)]
-    public void TestReadInt24(Endianness endianness, byte[] bytes, int expectedValue) {
+    public void TestAssertInt24(Endianness endianness, byte[] bytes, int expectedValue) {
       using var ms = new MemoryStream(bytes);
       using var er = new EndianBinaryReader(ms, endianness);
 
@@ -114,7 +114,7 @@ namespace System.IO {
     [TestCase(Endianness.BigEndian, new byte[] { 0xFF, 0xFF, 0xFF }, (uint) 16777215)]
     [TestCase(Endianness.BigEndian, new byte[] { 0x7F, 0xFF, 0xFF }, (uint) 8388607)]
     [TestCase(Endianness.BigEndian, new byte[] { 0x80, 0x00, 0x00 }, (uint) 8388608)]
-    public void TestReadUInt24(Endianness endianness, byte[] bytes, uint expectedValue) {
+    public void TestAssertUInt24(Endianness endianness, byte[] bytes, uint expectedValue) {
       using var ms = new MemoryStream(bytes);
       using var er = new EndianBinaryReader(ms, endianness);
 
@@ -135,7 +135,7 @@ namespace System.IO {
     [TestCase(Endianness.BigEndian, new byte[] { 0xFF, 0xFF, 0xFF, 0xFF }, -1)]
     [TestCase(Endianness.BigEndian, new byte[] { 0x7F, 0xFF, 0xFF, 0xFF }, int.MaxValue)]
     [TestCase(Endianness.BigEndian, new byte[] { 0x80, 0x00, 0x00, 0x00 }, int.MinValue)]
-    public void TestReadInt32(Endianness endianness, byte[] bytes, int expectedValue) {
+    public void TestAssertInt32(Endianness endianness, byte[] bytes, int expectedValue) {
       using var ms = new MemoryStream(bytes);
       using var er = new EndianBinaryReader(ms, endianness);
 
@@ -155,7 +155,7 @@ namespace System.IO {
     [TestCase(Endianness.BigEndian, new byte[] { 0xFF, 0xFF, 0xFF, 0xFF }, uint.MaxValue)]
     [TestCase(Endianness.BigEndian, new byte[] { 0x7F, 0xFF, 0xFF, 0xFF }, (uint) 2147483647)]
     [TestCase(Endianness.BigEndian, new byte[] { 0x80, 0x00, 0x00, 0x00 }, (uint) 2147483648)]
-    public void TestReadUInt32(Endianness endianness, byte[] bytes, uint expectedValue) {
+    public void TestAssertUInt32(Endianness endianness, byte[] bytes, uint expectedValue) {
       using var ms = new MemoryStream(bytes);
       using var er = new EndianBinaryReader(ms, endianness);
 
@@ -176,7 +176,7 @@ namespace System.IO {
     [TestCase(Endianness.BigEndian, new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF }, -1)]
     [TestCase(Endianness.BigEndian, new byte[] { 0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF }, long.MaxValue)]
     [TestCase(Endianness.BigEndian, new byte[] { 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, long.MinValue)]
-    public void TestReadInt64(Endianness endianness, byte[] bytes, long expectedValue) {
+    public void TestAssertInt64(Endianness endianness, byte[] bytes, long expectedValue) {
       using var ms = new MemoryStream(bytes);
       using var er = new EndianBinaryReader(ms, endianness);
 
@@ -196,7 +196,7 @@ namespace System.IO {
     [TestCase(Endianness.BigEndian, new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF }, ulong.MaxValue)]
     [TestCase(Endianness.BigEndian, new byte[] { 0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF }, (ulong) 9223372036854775807)]
     [TestCase(Endianness.BigEndian, new byte[] { 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, (ulong) 9223372036854775808)]
-    public void TestReadUInt64(Endianness endianness, byte[] bytes, ulong expectedValue) {
+    public void TestAssertUInt64(Endianness endianness, byte[] bytes, ulong expectedValue) {
       using var ms = new MemoryStream(bytes);
       using var er = new EndianBinaryReader(ms, endianness);
 
@@ -205,6 +205,116 @@ namespace System.IO {
 
       er.Position = 0;
       Assert.Throws<Exception>(() => er.AssertUInt64((ulong) (~expectedValue)));
+    }
+
+
+    [Test]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00 }, 0f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x20 }, .25f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x40 }, .5f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x60 }, .75f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x7F }, 1f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x80 }, -1f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0xA0 }, -.75f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0xC0 }, -.5f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0xE0 }, -.25f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0xFF }, 0f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x00 }, 0f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x20 }, .25f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x40 }, .5f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x60 }, .75f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x7F }, 1f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x80 }, -1f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0xA0 }, -.75f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0xC0 }, -.5f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0xE0 }, -.25f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0xFF }, 0f)]
+    public void TestAssertSn8(Endianness endianness, byte[] bytes, float expectedValue) {
+      using var ms = new MemoryStream(bytes);
+      using var er = new EndianBinaryReader(ms, endianness);
+
+      Assert.DoesNotThrow(() => er.AssertSn8(expectedValue));
+      Assert.AreEqual(sizeof(sbyte), ms.Position);
+
+      er.Position = 0;
+      Assert.Throws<Exception>(() => er.AssertSn8(10 + expectedValue));
+    }
+
+    [Test]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00 }, 0f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x40 }, .25f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x80 }, .5f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0xC0 }, .75f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0xFF }, 1f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x00 }, 0f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x40 }, .25f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x80 }, .5f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0xC0 }, .75f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0xFF }, 1f)]
+    public void TestAssertUn8(Endianness endianness, byte[] bytes, float expectedValue) {
+      using var ms = new MemoryStream(bytes);
+      using var er = new EndianBinaryReader(ms, endianness);
+
+      Assert.DoesNotThrow(() => er.AssertUn8(expectedValue));
+      Assert.AreEqual(sizeof(byte), ms.Position);
+
+      er.Position = 0;
+      Assert.Throws<Exception>(() => er.AssertUn8(10 + expectedValue));
+    }
+
+
+    [Test]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0x00 }, 0f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0x20 }, .25f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0x40 }, .5f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0x60 }, .75f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0xFF, 0x7F }, 1f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0x80 }, -1f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0xA0 }, -.75f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0xC0 }, -.5f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0xE0 }, -.25f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0xFF, 0xFF }, 0f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x00, 0x00 }, 0f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x20, 0x00 }, .25f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x40, 0x00 }, .5f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x60, 0x00 }, .75f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x7F, 0xFF }, 1f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x80, 0x00 }, -1f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0xA0, 0x00 }, -.75f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0xC0, 0x00 }, -.5f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0xE0, 0x00 }, -.25f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0xFF, 0xFF }, 0f)]
+    public void TestAssertSn16(Endianness endianness, byte[] bytes, float expectedValue) {
+      using var ms = new MemoryStream(bytes);
+      using var er = new EndianBinaryReader(ms, endianness);
+
+      Assert.DoesNotThrow(() => er.AssertSn16(expectedValue));
+      Assert.AreEqual(sizeof(short), ms.Position);
+
+      er.Position = 0;
+      Assert.Throws<Exception>(() => er.AssertSn16(10 + expectedValue));
+    }
+
+    [Test]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0x00 }, 0f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0x40 }, .25f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0x80 }, .5f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0x00, 0xC0 }, .75f)]
+    [TestCase(Endianness.LittleEndian, new byte[] { 0xFF, 0xFF }, 1f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x00, 0x00 }, 0f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x40, 0x00 }, .25f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0x80, 0x00 }, .5f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0xC0, 0x00 }, .75f)]
+    [TestCase(Endianness.BigEndian, new byte[] { 0xFF, 0xFF }, 1f)]
+    public void TestAssertUn16(Endianness endianness, byte[] bytes, float expectedValue) {
+      using var ms = new MemoryStream(bytes);
+      using var er = new EndianBinaryReader(ms, endianness);
+
+      Assert.DoesNotThrow(() => er.AssertUn16(expectedValue));
+      Assert.AreEqual(sizeof(ushort), ms.Position);
+
+      er.Position = 0;
+      Assert.Throws<Exception>(() => er.AssertUn16(10 + expectedValue));
     }
   }
 }

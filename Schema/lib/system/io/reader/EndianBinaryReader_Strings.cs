@@ -6,7 +6,7 @@ namespace System.IO {
     // TODO: Handle other encodings besides ASCII
 
     public void AssertChar(char expectedValue)
-      => Assert(expectedValue, this.ReadChar());
+      => EndianBinaryReader.Assert_(expectedValue, this.ReadChar());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public char ReadChar() => (char) this.ReadByte();
@@ -22,7 +22,7 @@ namespace System.IO {
 
 
     public void AssertChar(Encoding encoding, char expectedValue)
-      => Assert(expectedValue, this.ReadChar(encoding));
+      => EndianBinaryReader.Assert_(expectedValue, this.ReadChar(encoding));
 
     public unsafe char ReadChar(Encoding encoding) {
       var encodingSize = EndianBinaryReader.GetEncodingSize_(encoding);
@@ -138,7 +138,7 @@ namespace System.IO {
 
 
     public void AssertString(Encoding encoding, string expectedValue)
-      => EndianBinaryReader.Assert(
+      => EndianBinaryReader.Assert_(
           expectedValue.TrimEnd('\0'),
           this.ReadString(encoding, expectedValue.Length));
 
@@ -148,13 +148,13 @@ namespace System.IO {
 
 
     public void AssertStringNT(string expectedValue)
-      => EndianBinaryReader.Assert(expectedValue, this.ReadStringNT());
+      => EndianBinaryReader.Assert_(expectedValue, this.ReadStringNT());
 
     public string ReadStringNT() => ReadUpTo('\0');
 
 
     public void AssertStringNT(Encoding encoding, string expectedValue)
-      => EndianBinaryReader.Assert(
+      => EndianBinaryReader.Assert_(
           expectedValue,
           this.ReadStringNT(encoding));
 

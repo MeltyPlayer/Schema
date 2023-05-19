@@ -6,7 +6,7 @@ using CommunityToolkit.HighPerformance;
 namespace System.IO {
   public sealed partial class EndianBinaryReader {
     public void AssertByte(byte expectedValue)
-      => EndianBinaryReader.Assert(expectedValue, this.ReadByte());
+      => EndianBinaryReader.Assert_(expectedValue, this.ReadByte());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte ReadByte()
@@ -29,7 +29,7 @@ namespace System.IO {
 
 
     public void AssertSByte(sbyte expectedValue)
-      => EndianBinaryReader.Assert(expectedValue, this.ReadSByte());
+      => EndianBinaryReader.Assert_(expectedValue, this.ReadSByte());
 
     public sbyte ReadSByte() => (sbyte) this.ReadByte();
 
@@ -47,7 +47,7 @@ namespace System.IO {
 
 
     public void AssertInt16(short expectedValue)
-      => EndianBinaryReader.Assert(expectedValue, this.ReadInt16());
+      => EndianBinaryReader.Assert_(expectedValue, this.ReadInt16());
 
     public short ReadInt16() => this.BufferedStream_.Read<short>();
 
@@ -65,7 +65,7 @@ namespace System.IO {
 
 
     public void AssertUInt16(ushort expectedValue)
-      => EndianBinaryReader.Assert(expectedValue, this.ReadUInt16());
+      => EndianBinaryReader.Assert_(expectedValue, this.ReadUInt16());
 
     public ushort ReadUInt16() => this.BufferedStream_.Read<ushort>();
 
@@ -83,7 +83,7 @@ namespace System.IO {
 
 
     public void AssertInt24(int expectedValue)
-      => EndianBinaryReader.Assert(expectedValue, this.ReadInt24());
+      => EndianBinaryReader.Assert_(expectedValue, this.ReadInt24());
 
     public int ReadInt24() {
       this.FillBuffer_(3);
@@ -111,7 +111,7 @@ namespace System.IO {
 
 
     public void AssertUInt24(uint expectedValue)
-      => EndianBinaryReader.Assert(expectedValue, this.ReadUInt24());
+      => EndianBinaryReader.Assert_(expectedValue, this.ReadUInt24());
 
     public uint ReadUInt24() {
       this.FillBuffer_(3);
@@ -138,7 +138,7 @@ namespace System.IO {
 
 
     public void AssertInt32(int expectedValue)
-      => EndianBinaryReader.Assert(expectedValue, this.ReadInt32());
+      => EndianBinaryReader.Assert_(expectedValue, this.ReadInt32());
 
     public int ReadInt32() => this.BufferedStream_.Read<int>();
 
@@ -156,7 +156,7 @@ namespace System.IO {
 
 
     public void AssertUInt32(uint expectedValue)
-      => EndianBinaryReader.Assert(expectedValue, this.ReadUInt32());
+      => EndianBinaryReader.Assert_(expectedValue, this.ReadUInt32());
 
     public uint ReadUInt32() => this.BufferedStream_.Read<uint>();
 
@@ -174,7 +174,7 @@ namespace System.IO {
 
 
     public void AssertInt64(long expectedValue)
-      => EndianBinaryReader.Assert(expectedValue, this.ReadInt64());
+      => EndianBinaryReader.Assert_(expectedValue, this.ReadInt64());
 
     public long ReadInt64() => this.BufferedStream_.Read<long>();
 
@@ -192,7 +192,7 @@ namespace System.IO {
 
 
     public void AssertUInt64(ulong expectedValue)
-      => EndianBinaryReader.Assert(expectedValue, this.ReadUInt64());
+      => EndianBinaryReader.Assert_(expectedValue, this.ReadUInt64());
 
     public ulong ReadUInt64() => this.BufferedStream_.Read<ulong>();
 
@@ -210,7 +210,7 @@ namespace System.IO {
 
 
     public void AssertHalf(float expectedValue)
-      => EndianBinaryReader.Assert(expectedValue, this.ReadHalf());
+      => EndianBinaryReader.Assert_(expectedValue, this.ReadHalf());
 
     public float ReadHalf() {
       this.FillBuffer_(2);
@@ -238,7 +238,7 @@ namespace System.IO {
 
 
     public void AssertSingle(float expectedValue)
-      => EndianBinaryReader.Assert(expectedValue, this.ReadSingle());
+      => EndianBinaryReader.AssertAlmost_(expectedValue, this.ReadSingle());
 
     public float ReadSingle() => this.BufferedStream_.Read<float>();
 
@@ -256,7 +256,7 @@ namespace System.IO {
 
 
     public void AssertDouble(double expectedValue)
-      => EndianBinaryReader.Assert(expectedValue, this.ReadDouble());
+      => EndianBinaryReader.AssertAlmost_(expectedValue, this.ReadDouble());
 
     public double ReadDouble() => this.BufferedStream_.Read<double>();
 
@@ -274,7 +274,7 @@ namespace System.IO {
 
 
     public void AssertSn8(float expectedValue)
-      => EndianBinaryReader.Assert(expectedValue, this.ReadSn8());
+      => EndianBinaryReader.AssertAlmost_(expectedValue, this.ReadSn8());
 
     public float ReadSn8() {
       this.FillBuffer_(sizeof(byte));
@@ -302,7 +302,7 @@ namespace System.IO {
 
 
     public void AssertUn8(float expectedValue)
-      => EndianBinaryReader.Assert(expectedValue, this.ReadUn8());
+      => EndianBinaryReader.AssertAlmost_(expectedValue, this.ReadUn8());
 
     public float ReadUn8() {
       this.FillBuffer_(sizeof(byte));
@@ -329,7 +329,7 @@ namespace System.IO {
 
 
     public void AssertSn16(float expectedValue)
-      => EndianBinaryReader.Assert(expectedValue, this.ReadSn16());
+      => EndianBinaryReader.AssertAlmost_(expectedValue, this.ReadSn16());
 
     public float ReadSn16() {
       this.FillBuffer_(sizeof(short));
@@ -356,7 +356,7 @@ namespace System.IO {
 
 
     public void AssertUn16(float expectedValue)
-      => EndianBinaryReader.Assert(expectedValue, this.ReadUn16());
+      => EndianBinaryReader.AssertAlmost_(expectedValue, this.ReadUn16());
 
     public float ReadUn16() {
       this.FillBuffer_(sizeof(ushort));
