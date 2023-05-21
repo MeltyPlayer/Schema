@@ -5,22 +5,27 @@ namespace System.IO {
   public sealed partial class EndianBinaryReader {
     // TODO: Handle other encodings besides ASCII
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AssertChar(char expectedValue)
       => EndianBinaryReader.Assert_(expectedValue, this.ReadChar());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public char ReadChar() => (char) this.ReadByte();
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public char[] ReadChars(long count)
       => this.ReadChars(Encoding.ASCII, count);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadChars(char[] dst, int start, int length)
       => this.ReadChars(dst.AsSpan(start, length));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadChars(Span<char> dst)
       => this.ReadChars(Encoding.ASCII, dst);
 
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AssertChar(Encoding encoding, char expectedValue)
       => EndianBinaryReader.Assert_(expectedValue, this.ReadChar(encoding));
 
@@ -40,24 +45,28 @@ namespace System.IO {
       return cBuffer[0];
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public char[] ReadChars(Encoding encoding, long count) {
       var newArray = new char[count];
       this.ReadChars(encoding, newArray);
       return newArray;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadChars(Encoding encoding,
                           char[] dst,
                           int start,
                           int length)
       => this.ReadChars(encoding, dst.AsSpan(start, length));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadChars(Encoding encoding, Span<char> dst) {
       var encodingSize = EndianBinaryReader.GetEncodingSize_(encoding);
       this.BufferedStream_.FillBuffer(encodingSize * dst.Length, encodingSize);
       encoding.GetChars(this.BufferedStream_.Buffer, dst);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static int GetEncodingSize_(Encoding encoding) {
       return encoding == Encoding.UTF8 ||
              encoding == Encoding.ASCII ||
@@ -93,6 +102,7 @@ namespace System.IO {
       return strBuilder.ToString();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string ReadUpTo(params string[] endTokens)
       => ReadUpTo(Encoding.ASCII, endTokens);
 
@@ -124,42 +134,53 @@ namespace System.IO {
     }
 
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string ReadLine() => ReadLine(Encoding.ASCII);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string ReadLine(Encoding encoding)
       => ReadUpTo(encoding, "\n", "\r\n");
 
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AssertString(string expectedValue)
       => this.AssertString(Encoding.ASCII, expectedValue);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string ReadString(long count)
       => this.ReadString(Encoding.ASCII, count);
 
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AssertString(Encoding encoding, string expectedValue)
       => EndianBinaryReader.Assert_(
           expectedValue.TrimEnd('\0'),
           this.ReadString(encoding, expectedValue.Length));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string ReadString(Encoding encoding, long count) {
       return new string(this.ReadChars(encoding, count)).TrimEnd('\0');
     }
 
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AssertStringNT(string expectedValue)
       => EndianBinaryReader.Assert_(expectedValue, this.ReadStringNT());
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string ReadStringNT() => ReadUpTo('\0');
 
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AssertStringNT(Encoding encoding, string expectedValue)
       => EndianBinaryReader.Assert_(
           expectedValue,
           this.ReadStringNT(encoding));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string ReadStringNT(Encoding encoding) => ReadUpTo(encoding, '\0');
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AssertMagicText(string expectedText) {
       var actualText = this.ReadString(expectedText.Length);
 

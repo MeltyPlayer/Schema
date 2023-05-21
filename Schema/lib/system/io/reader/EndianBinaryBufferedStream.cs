@@ -26,14 +26,6 @@ namespace System.IO {
       FillBuffer(new Span<byte>(this.Buffer, 0, (int) count), optStride);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public unsafe void FillBuffer<T>(T[] buffer, int count)
-        where T : unmanaged {
-      fixed (T* tPtr = buffer) {
-        this.BaseStream.Read(new Span<byte>(tPtr, sizeof(T) * count));
-      }
-    }
-
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FillBuffer<T>(Span<T> buffer) where T : unmanaged

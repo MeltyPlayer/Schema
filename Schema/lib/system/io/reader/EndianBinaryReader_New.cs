@@ -1,10 +1,11 @@
-﻿using schema.binary;
+﻿using System.Runtime.CompilerServices;
+
+using schema.binary;
 
 
 namespace System.IO {
   public sealed partial class EndianBinaryReader {
-
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public T ReadNew<T>() where T : IBinaryDeserializable, new() {
       this.AssertNotEof();
       var value = new T();
@@ -25,6 +26,7 @@ namespace System.IO {
       }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadNewArray<T>(out T[] array, int length)
         where T : IBinaryDeserializable, new() {
       array = ReadNewArray<T>(length);

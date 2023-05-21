@@ -85,6 +85,7 @@ namespace System.IO {
       get => this.Position >= this.Length;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AssertNotEof() {
       if (this.Eof) {
         throw new Exception(
@@ -92,6 +93,7 @@ namespace System.IO {
       }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Align(uint amt) {
       var offs = amt - (this.Position % amt);
       if (offs != amt) {
@@ -159,6 +161,7 @@ namespace System.IO {
     }
 
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void Assert_<T>(T expectedValue, T actualValue) {
       if (!expectedValue.Equals(actualValue)) {
         throw new Exception(

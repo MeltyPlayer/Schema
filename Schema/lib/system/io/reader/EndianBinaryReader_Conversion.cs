@@ -1,27 +1,24 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: System.IO.EndianBinaryReader
-// Assembly: MKDS Course Modifier, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: DAEF8B62-698B-42D0-BEDD-3770EB8C9FE8
-// Assembly location: R:\Documents\CSharpWorkspace\Pikmin2Utility\MKDS Course Modifier\MKDS Course Modifier.exe
-
-using System.Text;
-
-using schema.binary;
+﻿using System.Runtime.CompilerServices;
 
 
 namespace System.IO {
   public sealed partial class EndianBinaryReader {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static byte ConvertByte_(byte[] buffer, int i) => buffer[i];
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static sbyte ConvertSByte_(byte[] buffer, int i)
       => (sbyte) buffer[i];
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static short ConvertInt16_(byte[] buffer, int i)
       => BitConverter.ToInt16(buffer, i);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ushort ConvertUInt16_(byte[] buffer, int i)
       => BitConverter.ToUInt16(buffer, sizeof(ushort) * i);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static int ConvertInt24_(byte[] buffer, int i) {
       var value = (buffer[3 * i + 2] << 16) |
                   (buffer[3 * i + 1] << 8) |
@@ -42,23 +39,29 @@ namespace System.IO {
       return value;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static uint ConvertUInt24_(byte[] buffer, int i)
       => (uint) ((buffer[3 * i + 2] << 16) |
                  (buffer[3 * i + 1] << 8) |
                  buffer[3 * i]);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static float ConvertHalf_(byte[] buffer, int i)
       => (float) Half.ToHalf(buffer, i);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static float ConvertSn8_(byte[] buffer, int i)
       => EndianBinaryReader.ConvertSByte_(buffer, i) / (255f / 2);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static float ConvertUn8_(byte[] buffer, int i)
       => EndianBinaryReader.ConvertByte_(buffer, i) / 255f;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static float ConvertSn16_(byte[] buffer, int i)
       => EndianBinaryReader.ConvertInt16_(buffer, i) / (65535f / 2);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static float ConvertUn16_(byte[] buffer, int i)
       => EndianBinaryReader.ConvertUInt16_(buffer, i) / 65535f;
   }
