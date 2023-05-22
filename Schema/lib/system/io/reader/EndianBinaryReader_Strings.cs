@@ -36,11 +36,7 @@ namespace System.IO {
 
       Span<char> cBuffer = stackalloc char[1];
 
-      fixed (byte* bPtr = bBuffer) {
-        fixed (char* cPtr = cBuffer) {
-          encoding.GetChars(bPtr, bBuffer.Length, cPtr, cBuffer.Length);
-        }
-      }
+      encoding.GetChars(bBuffer, cBuffer);
 
       return cBuffer[0];
     }
@@ -62,8 +58,9 @@ namespace System.IO {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadChars(Encoding encoding, Span<char> dst) {
       var encodingSize = EndianBinaryReader.GetEncodingSize_(encoding);
-      this.BufferedStream_.FillBuffer(encodingSize * dst.Length, encodingSize);
-      encoding.GetChars(this.BufferedStream_.Buffer, dst);
+      var lengthInBytes = encodingSize * dst.Length;
+      this.BufferedStream_.FillBuffer(lengthInBytes, encodingSize);
+      encoding.GetChars(this.BufferedStream_.Buffer.AsSpan(0, lengthInBytes), dst);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -158,9 +155,8 @@ namespace System.IO {
           this.ReadString(encoding, expectedValue.Length));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public string ReadString(Encoding encoding, long count) {
-      return new string(this.ReadChars(encoding, count)).TrimEnd('\0');
-    }
+    public string ReadString(Encoding encoding, long count)
+      => new string(this.ReadChars(encoding, count)).TrimEnd('\0');
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

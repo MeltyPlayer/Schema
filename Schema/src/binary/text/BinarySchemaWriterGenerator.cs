@@ -287,9 +287,20 @@ namespace schema.binary.text {
               $"ew.WriteStringWithExactLength(this.{member.Name}, {stringType.ConstLength});");
         } else if (stringType.LengthSourceType ==
                    StringLengthSourceType.IMMEDIATE_VALUE) {
-          var writeType = SchemaGeneratorUtil.GetIntLabel(
-              stringType.ImmediateLengthType);
-          cbsb.WriteLine($"ew.Write{writeType}(this.{member.Name}.Length);")
+          var immediateLengthType = stringType.ImmediateLengthType;
+
+          var needToCast = !immediateLengthType.CanAcceptAnInt();
+
+          var castText = "";
+          if (needToCast) {
+            var castType = immediateLengthType.GetTypeName();
+            castText = $"({castType}) ";
+          }
+
+          var accessText = $"this.{member.Name}.Length";
+
+          var writeType = stringType.ImmediateLengthType.GetIntLabel();
+          cbsb.WriteLine($"ew.Write{writeType}({castText}{accessText});")
               .WriteLine($"ew.WriteString(this.{member.Name});");
         } else {
           cbsb.WriteLine($"ew.WriteString(this.{member.Name});");
