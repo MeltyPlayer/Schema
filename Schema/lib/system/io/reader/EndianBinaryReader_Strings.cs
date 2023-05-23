@@ -58,9 +58,12 @@ namespace System.IO {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadChars(Encoding encoding, Span<char> dst) {
       var encodingSize = EndianBinaryReader.GetEncodingSize_(encoding);
+
       var lengthInBytes = encodingSize * dst.Length;
-      this.BufferedStream_.FillBuffer(lengthInBytes, encodingSize);
-      encoding.GetChars(this.BufferedStream_.Buffer.AsSpan(0, lengthInBytes), dst);
+      Span<byte> buffer = stackalloc byte[lengthInBytes];
+      this.BufferedStream_.FillBuffer(buffer, encodingSize);
+      
+      encoding.GetChars(buffer, dst);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -104,8 +104,9 @@ namespace System.IO {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int ReadInt24() {
-      this.FillBuffer_(3);
-      return EndianBinaryReader.ConvertInt24_(this.BufferedStream_.Buffer, 0);
+      Span<byte> buffer = stackalloc byte[3];
+      this.FillBuffer_(buffer);
+      return EndianBinaryReader.ConvertInt24_(buffer, 0);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -137,8 +138,9 @@ namespace System.IO {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public uint ReadUInt24() {
-      this.FillBuffer_(3);
-      return EndianBinaryReader.ConvertUInt24_(this.BufferedStream_.Buffer, 0);
+      Span<byte> buffer = stackalloc byte[3];
+      this.FillBuffer_(buffer);
+      return EndianBinaryReader.ConvertUInt24_(buffer, 0);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

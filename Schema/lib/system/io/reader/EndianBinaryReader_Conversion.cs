@@ -4,10 +4,11 @@
 namespace System.IO {
   public sealed partial class EndianBinaryReader {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static byte ConvertByte_(byte[] buffer, int i) => buffer[i];
+    private static byte ConvertByte_(ReadOnlySpan<byte> buffer, int i)
+      => buffer[i];
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static sbyte ConvertSByte_(byte[] buffer, int i)
+    private static sbyte ConvertSByte_(ReadOnlySpan<byte> buffer, int i)
       => (sbyte) buffer[i];
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -19,7 +20,7 @@ namespace System.IO {
       => BitConverter.ToUInt16(buffer, sizeof(ushort) * i);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static int ConvertInt24_(byte[] buffer, int i) {
+    private static int ConvertInt24_(ReadOnlySpan<byte> buffer, int i) {
       var value = (buffer[3 * i + 2] << 16) |
                   (buffer[3 * i + 1] << 8) |
                   buffer[3 * i];
@@ -40,7 +41,7 @@ namespace System.IO {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static uint ConvertUInt24_(byte[] buffer, int i)
+    private static uint ConvertUInt24_(ReadOnlySpan<byte> buffer, int i)
       => (uint) ((buffer[3 * i + 2] << 16) |
                  (buffer[3 * i + 1] << 8) |
                  buffer[3 * i]);
@@ -50,11 +51,11 @@ namespace System.IO {
       => (float) Half.ToHalf(buffer, i);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static float ConvertSn8_(byte[] buffer, int i)
+    private static float ConvertSn8_(ReadOnlySpan<byte> buffer, int i)
       => EndianBinaryReader.ConvertSByte_(buffer, i) / (255f / 2);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static float ConvertUn8_(byte[] buffer, int i)
+    private static float ConvertUn8_(ReadOnlySpan<byte> buffer, int i)
       => EndianBinaryReader.ConvertByte_(buffer, i) / 255f;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
