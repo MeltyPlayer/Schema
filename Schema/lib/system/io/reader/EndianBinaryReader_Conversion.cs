@@ -12,14 +12,6 @@ namespace System.IO {
       => (sbyte) buffer[i];
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static short ConvertInt16_(byte[] buffer, int i)
-      => BitConverter.ToInt16(buffer, i);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ushort ConvertUInt16_(byte[] buffer, int i)
-      => BitConverter.ToUInt16(buffer, sizeof(ushort) * i);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static int ConvertInt24_(ReadOnlySpan<byte> buffer, int i) {
       var value = (buffer[3 * i + 2] << 16) |
                   (buffer[3 * i + 1] << 8) |
@@ -47,8 +39,8 @@ namespace System.IO {
                  buffer[3 * i]);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static float ConvertHalf_(byte[] buffer, int i)
-      => (float) Half.ToHalf(buffer, i);
+    private static float ConvertHalf_(ushort value)
+      => Half.ToHalf(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static float ConvertSn8_(ReadOnlySpan<byte> buffer, int i)
@@ -59,11 +51,9 @@ namespace System.IO {
       => EndianBinaryReader.ConvertByte_(buffer, i) / 255f;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static float ConvertSn16_(byte[] buffer, int i)
-      => EndianBinaryReader.ConvertInt16_(buffer, i) / (65535f / 2);
+    private static float ConvertSn16_(short value) => value / (65535f / 2);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static float ConvertUn16_(byte[] buffer, int i)
-      => EndianBinaryReader.ConvertUInt16_(buffer, i) / 65535f;
+    private static float ConvertUn16_(ushort value) => value / 65535f;
   }
 }

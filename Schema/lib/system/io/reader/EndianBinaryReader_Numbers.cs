@@ -105,7 +105,7 @@ namespace System.IO {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int ReadInt24() {
       Span<byte> buffer = stackalloc byte[3];
-      this.FillBuffer_(buffer);
+      this.BufferedStream_.FillBuffer(buffer, 3);
       return EndianBinaryReader.ConvertInt24_(buffer, 0);
     }
 
@@ -139,7 +139,7 @@ namespace System.IO {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public uint ReadUInt24() {
       Span<byte> buffer = stackalloc byte[3];
-      this.FillBuffer_(buffer);
+      this.BufferedStream_.FillBuffer(buffer, 3);
       return EndianBinaryReader.ConvertUInt24_(buffer, 0);
     }
 
@@ -262,10 +262,8 @@ namespace System.IO {
       => EndianBinaryReader.Assert_(expectedValue, this.ReadHalf());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public float ReadHalf() {
-      this.FillBuffer_(2);
-      return EndianBinaryReader.ConvertHalf_(this.BufferedStream_.Buffer, 0);
-    }
+    public float ReadHalf()
+      => EndianBinaryReader.ConvertHalf_(this.ReadUInt16());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public float[] ReadHalfs(long count) {
@@ -280,11 +278,11 @@ namespace System.IO {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadHalfs(Span<float> dst) {
-      const int size = 2;
-      this.FillBuffer_(size * dst.Length, size);
+      Span<ushort> values = stackalloc ushort[dst.Length];
+      this.ReadUInt16s(values);
       for (var i = 0; i < dst.Length; ++i) {
         dst[i] =
-            EndianBinaryReader.ConvertHalf_(this.BufferedStream_.Buffer, i);
+            EndianBinaryReader.ConvertHalf_(values[i]);
       }
     }
 
@@ -406,10 +404,8 @@ namespace System.IO {
       => EndianBinaryReader.AssertAlmost_(expectedValue, this.ReadSn16());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public float ReadSn16() {
-      this.FillBuffer_(sizeof(short));
-      return EndianBinaryReader.ConvertSn16_(this.BufferedStream_.Buffer, 0);
-    }
+    public float ReadSn16()
+      => EndianBinaryReader.ConvertSn16_(this.ReadInt16());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public float[] ReadSn16s(long count) {
@@ -424,11 +420,11 @@ namespace System.IO {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadSn16s(Span<float> dst) {
-      const int size = sizeof(short);
-      this.FillBuffer_(size * dst.Length, size);
+      Span<short> values = stackalloc short[dst.Length];
+      this.ReadInt16s(values);
       for (var i = 0; i < dst.Length; ++i) {
         dst[i] =
-            EndianBinaryReader.ConvertSn16_(this.BufferedStream_.Buffer, i);
+            EndianBinaryReader.ConvertSn16_(values[i]);
       }
     }
 
@@ -438,10 +434,8 @@ namespace System.IO {
       => EndianBinaryReader.AssertAlmost_(expectedValue, this.ReadUn16());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public float ReadUn16() {
-      this.FillBuffer_(sizeof(ushort));
-      return EndianBinaryReader.ConvertUn16_(this.BufferedStream_.Buffer, 0);
-    }
+    public float ReadUn16()
+      => EndianBinaryReader.ConvertUn16_(this.ReadUInt16());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public float[] ReadUn16s(long count) {
@@ -456,11 +450,11 @@ namespace System.IO {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadUn16s(Span<float> dst) {
-      const int size = sizeof(ushort);
-      this.FillBuffer_(size * dst.Length, size);
+      Span<ushort> values = stackalloc ushort[dst.Length];
+      this.ReadUInt16s(values);
       for (var i = 0; i < dst.Length; ++i) {
         dst[i] =
-            EndianBinaryReader.ConvertUn16_(this.BufferedStream_.Buffer, i);
+            EndianBinaryReader.ConvertUn16_(values[i]);
       }
     }
   }

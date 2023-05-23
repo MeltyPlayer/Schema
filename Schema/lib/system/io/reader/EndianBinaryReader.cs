@@ -182,9 +182,5 @@ namespace System.IO {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void FillBuffer_(long count, int? optStride = null)
       => this.BufferedStream_.FillBuffer(count, optStride);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void FillBuffer_(Span<byte> buffer)
-      => this.BufferedStream_.FillBuffer(buffer);
   }
 }
