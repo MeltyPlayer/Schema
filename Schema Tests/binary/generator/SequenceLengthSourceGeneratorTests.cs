@@ -2,7 +2,7 @@
 
 
 namespace schema.binary.text {
-  internal class SequencceLengthSourceGeneratorTests {
+  internal class SequenceLengthSourceGeneratorTests {
     [Test]
     public void TestConstLength() {
       BinarySchemaTestUtil.AssertGenerated(@"

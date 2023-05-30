@@ -49,6 +49,7 @@ namespace schema.binary.parser {
 
   public interface IStructureTypeInfo : ITypeInfo {
     INamedTypeSymbol NamedTypeSymbol { get; }
+    bool IsStruct { get; }
   }
 
   public interface IGenericTypeInfo : ITypeInfo {
@@ -469,6 +470,8 @@ namespace schema.binary.parser {
 
       public bool IsReadonly { get; }
       public bool IsNullable { get; }
+
+      public bool IsStruct => this.NamedTypeSymbol.TypeKind == TypeKind.Struct;
     }
 
     private class GenericTypeInfo : IGenericTypeInfo {

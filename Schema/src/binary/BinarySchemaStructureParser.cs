@@ -92,6 +92,7 @@ namespace schema.binary {
     IStructureTypeInfo StructureTypeInfo { get; }
     bool IsReferenceType { get; }
     bool IsChild { get; }
+    bool IsStruct { get; }
   }
 
   public interface IGenericMemberType : IMemberType {
@@ -677,6 +678,7 @@ namespace schema.binary {
 
       public bool IsReferenceType { get; set; }
       public bool IsChild { get; set; }
+      public bool IsStruct => StructureTypeInfo.IsStruct;
     }
 
     public class GenericMemberType : IGenericMemberType {

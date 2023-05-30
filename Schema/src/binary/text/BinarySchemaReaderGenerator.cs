@@ -364,11 +364,24 @@ namespace schema.binary.text {
         cbsb.WriteLine($"this.{memberName}.Parent = this;");
       }
 
-      HandleMemberEndianness_(cbsb,
-                              member,
-                              () => {
-                                cbsb.WriteLine($"this.{memberName}.Read(er);");
-                              });
+      HandleMemberEndianness_(
+        cbsb,
+        member,
+        () =>
+        {
+          if (!structureMemberType.IsStruct)
+          {
+            cbsb.WriteLine($"this.{memberName}.Read(er);");
+          }
+          else
+          {
+            cbsb.EnterBlock()
+              .WriteLine($"var value = this.{memberName};")
+              .WriteLine("value.Read(er);")
+              .WriteLine($"this.{memberName} = value;")
+              .ExitBlock();
+          }
+        });
     }
 
     private static void ReadGeneric_(
@@ -547,7 +560,8 @@ namespace schema.binary.text {
                 arrayType.ElementType.TypeSymbol);
         var hasReferenceElements =
             arrayType.ElementType is IStructureMemberType {
-                IsReferenceType: true
+                IsReferenceType: true,
+                IsStruct: false,
             };
 
         // TODO: Handle readonly lists, can't be expanded like this!
@@ -572,9 +586,9 @@ namespace schema.binary.text {
 
           if (hasReferenceElements) {
             cbsb.EnterBlock($"for (var i = 0; i < {lengthName}; ++i)")
-                .WriteLine(
-                    $"this.{member.Name}[i] = new {qualifiedElementName}();")
-                .ExitBlock();
+              .WriteLine(
+                $"this.{member.Name}[i] = new {qualifiedElementName}();")
+              .ExitBlock();
           }
         }
 
@@ -667,15 +681,39 @@ namespace schema.binary.text {
 
                                 if (elementType is IStructureMemberType
                                     structureElementType) {
-                                  cbsb.EnterBlock(
+                                  if (!structureElementType.IsStruct) {
+                                    cbsb.EnterBlock(
                                       $"foreach (var e in this.{member.Name})");
 
-                                  if (structureElementType.IsChild) {
-                                    cbsb.WriteLine("e.Parent = this;");
-                                  }
+                                    if (structureElementType.IsChild) {
+                                      cbsb.WriteLine("e.Parent = this;");
+                                    }
 
-                                  cbsb.WriteLine("e.Read(er);");
-                                  cbsb.ExitBlock();
+                                    cbsb.WriteLine("e.Read(er);");
+                                    cbsb.ExitBlock();
+                                  }
+                                  else
+                                  {
+                                    var arrayLengthName =
+                                      arrayType.SequenceType ==
+                                      SequenceType.ARRAY
+                                        ? "Length"
+                                        : "Count";
+                                    cbsb.EnterBlock(
+                                      $"for (var i = 0; i < this.{member.Name}.{arrayLengthName}; ++i)");
+                                    cbsb.WriteLine(
+                                      $"var e = this.{member.Name}[i];");
+
+                                    if (structureElementType.IsChild) {
+                                      cbsb.WriteLine("e.Parent = this;");
+                                    }
+
+                                    cbsb.WriteLine("e.Read(er);");
+                                    cbsb.WriteLine(
+                                      $"this.{member.Name}[i] = e;");
+
+                                    cbsb.ExitBlock();
+                                  }
                                   return;
                                 }
 
