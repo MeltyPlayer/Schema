@@ -35,7 +35,7 @@
   ///     }
   ///   </code>
   /// </summary>
-  public interface IChildOf<TParent> where TParent : IBinaryConvertible {
+  public interface IChildOf<TParent> where TParent : IBinary {
     public TParent Parent { get; set; }
   }
 }

@@ -182,7 +182,11 @@ namespace schema.binary {
           iChildOfParser.GetParentTypeSymbolOf(structureSymbol);
       if (parentTypeSymbol != null) {
         iChildOfParser.AssertParentContainsChild(
-            parentTypeSymbol, structureSymbol);
+            parentTypeSymbol,
+            structureSymbol);
+        iChildOfParser.AssertParentBinaryConvertabilityMatchesChild(
+            parentTypeSymbol,
+            structureSymbol);
       }
 
       var structureEndianness =
@@ -199,17 +203,13 @@ namespace schema.binary {
           continue;
         }
 
-        var isIgnored = false;
-        if (SymbolTypeUtil.GetAttribute<IgnoreAttribute>(
-                diagnostics, memberSymbol) != null) {
-          isIgnored = true;
-        }
+        bool isIgnored =
+            SymbolTypeUtil.GetAttribute<IgnoreAttribute>(diagnostics,
+              memberSymbol) != null ||
+            (memberSymbol.Name == nameof(IChildOf<IBinaryConvertible>.Parent)
+             && parentTypeSymbol != null);
 
         // Skips parent field for child types
-        if (memberSymbol.Name == nameof(IChildOf<IBinaryConvertible>.Parent)
-            && parentTypeSymbol != null) {
-          isIgnored = true;
-        }
 
         var field =
             !isIgnored
@@ -272,24 +272,23 @@ namespace schema.binary {
         return null;
       }
 
-      var typeOfSerializable = SymbolTypeUtil.Implements(
-              structureSymbol,
-              typeof(IBinaryConvertible)) ? typeof(IBinaryConvertible) :
-          SymbolTypeUtil.Implements(
-              structureSymbol,
-              typeof(IBinaryDeserializable)) ? typeof(IBinaryDeserializable) :
-          typeof(IBinarySerializable);
-
       // Makes sure the member is serializable
       {
-        if (memberTypeInfo is IStructureTypeInfo structureTypeInfo) {
-          if (!SymbolTypeUtil.Implements(
-                  structureTypeInfo.NamedTypeSymbol,
-                  typeOfSerializable)) {
+        var isDeserializable = structureSymbol.IsBinaryDeserializable();
+        var isSerializable = structureSymbol.IsBinarySerializable();
+
+        if (memberTypeInfo is IStructureTypeInfo) {
+          var isMemberDeserializable =
+              memberTypeInfo.TypeSymbol.IsBinaryDeserializable();
+          var isMemberSerializable =
+              memberTypeInfo.TypeSymbol.IsBinarySerializable();
+
+          if ((isDeserializable && !isMemberDeserializable) ||
+              (isSerializable && !isMemberSerializable)) {
             diagnostics.Add(
                 Rules.CreateDiagnostic(
                     memberSymbol,
-                    Rules.StructureMemberNeedsToImplementIBiSerializable));
+                    Rules.StructureMemberBinaryConvertabilityNeedsToSatisfyParent));
             return null;
           }
         }

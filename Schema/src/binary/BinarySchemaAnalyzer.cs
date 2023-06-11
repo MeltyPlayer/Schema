@@ -32,10 +32,11 @@ namespace schema.binary {
           Rules.MutableArrayNeedsLengthSource,
           Rules.MutableStringNeedsLengthSource,
           Rules.NotSupported,
+          Rules.ParentBinaryConvertabilityMustSatisfyChild,
           Rules.ReadAlreadyDefined,
           Rules.SchemaTypeMustBePartial,
           Rules.SourceMustBePrivate,
-          Rules.StructureMemberNeedsToImplementIBiSerializable,
+          Rules.StructureMemberBinaryConvertabilityNeedsToSatisfyParent,
           Rules.UnexpectedAttribute,
           Rules.UnsupportedArrayType,
           Rules.WriteAlreadyDefined

@@ -39,6 +39,12 @@ namespace schema.binary {
             "Child type must be contained in parent",
             "Type '{0}' is defined as a child, but is not actually contained in its parent type.");
 
+    public static readonly DiagnosticDescriptor ParentBinaryConvertabilityMustSatisfyChild
+        = Rules.CreateDiagnosticDescriptor_(
+            "Parent's binary convertability must satisfy child's",
+            "Type '{0}' is defined as a child, but its binary convertability is not satisfied by its parent's. The parent must at least implement the same binary serializable/deserializable interface as the child.");
+
+
     public static readonly DiagnosticDescriptor
         ChildTypeCanOnlyBeContainedInParent
             = Rules.CreateDiagnosticDescriptor_(
@@ -76,10 +82,10 @@ namespace schema.binary {
           "Member '{0}' must be a nullable type to use IfBoolean.");
 
     public static DiagnosticDescriptor
-        StructureMemberNeedsToImplementIBiSerializable { get; } =
+        StructureMemberBinaryConvertabilityNeedsToSatisfyParent { get; } =
       Rules.CreateDiagnosticDescriptor_(
-          "Structure member needs to implement IBinaryConvertible",
-          "Structure member '{0}' must implement IBinaryConvertible.");
+          "Structure member must satisfy parent's binary convertability",
+          "Structure member '{0}' must implement at least the same binary serializable/deserializable interface as its parent.");
 
     public static DiagnosticDescriptor
         ElementNeedsToImplementIBiSerializable { get; } =

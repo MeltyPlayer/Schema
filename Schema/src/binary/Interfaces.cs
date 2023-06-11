@@ -1,11 +1,13 @@
 ﻿using System.IO;
 
 namespace schema.binary {
-  public interface IBinarySerializable {
+  public interface IBinary { }
+
+  public interface IBinarySerializable : IBinary {
     void Write(ISubEndianBinaryWriter ew);
   }
 
-  public interface IBinaryDeserializable {
+  public interface IBinaryDeserializable : IBinary {
     void Read(IEndianBinaryReader er);
   }
 

@@ -17,7 +17,7 @@ namespace schema.binary {
   internal static class SymbolTypeUtil {
     public static ISymbol GetSymbolFromType(SemanticModel semanticModel,
                                             Type type)
-      => GetSymbolFromIdentifier(semanticModel, type.FullName);
+      => SymbolTypeUtil.GetSymbolFromIdentifier(semanticModel, type.FullName);
 
     public static ISymbol GetSymbolFromIdentifier(
         SemanticModel semanticModel,
@@ -26,28 +26,42 @@ namespace schema.binary {
       return symbol.First();
     }
 
-    public static bool CanBeStoredAs(ITypeSymbol symbol, Type type) {
-      if (IsExactlyType(symbol, type) ||
-          Implements(symbol, type) ||
-          ImplementsGeneric(symbol, type)) {
+    public static bool CanBeStoredAs<TType>(this ITypeSymbol symbol)
+      => symbol.CanBeStoredAs(typeof(TType));
+
+    public static bool CanBeStoredAs(this ITypeSymbol symbol, Type type) {
+      if (symbol.IsExactlyType(type) || symbol.Implements(type) ||
+          symbol.ImplementsGeneric(type)) {
         return true;
       }
 
       if (symbol is INamedTypeSymbol namedSymbol &&
-          MatchesGeneric(namedSymbol, type)) {
+          namedSymbol.MatchesGeneric(type)) {
         return true;
       }
 
       return false;
     }
 
-    public static bool ImplementsGeneric(ITypeSymbol symbol, Type type)
-      => symbol.AllInterfaces.Any(i => SymbolTypeUtil.MatchesGeneric(i, type));
 
-    public static bool Implements(ITypeSymbol symbol, Type type)
-      => symbol.AllInterfaces.Any(i => SymbolTypeUtil.IsExactlyType(i, type));
+    public static bool ImplementsGeneric(this ITypeSymbol symbol, Type type)
+      => symbol.AllInterfaces.Any(i => i.MatchesGeneric(type));
 
-    public static string[]? GetContainingNamespaces(ISymbol symbol) {
+
+    public static bool IsBinaryDeserializable(this ITypeSymbol symbol)
+      => symbol.Implements<IBinaryDeserializable>();
+   
+    public static bool IsBinarySerializable(this ITypeSymbol symbol)
+      => symbol.Implements<IBinarySerializable>();
+
+    public static bool Implements<TType>(this ITypeSymbol symbol)
+      => symbol.Implements(typeof(TType));
+
+    public static bool Implements(this ITypeSymbol symbol, Type type)
+      => symbol.AllInterfaces.Any(i => i.IsExactlyType(type));
+
+
+    public static string[]? GetContainingNamespaces(this ISymbol symbol) {
       var namespaceSymbol = symbol.ContainingNamespace;
       if (namespaceSymbol == null) {
         return null;
@@ -86,13 +100,13 @@ namespace schema.binary {
       return combined.ToString();
     }
 
-    public static bool HasEmptyConstructor(INamedTypeSymbol symbol)
+    public static bool HasEmptyConstructor(this INamedTypeSymbol symbol)
       => symbol.InstanceConstructors.Any(c => c.Parameters.Length == 0);
 
-    public static bool IsPartial(TypeDeclarationSyntax syntax)
+    public static bool IsPartial(this TypeDeclarationSyntax syntax)
       => syntax.Modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword));
 
-    public static bool MatchesGeneric(INamedTypeSymbol symbol,
+    public static bool MatchesGeneric(this INamedTypeSymbol symbol,
                                       Type expectedGenericType) {
       var indexOfBacktick = expectedGenericType.Name.IndexOf('`');
       if (indexOfBacktick == -1) {
@@ -110,16 +124,15 @@ namespace schema.binary {
       return sameName && sameNamespace && sameTypeArguments;
     }
 
-    public static bool IsExactlyType(ISymbol symbol, Type expectedType)
+    public static bool IsExactlyType(this ISymbol symbol, Type expectedType)
       => symbol.Name == expectedType.Name &&
          SymbolTypeUtil.MergeContainingNamespaces(symbol) ==
          expectedType.Namespace;
 
-    internal static bool HasAttribute(ISymbol symbol, Type expectedType)
+    internal static bool HasAttribute(this ISymbol symbol, Type expectedType)
       => symbol.GetAttributes()
                .Any(attributeData
-                        => SymbolTypeUtil.IsExactlyType(
-                            attributeData.AttributeClass!,
+                        => attributeData.AttributeClass!.IsExactlyType(
                             expectedType));
 
     internal static IEnumerable<AttributeData>
@@ -140,57 +153,57 @@ namespace schema.binary {
         IList<Diagnostic> diagnostics,
         ISymbol symbol)
         where TAttribute : notnull
-      => GetAttributes<TAttribute>(diagnostics, symbol)
-          .SingleOrDefault();
+      => SymbolTypeUtil.GetAttributes<TAttribute>(diagnostics, symbol)
+                       .SingleOrDefault();
 
     internal static IEnumerable<TAttribute> GetAttributes<TAttribute>(
         IList<Diagnostic> diagnostics,
         ISymbol symbol)
         where TAttribute : notnull
-      => GetAttributeData<TAttribute>(symbol)
-          .Select(attributeData => {
-            var parameters = attributeData.AttributeConstructor.Parameters;
+      => SymbolTypeUtil.GetAttributeData<TAttribute>(symbol)
+                       .Select(attributeData => {
+                         var parameters = attributeData.AttributeConstructor.Parameters;
 
-            // TODO: Does this still work w/ optional arguments?
-            var attributeType = typeof(TAttribute);
+                         // TODO: Does this still work w/ optional arguments?
+                         var attributeType = typeof(TAttribute);
 
-            var constructor =
-                attributeType.GetConstructors()
-                             .FirstOrDefault(c => {
-                               var cParameters = c.GetParameters();
-                               if (cParameters.Length != parameters.Length) {
-                                 return false;
-                               }
+                         var constructor =
+                             attributeType.GetConstructors()
+                                          .FirstOrDefault(c => {
+                                            var cParameters = c.GetParameters();
+                                            if (cParameters.Length != parameters.Length) {
+                                              return false;
+                                            }
 
-                               for (var i = 0; i < parameters.Length; ++i) {
-                                 if (parameters[i].Name !=
-                                     cParameters[i].Name) {
-                                   return false;
-                                 }
-                               }
+                                            for (var i = 0; i < parameters.Length; ++i) {
+                                              if (parameters[i].Name !=
+                                                  cParameters[i].Name) {
+                                                return false;
+                                              }
+                                            }
 
-                               return true;
-                             });
-            if (constructor == null) {
-              throw new Exception(
-                  $"Failed to find constructor for {typeof(TAttribute)}");
-            }
+                                            return true;
+                                          });
+                         if (constructor == null) {
+                           throw new Exception(
+                               $"Failed to find constructor for {typeof(TAttribute)}");
+                         }
 
-            var arguments = attributeData.ConstructorArguments;
+                         var arguments = attributeData.ConstructorArguments;
 
-            var attribute = (TAttribute) constructor.Invoke(
-                arguments.Select(a => a.Value).ToArray());
-            if (attribute is BMemberAttribute memberAttribute) {
-              memberAttribute.Init(diagnostics,
-                                   symbol.ContainingType,
-                                   symbol.Name);
-            }
+                         var attribute = (TAttribute) constructor.Invoke(
+                             arguments.Select(a => a.Value).ToArray());
+                         if (attribute is BMemberAttribute memberAttribute) {
+                           memberAttribute.Init(diagnostics,
+                                                symbol.ContainingType,
+                                                symbol.Name);
+                         }
 
-            return attribute;
-          });
+                         return attribute;
+                       });
 
     public static IEnumerable<ISymbol> GetInstanceMembers(
-        INamedTypeSymbol structureSymbol) {
+        this INamedTypeSymbol structureSymbol) {
       var baseClassesAndSelf = new LinkedList<INamedTypeSymbol>();
       {
         var currentSymbol = structureSymbol;
@@ -223,7 +236,7 @@ namespace schema.binary {
     }
 
     public static INamedTypeSymbol[] GetDeclaringTypesDownward(
-        ITypeSymbol type) {
+        this ITypeSymbol type) {
       var declaringTypes = new List<INamedTypeSymbol>();
 
       var declaringType = type.ContainingType;
@@ -238,9 +251,9 @@ namespace schema.binary {
     }
 
     public static string GetQualifiersAndNameFor(
-        INamedTypeSymbol namedTypeSymbol) {
+        this INamedTypeSymbol namedTypeSymbol) {
       var sb = new StringBuilder();
-      sb.Append(SymbolTypeUtil.GetSymbolQualifiers(namedTypeSymbol));
+      sb.Append(namedTypeSymbol.GetSymbolQualifiers());
       sb.Append(" ");
       sb.Append(namedTypeSymbol.Name);
 
@@ -262,7 +275,7 @@ namespace schema.binary {
       return sb.ToString();
     }
 
-    public static string GetSymbolQualifiers(INamedTypeSymbol typeSymbol)
+    public static string GetSymbolQualifiers(this INamedTypeSymbol typeSymbol)
       => (typeSymbol.IsStatic ? "static " : "") +
          SymbolTypeUtil.AccessibilityToModifier(
              typeSymbol.DeclaredAccessibility) +
@@ -284,7 +297,7 @@ namespace schema.binary {
               null)
       };
 
-    public static string GetQualifiedName(ITypeSymbol typeSymbol) {
+    public static string GetQualifiedName(this ITypeSymbol typeSymbol) {
       var mergedNamespace =
           SymbolTypeUtil.MergeContainingNamespaces(typeSymbol);
       var mergedNamespaceText = mergedNamespace == null
@@ -292,8 +305,7 @@ namespace schema.binary {
           : $"{mergedNamespace}.";
 
       var mergedContainersText = "";
-      foreach (var container in SymbolTypeUtil.GetDeclaringTypesDownward(
-                   typeSymbol)) {
+      foreach (var container in typeSymbol.GetDeclaringTypesDownward()) {
         mergedContainersText += $"{container.Name}.";
       }
 
@@ -301,7 +313,7 @@ namespace schema.binary {
     }
 
     public static string GetQualifiedNameFromCurrentSymbol(
-        ITypeSymbol sourceSymbol,
+        this ITypeSymbol sourceSymbol,
         ITypeSymbol referencedSymbol) {
       if (referencedSymbol.SpecialType
           is SpecialType.System_Byte
@@ -321,10 +333,8 @@ namespace schema.binary {
         return referencedSymbol.ToDisplayString();
       }
 
-      var currentNamespace =
-          SymbolTypeUtil.GetContainingNamespaces(sourceSymbol);
-      var referencedNamespace =
-          SymbolTypeUtil.GetContainingNamespaces(referencedSymbol);
+      var currentNamespace = sourceSymbol.GetContainingNamespaces();
+      var referencedNamespace = referencedSymbol.GetContainingNamespaces();
 
       string mergedNamespaceText;
       if (currentNamespace == null && referencedNamespace == null) {
@@ -353,8 +363,7 @@ namespace schema.binary {
       }
 
       var mergedContainersText = "";
-      foreach (var container in SymbolTypeUtil.GetDeclaringTypesDownward(
-                   referencedSymbol)) {
+      foreach (var container in referencedSymbol.GetDeclaringTypesDownward()) {
         mergedContainersText += $"{container.Name}.";
       }
 
@@ -363,7 +372,7 @@ namespace schema.binary {
     }
 
     public static void GetMemberInStructure(
-        ITypeSymbol structureSymbol,
+        this ITypeSymbol structureSymbol,
         string memberName,
         out ISymbol memberSymbol,
         out ITypeInfo memberTypeInfo

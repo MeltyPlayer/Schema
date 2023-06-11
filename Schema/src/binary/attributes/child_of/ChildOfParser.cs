@@ -22,7 +22,8 @@ namespace schema.binary.attributes.child_of {
       }
 
       var parentSymbol = childNamedTypeSymbol
-                         .GetMembers(nameof(IChildOf<IBinaryConvertible>.Parent))
+                         .GetMembers(
+                             nameof(IChildOf<IBinaryConvertible>.Parent))
                          .Single();
       return parentSymbol switch {
           IPropertySymbol propertySymbol => propertySymbol.Type,
@@ -37,7 +38,7 @@ namespace schema.binary.attributes.child_of {
           new TypeInfoParser()
               .ParseMembers(parentNamedTypeSymbol)
               .Any(tuple => {
-                var (parseStatus, memberSymbol, memberTypeInfo) = tuple;
+                var (parseStatus, _, memberTypeInfo) = tuple;
                 if (parseStatus != TypeInfoParser.ParseStatus.SUCCESS) {
                   return false;
                 }
@@ -72,6 +73,20 @@ namespace schema.binary.attributes.child_of {
         diagnostics_.Add(
             Rules.CreateDiagnostic(childNamedTypeSymbol,
                                    Rules.ChildTypeMustBeContainedInParent));
+      }
+    }
+
+    public void AssertParentBinaryConvertabilityMatchesChild(
+        INamedTypeSymbol parentNamedTypeSymbol,
+        INamedTypeSymbol childNamedTypeSymbol) {
+      if ((childNamedTypeSymbol.IsBinaryDeserializable() &&
+           !parentNamedTypeSymbol.IsBinaryDeserializable()) ||
+          (childNamedTypeSymbol.IsBinarySerializable() &&
+           !parentNamedTypeSymbol.IsBinarySerializable())) {
+        this.diagnostics_.Add(
+            Rules.CreateDiagnostic(
+                childNamedTypeSymbol,
+                Rules.ParentBinaryConvertabilityMustSatisfyChild));
       }
     }
   }

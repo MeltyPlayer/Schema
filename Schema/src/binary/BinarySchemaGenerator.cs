@@ -22,14 +22,17 @@ namespace schema.binary {
     private readonly BinarySchemaWriterGenerator writerImpl_ = new();
 
     private void Generate_(IBinarySchemaStructure structure) {
-      if (structure.TypeSymbol.MemberNames.All(member => member != "Read")) {
+      if (SymbolTypeUtil.Implements<IBinaryDeserializable>(structure.TypeSymbol)
+          && structure.TypeSymbol.MemberNames.All(member => member != "Read")) {
         var readerCode = this.readerImpl_.Generate(structure);
         this.context_.Value.AddSource(
             SymbolTypeUtil.GetQualifiedName(structure.TypeSymbol) + "_reader.g",
             readerCode);
       }
 
-      if (structure.TypeSymbol.MemberNames.All(member => member != "Write")) {
+      if (SymbolTypeUtil.Implements<IBinarySerializable>(structure.TypeSymbol)
+          && structure.TypeSymbol.MemberNames.All(
+              member => member != "Write")) {
         var writerCode = this.writerImpl_.Generate(structure);
         this.context_.Value.AddSource(
             SymbolTypeUtil.GetQualifiedName(structure.TypeSymbol) + "_writer.g",
@@ -125,6 +128,7 @@ namespace schema.binary {
                     structureByNamedTypeSymbol,
                     primitiveMemberType.AccessChainToSizeOf);
               }
+
               if (primitiveMemberType.AccessChainToPointer != null) {
                 sizeOfMemberInBytesDependencyFixer.AddDependenciesForStructure(
                     structureByNamedTypeSymbol,
@@ -143,12 +147,14 @@ namespace schema.binary {
           ;
         }
       }
+
       this.queue_.Clear();
 
       foreach (var (errorSymbol, exception) in this.errorSymbols_) {
         this.context_.Value.ReportDiagnostic(
             Rules.CreateExceptionDiagnostic(errorSymbol, exception));
       }
+
       this.errorSymbols_.Clear();
     }
 

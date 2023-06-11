@@ -17,7 +17,7 @@ namespace foo.bar {
     public byte Field { get; set; }
   }
 
-  public partial class Parent {
+  public partial class Parent : IBinaryConvertible {
     public ChildOfWrapper Child { get; set; }
   }
 }",
