@@ -1,7 +1,7 @@
 ﻿using schema.text;
 
 namespace System.IO {
-  public sealed partial class FinTextReader : ITextReader {
+  public sealed partial class FinTextReader : ITextReader, IDisposable {
     private readonly Stream baseStream_;
 
     public FinTextReader(Stream baseStream) {

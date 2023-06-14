@@ -1,5 +1,5 @@
 ﻿namespace System.IO {
-  public interface IDataReader : IDisposable {
+  public interface IDataReader {
     long Position { get; set; }
     long Length { get; }
     bool Eof { get; }

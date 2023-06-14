@@ -4,7 +4,8 @@ using SubstreamSharp;
 
 
 namespace System.IO {
-  public sealed partial class EndianBinaryReader : IEndianBinaryReader {
+  public sealed partial class EndianBinaryReader : IEndianBinaryReader,
+                                                   IDisposable {
     private bool disposed_;
 
     // TODO: This should be private.
