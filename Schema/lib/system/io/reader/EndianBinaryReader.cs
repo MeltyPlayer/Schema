@@ -2,6 +2,7 @@
 
 using SubstreamSharp;
 
+using static schema.binary.BinarySchemaStructureParser;
 
 namespace System.IO {
   public sealed partial class EndianBinaryReader : IEndianBinaryReader,
@@ -159,6 +160,30 @@ namespace System.IO {
         subread(this);
       }
       this.Position = tempPos;
+    }
+
+
+    public T Subread<T>(long position,
+                        int len,
+                        Func<IEndianBinaryReader, T> subread) {
+      T value = default;
+
+      this.Subread(
+          position,
+          len,
+          ser => { value = subread(ser); });
+
+      return value!;
+    }
+
+    public T Subread<T>(long position, Func<IEndianBinaryReader, T> subread) {
+      T value = default;
+
+      this.Subread(
+          position,
+          ser => { value = subread(ser); });
+
+      return value!;
     }
 
 
