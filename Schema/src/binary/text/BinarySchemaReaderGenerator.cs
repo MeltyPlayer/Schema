@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
 using Microsoft.CodeAnalysis;
 
+using schema.binary.dependencies;
 using schema.binary.util;
 
 
@@ -19,9 +21,24 @@ namespace schema.binary.text {
 
       var sb = new StringBuilder();
       var cbsb = new CurlyBracketTextWriter(new StringWriter(sb));
-      cbsb.WriteLine("using System;")
-          .WriteLine("using System.Collections.Generic;")
-          .WriteLine("using System.IO;");
+
+      {
+        var dependencies = new List<string> { "System", "System.IO" };
+        if (structure.DependsOnSequenceImports()) {
+          dependencies.Add("schema.util.sequences");
+        }
+
+        if (structure.DependsOnCollectionsImports()) {
+          dependencies.Add("System.Collections.Generic");
+        }
+
+        dependencies.Sort(StringComparer.Ordinal);
+        foreach (var dependency in dependencies) {
+          cbsb.WriteLine($"using {dependency};");
+        }
+
+        cbsb.WriteLine("");
+      }
 
       // TODO: Handle fancier cases here
       if (typeNamespace != null) {
@@ -544,50 +561,15 @@ namespace schema.binary.text {
               .WriteLine($"var {lengthName} = er.Read{readType}();");
         }
 
-        if (arrayType.LengthSourceType is SequenceLengthSourceType
-                .IMMEDIATE_VALUE or SequenceLengthSourceType.OTHER_MEMBER) {
-          cbsb.EnterBlock($"if ({lengthName} < 0)")
-              .WriteLine(
-                  $"throw new Exception(\"Expected length to be nonnegative!\");")
-              .ExitBlock();
-        }
-
-        var qualifiedElementName =
-            SymbolTypeUtil.GetQualifiedNameFromCurrentSymbol(
-                sourceSymbol,
-                arrayType.ElementType.TypeSymbol);
-        var hasReferenceElements =
-            arrayType.ElementType is IStructureMemberType {
-                IsReferenceType: true,
-                IsStruct: false,
-            };
-
-        // TODO: Handle readonly lists, can't be expanded like this!
-        if (sequenceType == SequenceType.MUTABLE_LIST) {
-          cbsb.EnterBlock($"while (this.{member.Name}.Count < {lengthName})");
-          if (hasReferenceElements) {
-            cbsb.WriteLine(
-                $"this.{member.Name}.Add(new {qualifiedElementName}());");
-          } else {
-            cbsb.WriteLine($"this.{member.Name}.Add(default);");
-          }
-
-          cbsb.ExitBlock();
-
-          cbsb.EnterBlock(
-                  $"while (this.{member.Name}.Count > {lengthName})")
-              .WriteLine($"this.{member.Name}.RemoveAt(0);")
-              .ExitBlock();
+        var inPlace =
+            arrayType.SequenceTypeInfo.SequenceType is SequenceType.MUTABLE_LIST
+                or SequenceType.MUTABLE_SEQUENCE;
+        if (inPlace) {
+          cbsb.WriteLine(
+              $"SequencesUtil.ResizeSequenceInPlace(this.{member.Name}, {lengthName});");
         } else {
           cbsb.WriteLine(
-              $"this.{member.Name} = new {qualifiedElementName}[{lengthName}];");
-
-          if (hasReferenceElements) {
-            cbsb.EnterBlock($"for (var i = 0; i < {lengthName}; ++i)")
-                .WriteLine(
-                    $"this.{member.Name}[i] = new {qualifiedElementName}();")
-                .ExitBlock();
-          }
+              $"this.{member.Name} = SequencesUtil.ResizeSequence(this.{member.Name}, {lengthName});");
         }
 
         if (isImmediate) {
@@ -708,7 +690,7 @@ namespace schema.binary.text {
                                   return;
                                 }
 
-// Anything that makes it down here probably isn't meant to be read.
+                                // Anything that makes it down here probably isn't meant to be read.
                                 throw new NotImplementedException();
                               });
     }

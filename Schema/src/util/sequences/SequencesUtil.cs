@@ -13,18 +13,28 @@ namespace schema.util.sequences {
       }
     }
 
-    public static T[] ResizeSequence<T>(T[] list, int length) where T : new() {
+    public static T[] ResizeSequence<T>(T[]? list, int length) where T : new() {
       SequencesUtil.AssertLengthNonnegative_(length);
-      return list.Length == length ? list : list.Resized(length).ToArray();
+
+      if (list != null && list.Length == length) {
+        return list;
+      }
+
+      return (list?.Resized(length) ?? Enumerable.Repeat(new T(), length))
+          .ToArray();
     }
 
     public static ImmutableArray<T> ResizeSequence<T>(
-        ImmutableArray<T> list,
+        ImmutableArray<T>? list,
         int length) where T : new() {
       SequencesUtil.AssertLengthNonnegative_(length);
-      return list.Length == length
-          ? list
-          : list.Resized(length).ToImmutableArray();
+
+      if (list != null && list.Value.Length == length) {
+        return list.Value;
+      }
+
+      return (list?.Resized(length) ?? Enumerable.Repeat(new T(), length))
+          .ToImmutableArray();
     }
 
 
@@ -40,10 +50,16 @@ namespace schema.util.sequences {
       }
     }
 
-    public static IReadOnlyList<T> ResizeSequence<T>(IReadOnlyList<T> list,
+    public static IReadOnlyList<T> ResizeSequence<T>(IReadOnlyList<T>? list,
       int length) where T : new() {
       SequencesUtil.AssertLengthNonnegative_(length);
-      return list.Count == length ? list : list.Resized(length).ToList();
+
+      if (list != null && list.Count == length) {
+        return list;
+      }
+
+      return (list?.Resized(length) ?? Enumerable.Repeat(new T(), length))
+          .ToArray();
     }
 
 

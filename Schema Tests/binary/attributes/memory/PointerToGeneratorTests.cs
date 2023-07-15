@@ -19,8 +19,8 @@ namespace foo.bar {
   }
 }",
                                      @"using System;
-using System.Collections.Generic;
 using System.IO;
+
 namespace foo.bar {
   public partial class SizeWrapper {
     public void Read(IEndianBinaryReader er) {
@@ -66,8 +66,8 @@ namespace foo.bar {
   }
 }",
                                      @"using System;
-using System.Collections.Generic;
 using System.IO;
+
 namespace foo.bar {
   public partial class SizeWrapper {
     public void Read(IEndianBinaryReader er) {
@@ -117,8 +117,8 @@ namespace foo.bar {
 }",
 // Size Wrapper                                           
                                            (@"using System;
-using System.Collections.Generic;
 using System.IO;
+
 namespace foo.bar {
   public partial class SizeWrapper {
     public void Read(IEndianBinaryReader er) {
@@ -139,8 +139,8 @@ namespace foo.bar {
 "),
 // Parent Impl
                                            (@"using System;
-using System.Collections.Generic;
 using System.IO;
+
 namespace foo.bar {
   public partial class ParentImpl {
     public void Read(IEndianBinaryReader er) {

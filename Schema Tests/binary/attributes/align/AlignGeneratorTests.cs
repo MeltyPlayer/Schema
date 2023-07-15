@@ -3,7 +3,8 @@
 
 namespace schema.binary.attributes.align {
   internal class AlignGeneratorTests {
-    [Test] public void TestAlign() {
+    [Test]
+    public void TestAlign() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes.align;
@@ -15,9 +16,9 @@ namespace foo.bar {
     public byte Field { get; set; }
   }
 }",
-                                     @"using System;
-using System.Collections.Generic;
+                                           @"using System;
 using System.IO;
+
 namespace foo.bar {
   public partial class AlignWrapper {
     public void Read(IEndianBinaryReader er) {
@@ -27,7 +28,7 @@ namespace foo.bar {
   }
 }
 ",
-                                     @"using System;
+                                           @"using System;
 using System.IO;
 namespace foo.bar {
   public partial class AlignWrapper {
@@ -55,18 +56,16 @@ namespace foo.bar {
     public int[] Field { get; set; }
   }
 }",
-                                     @"using System;
-using System.Collections.Generic;
+                                           @"using System;
 using System.IO;
+using schema.util.sequences;
+
 namespace foo.bar {
   public partial class AlignWrapper {
     public void Read(IEndianBinaryReader er) {
       {
         var c = er.ReadUInt32();
-        if (c < 0) {
-          throw new Exception(""Expected length to be nonnegative!"");
-        }
-        this.Field = new int[c];
+        this.Field = SequencesUtil.ResizeSequence(this.Field, c);
       }
       er.Align(2);
       er.ReadInt32s(this.Field);
@@ -74,7 +73,7 @@ namespace foo.bar {
   }
 }
 ",
-                                     @"using System;
+                                           @"using System;
 using System.IO;
 namespace foo.bar {
   public partial class AlignWrapper {

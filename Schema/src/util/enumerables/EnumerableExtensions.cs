@@ -6,6 +6,7 @@ namespace schema.util.enumerables {
         this IEnumerable<T> enumerable,
         int length) where T : new() {
       var count = 0;
+
       foreach (var value in enumerable) {
         if (count >= length) {
           yield break;

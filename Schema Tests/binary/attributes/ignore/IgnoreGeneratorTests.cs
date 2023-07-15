@@ -16,8 +16,8 @@ namespace foo.bar {
   }
 }",
                                      @"using System;
-using System.Collections.Generic;
 using System.IO;
+
 namespace foo.bar {
   public partial class IgnoreWrapper {
     public void Read(IEndianBinaryReader er) {

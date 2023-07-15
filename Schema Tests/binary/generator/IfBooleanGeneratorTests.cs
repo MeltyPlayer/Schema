@@ -24,8 +24,8 @@ namespace foo.bar {
   public class A : IBinaryConvertible { }
 }",
                                      @"using System;
-using System.Collections.Generic;
 using System.IO;
+
 namespace foo.bar {
   public partial class ByteWrapper {
     public void Read(IEndianBinaryReader er) {
@@ -87,8 +87,8 @@ namespace foo.bar {
   public class A : IBinaryConvertible { }
 }",
                                      @"using System;
-using System.Collections.Generic;
 using System.IO;
+
 namespace foo.bar {
   public partial class ByteWrapper {
     public void Read(IEndianBinaryReader er) {
@@ -133,8 +133,8 @@ namespace foo.bar {
   }
 }",
                                      @"using System;
-using System.Collections.Generic;
 using System.IO;
+
 namespace foo.bar {
   public partial class ByteWrapper {
     public void Read(IEndianBinaryReader er) {

@@ -36,15 +36,17 @@ namespace foo.bar {
                                      @"using System;
 using System.Collections.Generic;
 using System.IO;
+using schema.util.sequences;
+
 namespace foo.bar {
   public partial class ConstLengthWrapper {
     public void Read(IEndianBinaryReader er) {
-      this.Field = new int[3];
+      this.Field = SequencesUtil.ResizeSequence(this.Field, 3);
       er.ReadInt32s(this.Field);
-      this.NullableField = new int[3];
+      this.NullableField = SequencesUtil.ResizeSequence(this.NullableField, 3);
       er.ReadInt32s(this.NullableField);
       if (this.Toggle) {
-        this.IfBooleanArray = new int[3];
+        this.IfBooleanArray = SequencesUtil.ResizeSequence(this.IfBooleanArray, 3);
         er.ReadInt32s(this.IfBooleanArray);
       }
       else {
@@ -52,12 +54,7 @@ namespace foo.bar {
       }
       if (this.Toggle) {
         this.IfBooleanList = new System.Collections.Generic.List();
-        while (this.IfBooleanList.Count < 3) {
-          this.IfBooleanList.Add(default);
-        }
-        while (this.IfBooleanList.Count > 3) {
-          this.IfBooleanList.RemoveAt(0);
-        }
+        SequencesUtil.ResizeSequenceInPlace(this.IfBooleanList, 3);
         er.ReadInt32s(this.IfBooleanList);
       }
       else {

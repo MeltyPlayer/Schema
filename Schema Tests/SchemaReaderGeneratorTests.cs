@@ -17,8 +17,8 @@ namespace foo.bar {
   }
 }",
                             @"using System;
-using System.Collections.Generic;
 using System.IO;
+
 namespace foo.bar {
   public partial class ByteWrapper {
     public void Read(IEndianBinaryReader er) {
@@ -41,8 +41,8 @@ namespace foo.bar {
   }
 }",
                             @"using System;
-using System.Collections.Generic;
 using System.IO;
+
 namespace foo.bar {
   public partial class SByteWrapper {
     public void Read(IEndianBinaryReader er) {
@@ -65,8 +65,8 @@ namespace foo.bar {
   }
 }",
                             @"using System;
-using System.Collections.Generic;
 using System.IO;
+
 namespace foo.bar {
   public partial class ShortWrapper {
     public void Read(IEndianBinaryReader er) {
@@ -89,8 +89,8 @@ namespace foo.bar {
   }
 }",
                             @"using System;
-using System.Collections.Generic;
 using System.IO;
+
 namespace foo.bar {
   public partial class ArrayWrapper {
     public void Read(IEndianBinaryReader er) {
@@ -117,16 +117,14 @@ namespace foo.bar {
   }
 }",
                             @"using System;
-using System.Collections.Generic;
 using System.IO;
+using schema.util.sequences;
+
 namespace foo.bar {
   public partial class ArrayWrapper {
     public void Read(IEndianBinaryReader er) {
       this.length = er.ReadInt32();
-      if (this.length < 0) {
-        throw new Exception(""Expected length to be nonnegative!"");
-      }
-      this.field = new int[this.length];
+      this.field = SequencesUtil.ResizeSequence(this.field, this.length);
       er.ReadInt32s(this.field);
     }
   }
@@ -156,8 +154,8 @@ namespace foo.bar {
   }
 }",
                             @"using System;
-using System.Collections.Generic;
 using System.IO;
+
 namespace foo.bar {
   static internal partial class Parent {
     protected partial class Middle {
@@ -185,8 +183,8 @@ namespace foo.bar {
   }
 }",
                             @"using System;
-using System.Collections.Generic;
 using System.IO;
+
 namespace foo.bar {
   public partial class CharWrapper {
     public void Read(IEndianBinaryReader er) {
@@ -209,8 +207,8 @@ namespace foo.bar {
   }
 }",
                             @"using System;
-using System.Collections.Generic;
 using System.IO;
+
 namespace foo.bar {
   public partial class ShortWrapper {
     public void Read(IEndianBinaryReader er) {
@@ -233,8 +231,8 @@ namespace foo.bar {
   }
 }",
                             @"using System;
-using System.Collections.Generic;
 using System.IO;
+
 namespace foo.bar {
   public partial class ByteWrapper {
     public void Read(IEndianBinaryReader er) {
@@ -257,8 +255,8 @@ namespace foo.bar {
   }
 }",
                             @"using System;
-using System.Collections.Generic;
 using System.IO;
+
 namespace foo.bar {
   public partial class ByteWrapper {
     public void Read(IEndianBinaryReader er) {
@@ -281,8 +279,8 @@ namespace foo.bar {
   }
 }",
                             @"using System;
-using System.Collections.Generic;
 using System.IO;
+
 namespace foo.bar {
   public partial class ByteWrapper {
     public void Read(IEndianBinaryReader er) {
@@ -341,8 +339,9 @@ namespace foo {
   }
 }",
                             @"using System;
-using System.Collections.Generic;
 using System.IO;
+using schema.util.sequences;
+
 namespace foo.bar {
   public partial class EverythingWrapper {
     public void Read(IEndianBinaryReader er) {" +
@@ -362,23 +361,14 @@ namespace foo.bar {
       er.ReadInt32s(this.constLengthIntValues);
       {
         var c = er.ReadUInt32();
-        if (c < 0) {
-          throw new Exception(""Expected length to be nonnegative!"");
-        }
-        this.intValues = new int[c];
+        this.intValues = SequencesUtil.ResizeSequence(this.intValues, c);
       }
       er.ReadInt32s(this.intValues);" +
                             @"
       this.other.Read(er);
       {
         var c = er.ReadInt32();
-        if (c < 0) {
-          throw new Exception(""Expected length to be nonnegative!"");
-        }
-        this.others = new Other[c];
-        for (var i = 0; i < c; ++i) {
-          this.others[i] = new Other();
-        }
+        this.others = SequencesUtil.ResizeSequence(this.others, c);
       }
       foreach (var e in this.others) {
         e.Read(er);

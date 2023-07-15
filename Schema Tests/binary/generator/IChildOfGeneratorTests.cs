@@ -22,8 +22,8 @@ namespace foo.bar {
   }
 }",
                                      @"using System;
-using System.Collections.Generic;
 using System.IO;
+
 namespace foo.bar {
   public partial class ChildOfWrapper {
     public void Read(IEndianBinaryReader er) {
@@ -63,8 +63,8 @@ namespace foo.bar {
   }
 }",
                                      @"using System;
-using System.Collections.Generic;
 using System.IO;
+
 namespace foo.bar {
   public partial class Parent {
     public void Read(IEndianBinaryReader er) {
@@ -106,8 +106,8 @@ namespace foo.bar {
   }
 }",
                                      @"using System;
-using System.Collections.Generic;
 using System.IO;
+
 namespace foo.bar {
   public partial class ChildOfWrapper {
     public void Read(IEndianBinaryReader er) {
@@ -147,19 +147,14 @@ namespace foo.bar {
   }
 }",
                                      @"using System;
-using System.Collections.Generic;
 using System.IO;
+using schema.util.sequences;
+
 namespace foo.bar {
   public partial class Parent {
     public void Read(IEndianBinaryReader er) {
       this.Length = er.ReadUInt32();
-      if (this.Length < 0) {
-        throw new Exception(""Expected length to be nonnegative!"");
-      }
-      this.Child = new ChildOfWrapper[this.Length];
-      for (var i = 0; i < this.Length; ++i) {
-        this.Child[i] = new ChildOfWrapper();
-      }
+      this.Child = SequencesUtil.ResizeSequence(this.Child, this.Length);
       foreach (var e in this.Child) {
         e.Parent = this;
         e.Read(er);
