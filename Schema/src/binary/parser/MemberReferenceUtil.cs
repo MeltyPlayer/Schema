@@ -42,14 +42,11 @@ namespace schema.binary.parser {
         case ISequenceTypeInfo sequenceTypeInfo: {
             return new BinarySchemaStructureParser.SequenceMemberType {
               SequenceTypeInfo = sequenceTypeInfo,
-              SequenceType = sequenceTypeInfo.IsArray
-                                   ? SequenceType.ARRAY
-                                   : SequenceType.LIST,
               ElementType =
                     WrapTypeInfoWithMemberType(sequenceTypeInfo.ElementTypeInfo),
               LengthSourceType =
                     sequenceTypeInfo.IsLengthConst
-                        ? SequenceLengthSourceType.READONLY
+                        ? SequenceLengthSourceType.READ_ONLY
                         : ((ISequenceLengthSourceAttribute?) SymbolTypeUtil
                             .GetAttribute<SequenceLengthSourceAttribute>(
                                 null,

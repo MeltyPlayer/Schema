@@ -23,7 +23,7 @@ namespace schema.binary.parser {
   public interface ITypeInfo {
     ITypeSymbol TypeSymbol { get; }
     SchemaTypeKind Kind { get; }
-    bool IsReadonly { get; }
+    bool IsReadOnly { get; }
     bool IsNullable { get; }
   }
 
@@ -58,9 +58,11 @@ namespace schema.binary.parser {
   }
 
   public interface ISequenceTypeInfo : ITypeInfo {
-    bool IsArray { get; }
+    SequenceType SequenceType { get; }
     bool IsLengthConst { get; }
     ITypeInfo ElementTypeInfo { get; }
+
+    string LengthName { get; }
   }
 
   public class TypeInfoParser {
@@ -76,7 +78,8 @@ namespace schema.binary.parser {
                    structureSymbol)) {
         // Tries to parse the type to get info about it
         var parseStatus = this.ParseMember(
-            memberSymbol, out var memberTypeInfo);
+            memberSymbol,
+            out var memberTypeInfo);
         yield return (parseStatus, memberSymbol, memberTypeInfo);
       }
     }
@@ -192,7 +195,7 @@ namespace schema.binary.parser {
             typeSymbol,
             isReadonly,
             isNullable,
-            true,
+            SequenceType.MUTABLE_ARRAY,
             isReadonly,
             containedTypeInfo);
         return ParseStatus.SUCCESS;
@@ -216,13 +219,13 @@ namespace schema.binary.parser {
               typeSymbol,
               isReadonly,
               isNullable,
-              false,
+              SequenceType.MUTABLE_LIST,
               false,
               containedTypeInfo);
           return ParseStatus.SUCCESS;
         }
 
-        if (SymbolTypeUtil.MatchesGeneric(namedTypeSymbol, 
+        if (SymbolTypeUtil.MatchesGeneric(namedTypeSymbol,
                                           typeof(IReadOnlyList<>))) {
           var listTypeSymbol = typeSymbol as INamedTypeSymbol;
 
@@ -240,7 +243,7 @@ namespace schema.binary.parser {
               typeSymbol,
               isReadonly,
               isNullable,
-              false,
+              SequenceType.READ_ONLY_LIST,
               isReadonly,
               containedTypeInfo);
           return ParseStatus.SUCCESS;
@@ -259,7 +262,9 @@ namespace schema.binary.parser {
                 .ConstraintTypes
                 .Select(constraintType => {
                   var parseStatus = this.ParseTypeSymbol(
-                      constraintType, isReadonly, out var constraintTypeInfo);
+                      constraintType,
+                      isReadonly,
+                      out var constraintTypeInfo);
                   Asserts.Equal(ParseStatus.SUCCESS, parseStatus);
                   return constraintTypeInfo;
                 })
@@ -284,6 +289,7 @@ namespace schema.binary.parser {
       if (parseStatus != ParseStatus.SUCCESS) {
         throw new NotImplementedException();
       }
+
       return typeInfo;
     }
 
@@ -330,7 +336,7 @@ namespace schema.binary.parser {
           bool isReadonly,
           bool isNullable) {
         this.TypeSymbol = typeSymbol;
-        this.IsReadonly = isReadonly;
+        this.IsReadOnly = isReadonly;
         this.IsNullable = isNullable;
       }
 
@@ -339,7 +345,7 @@ namespace schema.binary.parser {
       public SchemaPrimitiveType PrimitiveType => SchemaPrimitiveType.BOOLEAN;
       public SchemaTypeKind Kind => SchemaTypeKind.BOOL;
 
-      public bool IsReadonly { get; }
+      public bool IsReadOnly { get; }
       public bool IsNullable { get; }
     }
 
@@ -354,7 +360,7 @@ namespace schema.binary.parser {
         this.TypeSymbol = typeSymbol;
         this.Kind = kind;
         this.NumberType = numberType;
-        this.IsReadonly = isReadonly;
+        this.IsReadOnly = isReadonly;
         this.IsNullable = isNullable;
       }
 
@@ -365,7 +371,7 @@ namespace schema.binary.parser {
       public SchemaPrimitiveType PrimitiveType
         => SchemaPrimitiveTypesUtil.ConvertNumberToPrimitive(this.NumberType);
 
-      public bool IsReadonly { get; }
+      public bool IsReadOnly { get; }
       public bool IsNullable { get; }
     }
 
@@ -379,7 +385,7 @@ namespace schema.binary.parser {
         this.TypeSymbol = typeSymbol;
         this.Kind = kind;
         this.IntegerType = integerType;
-        this.IsReadonly = isReadonly;
+        this.IsReadOnly = isReadonly;
         this.IsNullable = isNullable;
       }
 
@@ -393,7 +399,7 @@ namespace schema.binary.parser {
       public SchemaPrimitiveType PrimitiveType
         => SchemaPrimitiveTypesUtil.ConvertNumberToPrimitive(this.NumberType);
 
-      public bool IsReadonly { get; }
+      public bool IsReadOnly { get; }
       public bool IsNullable { get; }
     }
 
@@ -403,7 +409,7 @@ namespace schema.binary.parser {
           bool isReadonly,
           bool isNullable) {
         this.TypeSymbol = typeSymbol;
-        this.IsReadonly = isReadonly;
+        this.IsReadOnly = isReadonly;
         this.IsNullable = isNullable;
       }
 
@@ -412,7 +418,7 @@ namespace schema.binary.parser {
 
       public ITypeSymbol TypeSymbol { get; }
 
-      public bool IsReadonly { get; }
+      public bool IsReadOnly { get; }
       public bool IsNullable { get; }
     }
 
@@ -422,7 +428,7 @@ namespace schema.binary.parser {
           bool isReadonly,
           bool isNullable) {
         this.TypeSymbol = typeSymbol;
-        this.IsReadonly = isReadonly;
+        this.IsReadOnly = isReadonly;
         this.IsNullable = isNullable;
       }
 
@@ -430,7 +436,7 @@ namespace schema.binary.parser {
 
       public ITypeSymbol TypeSymbol { get; }
 
-      public bool IsReadonly { get; }
+      public bool IsReadOnly { get; }
       public bool IsNullable { get; }
     }
 
@@ -440,7 +446,7 @@ namespace schema.binary.parser {
           bool isReadonly,
           bool isNullable) {
         this.TypeSymbol = typeSymbol;
-        this.IsReadonly = isReadonly;
+        this.IsReadOnly = isReadonly;
         this.IsNullable = isNullable;
       }
 
@@ -449,7 +455,7 @@ namespace schema.binary.parser {
 
       public ITypeSymbol TypeSymbol { get; }
 
-      public bool IsReadonly { get; }
+      public bool IsReadOnly { get; }
       public bool IsNullable { get; }
     }
 
@@ -459,7 +465,7 @@ namespace schema.binary.parser {
           bool isReadonly,
           bool isNullable) {
         this.NamedTypeSymbol = namedTypeSymbol;
-        this.IsReadonly = isReadonly;
+        this.IsReadOnly = isReadonly;
         this.IsNullable = isNullable;
       }
 
@@ -468,7 +474,7 @@ namespace schema.binary.parser {
       public INamedTypeSymbol NamedTypeSymbol { get; }
       public ITypeSymbol TypeSymbol => this.NamedTypeSymbol;
 
-      public bool IsReadonly { get; }
+      public bool IsReadOnly { get; }
       public bool IsNullable { get; }
 
       public bool IsStruct => this.NamedTypeSymbol.TypeKind == TypeKind.Struct;
@@ -482,7 +488,7 @@ namespace schema.binary.parser {
           bool isNullable) {
         this.ConstraintTypeInfos = constraintTypeInfos;
         this.TypeParameterSymbol = typeParameterSymbol;
-        this.IsReadonly = isReadonly;
+        this.IsReadOnly = isReadonly;
         this.IsNullable = isNullable;
       }
 
@@ -492,7 +498,7 @@ namespace schema.binary.parser {
       public ITypeParameterSymbol TypeParameterSymbol { get; }
       public ITypeSymbol TypeSymbol => this.TypeParameterSymbol;
 
-      public bool IsReadonly { get; }
+      public bool IsReadOnly { get; }
       public bool IsNullable { get; }
     }
 
@@ -501,13 +507,13 @@ namespace schema.binary.parser {
           ITypeSymbol typeSymbol,
           bool isReadonly,
           bool isNullable,
-          bool isArray,
+          SequenceType sequenceType,
           bool isLengthConst,
           ITypeInfo containedType) {
         this.TypeSymbol = typeSymbol;
-        this.IsReadonly = isReadonly;
+        this.IsReadOnly = isReadonly;
         this.IsNullable = isNullable;
-        this.IsArray = isArray;
+        this.SequenceType = sequenceType;
         this.IsLengthConst = isLengthConst;
         this.ElementTypeInfo = containedType;
       }
@@ -516,12 +522,18 @@ namespace schema.binary.parser {
 
       public ITypeSymbol TypeSymbol { get; }
 
-      public bool IsReadonly { get; }
+      public bool IsReadOnly { get; }
       public bool IsNullable { get; }
 
-      public bool IsArray { get; }
+      public SequenceType SequenceType { get; }
       public bool IsLengthConst { get; }
       public ITypeInfo ElementTypeInfo { get; }
+
+      public string LengthName
+        => this.SequenceType is SequenceType.MUTABLE_ARRAY
+                                or SequenceType.IMMUTABLE_ARRAY
+            ? "Length"
+            : "Count";
     }
   }
 }

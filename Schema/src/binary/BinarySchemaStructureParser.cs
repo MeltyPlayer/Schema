@@ -75,7 +75,7 @@ namespace schema.binary {
   public interface IMemberType {
     ITypeInfo TypeInfo { get; }
     ITypeSymbol TypeSymbol { get; }
-    bool IsReadonly { get; }
+    bool IsReadOnly { get; }
   }
 
   public interface IPrimitiveMemberType : IMemberType {
@@ -143,8 +143,12 @@ namespace schema.binary {
   }
 
   public enum SequenceType {
-    ARRAY,
-    LIST,
+    MUTABLE_ARRAY,
+    IMMUTABLE_ARRAY,
+    MUTABLE_LIST,
+    READ_ONLY_LIST,
+    MUTABLE_SEQUENCE,
+    READ_ONLY_SEQUENCE,
   }
 
   public enum SequenceLengthSourceType {
@@ -152,14 +156,12 @@ namespace schema.binary {
     IMMEDIATE_VALUE,
     OTHER_MEMBER,
     CONST_LENGTH,
-    READONLY,
+    READ_ONLY,
     UNTIL_END_OF_STREAM,
   }
 
   public interface ISequenceMemberType : IMemberType {
     ISequenceTypeInfo SequenceTypeInfo { get; }
-
-    SequenceType SequenceType { get; }
 
     SequenceLengthSourceType LengthSourceType { get; }
     SchemaIntegerType ImmediateLengthType { get; }
@@ -556,7 +558,7 @@ namespace schema.binary {
                                          Rules.NotSupported));
             }
 
-            if (memberTypeInfo.IsReadonly) {
+            if (memberTypeInfo.IsReadOnly) {
               diagnostics.Add(
                   Rules.CreateDiagnostic(memberSymbol,
                                          Rules.UnexpectedAttribute));
@@ -656,7 +658,7 @@ namespace schema.binary {
       public IPrimitiveTypeInfo PrimitiveTypeInfo { get; set; }
       public ITypeInfo TypeInfo => PrimitiveTypeInfo;
       public ITypeSymbol TypeSymbol => TypeInfo.TypeSymbol;
-      public bool IsReadonly => this.TypeInfo.IsReadonly;
+      public bool IsReadOnly => this.TypeInfo.IsReadOnly;
 
       public SchemaPrimitiveType PrimitiveType
         => this.PrimitiveTypeInfo.PrimitiveType;
@@ -673,7 +675,7 @@ namespace schema.binary {
       public IStructureTypeInfo StructureTypeInfo { get; set; }
       public ITypeInfo TypeInfo => StructureTypeInfo;
       public ITypeSymbol TypeSymbol => TypeInfo.TypeSymbol;
-      public bool IsReadonly => this.TypeInfo.IsReadonly;
+      public bool IsReadOnly => this.TypeInfo.IsReadOnly;
 
       public bool IsReferenceType { get; set; }
       public bool IsChild { get; set; }
@@ -685,7 +687,7 @@ namespace schema.binary {
       public IGenericTypeInfo GenericTypeInfo { get; set; }
       public ITypeInfo TypeInfo => GenericTypeInfo;
       public ITypeSymbol TypeSymbol => TypeInfo.TypeSymbol;
-      public bool IsReadonly => this.TypeInfo.IsReadonly;
+      public bool IsReadOnly => this.TypeInfo.IsReadOnly;
     }
 
     public class IfBoolean : IIfBoolean {
@@ -702,7 +704,7 @@ namespace schema.binary {
     public class StringType : IStringType {
       public ITypeInfo TypeInfo { get; set; }
       public ITypeSymbol TypeSymbol => TypeInfo.TypeSymbol;
-      public bool IsReadonly => this.TypeInfo.IsReadonly;
+      public bool IsReadOnly => this.TypeInfo.IsReadOnly;
 
       public StringLengthSourceType LengthSourceType { get; set; }
       public SchemaIntegerType ImmediateLengthType { get; set; }
@@ -714,9 +716,7 @@ namespace schema.binary {
       public ISequenceTypeInfo SequenceTypeInfo { get; set; }
       public ITypeInfo TypeInfo => SequenceTypeInfo;
       public ITypeSymbol TypeSymbol => TypeInfo.TypeSymbol;
-      public bool IsReadonly => this.TypeInfo.IsReadonly;
-
-      public SequenceType SequenceType { get; set; }
+      public bool IsReadOnly => this.TypeInfo.IsReadOnly;
 
       public SequenceLengthSourceType LengthSourceType { get; set; }
       public SchemaIntegerType ImmediateLengthType { get; set; }

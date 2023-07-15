@@ -76,7 +76,7 @@ namespace schema.binary.text {
         ITypeSymbol sourceSymbol,
         ISchemaMember member) {
       if (member.IsPosition) {
-        if (member.MemberType.IsReadonly) {
+        if (member.MemberType.IsReadOnly) {
           cbsb.WriteLine($"er.AssertPosition(this.{member.Name});");
         } else {
           cbsb.WriteLine($"this.{member.Name} = er.Position;");
@@ -124,10 +124,11 @@ namespace schema.binary.text {
 
         if (member.MemberType is not IPrimitiveMemberType &&
             member.MemberType is not ISequenceMemberType {
-                SequenceType: SequenceType.ARRAY
+                SequenceTypeInfo.SequenceType: SequenceType
+                    .MUTABLE_ARRAY
             }) {
           cbsb.WriteLine(
-              $"this.{member.Name} = new {SymbolTypeUtil.GetQualifiedNameFromCurrentSymbol(sourceSymbol, member.MemberType.TypeSymbol)}();");
+              $"this.{member.Name} = new {sourceSymbol.GetQualifiedNameFromCurrentSymbol(member.MemberType.TypeSymbol)}();");
         }
       }
 
@@ -240,7 +241,7 @@ namespace schema.binary.text {
                                                                  primitiveType
                                                                      .AltFormat));
 
-                                if (!primitiveType.IsReadonly) {
+                                if (!primitiveType.IsReadOnly) {
                                   var castText = "";
                                   if (needToCast) {
                                     var castType =
@@ -288,7 +289,7 @@ namespace schema.binary.text {
                                             .ConvertNumberToPrimitive(
                                                 primitiveType.AltFormat));
 
-                                if (!primitiveType.IsReadonly) {
+                                if (!primitiveType.IsReadOnly) {
                                   cbsb.WriteLine(
                                       $"this.{member.Name} = er.Read{readType}() != 0;");
                                 } else {
@@ -308,7 +309,7 @@ namespace schema.binary.text {
                                     Asserts.CastNonnull(
                                         member.MemberType as IStringType);
 
-                                if (stringType.IsReadonly) {
+                                if (stringType.IsReadOnly) {
                                   if (stringType.LengthSourceType ==
                                       StringLengthSourceType.NULL_TERMINATED) {
                                     cbsb.WriteLine(
@@ -365,23 +366,19 @@ namespace schema.binary.text {
       }
 
       HandleMemberEndianness_(
-        cbsb,
-        member,
-        () =>
-        {
-          if (!structureMemberType.IsStruct)
-          {
-            cbsb.WriteLine($"this.{memberName}.Read(er);");
-          }
-          else
-          {
-            cbsb.EnterBlock()
-              .WriteLine($"var value = this.{memberName};")
-              .WriteLine("value.Read(er);")
-              .WriteLine($"this.{memberName} = value;")
-              .ExitBlock();
-          }
-        });
+          cbsb,
+          member,
+          () => {
+            if (!structureMemberType.IsStruct) {
+              cbsb.WriteLine($"this.{memberName}.Read(er);");
+            } else {
+              cbsb.EnterBlock()
+                  .WriteLine($"var value = this.{memberName};")
+                  .WriteLine("value.Read(er);")
+                  .WriteLine($"this.{memberName} = value;")
+                  .ExitBlock();
+            }
+          });
     }
 
     private static void ReadGeneric_(
@@ -411,6 +408,7 @@ namespace schema.binary.text {
         ISchemaMember member) {
       var arrayType =
           Asserts.CastNonnull(member.MemberType as ISequenceMemberType);
+      var sequenceType = arrayType.SequenceTypeInfo.SequenceType;
       if (arrayType.LengthSourceType ==
           SequenceLengthSourceType.UNTIL_END_OF_STREAM) {
         var qualifiedElementName =
@@ -420,7 +418,7 @@ namespace schema.binary.text {
 
         var memberAccessor = $"this.{member.Name}";
 
-        var isArray = arrayType.SequenceType == SequenceType.ARRAY;
+        var isArray = sequenceType == SequenceType.MUTABLE_ARRAY;
         {
           if (isArray &&
               arrayType.ElementType is IPrimitiveMemberType
@@ -527,7 +525,7 @@ namespace schema.binary.text {
 
         return;
       } else if (arrayType.LengthSourceType !=
-                 SequenceLengthSourceType.READONLY) {
+                 SequenceLengthSourceType.READ_ONLY) {
         var isImmediate =
             arrayType.LengthSourceType ==
             SequenceLengthSourceType.IMMEDIATE_VALUE;
@@ -565,7 +563,7 @@ namespace schema.binary.text {
             };
 
         // TODO: Handle readonly lists, can't be expanded like this!
-        if (arrayType.SequenceType == SequenceType.LIST) {
+        if (sequenceType == SequenceType.MUTABLE_LIST) {
           cbsb.EnterBlock($"while (this.{member.Name}.Count < {lengthName})");
           if (hasReferenceElements) {
             cbsb.WriteLine(
@@ -586,9 +584,9 @@ namespace schema.binary.text {
 
           if (hasReferenceElements) {
             cbsb.EnterBlock($"for (var i = 0; i < {lengthName}; ++i)")
-              .WriteLine(
-                $"this.{member.Name}[i] = new {qualifiedElementName}();")
-              .ExitBlock();
+                .WriteLine(
+                    $"this.{member.Name}[i] = new {qualifiedElementName}();")
+                .ExitBlock();
           }
         }
 
@@ -626,7 +624,7 @@ namespace schema.binary.text {
                                     var label =
                                         SchemaGeneratorUtil.GetPrimitiveLabel(
                                             primitiveElementType.PrimitiveType);
-                                    if (!primitiveElementType.IsReadonly) {
+                                    if (!primitiveElementType.IsReadOnly) {
                                       cbsb.WriteLine(
                                           $"er.Read{label}s(this.{member.Name});");
                                     } else {
@@ -644,12 +642,9 @@ namespace schema.binary.text {
                                               .ConvertNumberToPrimitive(
                                                   primitiveElementType
                                                       .AltFormat));
-                                  if (!primitiveElementType.IsReadonly) {
+                                  if (!primitiveElementType.IsReadOnly) {
                                     var arrayLengthName =
-                                        arrayType.SequenceType ==
-                                        SequenceType.ARRAY
-                                            ? "Length"
-                                            : "Count";
+                                        arrayType.SequenceTypeInfo.LengthName;
                                     var castType =
                                         primitiveElementType.PrimitiveType ==
                                         SchemaPrimitiveType.ENUM
@@ -683,7 +678,7 @@ namespace schema.binary.text {
                                     structureElementType) {
                                   if (!structureElementType.IsStruct) {
                                     cbsb.EnterBlock(
-                                      $"foreach (var e in this.{member.Name})");
+                                        $"foreach (var e in this.{member.Name})");
 
                                     if (structureElementType.IsChild) {
                                       cbsb.WriteLine("e.Parent = this;");
@@ -691,18 +686,13 @@ namespace schema.binary.text {
 
                                     cbsb.WriteLine("e.Read(er);");
                                     cbsb.ExitBlock();
-                                  }
-                                  else
-                                  {
+                                  } else {
                                     var arrayLengthName =
-                                      arrayType.SequenceType ==
-                                      SequenceType.ARRAY
-                                        ? "Length"
-                                        : "Count";
+                                        arrayType.SequenceTypeInfo.LengthName;
                                     cbsb.EnterBlock(
-                                      $"for (var i = 0; i < this.{member.Name}.{arrayLengthName}; ++i)");
+                                        $"for (var i = 0; i < this.{member.Name}.{arrayLengthName}; ++i)");
                                     cbsb.WriteLine(
-                                      $"var e = this.{member.Name}[i];");
+                                        $"var e = this.{member.Name}[i];");
 
                                     if (structureElementType.IsChild) {
                                       cbsb.WriteLine("e.Parent = this;");
@@ -710,10 +700,11 @@ namespace schema.binary.text {
 
                                     cbsb.WriteLine("e.Read(er);");
                                     cbsb.WriteLine(
-                                      $"this.{member.Name}[i] = e;");
+                                        $"this.{member.Name}[i] = e;");
 
                                     cbsb.ExitBlock();
                                   }
+
                                   return;
                                 }
 

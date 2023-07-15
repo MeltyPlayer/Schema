@@ -49,7 +49,7 @@ namespace schema.util.sequences {
 
     public static void ResizeSequenceInPlace<T>(ISequence<T> list, int length) {
       SequencesUtil.AssertLengthNonnegative_(length);
-      list.Length = length;
+      list.Count = length;
     }
 
     public static IReadOnlySequence<T> ResizeSequence<T>(
