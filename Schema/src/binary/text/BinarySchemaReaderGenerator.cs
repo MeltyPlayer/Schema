@@ -554,6 +554,16 @@ namespace schema.binary.text {
             SequenceLengthSourceType.CONST_LENGTH => $"{arrayType.ConstLength}",
         };
 
+        var castText = "";
+        if ((isImmediate &&
+             arrayType.ImmediateLengthType == SchemaIntegerType.UINT32) ||
+            (arrayType.LengthSourceType ==
+             SequenceLengthSourceType.OTHER_MEMBER &&
+             (arrayType.LengthMember.MemberType as IPrimitiveMemberType)!
+             .PrimitiveType == SchemaPrimitiveType.UINT32)) {
+          castText = "(int) ";
+        }
+
         if (isImmediate) {
           var readType = SchemaGeneratorUtil.GetIntLabel(
               arrayType.ImmediateLengthType);
@@ -566,10 +576,10 @@ namespace schema.binary.text {
                 or SequenceType.MUTABLE_SEQUENCE;
         if (inPlace) {
           cbsb.WriteLine(
-              $"SequencesUtil.ResizeSequenceInPlace(this.{member.Name}, {lengthName});");
+              $"SequencesUtil.ResizeSequenceInPlace(this.{member.Name}, {castText}{lengthName});");
         } else {
           cbsb.WriteLine(
-              $"this.{member.Name} = SequencesUtil.ResizeSequence(this.{member.Name}, {lengthName});");
+              $"this.{member.Name} = SequencesUtil.ResizeSequence(this.{member.Name}, {castText}{lengthName});");
         }
 
         if (isImmediate) {

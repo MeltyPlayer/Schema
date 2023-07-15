@@ -361,7 +361,7 @@ namespace foo.bar {
       er.ReadInt32s(this.constLengthIntValues);
       {
         var c = er.ReadUInt32();
-        this.intValues = SequencesUtil.ResizeSequence(this.intValues, c);
+        this.intValues = SequencesUtil.ResizeSequence(this.intValues, (int) c);
       }
       er.ReadInt32s(this.intValues);" +
                             @"

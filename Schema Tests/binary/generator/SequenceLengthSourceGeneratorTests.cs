@@ -33,7 +33,7 @@ namespace foo.bar {
     public List<int>? IfBooleanList { get; set; }
   }
 }",
-                                     @"using System;
+                                           @"using System;
 using System.Collections.Generic;
 using System.IO;
 using schema.util.sequences;
@@ -64,7 +64,7 @@ namespace foo.bar {
   }
 }
 ",
-                                     @"using System;
+                                           @"using System;
 using System.IO;
 namespace foo.bar {
   public partial class ConstLengthWrapper {
