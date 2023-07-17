@@ -571,7 +571,12 @@ namespace schema.binary.text {
               .WriteLine($"var {lengthName} = er.Read{readType}();");
         }
 
-        var inPlace = !arrayType.SequenceTypeInfo.IsLengthConst;
+        var inPlace =
+            arrayType.SequenceTypeInfo.SequenceType == SequenceType.MUTABLE_LIST
+            || arrayType.SequenceTypeInfo is {
+                SequenceType: SequenceType.MUTABLE_SEQUENCE,
+                IsLengthConst: false
+            };
         if (inPlace) {
           cbsb.WriteLine(
               $"SequencesUtil.ResizeSequenceInPlace(this.{member.Name}, {castText}{lengthName});");

@@ -10,7 +10,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using schema.binary.attributes;
 using schema.binary.parser;
-using schema.binary.util;
 
 
 namespace schema.binary {
@@ -150,7 +149,7 @@ namespace schema.binary {
                             expectedType));
 
     internal static IEnumerable<AttributeData>
-        GetAttributeData<TAttribute>(ISymbol symbol) {
+        GetAttributeData<TAttribute>(this ISymbol symbol) {
       var attributeType = typeof(TAttribute);
       return symbol.GetAttributes()
                    .Where(attributeData => {
@@ -163,62 +162,77 @@ namespace schema.binary {
                    });
     }
 
+
+    internal static bool HasAttribute<TAttribute>(
+        this ISymbol symbol,
+        IList<Diagnostic> diagnostics)
+        where TAttribute : notnull
+      => symbol.GetAttribute<TAttribute>(diagnostics) != null;
+
+    internal static TAttribute? GetAttribute<TAttribute>(
+        this ISymbol symbol,
+        IList<Diagnostic> diagnostics)
+        where TAttribute : notnull
+      => symbol.GetAttributes<TAttribute>(diagnostics)
+               .SingleOrDefault();
+
+
     internal static TAttribute? GetAttribute<TAttribute>(
         IList<Diagnostic> diagnostics,
         ISymbol symbol)
         where TAttribute : notnull
-      => SymbolTypeUtil.GetAttributes<TAttribute>(diagnostics, symbol)
-                       .SingleOrDefault();
+      => symbol.GetAttributes<TAttribute>(diagnostics)
+               .SingleOrDefault();
 
     internal static IEnumerable<TAttribute> GetAttributes<TAttribute>(
-        IList<Diagnostic> diagnostics,
-        ISymbol symbol)
+        this ISymbol symbol,
+        IList<Diagnostic> diagnostics)
         where TAttribute : notnull
-      => SymbolTypeUtil.GetAttributeData<TAttribute>(symbol)
-                       .Select(attributeData => {
-                         var parameters = attributeData.AttributeConstructor
-                             .Parameters;
+      => symbol.GetAttributeData<TAttribute>()
+               .Select(attributeData => {
+                 var parameters = attributeData.AttributeConstructor
+                                               .Parameters;
 
-                         // TODO: Does this still work w/ optional arguments?
-                         var attributeType = typeof(TAttribute);
+                 // TODO: Does this still work w/ optional arguments?
+                 var attributeType = typeof(TAttribute);
 
-                         var constructor =
-                             attributeType.GetConstructors()
-                                          .FirstOrDefault(c => {
-                                            var cParameters = c.GetParameters();
-                                            if (cParameters.Length !=
-                                                parameters.Length) {
-                                              return false;
-                                            }
+                 var constructor =
+                     attributeType.GetConstructors()
+                                  .FirstOrDefault(c => {
+                                    var cParameters = c.GetParameters();
+                                    if (cParameters.Length !=
+                                        parameters.Length) {
+                                      return false;
+                                    }
 
-                                            for (var i = 0;
-                                                 i < parameters.Length;
-                                                 ++i) {
-                                              if (parameters[i].Name !=
-                                                  cParameters[i].Name) {
-                                                return false;
-                                              }
-                                            }
+                                    for (var i = 0;
+                                         i < parameters.Length;
+                                         ++i) {
+                                      if (parameters[i].Name !=
+                                          cParameters[i].Name) {
+                                        return false;
+                                      }
+                                    }
 
-                                            return true;
-                                          });
-                         if (constructor == null) {
-                           throw new Exception(
-                               $"Failed to find constructor for {typeof(TAttribute)}");
-                         }
+                                    return true;
+                                  });
+                 if (constructor == null) {
+                   throw new Exception(
+                       $"Failed to find constructor for {typeof(TAttribute)}");
+                 }
 
-                         var arguments = attributeData.ConstructorArguments;
+                 var arguments = attributeData.ConstructorArguments;
 
-                         var attribute = (TAttribute) constructor.Invoke(
-                             arguments.Select(a => a.Value).ToArray());
-                         if (attribute is BMemberAttribute memberAttribute) {
-                           memberAttribute.Init(diagnostics,
-                                                symbol.ContainingType,
-                                                symbol.Name);
-                         }
+                 var attribute = (TAttribute) constructor.Invoke(
+                     arguments.Select(a => a.Value).ToArray());
+                 if (attribute is BMemberAttribute memberAttribute) {
+                   memberAttribute.Init(diagnostics,
+                                        symbol.ContainingType,
+                                        symbol.Name);
+                 }
 
-                         return attribute;
-                       });
+                 return attribute;
+               });
 
     public static IEnumerable<ISymbol> GetInstanceMembers(
         this INamedTypeSymbol structureSymbol) {

@@ -206,8 +206,7 @@ namespace schema.binary {
         }
 
         bool isIgnored =
-            SymbolTypeUtil.GetAttribute<IgnoreAttribute>(diagnostics,
-              memberSymbol) != null ||
+            memberSymbol.HasAttribute<IgnoreAttribute>(diagnostics) ||
             (memberSymbol.Name == nameof(IChildOf<IBinaryConvertible>.Parent)
              && parentTypeSymbol != null);
 
@@ -544,15 +543,12 @@ namespace schema.binary {
                 .GetAttribute<RStringLengthSourceAttribute>(
                     diagnostics,
                     memberSymbol);
-        var nullTerminatedStringAttribute =
-            SymbolTypeUtil.GetAttribute<NullTerminatedStringAttribute>(
-                diagnostics, memberSymbol);
+        var isNullTerminatedString =
+            memberSymbol.HasAttribute<NullTerminatedStringAttribute>(diagnostics);
 
-        if (stringLengthSourceAttribute != null ||
-            nullTerminatedStringAttribute != null) {
+        if (stringLengthSourceAttribute != null || isNullTerminatedString) {
           if (memberType is StringType stringType) {
-            if (stringLengthSourceAttribute != null &&
-                nullTerminatedStringAttribute != null) {
+            if (stringLengthSourceAttribute != null && isNullTerminatedString) {
               diagnostics.Add(
                   Rules.CreateDiagnostic(memberSymbol,
                                          Rules.NotSupported));
