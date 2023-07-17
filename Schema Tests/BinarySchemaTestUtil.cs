@@ -119,6 +119,7 @@ namespace schema.binary {
         params DiagnosticDescriptor[] expectedDiagnostics) {
       var message = "";
 
+      
       if (actualDiagnostics.Count != expectedDiagnostics.Length) {
         message +=
             $"Expected {expectedDiagnostics.Length} diagnostics but got {actualDiagnostics.Count}.\n";

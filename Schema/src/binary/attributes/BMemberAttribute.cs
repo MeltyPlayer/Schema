@@ -1,8 +1,10 @@
 ﻿using System;
+
 using Microsoft.CodeAnalysis;
 
 using System.Collections.Generic;
 
+using schema.binary.attributes.ignore;
 using schema.binary.parser;
 using schema.binary.util;
 
@@ -153,7 +155,7 @@ namespace schema.binary.attributes {
         string otherMemberName) {
       var source = this.GetOtherMemberRelativeToStructure(otherMemberName);
 
-      if (!IsMemberWritePrivate_(source.MemberSymbol)) {
+      if (!IsMemberWritePrivateOrIgnored_(source.MemberSymbol)) {
         this.diagnostics_.Add(
             Rules.CreateDiagnostic(source.MemberSymbol,
                                    Rules.SourceMustBePrivate));
@@ -166,7 +168,7 @@ namespace schema.binary.attributes {
         string otherMemberName) {
       var source = this.GetOtherMemberRelativeToStructure<T>(otherMemberName);
 
-      if (!IsMemberWritePrivate_(source.MemberSymbol)) {
+      if (!IsMemberWritePrivateOrIgnored_(source.MemberSymbol)) {
         this.diagnostics_.Add(
             Rules.CreateDiagnostic(source.MemberSymbol,
                                    Rules.SourceMustBePrivate));
@@ -175,15 +177,15 @@ namespace schema.binary.attributes {
       return source;
     }
 
-    private bool IsMemberWritePrivate_(ISymbol symbol)
+    private bool IsMemberWritePrivateOrIgnored_(ISymbol symbol)
       => symbol switch {
-          IPropertySymbol propertySymbol
-              => (propertySymbol.SetMethod
-                                ?.DeclaredAccessibility ??
-                  Accessibility.Private) == Accessibility.Private,
-          IFieldSymbol fieldSymbol
-              => fieldSymbol.DeclaredAccessibility == Accessibility.Private,
-      };
+        IPropertySymbol propertySymbol
+            => (propertySymbol.SetMethod
+                              ?.DeclaredAccessibility ??
+                Accessibility.Private) == Accessibility.Private,
+        IFieldSymbol fieldSymbol
+            => fieldSymbol.DeclaredAccessibility == Accessibility.Private,
+      } || symbol.HasAttribute<IgnoreAttribute>(this.diagnostics_);
   }
 
 
@@ -229,6 +231,7 @@ namespace schema.binary.attributes {
       if (!this.IsInteger) {
         Asserts.Fail($"Expected {this.Name} to refer to an integer!");
       }
+
       return this;
     }
 
@@ -238,6 +241,7 @@ namespace schema.binary.attributes {
       if (!this.IsBool) {
         Asserts.Fail($"Expected {this.Name} to refer to an bool!");
       }
+
       return this;
     }
 
@@ -247,6 +251,7 @@ namespace schema.binary.attributes {
       if (!this.IsSequence) {
         Asserts.Fail($"Expected {this.Name} to refer to an sequence!");
       }
+
       return this;
     }
   }

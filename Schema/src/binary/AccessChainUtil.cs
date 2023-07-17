@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 
 using schema.binary.attributes.child_of;
+using schema.binary.attributes.ignore;
 using schema.binary.io;
 using schema.binary.parser;
 using schema.binary.util;
@@ -23,6 +24,7 @@ namespace schema.binary {
     INamedTypeSymbol StructureSymbol { get; }
     ISymbol MemberSymbol { get; }
     ITypeInfo MemberTypeInfo { get; }
+    bool IsOrderValid { get; }
   }
 
 
@@ -33,17 +35,32 @@ namespace schema.binary {
         string otherMemberPath,
         string thisMemberName,
         bool assertOrder
-    )
-      => GetAccessChainForRelativeMemberImpl_(
+    ) {
+      var typeChain = GetAccessChainForRelativeMemberImpl_(
           diagnostics,
           structureSymbol,
           otherMemberPath,
           thisMemberName,
-          assertOrder,
           new UpDownStack<string>(),
           null,
           null
       );
+
+      if (assertOrder) {
+        foreach (var node in typeChain.RootToTarget) {
+          if (!node.IsOrderValid &&
+              SymbolTypeUtil.GetAttribute<IgnoreAttribute>(
+                  diagnostics,
+                  node.MemberSymbol) == null) {
+            diagnostics.Add(Rules.CreateDiagnostic(
+                                node.MemberSymbol,
+                                Rules.DependentMustComeAfterSource));
+          }
+        }
+      }
+
+      return typeChain;
+    }
 
     public static void AssertAllNodesInTypeChainUntilTargetUseBinarySchema(
         IList<Diagnostic> diagnostics,
@@ -79,7 +96,6 @@ namespace schema.binary {
             ITypeSymbol structureSymbol,
             string otherMemberPath,
             string thisMemberName,
-            bool assertOrder,
             IUpDownStack<string> upDownStack,
             AccessChain accessChain,
             string prevMemberName
@@ -94,7 +110,8 @@ namespace schema.binary {
         accessChain = new AccessChain(new AccessChainNode {
             StructureSymbol = (structureSymbol as INamedTypeSymbol)!,
             MemberSymbol = rootSymbol,
-            MemberTypeInfo = rootTypeInfo
+            MemberTypeInfo = rootTypeInfo,
+            IsOrderValid = true,
         });
 
         prevMemberName = thisMemberName;
@@ -113,15 +130,10 @@ namespace schema.binary {
           out var memberSymbol,
           out var memberTypeInfo);
 
-      accessChain.AddLinkInChain(new AccessChainNode {
-          StructureSymbol = (structureSymbol as INamedTypeSymbol)!,
-          MemberSymbol = memberSymbol,
-          MemberTypeInfo = memberTypeInfo
-      });
-
+      var comesAfter = true;
       // Asserts that we're not referencing something that comes before the
       // current member.
-      if (assertOrder && upDownStack.Count == 0) {
+      if (upDownStack.Count == 0) {
         var members = structureSymbol.GetMembers();
         var membersAndIndices =
             members.Select((member, index) => (member, index)).ToArray();
@@ -137,11 +149,16 @@ namespace schema.binary {
                                  .index;
 
         if (indexOfThisMember < indexOfOtherMember) {
-          diagnostics.Add(Rules.CreateDiagnostic(
-                              members[indexOfThisMember],
-                              Rules.DependentMustComeAfterSource));
+          comesAfter = false;
         }
       }
+
+      accessChain.AddLinkInChain(new AccessChainNode {
+          StructureSymbol = (structureSymbol as INamedTypeSymbol)!,
+          MemberSymbol = memberSymbol,
+          MemberTypeInfo = memberTypeInfo,
+          IsOrderValid = comesAfter,
+      });
 
       if (currentMemberName == nameof(IChildOf<IBinaryConvertible>.Parent) &&
           new ChildOfParser(diagnostics).GetParentTypeSymbolOf(
@@ -159,7 +176,6 @@ namespace schema.binary {
             (memberTypeInfo.TypeSymbol as INamedTypeSymbol)!,
             subMemberPath,
             thisMemberName,
-            assertOrder,
             upDownStack,
             accessChain,
             currentMemberName);
@@ -206,6 +222,7 @@ namespace schema.binary {
       public INamedTypeSymbol StructureSymbol { get; set; }
       public ISymbol MemberSymbol { get; set; }
       public ITypeInfo MemberTypeInfo { get; set; }
+      public bool IsOrderValid { get; set; }
     }
   }
 }
