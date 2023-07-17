@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 using NUnit.Framework;
 
 using schema.binary.attributes.size;
@@ -22,7 +24,7 @@ namespace schema.binary {
       var syntaxTree = CSharpSyntaxTree.ParseText(src);
 
       var references =
-          ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES"))
+          ((string) AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES"))
           .Split(Path.PathSeparator)
           .Select(path => MetadataReference.CreateFromFile(path));
 
@@ -41,6 +43,7 @@ namespace schema.binary {
                               ?.Parent is AttributeSyntax) {
                            return true;
                          }
+
                          return false;
                        })
                        .Select(t => t.Parent?.Parent as AttributeSyntax)
@@ -76,8 +79,9 @@ namespace schema.binary {
                          var symbol = semanticModel.GetDeclaredSymbol(typeNode);
                          var namedTypeSymbol = symbol as INamedTypeSymbol;
 
-                         return new BinarySchemaStructureParser().ParseStructure(
-                             namedTypeSymbol);
+                         return new BinarySchemaStructureParser()
+                             .ParseStructure(
+                                 namedTypeSymbol);
                        })
                        .ToArray();
 
@@ -97,6 +101,7 @@ namespace schema.binary {
                   structureByNamedTypeSymbol,
                   primitiveMemberType.AccessChainToSizeOf);
             }
+
             if (primitiveMemberType.AccessChainToPointer != null) {
               sizeOfMemberInBytesDependencyFixer.AddDependenciesForStructure(
                   structureByNamedTypeSymbol,
@@ -119,14 +124,62 @@ namespace schema.binary {
             $"Expected {expectedDiagnostics.Length} diagnostics but got {actualDiagnostics.Count}.\n";
       }
 
-      var issues = 0;
-      for (var i = 0; i < actualDiagnostics.Count; ++i) {
-        var actualDiagnostic = actualDiagnostics[i];
-        var expectedDiagnostic = expectedDiagnostics[i];
+      bool[] actualMatches = new bool[actualDiagnostics.Count];
+      bool[] expectedMatches = new bool[expectedDiagnostics.Length];
 
-        if (!actualDiagnostic.Descriptor.Equals(expectedDiagnostic)) {
-          message +=
-              $"{++issues}) Expected '{expectedDiagnostic.MessageFormat.ToString()}' but was '{actualDiagnostic.GetMessage()}'.\n";
+      for (var a = 0; a < actualDiagnostics.Count; ++a) {
+        var actualDiagnostic = actualDiagnostics[a];
+
+        for (var e = 0; e < expectedDiagnostics.Length; ++e) {
+          if (expectedMatches[e]) {
+            continue;
+          }
+
+          var expectedDiagnostic = expectedDiagnostics[e];
+          if (actualDiagnostic.Descriptor.Equals(expectedDiagnostic)) {
+            actualMatches[a] = true;
+            expectedMatches[a] = true;
+            break;
+          }
+        }
+      }
+
+      var allActualMatched = actualMatches.All(value => value);
+      var allExpectedMatched = expectedMatches.All(value => value);
+
+      if (allActualMatched && allExpectedMatched) {
+        return;
+      }
+
+      if (!allActualMatched) {
+        message += "\n";
+        message += "Unexpected actual diagnostics:\n";
+
+        var i = 0;
+        foreach (var (hadMatch, actualDiagnostic) in Enumerable.Zip(
+                     actualMatches,
+                     actualDiagnostics)) {
+          if (hadMatch) {
+            continue;
+          }
+
+          message += $" {i++}) {actualDiagnostic.GetMessage()}\n";
+        }
+      }
+
+      if (!allExpectedMatched) {
+        message += "\n";
+        message += "Unmatched expected diagnostics:\n";
+
+        var i = 0;
+        foreach (var (hadMatch, expectedDiagnostic) in Enumerable.Zip(
+                     expectedMatches,
+                     expectedDiagnostics)) {
+          if (hadMatch) {
+            continue;
+          }
+
+          message += $" {i++}) {expectedDiagnostic.MessageFormat}\n";
         }
       }
 
@@ -159,8 +212,10 @@ namespace schema.binary {
 
         Assert.IsEmpty(structure.Diagnostics);
 
-        var actualReader = new BinarySchemaReaderGenerator().Generate(structure);
-        var actualWriter = new BinarySchemaWriterGenerator().Generate(structure);
+        var actualReader =
+            new BinarySchemaReaderGenerator().Generate(structure);
+        var actualWriter =
+            new BinarySchemaWriterGenerator().Generate(structure);
 
         Assert.AreEqual(expectedReader, actualReader.ReplaceLineEndings());
         Assert.AreEqual(expectedWriter, actualWriter.ReplaceLineEndings());
