@@ -44,5 +44,33 @@ namespace foo.bar {
       BinarySchemaTestUtil.AssertDiagnostics(
           structure.Diagnostics);
     }
+
+    [Test]
+    public void TestAllowsSequenceAttributesOnISequence() {
+      var structure = BinarySchemaTestUtil.ParseFirst(@"
+using schema.binary;
+using schema.binary.attributes.ignore;
+using schema.binary.attributes.sequence;
+using schema.util.sequences;
+
+namespace foo.bar {
+  [BinarySchema]
+  public partial class ByteWrapper : IBinaryConvertible {
+    [SequenceLengthSource(SchemaIntegerType.UINT32)]
+    public SequenceImpl<int> Field1 { get; set; }
+
+    [RSequenceLengthSource(""Count"")]
+    public SequenceImpl<int> Field2 { get; set; }
+
+    [Ignore]
+    public int Count { get; set; }
+  }
+
+  public class SequenceImpl<T> : ISequence<SequenceImpl<T>, T> { 
+  }
+}");
+      BinarySchemaTestUtil.AssertDiagnostics(
+          structure.Diagnostics);
+    }
   }
 }

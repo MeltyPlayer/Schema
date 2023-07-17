@@ -14,12 +14,12 @@ using IgnoreAttribute = schema.binary.attributes.ignore.IgnoreAttribute;
 namespace schema.binary.build {
   public partial class ISequenceBuildTests {
     [BinarySchema]
-    public partial class MutableSequenceWrapper : IBinaryConvertible {
+    public partial class MutableSequenceWrapper1 : IBinaryConvertible {
       [SequenceLengthSource(SchemaIntegerType.UINT32)]
       public MutableSequenceImpl<IntWrapper> Sequence { get; } = new();
 
       public override bool Equals(object? otherObj) {
-        if (otherObj is MutableSequenceWrapper other) {
+        if (otherObj is MutableSequenceWrapper1 other) {
           return this.Sequence.Equals(other.Sequence);
         }
 
@@ -27,8 +27,75 @@ namespace schema.binary.build {
       }
     }
 
+    [Test]
+    public void TestWriteAndRead1() {
+      var expectedSw = new MutableSequenceWrapper1();
+      expectedSw.Sequence.AddRange(
+          new[] { 1, 2, 3, 4, 5, 9, 8, 7, 6 }
+              .Select(value => new IntWrapper { Value = value }));
+
+      var ms = new MemoryStream();
+
+      var endianness = Endianness.BigEndian;
+      var ew = new EndianBinaryWriter(endianness);
+
+      expectedSw.Write(ew);
+      ew.CompleteAndCopyToDelayed(ms).Wait();
+      Assert.AreEqual(4 + 9 * 4, ms.Position);
+
+      ms.Position = 0;
+      var er = new EndianBinaryReader(ms, endianness);
+      var actualSw = er.ReadNew<MutableSequenceWrapper1>();
+
+      Assert.AreEqual(expectedSw, actualSw);
+    }
+
+
     [BinarySchema]
-    public partial class MutableSequenceImpl<T> 
+    public partial class MutableSequenceWrapper2 : IBinaryConvertible {
+      public int Count {
+        get => this.Sequence.Count;
+        private set => this.Sequence.Count = value;
+      }
+
+      [RSequenceLengthSource(nameof(Count))]
+      public MutableSequenceImpl<IntWrapper> Sequence { get; } = new();
+
+      public override bool Equals(object? otherObj) {
+        if (otherObj is MutableSequenceWrapper2 other) {
+          return this.Sequence.Equals(other.Sequence);
+        }
+
+        return false;
+      }
+    }
+
+    [Test]
+    public void TestWriteAndRead2() {
+      var expectedSw = new MutableSequenceWrapper2();
+      expectedSw.Sequence.AddRange(
+          new[] { 1, 2, 3, 4, 5, 9, 8, 7, 6 }
+              .Select(value => new IntWrapper { Value = value }));
+
+      var ms = new MemoryStream();
+
+      var endianness = Endianness.BigEndian;
+      var ew = new EndianBinaryWriter(endianness);
+
+      expectedSw.Write(ew);
+      ew.CompleteAndCopyToDelayed(ms).Wait();
+      Assert.AreEqual(4 + 9 * 4, ms.Position);
+
+      ms.Position = 0;
+      var er = new EndianBinaryReader(ms, endianness);
+      var actualSw = er.ReadNew<MutableSequenceWrapper2>();
+
+      Assert.AreEqual(expectedSw, actualSw);
+    }
+
+
+    [BinarySchema]
+    public partial class MutableSequenceImpl<T>
         : ISequence<MutableSequenceImpl<T>, T>
         where T : IBinaryConvertible, new() {
       [RSequenceLengthSource(nameof(Count))]
@@ -89,28 +156,6 @@ namespace schema.binary.build {
 
         return false;
       }
-    }
-
-    [Test]
-    public void TestWriteAndRead() {
-      var expectedSw = new MutableSequenceWrapper();
-      expectedSw.Sequence.AddRange(
-          new[] { 1, 2, 3, 4, 5, 9, 8, 7, 6 }
-              .Select(value => new IntWrapper { Value = value }));
-
-      var ms = new MemoryStream();
-
-      var endianness = Endianness.BigEndian;
-      var ew = new EndianBinaryWriter(endianness);
-
-      expectedSw.Write(ew);
-      ew.CompleteAndCopyToDelayed(ms).Wait();
-
-      ms.Position = 0;
-      var er = new EndianBinaryReader(ms, endianness);
-      var actualSw = er.ReadNew<MutableSequenceWrapper>();
-
-      Assert.AreEqual(expectedSw, actualSw);
     }
   }
 }
