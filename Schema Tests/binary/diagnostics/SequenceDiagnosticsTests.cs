@@ -72,5 +72,33 @@ namespace foo.bar {
       BinarySchemaTestUtil.AssertDiagnostics(
           structure.Diagnostics);
     }
+
+    [Test]
+    public void TestAllowsSequenceAttributesOnTupledISequence() {
+      var structure = BinarySchemaTestUtil.ParseFirst(@"
+using schema.binary;
+using schema.binary.attributes.ignore;
+using schema.binary.attributes.sequence;
+using schema.util.sequences;
+
+namespace foo.bar {
+  [BinarySchema]
+  public partial class ByteWrapper : IBinaryConvertible {
+    [SequenceLengthSource(SchemaIntegerType.UINT32)]
+    public SequenceImpl<int, int> Field1 { get; set; }
+
+    [RSequenceLengthSource(""Count"")]
+    public SequenceImpl<int, int> Field2 { get; set; }
+
+    [Ignore]
+    public int Count { get; set; }
+  }
+
+  public class SequenceImpl<T1, T2> : ISequence<SequenceImpl<(T1 First, T2 Second)>, (T1 First, T2 Second)> { 
+  }
+}");
+      BinarySchemaTestUtil.AssertDiagnostics(
+          structure.Diagnostics);
+    }
   }
 }

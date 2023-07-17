@@ -18,6 +18,12 @@ namespace schema.binary.parser.asserts {
         return;
       }
 
+      // Allow any type in sequence, assume it will be handled by the implementation.
+      if (sequenceMemberType.SequenceTypeInfo.SequenceType is SequenceType
+              .MUTABLE_SEQUENCE or SequenceType.READ_ONLY_SEQUENCE) {
+        return;
+      }
+
       var elementTypeInfo = sequenceMemberType.ElementType.TypeInfo;
       if (elementTypeInfo is IStructureTypeInfo structureTypeInfo) {
         if (!SymbolTypeUtil.Implements(structureTypeInfo.NamedTypeSymbol,
