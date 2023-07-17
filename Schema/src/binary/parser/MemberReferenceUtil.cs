@@ -13,59 +13,60 @@ namespace schema.binary.parser {
         case IBoolTypeInfo boolTypeInfo:
         case ICharTypeInfo charTypeInfo:
         case IEnumTypeInfo enumTypeInfo: {
-            return new BinarySchemaStructureParser.PrimitiveMemberType {
+          return new BinarySchemaStructureParser.PrimitiveMemberType {
               PrimitiveTypeInfo =
-                    Asserts.CastNonnull(typeInfo as IPrimitiveTypeInfo),
-            };
-          }
+                  Asserts.CastNonnull(typeInfo as IPrimitiveTypeInfo),
+          };
+        }
         case IStringTypeInfo stringTypeInfo: {
-            return new BinarySchemaStructureParser.StringType { TypeInfo = typeInfo, };
-          }
+          return new BinarySchemaStructureParser.StringType {
+              TypeInfo = typeInfo,
+          };
+        }
         case IStructureTypeInfo structureTypeInfo: {
-            return new BinarySchemaStructureParser.StructureMemberType {
+          return new BinarySchemaStructureParser.StructureMemberType {
               StructureTypeInfo = structureTypeInfo,
               IsReferenceType =
-                    structureTypeInfo.NamedTypeSymbol.IsReferenceType,
-            };
-          }
+                  structureTypeInfo.NamedTypeSymbol.IsReferenceType,
+          };
+        }
         case IGenericTypeInfo genericTypeInfo: {
-            // TODO: Figure out how to find the best constraint
-            var constraintTypeInfo = genericTypeInfo.ConstraintTypeInfos[0];
-            var constraintMemberType =
-                MemberReferenceUtil.WrapTypeInfoWithMemberType(constraintTypeInfo);
+          // TODO: Figure out how to find the best constraint
+          var constraintTypeInfo = genericTypeInfo.ConstraintTypeInfos[0];
+          var constraintMemberType =
+              MemberReferenceUtil
+                  .WrapTypeInfoWithMemberType(constraintTypeInfo);
 
-            return new BinarySchemaStructureParser.GenericMemberType {
+          return new BinarySchemaStructureParser.GenericMemberType {
               ConstraintType = constraintMemberType,
               GenericTypeInfo = genericTypeInfo,
-            };
-          }
+          };
+        }
         case ISequenceTypeInfo sequenceTypeInfo: {
-            return new BinarySchemaStructureParser.SequenceMemberType {
+          return new BinarySchemaStructureParser.SequenceMemberType {
               SequenceTypeInfo = sequenceTypeInfo,
               ElementType =
-                    WrapTypeInfoWithMemberType(sequenceTypeInfo.ElementTypeInfo),
+                  WrapTypeInfoWithMemberType(sequenceTypeInfo.ElementTypeInfo),
               LengthSourceType =
-                    sequenceTypeInfo.IsLengthConst
-                        ? SequenceLengthSourceType.READ_ONLY
-                        : ((ISequenceLengthSourceAttribute?) SymbolTypeUtil
-                            .GetAttribute<SequenceLengthSourceAttribute>(
-                                null,
-                                sequenceTypeInfo.TypeSymbol) ?? SymbolTypeUtil
-                            .GetAttribute<RSequenceLengthSourceAttribute>(
-                                null,
-                                sequenceTypeInfo.TypeSymbol)) == null
-                            ? SequenceLengthSourceType.UNSPECIFIED
-                            : SequenceLengthSourceType.UNTIL_END_OF_STREAM,
-            };
-          }
+                  sequenceTypeInfo.IsLengthConst
+                      ? SequenceLengthSourceType.READ_ONLY
+                      : SymbolTypeUtil
+                          .GetAttribute<RSequenceUntilEndOfStreamAttribute>(
+                              null,
+                              sequenceTypeInfo.TypeSymbol) != null
+                          ? SequenceLengthSourceType.UNTIL_END_OF_STREAM
+                          : SequenceLengthSourceType.UNSPECIFIED,
+          };
+        }
         default: throw new ArgumentOutOfRangeException(nameof(typeInfo));
       }
     }
 
-    public static BinarySchemaStructureParser.SchemaMember WrapMemberReference(IMemberReference memberReference)
+    public static BinarySchemaStructureParser.SchemaMember WrapMemberReference(
+        IMemberReference memberReference)
       => new() {
-        Name = memberReference.Name,
-        MemberType = MemberReferenceUtil.WrapTypeInfoWithMemberType(
+          Name = memberReference.Name,
+          MemberType = MemberReferenceUtil.WrapTypeInfoWithMemberType(
               memberReference.MemberTypeInfo),
       };
   }
