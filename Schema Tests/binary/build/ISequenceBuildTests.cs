@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,7 +6,6 @@ using System.Linq;
 using NUnit.Framework;
 
 using schema.binary.attributes.sequence;
-using schema.binary.util;
 using schema.util.enumerables;
 using schema.util.sequences;
 
