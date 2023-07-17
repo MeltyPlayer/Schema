@@ -65,7 +65,7 @@ namespace foo.bar {
     public void Read(IEndianBinaryReader er) {
       {
         var c = er.ReadUInt32();
-        this.Field = SequencesUtil.ResizeSequence(this.Field, (int) c);
+        this.Field = SequencesUtil.CloneAndResizeSequence(this.Field, (int) c);
       }
       er.Align(2);
       er.ReadInt32s(this.Field);

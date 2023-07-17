@@ -45,12 +45,26 @@ namespace schema.binary {
 
 
     public static bool ImplementsGeneric(this ITypeSymbol symbol, Type type)
-      => symbol.AllInterfaces.Any(i => i.MatchesGeneric(type));
+      => symbol.ImplementsGeneric(type, out _);
+
+    public static bool ImplementsGeneric(this ITypeSymbol symbol,
+                                         Type type,
+                                         out INamedTypeSymbol outGenericType) {
+      var matchingGenericType =
+          symbol.AllInterfaces.FirstOrDefault(i => i.MatchesGeneric(type));
+      if (matchingGenericType != null) {
+        outGenericType = matchingGenericType;
+        return true;
+      }
+
+      outGenericType = default;
+      return false;
+    }
 
 
     public static bool IsBinaryDeserializable(this ITypeSymbol symbol)
       => symbol.Implements<IBinaryDeserializable>();
-   
+
     public static bool IsBinarySerializable(this ITypeSymbol symbol)
       => symbol.Implements<IBinarySerializable>();
 
@@ -162,7 +176,8 @@ namespace schema.binary {
         where TAttribute : notnull
       => SymbolTypeUtil.GetAttributeData<TAttribute>(symbol)
                        .Select(attributeData => {
-                         var parameters = attributeData.AttributeConstructor.Parameters;
+                         var parameters = attributeData.AttributeConstructor
+                             .Parameters;
 
                          // TODO: Does this still work w/ optional arguments?
                          var attributeType = typeof(TAttribute);
@@ -171,11 +186,14 @@ namespace schema.binary {
                              attributeType.GetConstructors()
                                           .FirstOrDefault(c => {
                                             var cParameters = c.GetParameters();
-                                            if (cParameters.Length != parameters.Length) {
+                                            if (cParameters.Length !=
+                                                parameters.Length) {
                                               return false;
                                             }
 
-                                            for (var i = 0; i < parameters.Length; ++i) {
+                                            for (var i = 0;
+                                                 i < parameters.Length;
+                                                 ++i) {
                                               if (parameters[i].Name !=
                                                   cParameters[i].Name) {
                                                 return false;

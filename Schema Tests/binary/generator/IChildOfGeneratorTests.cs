@@ -154,7 +154,7 @@ namespace foo.bar {
   public partial class Parent {
     public void Read(IEndianBinaryReader er) {
       this.Length = er.ReadUInt32();
-      this.Child = SequencesUtil.ResizeSequence(this.Child, (int) this.Length);
+      this.Child = SequencesUtil.CloneAndResizeSequence(this.Child, (int) this.Length);
       foreach (var e in this.Child) {
         e.Parent = this;
         e.Read(er);

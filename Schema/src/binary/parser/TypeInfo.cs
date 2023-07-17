@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 
 using schema.binary.util;
+using schema.util.sequences;
 
 
 namespace schema.binary.parser {
@@ -202,7 +203,73 @@ namespace schema.binary.parser {
       }
 
       if (typeSymbol is INamedTypeSymbol namedTypeSymbol) {
-        if (SymbolTypeUtil.MatchesGeneric(namedTypeSymbol, typeof(List<>))) {
+        if (namedTypeSymbol.ImplementsGeneric(typeof(ISequence<,>),
+                                              out var sequenceTypeSymbol)) {
+          var containedTypeSymbol = sequenceTypeSymbol.TypeArguments[1];
+          var containedParseStatus = this.ParseTypeSymbol(
+              containedTypeSymbol,
+              false,
+              out var containedTypeInfo);
+          if (containedParseStatus != ParseStatus.SUCCESS) {
+            typeInfo = default;
+            return containedParseStatus;
+          }
+
+          typeInfo = new SequenceTypeInfo(
+              typeSymbol,
+              isReadonly,
+              isNullable,
+              SequenceType.MUTABLE_SEQUENCE,
+              false,
+              containedTypeInfo);
+          return ParseStatus.SUCCESS;
+        }
+
+        if (namedTypeSymbol.ImplementsGeneric(typeof(IConstLengthSequence<,>),
+                                              out sequenceTypeSymbol)) {
+          var containedTypeSymbol = sequenceTypeSymbol.TypeArguments[1];
+          var containedParseStatus = this.ParseTypeSymbol(
+              containedTypeSymbol,
+              false,
+              out var containedTypeInfo);
+          if (containedParseStatus != ParseStatus.SUCCESS) {
+            typeInfo = default;
+            return containedParseStatus;
+          }
+
+          typeInfo = new SequenceTypeInfo(
+              typeSymbol,
+              isReadonly,
+              isNullable,
+              SequenceType.MUTABLE_SEQUENCE,
+              true,
+              containedTypeInfo);
+          return ParseStatus.SUCCESS;
+        }
+
+        if (namedTypeSymbol.ImplementsGeneric(typeof(IReadOnlySequence<,>),
+                                              out sequenceTypeSymbol)) {
+          var containedTypeSymbol = sequenceTypeSymbol.TypeArguments[1];
+          var containedParseStatus = this.ParseTypeSymbol(
+              containedTypeSymbol,
+              true,
+              out var containedTypeInfo);
+          if (containedParseStatus != ParseStatus.SUCCESS) {
+            typeInfo = default;
+            return containedParseStatus;
+          }
+
+          typeInfo = new SequenceTypeInfo(
+              typeSymbol,
+              isReadonly,
+              isNullable,
+              SequenceType.READ_ONLY_SEQUENCE,
+              isReadonly,
+              containedTypeInfo);
+          return ParseStatus.SUCCESS;
+        }
+
+        if (namedTypeSymbol.MatchesGeneric(typeof(List<>))) {
           var listTypeSymbol = typeSymbol as INamedTypeSymbol;
 
           var containedTypeSymbol = listTypeSymbol.TypeArguments[0];
@@ -225,8 +292,7 @@ namespace schema.binary.parser {
           return ParseStatus.SUCCESS;
         }
 
-        if (SymbolTypeUtil.MatchesGeneric(namedTypeSymbol,
-                                          typeof(IReadOnlyList<>))) {
+        if (namedTypeSymbol.MatchesGeneric(typeof(IReadOnlyList<>))) {
           var listTypeSymbol = typeSymbol as INamedTypeSymbol;
 
           var containedTypeSymbol = listTypeSymbol.TypeArguments[0];

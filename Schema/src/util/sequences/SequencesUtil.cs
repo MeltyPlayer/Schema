@@ -13,7 +13,8 @@ namespace schema.util.sequences {
       }
     }
 
-    public static T[] ResizeSequence<T>(T[]? list, int length) where T : new() {
+    public static T[] CloneAndResizeSequence<T>(T[]? list, int length)
+        where T : new() {
       SequencesUtil.AssertLengthNonnegative_(length);
 
       if (list != null && list.Length == length) {
@@ -24,7 +25,7 @@ namespace schema.util.sequences {
           .ToArray();
     }
 
-    public static ImmutableArray<T> ResizeSequence<T>(
+    public static ImmutableArray<T> CloneAndResizeSequence<T>(
         ImmutableArray<T>? list,
         int length) where T : new() {
       SequencesUtil.AssertLengthNonnegative_(length);
@@ -50,8 +51,8 @@ namespace schema.util.sequences {
       }
     }
 
-    public static IReadOnlyList<T> ResizeSequence<T>(IReadOnlyList<T>? list,
-      int length) where T : new() {
+    public static IList<T> CloneAndResizeSequence<T>(IList<T> list, int length)
+        where T : new() {
       SequencesUtil.AssertLengthNonnegative_(length);
 
       if (list != null && list.Count == length) {
@@ -59,20 +60,42 @@ namespace schema.util.sequences {
       }
 
       return (list?.Resized(length) ?? Enumerable.Repeat(new T(), length))
-          .ToArray();
+          .ToList();
+    }
+
+    public static IReadOnlyList<T> CloneAndResizeSequence<T>(
+        IReadOnlyList<T>? list,
+        int length) where T : new() {
+      SequencesUtil.AssertLengthNonnegative_(length);
+
+      if (list != null && list.Count == length) {
+        return list;
+      }
+
+      return (list?.Resized(length) ?? Enumerable.Repeat(new T(), length))
+          .ToImmutableList();
     }
 
 
-    public static void ResizeSequenceInPlace<T>(ISequence<T> list, int length) {
+    public static void ResizeSequenceInPlace<TSequence, T>(
+        ISequence<TSequence, T> list,
+        int length) where TSequence : ISequence<TSequence, T> {
       SequencesUtil.AssertLengthNonnegative_(length);
-      list.Count = length;
+      list.ResizeInPlace(length);
     }
 
-    public static IReadOnlySequence<T> ResizeSequence<T>(
-        IReadOnlySequence<T> list,
-        int length) {
+    public static void CloneAndResizeSequence<TSequence, T>(
+        IConstLengthSequence<TSequence, T> list,
+        int length) where TSequence : IConstLengthSequence<TSequence, T> {
       SequencesUtil.AssertLengthNonnegative_(length);
-      return list.CloneWithNewLength(length);
+      list.CloneWithNewLength(length);
+    }
+
+    public static void CloneAndResizeSequence<TSequence, T>(
+        IReadOnlySequence<TSequence, T> list,
+        int length) where TSequence : IReadOnlySequence<TSequence, T> {
+      SequencesUtil.AssertLengthNonnegative_(length);
+      list.CloneWithNewLength(length);
     }
   }
 }

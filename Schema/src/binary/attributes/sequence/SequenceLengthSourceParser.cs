@@ -70,11 +70,11 @@ namespace schema.binary.attributes.sequence {
         }
       }
 
-      // Didn't expect attribute b/c not an array
+      // Didn't expect attribute b/c not a sequence
       else if (lengthSourceAttribute != null) {
         diagnostics.Add(
             Rules.CreateDiagnostic(memberSymbol,
-                                   Rules.UnexpectedAttribute));
+                                   Rules.UnexpectedSequenceAttribute));
       }
     }
   }

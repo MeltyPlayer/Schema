@@ -38,6 +38,7 @@ namespace schema.binary {
           Rules.SourceMustBePrivate,
           Rules.StructureMemberBinaryConvertabilityNeedsToSatisfyParent,
           Rules.UnexpectedAttribute,
+          Rules.UnexpectedSequenceAttribute,
           Rules.UnsupportedArrayType,
           Rules.WriteAlreadyDefined
       );

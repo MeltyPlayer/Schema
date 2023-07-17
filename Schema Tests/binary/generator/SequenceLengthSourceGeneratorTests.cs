@@ -41,12 +41,12 @@ using schema.util.sequences;
 namespace foo.bar {
   public partial class ConstLengthWrapper {
     public void Read(IEndianBinaryReader er) {
-      this.Field = SequencesUtil.ResizeSequence(this.Field, 3);
+      this.Field = SequencesUtil.CloneAndResizeSequence(this.Field, 3);
       er.ReadInt32s(this.Field);
-      this.NullableField = SequencesUtil.ResizeSequence(this.NullableField, 3);
+      this.NullableField = SequencesUtil.CloneAndResizeSequence(this.NullableField, 3);
       er.ReadInt32s(this.NullableField);
       if (this.Toggle) {
-        this.IfBooleanArray = SequencesUtil.ResizeSequence(this.IfBooleanArray, 3);
+        this.IfBooleanArray = SequencesUtil.CloneAndResizeSequence(this.IfBooleanArray, 3);
         er.ReadInt32s(this.IfBooleanArray);
       }
       else {

@@ -124,7 +124,7 @@ namespace foo.bar {
   public partial class ArrayWrapper {
     public void Read(IEndianBinaryReader er) {
       this.length = er.ReadInt32();
-      this.field = SequencesUtil.ResizeSequence(this.field, this.length);
+      this.field = SequencesUtil.CloneAndResizeSequence(this.field, this.length);
       er.ReadInt32s(this.field);
     }
   }
@@ -361,14 +361,14 @@ namespace foo.bar {
       er.ReadInt32s(this.constLengthIntValues);
       {
         var c = er.ReadUInt32();
-        this.intValues = SequencesUtil.ResizeSequence(this.intValues, (int) c);
+        this.intValues = SequencesUtil.CloneAndResizeSequence(this.intValues, (int) c);
       }
       er.ReadInt32s(this.intValues);" +
                             @"
       this.other.Read(er);
       {
         var c = er.ReadInt32();
-        this.others = SequencesUtil.ResizeSequence(this.others, c);
+        this.others = SequencesUtil.CloneAndResizeSequence(this.others, c);
       }
       foreach (var e in this.others) {
         e.Read(er);

@@ -119,6 +119,11 @@ namespace schema.binary {
           "Unexpected attribute",
           "Did not expect this attribute on this field.");
 
+    public static DiagnosticDescriptor UnexpectedSequenceAttribute { get; }
+      = Rules.CreateDiagnosticDescriptor_(
+          "Unexpected sequence attribute",
+          "Expected for this sequence attribute used on a sequence.");
+
     public static readonly DiagnosticDescriptor UnsupportedArrayType
         = Rules.CreateDiagnosticDescriptor_(
             "Unsupported array type",
