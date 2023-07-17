@@ -417,107 +417,114 @@ namespace schema.binary.text {
         ICurlyBracketTextWriter cbsb,
         ITypeSymbol sourceSymbol,
         ISchemaMember member) {
-      HandleMemberEndiannessAndTracking_(cbsb,
-                                         member,
-                                         () => {
-                                           var arrayType =
-                                               Asserts.CastNonnull(
-                                                   member.MemberType as
-                                                       ISequenceMemberType);
+      HandleMemberEndiannessAndTracking_(
+          cbsb,
+          member,
+          () => {
+            var sequenceType =
+                Asserts.CastNonnull(
+                    member.MemberType as
+                        ISequenceMemberType);
 
-                                           var elementType =
-                                               arrayType.ElementType;
-                                           if (elementType is IGenericMemberType
-                                               genericElementType) {
-                                             elementType = genericElementType
-                                                 .ConstraintType;
-                                           }
+            if (sequenceType.SequenceTypeInfo.SequenceType is SequenceType
+                    .MUTABLE_SEQUENCE or SequenceType.READ_ONLY_SEQUENCE) {
+              cbsb.WriteLine($"this.{member.Name}.Write(ew);");
+              return;
+            }
 
-                                           if (elementType is
-                                               IPrimitiveMemberType
-                                               primitiveElementType) {
-                                             // Primitives that don't need to be cast are the easiest to write.
-                                             if (!primitiveElementType
-                                                     .UseAltFormat) {
-                                               var label =
-                                                   SchemaGeneratorUtil
-                                                       .GetPrimitiveLabel(
-                                                           primitiveElementType
-                                                               .PrimitiveType);
-                                               cbsb.WriteLine(
-                                                   $"ew.Write{label}s(this.{member.Name});");
-                                               return;
-                                             }
+            var elementType =
+                sequenceType.ElementType;
+            if (elementType is IGenericMemberType
+                genericElementType) {
+              elementType = genericElementType
+                  .ConstraintType;
+            }
 
-                                             // Primitives that *do* need to be cast have to be written individually.
-                                             var writeType =
-                                                 SchemaGeneratorUtil
-                                                     .GetPrimitiveLabel(
-                                                         SchemaPrimitiveTypesUtil
-                                                             .ConvertNumberToPrimitive(
-                                                                 primitiveElementType
-                                                                     .AltFormat));
-                                             var arrayLengthName =
-                                                 arrayType.SequenceTypeInfo.LengthName;
-                                             var needToCast =
-                                                 primitiveElementType
-                                                     .UseAltFormat &&
-                                                 primitiveElementType
-                                                     .PrimitiveType !=
-                                                 SchemaPrimitiveTypesUtil
-                                                     .GetUnderlyingPrimitiveType(
-                                                         SchemaPrimitiveTypesUtil
-                                                             .ConvertNumberToPrimitive(
-                                                                 primitiveElementType
-                                                                     .AltFormat));
+            if (elementType is
+                IPrimitiveMemberType
+                primitiveElementType) {
+              // Primitives that don't need to be cast are the easiest to write.
+              if (!primitiveElementType
+                      .UseAltFormat) {
+                var label =
+                    SchemaGeneratorUtil
+                        .GetPrimitiveLabel(
+                            primitiveElementType
+                                .PrimitiveType);
+                cbsb.WriteLine(
+                    $"ew.Write{label}s(this.{member.Name});");
+                return;
+              }
 
-                                             var castText = "";
-                                             if (needToCast) {
-                                               var castType =
-                                                   SchemaGeneratorUtil
-                                                       .GetTypeName(
-                                                           primitiveElementType
-                                                               .AltFormat);
-                                               castText = $"({castType}) ";
-                                             }
+              // Primitives that *do* need to be cast have to be written individually.
+              var writeType =
+                  SchemaGeneratorUtil
+                      .GetPrimitiveLabel(
+                          SchemaPrimitiveTypesUtil
+                              .ConvertNumberToPrimitive(
+                                  primitiveElementType
+                                      .AltFormat));
+              var arrayLengthName =
+                  sequenceType.SequenceTypeInfo.LengthName;
+              var needToCast =
+                  primitiveElementType
+                      .UseAltFormat &&
+                  primitiveElementType
+                      .PrimitiveType !=
+                  SchemaPrimitiveTypesUtil
+                      .GetUnderlyingPrimitiveType(
+                          SchemaPrimitiveTypesUtil
+                              .ConvertNumberToPrimitive(
+                                  primitiveElementType
+                                      .AltFormat));
 
-                                             cbsb.EnterBlock(
-                                                     $"for (var i = 0; i < this.{member.Name}.{arrayLengthName}; ++i)")
-                                                 .WriteLine(
-                                                     $"ew.Write{writeType}({castText}this.{member.Name}[i]);")
-                                                 .ExitBlock();
-                                             return;
-                                           }
+              var castText = "";
+              if (needToCast) {
+                var castType =
+                    SchemaGeneratorUtil
+                        .GetTypeName(
+                            primitiveElementType
+                                .AltFormat);
+                castText = $"({castType}) ";
+              }
 
-                                           if (elementType is
-                                               IStructureMemberType
-                                               structureElementType) {
-                                             //if (structureElementType.IsReferenceType) {
-                                             cbsb.EnterBlock(
-                                                     $"foreach (var e in this.{member.Name})")
-                                                 .WriteLine("e.Write(ew);")
-                                                 .ExitBlock();
-                                             // TODO: Do value types need to be read like below?
-                                             /*}
-                                             // Value types (mainly structs) have to be pulled out, read, then put
-                                             // back in.
-                                             else {
-                                               var arrayLengthName = arrayType.SequenceType == SequenceType.ARRAY
-                                                                         ? "Length"
-                                                                         : "Count";
-                                               cbsb.EnterBlock(
-                                                       $"for (var i = 0; i < this.{member.Name}.{arrayLengthName}; ++i)")
-                                                   .WriteLine($"var e = this.{member.Name}[i];")
-                                                   .WriteLine("e.Read(ew);")
-                                                   .WriteLine($"this.{member.Name}[i] = e;")
-                                                   .ExitBlock();
-                                             }*/
-                                             return;
-                                           }
+              cbsb.EnterBlock(
+                      $"for (var i = 0; i < this.{member.Name}.{arrayLengthName}; ++i)")
+                  .WriteLine(
+                      $"ew.Write{writeType}({castText}this.{member.Name}[i]);")
+                  .ExitBlock();
+              return;
+            }
 
-                                           // Anything that makes it down here probably isn't meant to be read.
-                                           throw new NotImplementedException();
-                                         });
+            if (elementType is
+                IStructureMemberType
+                structureElementType) {
+              //if (structureElementType.IsReferenceType) {
+              cbsb.EnterBlock(
+                      $"foreach (var e in this.{member.Name})")
+                  .WriteLine("e.Write(ew);")
+                  .ExitBlock();
+              // TODO: Do value types need to be read like below?
+              /*}
+              // Value types (mainly structs) have to be pulled out, read, then put
+              // back in.
+              else {
+                var arrayLengthName = arrayType.SequenceType == SequenceType.ARRAY
+                                          ? "Length"
+                                          : "Count";
+                cbsb.EnterBlock(
+                        $"for (var i = 0; i < this.{member.Name}.{arrayLengthName}; ++i)")
+                    .WriteLine($"var e = this.{member.Name}[i];")
+                    .WriteLine("e.Read(ew);")
+                    .WriteLine($"this.{member.Name}[i] = e;")
+                    .ExitBlock();
+              }*/
+              return;
+            }
+
+            // Anything that makes it down here probably isn't meant to be read.
+            throw new NotImplementedException();
+          });
     }
   }
 }

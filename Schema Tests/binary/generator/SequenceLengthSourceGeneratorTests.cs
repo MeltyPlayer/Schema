@@ -82,5 +82,48 @@ namespace foo.bar {
 }
 ");
     }
+
+    [Test]
+    public void TestISequence() {
+      BinarySchemaTestUtil.AssertGenerated(@"
+using schema.binary;
+using schema.binary.attributes.ignore;
+using schema.binary.attributes.sequence;
+using schema.util.sequences;
+
+namespace foo.bar {
+  [BinarySchema]
+  public partial class ConstLengthWrapper : IBinaryConvertible {
+    [SequenceLengthSource(3)]
+    public SequenceImpl<int, int> Field { get; } = new();
+  }
+
+  public class SequenceImpl<T1, T2> : ISequence<SequenceImpl<(T1 First, T2 Second)>, (T1 First, T2 Second)> { 
+  }
+}",
+                                           @"using System;
+using System.IO;
+using schema.util.sequences;
+
+namespace foo.bar {
+  public partial class ConstLengthWrapper {
+    public void Read(IEndianBinaryReader er) {
+      SequencesUtil.ResizeSequenceInPlace(this.Field, 3);
+      this.Field.Read(er);
+    }
+  }
+}
+",
+                                           @"using System;
+using System.IO;
+namespace foo.bar {
+  public partial class ConstLengthWrapper {
+    public void Write(ISubEndianBinaryWriter ew) {
+      this.Field.Write(ew);
+    }
+  }
+}
+");
+    }
   }
 }
