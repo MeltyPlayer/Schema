@@ -571,15 +571,13 @@ namespace schema.binary.text {
               .WriteLine($"var {lengthName} = er.Read{readType}();");
         }
 
-        var inPlace =
-            arrayType.SequenceTypeInfo.SequenceType is SequenceType.MUTABLE_LIST
-                or SequenceType.MUTABLE_SEQUENCE;
+        var inPlace = !arrayType.SequenceTypeInfo.IsLengthConst;
         if (inPlace) {
           cbsb.WriteLine(
               $"SequencesUtil.ResizeSequenceInPlace(this.{member.Name}, {castText}{lengthName});");
         } else {
           cbsb.WriteLine(
-              $"this.{member.Name} = SequencesUtil.ResizeSequence(this.{member.Name}, {castText}{lengthName});");
+              $"this.{member.Name} = SequencesUtil.CloneAndResizeSequence(this.{member.Name}, {castText}{lengthName});");
         }
 
         if (isImmediate) {
