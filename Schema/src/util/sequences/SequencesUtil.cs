@@ -21,8 +21,7 @@ namespace schema.util.sequences {
         return list;
       }
 
-      return (list?.Resized(length) ?? Enumerable.Repeat(new T(), length))
-          .ToArray();
+      return list.Resized(length).ToArray();
     }
 
     public static ImmutableArray<T> CloneAndResizeSequence<T>(
@@ -34,8 +33,7 @@ namespace schema.util.sequences {
         return list.Value;
       }
 
-      return (list?.Resized(length) ?? Enumerable.Repeat(new T(), length))
-          .ToImmutableArray();
+      return list.Resized<T>(length).ToImmutableArray();
     }
 
 
@@ -51,7 +49,7 @@ namespace schema.util.sequences {
       }
     }
 
-    public static IList<T> CloneAndResizeSequence<T>(IList<T> list, int length)
+    public static IList<T> CloneAndResizeSequence<T>(IList<T>? list, int length)
         where T : new() {
       SequencesUtil.AssertLengthNonnegative_(length);
 
@@ -59,8 +57,7 @@ namespace schema.util.sequences {
         return list;
       }
 
-      return (list?.Resized(length) ?? Enumerable.Repeat(new T(), length))
-          .ToList();
+      return list.Resized(length).ToList();
     }
 
     public static IReadOnlyList<T> CloneAndResizeSequence<T>(
