@@ -52,7 +52,7 @@ namespace schema.binary.attributes.sequence {
     protected override void InitFields() {
       if (this.otherMemberName_ != null) {
         this.OtherMember =
-            this.GetSourceRelativeToStructure(this.otherMemberName_)
+            this.GetReadTimeOnlySourceRelativeToStructure(this.otherMemberName_)
                 .AssertIsInteger();
       }
     }

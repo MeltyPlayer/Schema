@@ -4,7 +4,7 @@
 namespace schema.binary.attributes.align {
   internal class AlignGeneratorTests {
     [Test]
-    public void TestAlign() {
+    public void TestConstAlign() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes.align;
@@ -34,6 +34,48 @@ namespace foo.bar {
   public partial class AlignWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
       ew.Align(2);
+      ew.WriteByte(this.Field);
+    }
+  }
+}
+");
+    }
+
+    [Test]
+    public void TestOtherAlign() {
+      BinarySchemaTestUtil.AssertGenerated(@"
+using schema.binary;
+using schema.binary.attributes.align;
+
+namespace foo.bar {
+  [BinarySchema]
+  public partial class AlignWrapper : IBinaryConvertible {
+    public uint Value { get; set; }
+
+    [Align(nameof(Value))]
+    public byte Field { get; set; }
+  }
+}",
+                                           @"using System;
+using System.IO;
+
+namespace foo.bar {
+  public partial class AlignWrapper {
+    public void Read(IEndianBinaryReader er) {
+      this.Value = er.ReadUInt32();
+      er.Align(this.Value);
+      this.Field = er.ReadByte();
+    }
+  }
+}
+",
+                                           @"using System;
+using System.IO;
+namespace foo.bar {
+  public partial class AlignWrapper {
+    public void Write(ISubEndianBinaryWriter ew) {
+      ew.WriteUInt32(this.Value);
+      ew.Align(this.Value);
       ew.WriteByte(this.Field);
     }
   }

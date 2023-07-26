@@ -5,6 +5,7 @@ using System.Text;
 
 using Microsoft.CodeAnalysis;
 
+using schema.binary.attributes.align;
 using schema.binary.dependencies;
 using schema.binary.util;
 
@@ -202,9 +203,15 @@ namespace schema.binary.text {
         ICurlyBracketTextWriter cbsb,
         ISchemaMember member) {
       var align = member.Align;
-      if (align != 0) {
-        cbsb.WriteLine($"er.Align({align});");
+      if (align == null) {
+        return;
       }
+
+      var valueName = align.Method switch {
+          AlignSourceType.CONST        => $"{align.ConstAlign}",
+          AlignSourceType.OTHER_MEMBER => $"this.{align.OtherMember.Name}"
+      };
+      cbsb.WriteLine($"er.Align({valueName});");
     }
 
     private static void HandleMemberEndianness_(

@@ -151,7 +151,7 @@ namespace schema.binary.attributes {
     }
 
 
-    protected IMemberReference GetSourceRelativeToStructure(
+    protected IMemberReference GetReadTimeOnlySourceRelativeToStructure(
         string otherMemberName) {
       var source = this.GetOtherMemberRelativeToStructure(otherMemberName);
 
@@ -164,7 +164,7 @@ namespace schema.binary.attributes {
       return source;
     }
 
-    protected IMemberReference<T> GetSourceRelativeToStructure<T>(
+    protected IMemberReference<T> GetReadTimeOnlySourceRelativeToStructure<T>(
         string otherMemberName) {
       var source = this.GetOtherMemberRelativeToStructure<T>(otherMemberName);
 

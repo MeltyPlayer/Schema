@@ -64,7 +64,7 @@ namespace schema.binary {
     string Name { get; }
     IMemberType MemberType { get; }
     bool IsIgnored { get; }
-    int Align { get; }
+    AlignAttribute? Align { get; }
     IIfBoolean? IfBoolean { get; }
     IOffset? Offset { get; }
     bool IsPosition { get; }
@@ -303,8 +303,7 @@ namespace schema.binary {
           MemberReferenceUtil.WrapTypeInfoWithMemberType(memberTypeInfo);
 
       // Get attributes
-      var align = new AlignAttributeParser().GetAlignForMember(
-          diagnostics, memberSymbol);
+      var align = memberSymbol.GetAttribute<AlignAttribute>(diagnostics);
 
       new WSizeOfMemberInBytesParser().Parse(diagnostics, memberSymbol,
                                             memberTypeInfo, memberType);
@@ -642,7 +641,7 @@ namespace schema.binary {
       public string Name { get; set; }
       public IMemberType MemberType { get; set; }
       public bool IsIgnored { get; set; }
-      public int Align { get; set; }
+      public AlignAttribute? Align { get; set; }
       public IIfBoolean IfBoolean { get; set; }
       public IOffset Offset { get; set; }
       public bool IsPosition { get; set; }
