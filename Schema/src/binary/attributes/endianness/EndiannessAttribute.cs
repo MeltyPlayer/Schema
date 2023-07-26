@@ -2,7 +2,7 @@
 using System.IO;
 
 
-namespace schema.binary.attributes.endianness {
+namespace schema.binary.attributes {
   /// <summary>
   ///   Attribute for specifying the endianness of a given class or field.
   ///

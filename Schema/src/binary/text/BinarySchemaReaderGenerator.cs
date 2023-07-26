@@ -5,7 +5,7 @@ using System.Text;
 
 using Microsoft.CodeAnalysis;
 
-using schema.binary.attributes.align;
+using schema.binary.attributes;
 using schema.binary.dependencies;
 using schema.binary.util;
 

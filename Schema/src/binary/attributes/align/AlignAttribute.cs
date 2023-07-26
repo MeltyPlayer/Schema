@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace schema.binary.attributes.align {
+namespace schema.binary.attributes {
   public enum AlignSourceType {
     UNSPECIFIED,
     CONST,

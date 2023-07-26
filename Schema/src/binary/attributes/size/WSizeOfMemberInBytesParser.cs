@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using schema.binary.parser;
 
 
-namespace schema.binary.attributes.size {
+namespace schema.binary.attributes {
   internal class WSizeOfMemberInBytesParser {
     public void Parse(IList<Diagnostic> diagnostics,
                       ISymbol memberSymbol,

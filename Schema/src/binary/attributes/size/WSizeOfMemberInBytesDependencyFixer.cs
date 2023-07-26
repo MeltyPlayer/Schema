@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 
-namespace schema.binary.attributes.size {
+namespace schema.binary.attributes {
   public class WSizeOfMemberInBytesDependencyFixer {
     public void AddDependenciesForStructure(
         IDictionary<INamedTypeSymbol, IBinarySchemaStructure>

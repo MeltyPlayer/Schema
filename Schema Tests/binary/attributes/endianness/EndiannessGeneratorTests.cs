@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.attributes.endianness {
+namespace schema.binary.attributes {
   internal class EndiannessGeneratorTests {
     [Test]
     public void TestNoEndianness() {
@@ -43,7 +43,7 @@ namespace foo.bar {
 using System.IO;
 
 using schema.binary;
-using schema.binary.attributes.endianness;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]
@@ -94,7 +94,7 @@ namespace foo.bar {
 using System.IO;
 
 using schema.binary;
-using schema.binary.attributes.endianness;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]

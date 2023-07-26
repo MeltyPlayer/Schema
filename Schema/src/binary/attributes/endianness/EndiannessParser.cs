@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 
 
-namespace schema.binary.attributes.endianness {
+namespace schema.binary.attributes {
   public class EndiannessParser {
     public Endianness? GetEndianness(
         IList<Diagnostic> diagnostics,

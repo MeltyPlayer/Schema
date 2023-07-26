@@ -2,6 +2,8 @@
 
 using NUnit.Framework;
 
+using schema.binary.attributes;
+
 namespace schema.binary.build {
   public partial class StringBuildTests {
     [BinarySchema]

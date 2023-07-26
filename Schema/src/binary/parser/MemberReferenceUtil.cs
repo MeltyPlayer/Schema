@@ -1,7 +1,6 @@
 ﻿using System;
 
 using schema.binary.attributes;
-using schema.binary.attributes.sequence;
 using schema.binary.util;
 
 namespace schema.binary.parser {

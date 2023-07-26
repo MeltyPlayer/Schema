@@ -7,6 +7,7 @@ namespace schema.binary.text {
     public void TestImmediateLengthUInt32() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]
@@ -46,6 +47,7 @@ namespace foo.bar {
     public void TestImmediateLengthByte() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]

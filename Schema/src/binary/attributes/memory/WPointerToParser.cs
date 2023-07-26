@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using schema.binary.parser;
 
 
-namespace schema.binary.attributes.memory {
+namespace schema.binary.attributes {
   internal class WPointerToParser {
     public void Parse(IList<Diagnostic> diagnostics,
                       ISymbol memberSymbol,

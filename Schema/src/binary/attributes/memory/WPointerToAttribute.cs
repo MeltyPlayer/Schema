@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace schema.binary.attributes.memory {
+namespace schema.binary.attributes {
   /// <summary>
   ///   Pointer that encodes the relative difference between some address and
   ///   the start of the containing stream.

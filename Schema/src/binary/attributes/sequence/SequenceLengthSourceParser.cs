@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using schema.binary.parser;
 
 
-namespace schema.binary.attributes.sequence {
+namespace schema.binary.attributes {
   internal class SequenceLengthSourceParser {
     public void Parse(IList<Diagnostic> diagnostics,
                       ISymbol memberSymbol,

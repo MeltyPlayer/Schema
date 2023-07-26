@@ -1,13 +1,13 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.attributes.align {
+namespace schema.binary.attributes {
   internal class AlignGeneratorTests {
     [Test]
     public void TestConstAlign() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
-using schema.binary.attributes.align;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]
@@ -45,7 +45,7 @@ namespace foo.bar {
     public void TestOtherAlign() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
-using schema.binary.attributes.align;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]
@@ -87,8 +87,7 @@ namespace foo.bar {
     public void TestAlignWithImmediate() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
-using schema.binary.attributes.align;
-using schema.binary.attributes.sequence;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]

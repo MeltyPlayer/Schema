@@ -1,7 +1,4 @@
-﻿using NUnit.Framework;
-
-
-namespace schema.binary.attributes.memory {
+﻿namespace schema.binary.attributes {
   internal class MemoryGeneratorTests {
     /*[Test]
     public void TestOtherFieldBlock() {

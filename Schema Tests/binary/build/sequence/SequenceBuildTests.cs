@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 
 using NUnit.Framework;
 
-using schema.binary.attributes.sequence;
+using schema.binary.attributes;
 
 namespace schema.binary.build.sequence {
   public partial class SequenceBuildTests {

@@ -15,7 +15,7 @@ namespace schema.binary {
         Type parentInterface) {
       var structure = BinarySchemaTestUtil.ParseFirst(@$"
 using schema.binary;
-using schema.binary.attributes.child_of;
+using schema.binary.attributes;
 
 namespace foo.bar {{
   [BinarySchema]
@@ -42,7 +42,7 @@ namespace foo.bar {{
         Type parentInterface) {
       var structure = BinarySchemaTestUtil.ParseFirst(@$"
 using schema.binary;
-using schema.binary.attributes.child_of;
+using schema.binary.attributes;
 
 namespace foo.bar {{
   [BinarySchema]

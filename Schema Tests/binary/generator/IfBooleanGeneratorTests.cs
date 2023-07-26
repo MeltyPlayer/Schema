@@ -7,6 +7,7 @@ namespace schema.binary.text {
     public void TestIfBoolean() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]
@@ -73,6 +74,7 @@ namespace foo.bar {
     public void TestIfBooleanWithPrivateSetter() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]
@@ -122,6 +124,7 @@ namespace foo.bar {
     public void TestUsingBoolFromChild() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]

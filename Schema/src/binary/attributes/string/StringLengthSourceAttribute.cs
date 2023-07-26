@@ -1,9 +1,7 @@
 ﻿using System;
 
-using schema.binary.attributes;
 
-
-namespace schema.binary {
+namespace schema.binary.attributes {
   public interface IStringLengthSourceAttribute {
     StringLengthSourceType Method { get; }
 

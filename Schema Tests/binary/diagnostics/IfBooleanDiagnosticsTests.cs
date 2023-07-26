@@ -7,6 +7,8 @@ namespace schema.binary.text {
     public void TestIfBooleanNonReference() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
+using schema.binary.attributes;
+
 namespace foo.bar {
   [BinarySchema]
   public partial class BooleanWrapper : IBinaryConvertible {
@@ -22,6 +24,8 @@ namespace foo.bar {
     public void TestIfBooleanNonNullable() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
+using schema.binary.attributes;
+
 namespace foo.bar {
   [BinarySchema]
   public partial class BooleanWrapper : IBinaryConvertible {
@@ -41,6 +45,7 @@ namespace foo.bar {
     public void TestOutOfOrder() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]
@@ -62,6 +67,7 @@ namespace foo.bar {
     public void TestPublicPropertySource() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]
@@ -83,6 +89,7 @@ namespace foo.bar {
     public void TestProtectedPropertySource() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]
@@ -104,6 +111,7 @@ namespace foo.bar {
     public void TestInternalPropertySource() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]
@@ -125,6 +133,7 @@ namespace foo.bar {
     public void TestPublicFieldSource() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]
@@ -146,6 +155,7 @@ namespace foo.bar {
     public void TestProtectedFieldSource() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]
@@ -167,6 +177,7 @@ namespace foo.bar {
     public void TestInternalFieldSource() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]

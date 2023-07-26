@@ -1,12 +1,12 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.attributes.sequence {
+namespace schema.binary.attributes {
   internal class SequenceUntilEndOfStreamAttribute {
     [Test] public void TestArrayUntilEndOfStream() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
-using schema.binary.attributes.sequence;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]
@@ -45,7 +45,7 @@ namespace foo.bar {
 using System.Collections.Generic;
 
 using schema.binary;
-using schema.binary.attributes.sequence;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]

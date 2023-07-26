@@ -6,7 +6,7 @@ namespace schema.binary.text {
     [Test] public void TestOffset() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
-using schema.binary.attributes.offset;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]
@@ -55,8 +55,7 @@ namespace foo.bar {
     public void TestOffsetFromParent() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
-using schema.binary.attributes.child_of;
-using schema.binary.attributes.offset;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]

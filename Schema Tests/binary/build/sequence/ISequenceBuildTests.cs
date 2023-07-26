@@ -5,11 +5,11 @@ using System.Linq;
 
 using NUnit.Framework;
 
-using schema.binary.attributes.sequence;
+using schema.binary.attributes;
 using schema.util.enumerables;
 using schema.util.sequences;
 
-using IgnoreAttribute = schema.binary.attributes.ignore.IgnoreAttribute;
+using IgnoreAttribute = schema.binary.attributes.IgnoreAttribute;
 
 namespace schema.binary.build.sequence {
   public partial class ISequenceBuildTests {

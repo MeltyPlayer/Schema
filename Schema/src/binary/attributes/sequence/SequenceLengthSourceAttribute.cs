@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace schema.binary.attributes.sequence {
+namespace schema.binary.attributes {
   public interface ISequenceLengthSourceAttribute {
     SequenceLengthSourceType Method { get; }
 

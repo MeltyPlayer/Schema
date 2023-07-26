@@ -1,4 +1,4 @@
-﻿namespace schema.binary.attributes.child_of {
+﻿namespace schema.binary.attributes {
   /// <summary>
   ///   Schema interface for allowing a child to access the data of a specific parent class.
   ///

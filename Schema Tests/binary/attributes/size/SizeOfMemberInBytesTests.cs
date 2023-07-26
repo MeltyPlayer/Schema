@@ -3,11 +3,10 @@
 using System.IO;
 using System.Threading.Tasks;
 
-using schema.binary.attributes.child_of;
 using schema.binary.testing;
 
 
-namespace schema.binary.attributes.size {
+namespace schema.binary.attributes {
   internal partial class SizeOfMemberInBytesTests {
     [BinarySchema]
     public partial class ParentImpl : IBinaryConvertible {

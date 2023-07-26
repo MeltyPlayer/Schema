@@ -4,7 +4,6 @@ using Microsoft.CodeAnalysis;
 
 using System.Collections.Generic;
 
-using schema.binary.attributes.ignore;
 using schema.binary.parser;
 using schema.binary.util;
 

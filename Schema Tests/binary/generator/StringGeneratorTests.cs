@@ -41,6 +41,7 @@ namespace foo.bar {
     public void TestConstLengthString() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]

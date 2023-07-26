@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using NUnit.Framework;
 
-using schema.binary.attributes.size;
+using schema.binary.attributes;
 using schema.binary.text;
 
 #pragma warning disable CS8604

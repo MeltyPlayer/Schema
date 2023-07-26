@@ -9,8 +9,7 @@ namespace schema.binary.text {
 using System.Collections.Generic;
 
 using schema.binary;
-using schema.binary.attributes.ignore;
-using schema.binary.attributes.sequence;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]
@@ -87,8 +86,7 @@ namespace foo.bar {
     public void TestISequence() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
-using schema.binary.attributes.ignore;
-using schema.binary.attributes.sequence;
+using schema.binary.attributes;
 using schema.util.sequences;
 
 namespace foo.bar {

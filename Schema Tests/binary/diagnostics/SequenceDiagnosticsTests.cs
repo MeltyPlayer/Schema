@@ -7,7 +7,7 @@ namespace schema.binary.text {
     public void TestFailsIfOutOfOrder() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
-using schema.binary.attributes.sequence;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]
@@ -28,8 +28,7 @@ namespace foo.bar {
     public void TestAllowsIgnoredOutOfOrder() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
-using schema.binary.attributes.ignore;
-using schema.binary.attributes.sequence;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]
@@ -49,8 +48,7 @@ namespace foo.bar {
     public void TestAllowsSequenceAttributesOnISequence() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
-using schema.binary.attributes.ignore;
-using schema.binary.attributes.sequence;
+using schema.binary.attributes;
 using schema.util.sequences;
 
 namespace foo.bar {
@@ -77,8 +75,7 @@ namespace foo.bar {
     public void TestAllowsSequenceAttributesOnTupledISequence() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
-using schema.binary.attributes.ignore;
-using schema.binary.attributes.sequence;
+using schema.binary.attributes;
 using schema.util.sequences;
 
 namespace foo.bar {

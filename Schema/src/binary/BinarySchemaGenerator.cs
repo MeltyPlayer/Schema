@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-using schema.binary.attributes.size;
+using schema.binary.attributes;
 using schema.binary.text;
 using schema.binary.util;
 

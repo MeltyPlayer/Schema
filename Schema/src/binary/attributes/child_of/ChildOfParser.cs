@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 using schema.binary.parser;
 
 
-namespace schema.binary.attributes.child_of {
+namespace schema.binary.attributes {
   public class ChildOfParser {
     private readonly IList<Diagnostic> diagnostics_;
 
