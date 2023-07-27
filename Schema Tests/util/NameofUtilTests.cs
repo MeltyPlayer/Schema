@@ -20,6 +20,13 @@ namespace schema.util {
                           ReturnArgumentText_("Some.Field.Name")));
     }
 
+    [Test]
+    public void TestOther() {
+      Assert.AreEqual("$\"Something${true}\"",
+                      NameofUtil.GetChainedAccessFromCallerArgumentExpression(
+                          ReturnArgumentText_($"Something${true}")));
+    }
+
     private string ReturnArgumentText_(
         string arg,
         [CallerArgumentExpression(nameof(arg))] string argText = "")
