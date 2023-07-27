@@ -104,7 +104,7 @@ namespace schema.binary.text {
                   $"ew.Write{booleanPrimitiveLabel}(({booleanNumberLabel}) (this.{member.Name} != null ? 1 : 0));")
               .EnterBlock($"if (this.{member.Name} != null)");
         } else {
-          cbsb.EnterBlock($"if (this.{ifBoolean.BooleanMember.Name})");
+          cbsb.EnterBlock($"if (this.{ifBoolean.OtherMember.Name})");
         }
       }
 

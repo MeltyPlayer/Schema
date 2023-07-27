@@ -1,23 +1,29 @@
 ﻿using System;
 
 namespace schema.binary.attributes {
-  public interface IIfBooleanAttribute {
-    IfBooleanSourceType Method { get; }
+  public enum IfBooleanSourceType {
+    UNSPECIFIED,
+    IMMEDIATE_VALUE,
+    OTHER_MEMBER,
+  }
 
-    SchemaIntegerType BooleanType { get; }
+  public interface IIfBooleanAttribute {
+    IfBooleanSourceType SourceType { get; }
+
+    SchemaIntegerType ImmediateBooleanType { get; }
     IMemberReference? OtherMember { get; }
   }
 
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
   public class IfBooleanAttribute : Attribute, IIfBooleanAttribute {
     public IfBooleanAttribute(SchemaIntegerType lengthType) {
-      this.Method = IfBooleanSourceType.IMMEDIATE_VALUE;
-      this.BooleanType = lengthType;
+      this.SourceType = IfBooleanSourceType.IMMEDIATE_VALUE;
+      this.ImmediateBooleanType = lengthType;
     }
 
-    public IfBooleanSourceType Method { get; }
+    public IfBooleanSourceType SourceType { get; }
 
-    public SchemaIntegerType BooleanType { get; }
+    public SchemaIntegerType ImmediateBooleanType { get; }
     public IMemberReference? OtherMember { get; }
   }
 
@@ -25,7 +31,7 @@ namespace schema.binary.attributes {
     private readonly string? otherMemberName_;
 
     public RIfBooleanAttribute(string otherMemberName) {
-      this.Method = IfBooleanSourceType.OTHER_MEMBER;
+      this.SourceType = IfBooleanSourceType.OTHER_MEMBER;
       this.otherMemberName_ = otherMemberName;
     }
 
@@ -37,9 +43,9 @@ namespace schema.binary.attributes {
       }
     }
 
-    public IfBooleanSourceType Method { get; }
+    public IfBooleanSourceType SourceType { get; }
 
-    public SchemaIntegerType BooleanType { get; }
+    public SchemaIntegerType ImmediateBooleanType { get; }
     public IMemberReference? OtherMember { get; private set; }
   }
 }

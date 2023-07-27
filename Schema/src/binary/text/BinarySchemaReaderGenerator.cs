@@ -136,7 +136,7 @@ namespace schema.binary.text {
           cbsb.WriteLine($"var b = er.Read{booleanPrimitiveLabel}() != 0;")
               .EnterBlock("if (b)");
         } else {
-          cbsb.EnterBlock($"if (this.{ifBoolean.BooleanMember.Name})");
+          cbsb.EnterBlock($"if (this.{ifBoolean.OtherMember.Name})");
         }
 
         if (member.MemberType is not IPrimitiveMemberType &&

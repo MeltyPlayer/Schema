@@ -57,7 +57,7 @@ namespace schema.binary {
     IMemberType MemberType { get; }
     bool IsIgnored { get; }
     AlignAttribute? Align { get; }
-    IIfBoolean? IfBoolean { get; }
+    IIfBooleanAttribute? IfBoolean { get; }
     IOffset? Offset { get; }
     bool IsPosition { get; }
     Endianness? Endianness { get; }
@@ -90,19 +90,6 @@ namespace schema.binary {
   public interface IGenericMemberType : IMemberType {
     IMemberType ConstraintType { get; }
     IGenericTypeInfo GenericTypeInfo { get; }
-  }
-
-  public enum IfBooleanSourceType {
-    UNSPECIFIED,
-    IMMEDIATE_VALUE,
-    OTHER_MEMBER,
-  }
-
-  public interface IIfBoolean {
-    IfBooleanSourceType SourceType { get; }
-
-    SchemaIntegerType ImmediateBooleanType { get; }
-    ISchemaMember? BooleanMember { get; }
   }
 
   public interface IOffset {
@@ -335,38 +322,17 @@ namespace schema.binary {
         }
       }
 
-      IIfBoolean? ifBoolean = null;
-      {
-        var ifBooleanAttribute =
-            (IIfBooleanAttribute?) SymbolTypeUtil
-                .GetAttribute<IfBooleanAttribute>(
-                    diagnostics,
-                    memberSymbol) ??
-            SymbolTypeUtil.GetAttribute<RIfBooleanAttribute>(
-                diagnostics,
-                memberSymbol);
-        if (ifBooleanAttribute != null) {
-          if (memberTypeInfo.IsNullable) {
-            SchemaMember? booleanMember = null;
-            if (ifBooleanAttribute.Method ==
-                IfBooleanSourceType.OTHER_MEMBER) {
-              booleanMember =
-                  MemberReferenceUtil.WrapMemberReference(
-                      ifBooleanAttribute.OtherMember!);
-            }
-
-            ifBoolean = new IfBoolean {
-                SourceType = ifBooleanAttribute.Method,
-                ImmediateBooleanType = ifBooleanAttribute.BooleanType,
-                BooleanMember = booleanMember,
-            };
-          } else {
-            diagnostics.Add(
-                Rules.CreateDiagnostic(memberSymbol,
-                                       Rules
-                                           .IfBooleanNeedsNullable));
-          }
-        }
+      var ifBooleanAttribute =
+          (IIfBooleanAttribute?)
+          SymbolTypeUtil.GetAttribute<IfBooleanAttribute>(
+              diagnostics,
+              memberSymbol) ??
+          SymbolTypeUtil.GetAttribute<RIfBooleanAttribute>(
+              diagnostics,
+              memberSymbol);
+      if (ifBooleanAttribute != null && !memberTypeInfo.IsNullable) {
+        diagnostics.Add(
+            Rules.CreateDiagnostic(memberSymbol, Rules.IfBooleanNeedsNullable));
       }
 
       IOffset? offset = null;
@@ -599,7 +565,7 @@ namespace schema.binary {
           MemberType = memberType,
           IsIgnored = false,
           Align = align,
-          IfBoolean = ifBoolean,
+          IfBoolean = ifBooleanAttribute,
           Offset = offset,
           IsPosition = isPosition,
           Endianness = memberEndianness,
@@ -634,7 +600,7 @@ namespace schema.binary {
       public IMemberType MemberType { get; set; }
       public bool IsIgnored { get; set; }
       public AlignAttribute? Align { get; set; }
-      public IIfBoolean IfBoolean { get; set; }
+      public IIfBooleanAttribute? IfBoolean { get; set; }
       public IOffset Offset { get; set; }
       public bool IsPosition { get; set; }
       public Endianness? Endianness { get; set; }
@@ -675,12 +641,6 @@ namespace schema.binary {
       public ITypeInfo TypeInfo => GenericTypeInfo;
       public ITypeSymbol TypeSymbol => TypeInfo.TypeSymbol;
       public bool IsReadOnly => this.TypeInfo.IsReadOnly;
-    }
-
-    public class IfBoolean : IIfBoolean {
-      public IfBooleanSourceType SourceType { get; set; }
-      public SchemaIntegerType ImmediateBooleanType { get; set; }
-      public ISchemaMember? BooleanMember { get; set; }
     }
 
     public class Offset : IOffset {
