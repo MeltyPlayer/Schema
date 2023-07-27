@@ -1,7 +1,7 @@
 ﻿using System;
 
 using schema.binary.attributes;
-using schema.binary.util;
+using schema.util;
 
 namespace schema.binary.parser {
   internal static class MemberReferenceUtil {

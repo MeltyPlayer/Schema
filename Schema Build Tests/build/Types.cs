@@ -1,4 +1,6 @@
-﻿namespace schema.binary {
+﻿using schema.binary;
+
+namespace build {
   [BinarySchema]
   public partial class ClassWith1Bool : IBinaryConvertible {
     [IntegerFormat(SchemaIntegerType.INT16)]

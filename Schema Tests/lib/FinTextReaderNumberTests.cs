@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-using schema.binary.util;
+using schema.util;
 using schema.text;
 
 

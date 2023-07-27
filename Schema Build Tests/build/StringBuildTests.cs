@@ -1,10 +1,9 @@
 ﻿using System.IO;
 
-using NUnit.Framework;
-
+using schema.binary;
 using schema.binary.attributes;
 
-namespace schema.binary.build {
+namespace build {
   public partial class StringBuildTests {
     [BinarySchema]
     public partial class StringWrapper : IBinaryConvertible {

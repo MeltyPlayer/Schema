@@ -3,7 +3,7 @@ using System.Text;
 
 using CommunityToolkit.HighPerformance;
 
-using schema.binary.util;
+using schema.util;
 
 namespace System.IO {
   public sealed partial class FinTextReader {

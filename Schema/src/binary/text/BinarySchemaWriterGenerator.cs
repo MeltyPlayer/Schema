@@ -5,8 +5,7 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 
 using schema.binary.attributes;
-using schema.binary.util;
-
+using schema.util;
 
 namespace schema.binary.text {
   public class BinarySchemaWriterGenerator {
@@ -151,7 +150,7 @@ namespace schema.binary.text {
 
       var valueName = align.Method switch {
           AlignSourceType.CONST        => $"{align.ConstAlign}",
-          AlignSourceType.OTHER_MEMBER => $"this.{align.OtherMember.Name}"
+          AlignSourceType.OTHER_MEMBER => $"{align.OtherMember.Name}"
       };
       cbsb.WriteLine($"ew.Align({valueName});");
     }

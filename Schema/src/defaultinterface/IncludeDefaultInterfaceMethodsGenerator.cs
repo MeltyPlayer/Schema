@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using schema.binary;
-using schema.binary.util;
+using schema.util;
 
 namespace schema.defaultinterface {
   [Generator(LanguageNames.CSharp)]

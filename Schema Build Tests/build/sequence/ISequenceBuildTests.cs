@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using NUnit.Framework;
-
+using schema.binary;
 using schema.binary.attributes;
+
 using schema.util.enumerables;
 using schema.util.sequences;
 
 using IgnoreAttribute = schema.binary.attributes.IgnoreAttribute;
 
-namespace schema.binary.build.sequence {
+namespace build.sequence {
   public partial class ISequenceBuildTests {
     [BinarySchema]
     public partial class MutableSequenceWrapper1 : IBinaryConvertible {

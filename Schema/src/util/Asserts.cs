@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace schema.binary.util {
+namespace schema.util {
   public class Asserts {
     /**
      * NOTE: Using $"" to define messages allocates strings, and can be expensive!
@@ -32,21 +32,21 @@ namespace schema.binary.util {
       => throw new AssertionException(message ?? "Failed.");
 
     public static bool True(bool value, string? message = null)
-      => value || Asserts.Fail(message ?? "Expected to be true.");
+      => value || Fail(message ?? "Expected to be true.");
 
     public static bool False(bool value, string? message = null)
-      => Asserts.True(!value, message ?? "Expected to be false.");
+      => True(!value, message ?? "Expected to be false.");
 
     public static bool Nonnull(
         object? instance,
         string? message = null)
-      => Asserts.True(instance != null,
+      => True(instance != null,
                       message ?? "Expected reference to be nonnull.");
 
     public static T CastNonnull<T>(
         T? instance,
         string? message = null) {
-      Asserts.True(instance != null,
+      True(instance != null,
                    message ?? "Expected reference to be nonnull.");
       return instance!;
     }
@@ -54,19 +54,19 @@ namespace schema.binary.util {
     public static void Null(
         object? instance,
         string message = "Expected reference to be null.")
-      => Asserts.True(instance == null, message);
+      => True(instance == null, message);
 
     public static bool Same(
         object instanceA,
         object instanceB,
         string message = "Expected references to be the same.")
-      => Asserts.True(object.ReferenceEquals(instanceA, instanceB), message);
+      => True(ReferenceEquals(instanceA, instanceB), message);
 
     public static void Different(
         object instanceA,
         object instanceB,
         string message = "Expected references to be different.") {
-      Asserts.False(object.ReferenceEquals(instanceA, instanceB), message);
+      False(ReferenceEquals(instanceA, instanceB), message);
     }
 
     public static bool Equal(
@@ -76,7 +76,7 @@ namespace schema.binary.util {
       if (expected?.Equals(actual) ?? false) {
         return true;
       }
-      Asserts.Fail(message ?? $"Expected {actual} to equal {expected}.");
+      Fail(message ?? $"Expected {actual} to equal {expected}.");
       return false;
     }
 
@@ -94,8 +94,8 @@ namespace schema.binary.util {
         var currentA = enumeratorA.Current;
         var currentB = enumeratorB.Current;
 
-        if (!object.Equals(currentA, currentB)) {
-          Asserts.Fail($"Expected {currentA} to equal {currentB} at index ${index}.");
+        if (!Equals(currentA, currentB)) {
+          Fail($"Expected {currentA} to equal {currentB} at index ${index}.");
         }
         index++;
 
@@ -103,7 +103,7 @@ namespace schema.binary.util {
         hasB = enumeratorB.MoveNext();
       }
 
-      Asserts.True(!hasA && !hasB,
+      True(!hasA && !hasB,
                    "Expected enumerables to be the same length.");
     }
 
@@ -114,7 +114,7 @@ namespace schema.binary.util {
       if (expected?.Equals(actual) ?? false) {
         return true;
       }
-      Asserts.Fail(message ?? $"Expected {actual} to equal {expected}.");
+      Fail(message ?? $"Expected {actual} to equal {expected}.");
       return false;
     }
 
@@ -122,27 +122,27 @@ namespace schema.binary.util {
         string expected,
         string actual,
         string? message = null)
-      => Asserts.Equal<string>(expected, actual, message);
+      => Equal<string>(expected, actual, message);
 
     public static bool IsA<TExpected>(object? instance, string? message = null)
-      => Asserts.IsA(instance, typeof(TExpected), message);
+      => IsA(instance, typeof(TExpected), message);
 
     public static bool IsA(
         object? instance,
         Type expected,
         string? message = null)
-      => Asserts.Nonnull(instance, message) &&
-         Asserts.Equal(instance!.GetType(), expected, message);
+      => Nonnull(instance, message) &&
+         Equal(instance!.GetType(), expected, message);
 
     public static TExpected AsA<TExpected>(
         object? instance,
         string? message = null) {
-      Asserts.IsA<TExpected>(instance, message);
-      return (TExpected)instance!;
+      IsA<TExpected>(instance, message);
+      return (TExpected) instance!;
     }
 
     public static T Assert<T>(T? value) where T : notnull {
-      Asserts.Nonnull(value);
+      Nonnull(value);
       return value!;
     }
   }

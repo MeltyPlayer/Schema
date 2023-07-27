@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System;
+
+using Microsoft.CodeAnalysis;
 
 using System.Collections.Generic;
 using System.Linq;
@@ -7,8 +9,7 @@ using System.Text;
 using schema.binary.attributes;
 using schema.binary.io;
 using schema.binary.parser;
-using schema.binary.util;
-
+using schema.util;
 
 namespace schema.binary {
   public interface IChain<out T> {
@@ -84,7 +85,12 @@ namespace schema.binary {
         out ISymbol memberSymbol,
         out ITypeInfo memberTypeInfo
     ) {
-      memberSymbol = structureSymbol.GetMembers(memberName).Single();
+      memberSymbol = structureSymbol.GetMembers(memberName).SingleOrDefault();
+      if (memberSymbol == null) {
+        throw new Exception(
+            $"Expected to find member \"{memberName}\" in class {structureSymbol.Name}");
+      }
+      
       new TypeInfoParser().ParseMember(memberSymbol, out memberTypeInfo);
     }
 

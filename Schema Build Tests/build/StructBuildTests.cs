@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 
-using NUnit.Framework;
+using schema.binary;
 
-namespace schema.binary.build
+namespace build
 {
   public partial class StructBuildTests
   {

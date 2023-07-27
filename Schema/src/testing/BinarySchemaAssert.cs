@@ -3,9 +3,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections;
-
-using schema.binary.util;
-
+using schema.util;
 
 namespace schema.binary.testing {
   public static class BinarySchemaAssert {

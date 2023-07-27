@@ -9,7 +9,7 @@ namespace schema.binary.text {
 using schema.binary;
 using schema.binary.attributes;
 
-namespace foo.bar {
+namespace build {
   [BinarySchema]
   public partial class ByteWrapper : IBinaryConvertible {
     [IfBoolean(SchemaIntegerType.BYTE)]
@@ -27,7 +27,7 @@ namespace foo.bar {
                                      @"using System;
 using System.IO;
 
-namespace foo.bar {
+namespace build {
   public partial class ByteWrapper {
     public void Read(IEndianBinaryReader er) {
       {
@@ -53,7 +53,7 @@ namespace foo.bar {
 ",
                                      @"using System;
 using System.IO;
-namespace foo.bar {
+namespace build {
   public partial class ByteWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
       ew.WriteByte((byte) (this.ImmediateValue != null ? 1 : 0));
@@ -76,7 +76,7 @@ namespace foo.bar {
 using schema.binary;
 using schema.binary.attributes;
 
-namespace foo.bar {
+namespace build {
   [BinarySchema]
   public partial class ByteWrapper : IBinaryConvertible {
     [IntegerFormat(SchemaIntegerType.BYTE)]
@@ -91,7 +91,7 @@ namespace foo.bar {
                                      @"using System;
 using System.IO;
 
-namespace foo.bar {
+namespace build {
   public partial class ByteWrapper {
     public void Read(IEndianBinaryReader er) {
       this.Field = er.ReadByte() != 0;
@@ -107,7 +107,7 @@ namespace foo.bar {
 ",
                                      @"using System;
 using System.IO;
-namespace foo.bar {
+namespace build {
   public partial class ByteWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
       ew.WriteByte((byte) (this.Field ? 1 : 0));
@@ -126,19 +126,23 @@ namespace foo.bar {
 using schema.binary;
 using schema.binary.attributes;
 
-namespace foo.bar {
+namespace build {
   [BinarySchema]
   public partial class ByteWrapper : IBinaryConvertible {
-    public ClassWith1Bool Field { get; set; }
+    public Wrapper Field { get; set; }
 
-    [RIfBoolean($""{nameof(Field)}.{nameof(Field.Bool)}"")]
+    [RIfBoolean(nameof(Field.Bool))]
     public int? OtherValue { get; set; }
+  }
+
+  public class Wrapper : IBinaryConvertible {
+    public bool Bool { get; private set; }
   }
 }",
                                      @"using System;
 using System.IO;
 
-namespace foo.bar {
+namespace build {
   public partial class ByteWrapper {
     public void Read(IEndianBinaryReader er) {
       this.Field.Read(er);
@@ -154,7 +158,7 @@ namespace foo.bar {
 ",
                                      @"using System;
 using System.IO;
-namespace foo.bar {
+namespace build {
   public partial class ByteWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
       this.Field.Write(ew);

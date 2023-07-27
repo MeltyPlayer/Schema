@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="lib\system\io\FileSize.cs" />
+    <Compile Remove="lib\System\IO\FileSize.cs" />
   </ItemGroup>
 
   <ItemGroup>

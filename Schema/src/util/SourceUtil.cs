@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace schema.binary.util {
+namespace schema.util {
   public static class SourceUtil {
     public static IEnumerable<ClassDeclarationSyntax>
         GetClassesWithAttribute<TAttribute>(

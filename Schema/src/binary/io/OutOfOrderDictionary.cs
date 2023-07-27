@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using schema.binary.util;
-
+using schema.util;
 
 namespace schema.binary.io {
   public interface IOutOfOrderDictionary<in TKey, TValue>

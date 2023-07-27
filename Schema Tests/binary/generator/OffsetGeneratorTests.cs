@@ -64,7 +64,7 @@ namespace foo.bar {
 
     public uint Offset { get; set; }
 
-    [Offset($""{nameof(Parent)}.{nameof(Parent.BaseLocation)}"", nameof(Offset))]
+    [Offset(nameof(Parent.BaseLocation), nameof(Offset))]
     public byte Field { get; set; }
   }
 

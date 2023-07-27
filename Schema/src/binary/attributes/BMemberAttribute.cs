@@ -5,8 +5,7 @@ using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
 
 using schema.binary.parser;
-using schema.binary.util;
-
+using schema.util;
 
 namespace schema.binary.attributes {
   public abstract class BMemberAttribute<T> : BMemberAttribute {

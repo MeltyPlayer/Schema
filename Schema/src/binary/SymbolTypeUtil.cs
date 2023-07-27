@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using schema.binary.attributes;
 using schema.binary.parser;
+using schema.util;
 
 
 namespace schema.binary {
@@ -166,13 +167,13 @@ namespace schema.binary {
     internal static bool HasAttribute<TAttribute>(
         this ISymbol symbol,
         IList<Diagnostic> diagnostics)
-        where TAttribute : notnull
+        where TAttribute : Attribute
       => symbol.GetAttribute<TAttribute>(diagnostics) != null;
 
     internal static TAttribute? GetAttribute<TAttribute>(
         this ISymbol symbol,
         IList<Diagnostic> diagnostics)
-        where TAttribute : notnull
+        where TAttribute : Attribute
       => symbol.GetAttributes<TAttribute>(diagnostics)
                .SingleOrDefault();
 
@@ -180,51 +181,18 @@ namespace schema.binary {
     internal static TAttribute? GetAttribute<TAttribute>(
         IList<Diagnostic> diagnostics,
         ISymbol symbol)
-        where TAttribute : notnull
+        where TAttribute : Attribute
       => symbol.GetAttributes<TAttribute>(diagnostics)
                .SingleOrDefault();
 
     internal static IEnumerable<TAttribute> GetAttributes<TAttribute>(
         this ISymbol symbol,
         IList<Diagnostic> diagnostics)
-        where TAttribute : notnull
+        where TAttribute : Attribute
       => symbol.GetAttributeData<TAttribute>()
                .Select(attributeData => {
-                 var parameters = attributeData.AttributeConstructor
-                                               .Parameters;
-
-                 // TODO: Does this still work w/ optional arguments?
-                 var attributeType = typeof(TAttribute);
-
-                 var constructor =
-                     attributeType.GetConstructors()
-                                  .FirstOrDefault(c => {
-                                    var cParameters = c.GetParameters();
-                                    if (cParameters.Length !=
-                                        parameters.Length) {
-                                      return false;
-                                    }
-
-                                    for (var i = 0;
-                                         i < parameters.Length;
-                                         ++i) {
-                                      if (parameters[i].Name !=
-                                          cParameters[i].Name) {
-                                        return false;
-                                      }
-                                    }
-
-                                    return true;
-                                  });
-                 if (constructor == null) {
-                   throw new Exception(
-                       $"Failed to find constructor for {typeof(TAttribute)}");
-                 }
-
-                 var arguments = attributeData.ConstructorArguments;
-
-                 var attribute = (TAttribute) constructor.Invoke(
-                     arguments.Select(a => a.Value).ToArray());
+                 var attribute =
+                     attributeData.Instantiate<TAttribute>(diagnostics);
                  if (attribute is BMemberAttribute memberAttribute) {
                    memberAttribute.Init(diagnostics,
                                         symbol.ContainingType,

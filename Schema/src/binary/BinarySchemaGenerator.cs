@@ -9,8 +9,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using schema.binary.attributes;
 using schema.binary.text;
-using schema.binary.util;
-
+using schema.util;
 
 namespace schema.binary {
   [Generator(LanguageNames.CSharp)]

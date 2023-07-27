@@ -1,13 +1,13 @@
-﻿using NUnit.Framework;
-
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 
+using schema.binary;
+using schema.binary.attributes;
 using schema.binary.testing;
 
 
-namespace schema.binary.attributes {
-  internal partial class SizeOfMemberInBytesTests {
+namespace build {
+  internal partial class PointerToTests {
     [BinarySchema]
     public partial class ParentImpl : IBinaryConvertible {
       public Child Child { get; } = new();
@@ -19,13 +19,13 @@ namespace schema.binary.attributes {
     public partial class Child : IChildOf<ParentImpl>, IBinaryConvertible {
       public ParentImpl Parent { get; set; }
 
-      [WSizeOfMemberInBytes($"{nameof(Parent)}.{nameof(ParentImpl.Field)}")]
-      private byte fieldSize_;
+      [WPointerTo(nameof(Parent.Field))]
+      private byte fieldPointer_;
     }
 
 
     [Test]
-    public async Task TestSizeOfThroughParent() {
+    public async Task TestPointerToThroughParent() {
       var parent = new ParentImpl();
       parent.Field = 12;
 
@@ -35,7 +35,7 @@ namespace schema.binary.attributes {
       var bytes = await BinarySchemaAssert.GetEndianBinaryWriterBytes(ew);
       BinarySchemaAssert.AssertSequence(
           bytes,
-          new byte[] {4, 12, 0, 0, 0});
+          new byte[] { 1, 12, 0, 0, 0 });
     }
   }
 }

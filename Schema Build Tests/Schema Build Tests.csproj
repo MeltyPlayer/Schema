@@ -1,8 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <RootNamespace>schema</RootNamespace>
+    <RootNamespace>build</RootNamespace>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
 
@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../Schema/Schema.csproj" />
+    <ProjectReference Include="../Schema/Schema.csproj" PrivateAssets="all" OutputItemType="Analyzer" />
   </ItemGroup>
 
 </Project>

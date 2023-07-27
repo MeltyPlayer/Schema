@@ -3,8 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-using schema.binary.util;
-
+using schema.util;
 
 namespace schema.binary.io {
   public interface IDelayedContentOutputStream :

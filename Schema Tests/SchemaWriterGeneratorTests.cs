@@ -110,7 +110,7 @@ namespace foo.bar {
   public partial class ArrayWrapper {
     private int length;
 
-    [RSequenceLengthSource(nameof(ArrayWrapper.length))]
+    [RSequenceLengthSource(nameof(length))]
     public int[] field;
   }
 }",

@@ -4,7 +4,7 @@ using System.Linq;
 
 using Microsoft.CodeAnalysis;
 
-using schema.binary.util;
+using schema.util;
 using schema.util.sequences;
 
 

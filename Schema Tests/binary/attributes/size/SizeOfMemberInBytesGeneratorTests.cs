@@ -54,7 +54,7 @@ using schema.binary.attributes;
 namespace foo.bar {
   [BinarySchema]
   public partial class SizeWrapper : IBinaryConvertible {
-    [WSizeOfMemberInBytes($""{nameof(Foo)}.{nameof(Foo.Bar}"")]
+    [WSizeOfMemberInBytes(nameof(Foo.Bar)]
     public uint FooBarSize { get; set; }
 
     public Child Foo;
@@ -103,7 +103,7 @@ namespace foo.bar {
   public partial class SizeWrapper : IChildOf<ParentImpl>, IBinaryConvertible {
     public ParentImpl Parent;
 
-    [WSizeOfMemberInBytes($""{nameof(Parent)}.{nameof(Parent.Foo}"")]
+    [WSizeOfMemberInBytes(nameof(Parent.Foo)]
     public uint FooSize { get; set; }
   }
 

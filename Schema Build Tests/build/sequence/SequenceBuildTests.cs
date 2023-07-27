@@ -1,11 +1,10 @@
 ﻿using System.IO;
 using System.Linq;
 
-using NUnit.Framework;
-
+using schema.binary;
 using schema.binary.attributes;
 
-namespace schema.binary.build.sequence {
+namespace build.sequence {
   public partial class SequenceBuildTests {
     [BinarySchema]
     public partial class SequenceWrapper : IBinaryConvertible {

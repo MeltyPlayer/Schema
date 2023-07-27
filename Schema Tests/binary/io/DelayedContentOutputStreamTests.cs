@@ -6,9 +6,7 @@ using NUnit.Framework;
 
 using System.Linq;
 using System.Text;
-
-using schema.binary.util;
-
+using schema.util;
 
 namespace schema.binary.io {
   public class DelayedContentOutputStreamTests {
