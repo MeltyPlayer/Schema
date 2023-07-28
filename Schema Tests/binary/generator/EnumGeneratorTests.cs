@@ -7,6 +7,7 @@ namespace schema.binary.text {
     public void TestEnum() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
+using schema.binary.attributes;
 
 namespace foo.bar {
   enum A {}
@@ -51,6 +52,7 @@ namespace foo.bar {
     public void TestEnumArray() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
+using schema.binary.attributes;
 
 namespace foo.bar {
   enum A {}

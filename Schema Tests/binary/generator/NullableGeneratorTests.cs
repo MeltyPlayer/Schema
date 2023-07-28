@@ -7,6 +7,7 @@ namespace schema.binary.text {
     public void TestNullable() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
+using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]

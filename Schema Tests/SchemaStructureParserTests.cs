@@ -104,6 +104,7 @@ namespace foo.bar {
     public void TestEnum() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
+using schema.binary.attributes;
 
 namespace foo.bar {
   public enum ValueType {
