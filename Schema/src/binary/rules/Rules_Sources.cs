@@ -11,7 +11,7 @@ namespace schema.binary {
     public static readonly DiagnosticDescriptor SourceMustBePrivate
         = Rules.CreateDiagnosticDescriptor_(
             "Source must be private",
-            "Source field '{0}' must be private, because it will never be used outside of read time.");
+            "Source field '{0}' must be private or have a private setter, because it will never be used outside of read time.");
 
     public static readonly DiagnosticDescriptor AllMembersInChainMustUseSchema
         = Rules.CreateDiagnosticDescriptor_(

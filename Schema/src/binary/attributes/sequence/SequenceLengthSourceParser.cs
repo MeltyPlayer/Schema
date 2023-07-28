@@ -7,10 +7,11 @@ using schema.binary.parser;
 
 
 namespace schema.binary.attributes {
-  internal class SequenceLengthSourceParser {
-    public void Parse(IList<Diagnostic> diagnostics,
-                      ISymbol memberSymbol,
-                      IMemberType memberType) {
+  internal class SequenceLengthSourceParser : IAttributeParser {
+    public void ParseIntoMemberType(IList<Diagnostic> diagnostics,
+                                    ISymbol memberSymbol,
+                                    ITypeInfo memberTypeInfo,
+                                    IMemberType memberType) {
       var lengthSourceAttribute =
           (ISequenceLengthSourceAttribute?) SymbolTypeUtil
               .GetAttribute<SequenceLengthSourceAttribute>(

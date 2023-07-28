@@ -2,7 +2,7 @@
   public interface IStringLengthSourceAttribute {
     StringLengthSourceType Method { get; }
 
-    SchemaIntegerType LengthType { get; }
+    SchemaIntegerType ImmediateLengthType { get; }
     IMemberReference? OtherMember { get; }
     int ConstLength { get; }
   }

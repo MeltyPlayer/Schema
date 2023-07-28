@@ -6,27 +6,24 @@ using schema.binary.parser;
 
 
 namespace schema.binary.attributes {
-  internal class WPointerToParser : IAttributeParser {
+  internal class WLengthOfStringParser : IAttributeParser {
     public void ParseIntoMemberType(IList<Diagnostic> diagnostics,
                                     ISymbol memberSymbol,
                                     ITypeInfo memberTypeInfo,
                                     IMemberType memberType) {
-      var pointerToAttribute = SymbolTypeUtil.GetAttribute<WPointerToAttribute>(
-          diagnostics,
-          memberSymbol);
-      if (pointerToAttribute == null) {
+      var lengthOfStringAttribute =
+          SymbolTypeUtil.GetAttribute<WLengthOfStringAttribute>(
+              diagnostics,
+              memberSymbol);
+      if (lengthOfStringAttribute == null) {
         return;
       }
-
-      AccessChainUtil.AssertAllNodesInTypeChainUntilTargetUseBinarySchema(
-          diagnostics,
-          pointerToAttribute.AccessChainToOtherMember);
 
       if (memberTypeInfo is IIntegerTypeInfo &&
           memberType is BinarySchemaStructureParser.PrimitiveMemberType
               primitiveMemberType) {
-        primitiveMemberType.AccessChainToPointer =
-            pointerToAttribute.AccessChainToOtherMember;
+        primitiveMemberType.LengthOfStringMember =
+            lengthOfStringAttribute.OtherMember;
       } else {
         diagnostics.Add(
             Rules.CreateDiagnostic(memberSymbol, Rules.NotSupported));

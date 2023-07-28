@@ -26,7 +26,7 @@ namespace schema.binary.attributes {
 
     public StringLengthSourceType Method { get; }
 
-    public SchemaIntegerType LengthType { get; }
+    public SchemaIntegerType ImmediateLengthType { get; }
     public IMemberReference? OtherMember { get; private set; }
     public int ConstLength { get; }
   }

@@ -33,7 +33,7 @@ namespace schema.binary.attributes {
 
     protected override void InitFields() {
       this.OtherMember =
-          this.GetReadTimeOnlySourceRelativeToStructure(this.otherMemberName_)
+          this.GetMemberRelativeToStructure(this.otherMemberName_)
               .AssertIsInteger();
     }
 

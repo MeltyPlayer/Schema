@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+
 using Microsoft.CodeAnalysis;
 
 using System.IO;
@@ -81,6 +82,8 @@ namespace schema.binary {
     SchemaNumberType AltFormat { get; }
 
     bool SizeOfStream { get; }
+    IMemberReference<string>? LengthOfStringMember { get; }
+    IMemberReference? LengthOfSequenceMember { get; }
     IChain<IAccessChainNode>? AccessChainToSizeOf { get; }
     IChain<IAccessChainNode>? AccessChainToPointer { get; }
   }
@@ -101,14 +104,6 @@ namespace schema.binary {
     ISchemaValueMember OffsetName { get; }
   }
 
-  public enum StringLengthSourceType {
-    UNSPECIFIED,
-    IMMEDIATE_VALUE,
-    OTHER_MEMBER,
-    CONST,
-    NULL_TERMINATED,
-  }
-
   public interface IStringType : IMemberType {
     // TODO: Support char format?
     /// <summary>
@@ -120,8 +115,9 @@ namespace schema.binary {
     /// </summary>
     StringLengthSourceType LengthSourceType { get; }
 
+    bool IsNullTerminated { get; }
     SchemaIntegerType ImmediateLengthType { get; }
-    ISchemaValueMember? LengthMember { get; }
+    IMemberReference? LengthMember { get; }
     int ConstLength { get; }
   }
 
@@ -155,7 +151,8 @@ namespace schema.binary {
   }
 
   public class BinarySchemaStructureParser : IBinarySchemaStructureParser {
-    public IBinarySchemaStructure ParseStructure(INamedTypeSymbol structureSymbol) {
+    public IBinarySchemaStructure ParseStructure(
+        INamedTypeSymbol structureSymbol) {
       var diagnostics = new List<Diagnostic>();
 
       // All of the types that contain the structure need to be partial
@@ -200,7 +197,8 @@ namespace schema.binary {
                       .Parameters[0]
                       .Type
                       .IsExactlyType(typeof(IEndianBinaryReader))) {
-                members.Add(new SchemaMethodMember { Name = methodSymbol.Name });
+                members.Add(
+                    new SchemaMethodMember { Name = methodSymbol.Name });
               } else {
                 diagnostics.Add(
                     Rules.CreateDiagnostic(memberSymbol, Rules.NotSupported));
@@ -302,7 +300,8 @@ namespace schema.binary {
             diagnostics.Add(
                 Rules.CreateDiagnostic(
                     memberSymbol,
-                    Rules.StructureMemberBinaryConvertabilityNeedsToSatisfyParent));
+                    Rules
+                        .StructureMemberBinaryConvertabilityNeedsToSatisfyParent));
             return null;
           }
         }
@@ -315,17 +314,28 @@ namespace schema.binary {
       var memberType =
           MemberReferenceUtil.WrapTypeInfoWithMemberType(memberTypeInfo);
 
+      var attributeParsers = new IAttributeParser[] {
+          new SequenceLengthSourceParser(),
+          new WLengthOfStringParser(),
+          new WSizeOfMemberInBytesParser(),
+          new WPointerToParser(),
+      };
+
+      foreach (var attributeParser in attributeParsers) {
+        attributeParser.ParseIntoMemberType(diagnostics,
+                                            memberSymbol,
+                                            memberTypeInfo,
+                                            memberType);
+      }
+
       // Get attributes
       var align = memberSymbol.GetAttribute<AlignAttribute>(diagnostics);
 
-      new WSizeOfMemberInBytesParser().Parse(diagnostics, memberSymbol,
-                                            memberTypeInfo, memberType);
-      new WPointerToParser().Parse(diagnostics, memberSymbol, memberTypeInfo,
-                                  memberType);
       {
         var sizeOfStreamAttribute =
             SymbolTypeUtil.GetAttribute<WSizeOfStreamInBytesAttribute>(
-                diagnostics, memberSymbol);
+                diagnostics,
+                memberSymbol);
         if (sizeOfStreamAttribute != null) {
           if (memberTypeInfo is IIntegerTypeInfo &&
               memberType is BinarySchemaStructureParser.PrimitiveMemberType
@@ -342,7 +352,8 @@ namespace schema.binary {
       {
         var positionAttribute =
             SymbolTypeUtil.GetAttribute<RPositionRelativeToStreamAttribute>(
-                diagnostics, memberSymbol);
+                diagnostics,
+                memberSymbol);
         if (positionAttribute != null) {
           isPosition = true;
           if (memberTypeInfo is not IIntegerTypeInfo {
@@ -373,7 +384,8 @@ namespace schema.binary {
       {
         var offsetAttribute =
             SymbolTypeUtil.GetAttribute<RAtOffsetAttribute>(
-                diagnostics, memberSymbol);
+                diagnostics,
+                memberSymbol);
 
         if (offsetAttribute != null) {
           var offsetName = offsetAttribute.OffsetName;
@@ -407,6 +419,7 @@ namespace schema.binary {
         } else {
           targetMemberType = memberType;
         }
+
         var targetPrimitiveType = SchemaPrimitiveType.UNDEFINED;
         if (targetMemberType is IPrimitiveMemberType primitiveType) {
           targetPrimitiveType = primitiveType.PrimitiveType;
@@ -430,7 +443,8 @@ namespace schema.binary {
           var numberFormatAttribute =
               SymbolTypeUtil
                   .GetAttribute<NumberFormatAttribute>(
-                      diagnostics, memberSymbol);
+                      diagnostics,
+                      memberSymbol);
           if (numberFormatAttribute != null) {
             formatNumberType = numberFormatAttribute.NumberType;
 
@@ -450,7 +464,8 @@ namespace schema.binary {
           var integerFormatAttribute =
               SymbolTypeUtil
                   .GetAttribute<IntegerFormatAttribute>(
-                      diagnostics, memberSymbol);
+                      diagnostics,
+                      memberSymbol);
           if (integerFormatAttribute != null) {
             formatIntegerType = integerFormatAttribute.IntegerType;
 
@@ -519,43 +534,38 @@ namespace schema.binary {
                     diagnostics,
                     memberSymbol);
         var isNullTerminatedString =
-            memberSymbol.HasAttribute<NullTerminatedStringAttribute>(diagnostics);
+            memberSymbol.HasAttribute<NullTerminatedStringAttribute>(
+                diagnostics);
 
         if (stringLengthSourceAttribute != null || isNullTerminatedString) {
           if (memberType is StringType stringType) {
-            if (stringLengthSourceAttribute != null && isNullTerminatedString) {
-              diagnostics.Add(
-                  Rules.CreateDiagnostic(memberSymbol,
-                                         Rules.NotSupported));
-            }
-
             if (memberTypeInfo.IsReadOnly) {
               diagnostics.Add(
                   Rules.CreateDiagnostic(memberSymbol,
                                          Rules.UnexpectedAttribute));
             }
 
-            var method =
-                stringLengthSourceAttribute?.Method ??
-                StringLengthSourceType.NULL_TERMINATED;
-
-            switch (method) {
+            stringType.IsNullTerminated = isNullTerminatedString;
+            stringType.LengthSourceType =
+                stringLengthSourceAttribute?.Method
+                ?? StringLengthSourceType.NULL_TERMINATED;
+            switch (stringType.LengthSourceType) {
               case StringLengthSourceType.CONST: {
-                stringType.LengthSourceType = StringLengthSourceType.CONST;
                 stringType.ConstLength =
                     stringLengthSourceAttribute!.ConstLength;
                 break;
               }
               case StringLengthSourceType.NULL_TERMINATED: {
-                stringType.LengthSourceType =
-                    StringLengthSourceType.NULL_TERMINATED;
                 break;
               }
               case StringLengthSourceType.IMMEDIATE_VALUE: {
-                stringType.LengthSourceType =
-                    StringLengthSourceType.IMMEDIATE_VALUE;
                 stringType.ImmediateLengthType =
-                    stringLengthSourceAttribute.LengthType;
+                    stringLengthSourceAttribute.ImmediateLengthType;
+                break;
+              }
+              case StringLengthSourceType.OTHER_MEMBER: {
+                stringType.LengthMember =
+                    stringLengthSourceAttribute.OtherMember;
                 break;
               }
               default: {
@@ -572,11 +582,6 @@ namespace schema.binary {
           }
         }
       }
-
-      new SequenceLengthSourceParser().Parse(
-          diagnostics,
-          memberSymbol,
-          memberType);
 
       return new SchemaValueMember {
           Name = memberSymbol.Name,
@@ -641,6 +646,8 @@ namespace schema.binary {
       public SchemaNumberType AltFormat { get; set; }
 
       public bool SizeOfStream { get; set; }
+      public IMemberReference<string>? LengthOfStringMember { get; set; }
+      public IMemberReference? LengthOfSequenceMember { get; set; }
       public IChain<IAccessChainNode>? AccessChainToSizeOf { get; set; }
       public IChain<IAccessChainNode>? AccessChainToPointer { get; set; }
     }
@@ -673,9 +680,10 @@ namespace schema.binary {
       public ITypeSymbol TypeSymbol => TypeInfo.TypeSymbol;
       public bool IsReadOnly => this.TypeInfo.IsReadOnly;
 
+      public bool IsNullTerminated { get; set; }
       public StringLengthSourceType LengthSourceType { get; set; }
       public SchemaIntegerType ImmediateLengthType { get; set; }
-      public ISchemaValueMember? LengthMember { get; set; }
+      public IMemberReference? LengthMember { get; set; }
       public int ConstLength { get; set; }
     }
 

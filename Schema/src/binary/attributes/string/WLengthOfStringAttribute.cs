@@ -34,7 +34,7 @@ namespace schema.binary.attributes {
 
     protected override void InitFields() {
       this.OtherMember =
-          this.GetReadTimeOnlySourceRelativeToStructure<string>(this.otherMemberName_);
+          this.GetMemberRelativeToStructure<string>(this.otherMemberName_);
     }
 
     public IMemberReference<string>? OtherMember { get; private set; }

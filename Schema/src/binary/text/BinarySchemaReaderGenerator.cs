@@ -332,57 +332,66 @@ namespace schema.binary.text {
     private static void ReadString_(
         ICurlyBracketTextWriter cbsb,
         ISchemaValueMember member) {
-      HandleMemberEndianness_(cbsb,
-                              member,
-                              () => {
-                                var stringType =
-                                    Asserts.CastNonnull(
-                                        member.MemberType as IStringType);
+      HandleMemberEndianness_(
+          cbsb,
+          member,
+          () => {
+            var stringType =
+                Asserts.CastNonnull(
+                    member.MemberType as IStringType);
 
-                                if (stringType.IsReadOnly) {
-                                  if (stringType.LengthSourceType ==
-                                      StringLengthSourceType.NULL_TERMINATED) {
-                                    cbsb.WriteLine(
-                                        $"er.AssertStringNT(this.{member.Name});");
-                                  } else {
-                                    cbsb.WriteLine(
-                                        $"er.AssertString(this.{member.Name});");
-                                  }
+            if (stringType.IsReadOnly) {
+              if (stringType.LengthSourceType ==
+                  StringLengthSourceType.NULL_TERMINATED) {
+                cbsb.WriteLine(
+                    $"er.AssertStringNT(this.{member.Name});");
+              } else {
+                cbsb.WriteLine(
+                    $"er.AssertString(this.{member.Name});");
+              }
 
-                                  return;
-                                }
+              return;
+            }
 
-                                if (stringType.LengthSourceType ==
-                                    StringLengthSourceType.NULL_TERMINATED) {
-                                  cbsb.WriteLine(
-                                      $"this.{member.Name} = er.ReadStringNT();");
-                                  return;
-                                }
+            if (stringType.LengthSourceType ==
+                StringLengthSourceType.NULL_TERMINATED) {
+              cbsb.WriteLine(
+                  $"this.{member.Name} = er.ReadStringNT();");
+              return;
+            }
 
-                                if (stringType.LengthSourceType ==
-                                    StringLengthSourceType.CONST) {
-                                  cbsb.WriteLine(
-                                      $"this.{member.Name} = er.ReadString({stringType.ConstLength});");
-                                  return;
-                                }
+            var readMethod = stringType.IsNullTerminated
+                ? "ReadStringNT"
+                : "ReadString";
 
-                                if (stringType.LengthSourceType ==
-                                    StringLengthSourceType.IMMEDIATE_VALUE) {
-                                  var readType =
-                                      SchemaGeneratorUtil.GetIntLabel(
-                                          stringType.ImmediateLengthType);
-                                  cbsb.EnterBlock()
-                                      .WriteLine(
-                                          $"var l = er.Read{readType}();")
-                                      .WriteLine(
-                                          $"this.{member.Name} = er.ReadString(l);")
-                                      .ExitBlock();
-                                  return;
-                                }
+            if (stringType.LengthSourceType == StringLengthSourceType.CONST) {
+              cbsb.WriteLine(
+                  $"this.{member.Name} = er.{readMethod}({stringType.ConstLength});");
+              return;
+            }
 
-                                // TODO: Handle more cases
-                                throw new NotImplementedException();
-                              });
+            if (stringType.LengthSourceType ==
+                StringLengthSourceType.IMMEDIATE_VALUE) {
+              var readType =
+                  SchemaGeneratorUtil.GetIntLabel(
+                      stringType.ImmediateLengthType);
+              cbsb.EnterBlock()
+                  .WriteLine($"var l = er.Read{readType}();")
+                  .WriteLine($"this.{member.Name} = er.{readMethod}(l);")
+                  .ExitBlock();
+              return;
+            }
+
+            if (stringType.LengthSourceType ==
+                StringLengthSourceType.OTHER_MEMBER) {
+              cbsb.WriteLine(
+                  $"this.{member.Name} = er.{readMethod}({stringType.LengthMember.Name});");
+              return;
+            }
+
+            // TODO: Handle more cases
+            throw new NotImplementedException();
+          });
     }
 
     private static void ReadStructure_(

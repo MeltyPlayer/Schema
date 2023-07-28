@@ -10,7 +10,7 @@ namespace schema.binary.attributes {
     /// </summary>
     public StringLengthSourceAttribute(SchemaIntegerType lengthType) {
       this.Method = StringLengthSourceType.IMMEDIATE_VALUE;
-      this.LengthType = lengthType;
+      this.ImmediateLengthType = lengthType;
     }
 
     public StringLengthSourceAttribute(int constLength) {
@@ -20,7 +20,7 @@ namespace schema.binary.attributes {
 
     public StringLengthSourceType Method { get; }
 
-    public SchemaIntegerType LengthType { get; }
+    public SchemaIntegerType ImmediateLengthType { get; }
     public IMemberReference? OtherMember { get; }
     public int ConstLength { get; }
   }
