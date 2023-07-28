@@ -1,8 +1,6 @@
 ﻿using System;
 using Microsoft.CodeAnalysis;
 
-using schema.binary.text;
-
 
 namespace schema.binary {
   public enum SchemaIntegerType {

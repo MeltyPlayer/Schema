@@ -69,14 +69,13 @@ namespace schema.binary.parser {
   public class TypeInfoParser {
     public enum ParseStatus {
       SUCCESS,
-      NOT_A_FIELD_OR_PROPERTY,
+      NOT_A_FIELD_OR_PROPERTY_OR_METHOD,
       NOT_IMPLEMENTED,
     }
 
-    public IEnumerable<(ParseStatus, ISymbol, ITypeInfo)> ParseMembers(
+    public IEnumerable<(ParseStatus, ISymbol, ITypeInfo?)> ParseMembers(
         INamedTypeSymbol structureSymbol) {
-      foreach (var memberSymbol in SymbolTypeUtil.GetInstanceMembers(
-                   structureSymbol)) {
+      foreach (var memberSymbol in structureSymbol.GetInstanceMembers()) {
         // Tries to parse the type to get info about it
         var parseStatus = this.ParseMember(
             memberSymbol,
@@ -85,15 +84,18 @@ namespace schema.binary.parser {
       }
     }
 
-    public ParseStatus
-        ParseMember(ISymbol memberSymbol, out ITypeInfo typeInfo) {
+    public ParseStatus ParseMember(ISymbol memberSymbol, out ITypeInfo? typeInfo) {
       typeInfo = null;
+
+      if (memberSymbol is IMethodSymbol) {
+        return ParseStatus.SUCCESS;
+      }
 
       if (!GetTypeOfMember_(
               memberSymbol,
               out var memberTypeSymbol,
               out var isReadonly)) {
-        return ParseStatus.NOT_A_FIELD_OR_PROPERTY;
+        return ParseStatus.NOT_A_FIELD_OR_PROPERTY_OR_METHOD;
       }
 
       return this.ParseTypeSymbol(
@@ -396,23 +398,16 @@ namespace schema.binary.parser {
       }
     }
 
-    private record BoolTypeInfo : IBoolTypeInfo {
-      public BoolTypeInfo(
-          ITypeSymbol typeSymbol,
-          bool isReadonly,
-          bool isNullable) {
-        this.TypeSymbol = typeSymbol;
-        this.IsReadOnly = isReadonly;
-        this.IsNullable = isNullable;
-      }
-
-      public ITypeSymbol TypeSymbol { get; }
+    private record BoolTypeInfo(ITypeSymbol TypeSymbol,
+                                bool IsReadOnly,
+                                bool IsNullable) : IBoolTypeInfo {
+      public ITypeSymbol TypeSymbol { get; } = TypeSymbol;
 
       public SchemaPrimitiveType PrimitiveType => SchemaPrimitiveType.BOOLEAN;
       public SchemaTypeKind Kind => SchemaTypeKind.BOOL;
 
-      public bool IsReadOnly { get; }
-      public bool IsNullable { get; }
+      public bool IsReadOnly { get; } = IsReadOnly;
+      public bool IsNullable { get; } = IsNullable;
     }
 
 
@@ -441,23 +436,14 @@ namespace schema.binary.parser {
       public bool IsNullable { get; }
     }
 
-    private class IntegerTypeInfo : IIntegerTypeInfo {
-      public IntegerTypeInfo(
-          ITypeSymbol typeSymbol,
-          SchemaTypeKind kind,
-          SchemaIntegerType integerType,
-          bool isReadonly,
-          bool isNullable) {
-        this.TypeSymbol = typeSymbol;
-        this.Kind = kind;
-        this.IntegerType = integerType;
-        this.IsReadOnly = isReadonly;
-        this.IsNullable = isNullable;
-      }
-
-      public ITypeSymbol TypeSymbol { get; }
-      public SchemaTypeKind Kind { get; }
-      public SchemaIntegerType IntegerType { get; }
+    private record IntegerTypeInfo(ITypeSymbol TypeSymbol,
+                                   SchemaTypeKind Kind,
+                                   SchemaIntegerType IntegerType,
+                                   bool IsReadOnly,
+                                   bool IsNullable) : IIntegerTypeInfo {
+      public ITypeSymbol TypeSymbol { get; } = TypeSymbol;
+      public SchemaTypeKind Kind { get; } = Kind;
+      public SchemaIntegerType IntegerType { get; } = IntegerType;
 
       public SchemaNumberType NumberType
         => SchemaPrimitiveTypesUtil.ConvertIntToNumber(this.IntegerType);
@@ -465,45 +451,31 @@ namespace schema.binary.parser {
       public SchemaPrimitiveType PrimitiveType
         => SchemaPrimitiveTypesUtil.ConvertNumberToPrimitive(this.NumberType);
 
-      public bool IsReadOnly { get; }
-      public bool IsNullable { get; }
+      public bool IsReadOnly { get; } = IsReadOnly;
+      public bool IsNullable { get; } = IsNullable;
     }
 
-    private class CharTypeInfo : ICharTypeInfo {
-      public CharTypeInfo(
-          ITypeSymbol typeSymbol,
-          bool isReadonly,
-          bool isNullable) {
-        this.TypeSymbol = typeSymbol;
-        this.IsReadOnly = isReadonly;
-        this.IsNullable = isNullable;
-      }
-
+    private record CharTypeInfo(ITypeSymbol TypeSymbol,
+                                bool IsReadOnly,
+                                bool IsNullable) : ICharTypeInfo {
       public SchemaPrimitiveType PrimitiveType => SchemaPrimitiveType.CHAR;
       public SchemaTypeKind Kind => SchemaTypeKind.CHAR;
 
-      public ITypeSymbol TypeSymbol { get; }
+      public ITypeSymbol TypeSymbol { get; } = TypeSymbol;
 
-      public bool IsReadOnly { get; }
-      public bool IsNullable { get; }
+      public bool IsReadOnly { get; } = IsReadOnly;
+      public bool IsNullable { get; } = IsNullable;
     }
 
-    private class StringTypeInfo : IStringTypeInfo {
-      public StringTypeInfo(
-          ITypeSymbol typeSymbol,
-          bool isReadonly,
-          bool isNullable) {
-        this.TypeSymbol = typeSymbol;
-        this.IsReadOnly = isReadonly;
-        this.IsNullable = isNullable;
-      }
-
+    private record StringTypeInfo(ITypeSymbol TypeSymbol,
+                                  bool IsReadOnly,
+                                  bool IsNullable) : IStringTypeInfo {
       public SchemaTypeKind Kind => SchemaTypeKind.STRING;
 
-      public ITypeSymbol TypeSymbol { get; }
+      public ITypeSymbol TypeSymbol { get; } = TypeSymbol;
 
-      public bool IsReadOnly { get; }
-      public bool IsNullable { get; }
+      public bool IsReadOnly { get; } = IsReadOnly;
+      public bool IsNullable { get; } = IsNullable;
     }
 
     private class EnumTypeInfo : IEnumTypeInfo {

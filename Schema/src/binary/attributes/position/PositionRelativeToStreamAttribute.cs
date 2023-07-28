@@ -32,15 +32,13 @@ namespace schema.binary.attributes {
   ///   </code>
   /// </summary>
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-  public class PositionRelativeToStreamAttribute : Attribute {
-    protected void InitFields() { }
+  public class PositionRelativeToStreamAttribute : BMemberAttribute<long> {
+    protected override void InitFields() { }
   }
 
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-  public class LengthOfStreamAttribute : Attribute {
-  }
+  public class LengthOfStreamAttribute : Attribute { }
 
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-  public class LengthOfContainingStructureAttribute : Attribute {
-  }
+  public class LengthOfContainingStructureAttribute : Attribute { }
 }

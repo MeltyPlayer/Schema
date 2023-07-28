@@ -37,6 +37,7 @@ namespace schema.binary.attributes {
       var containedInClass =
           new TypeInfoParser()
               .ParseMembers(parentNamedTypeSymbol)
+              .Where(tuple => tuple.Item2 is not IMethodSymbol)
               .Any(tuple => {
                 var (parseStatus, _, memberTypeInfo) = tuple;
                 if (parseStatus != TypeInfoParser.ParseStatus.SUCCESS) {

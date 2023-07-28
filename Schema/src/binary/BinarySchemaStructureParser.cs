@@ -54,6 +54,11 @@ namespace schema.binary {
 
   public interface ISchemaMember {
     string Name { get; }
+  }
+
+  public interface ISchemaMethodMember : ISchemaMember { }
+
+  public interface ISchemaValueMember : ISchemaMember {
     IMemberType MemberType { get; }
     bool IsIgnored { get; }
     AlignAttribute? Align { get; }
@@ -93,8 +98,8 @@ namespace schema.binary {
   }
 
   public interface IOffset {
-    ISchemaMember StartIndexName { get; }
-    ISchemaMember OffsetName { get; }
+    ISchemaValueMember StartIndexName { get; }
+    ISchemaValueMember OffsetName { get; }
   }
 
   public enum StringLengthSourceType {
@@ -117,7 +122,7 @@ namespace schema.binary {
     StringLengthSourceType LengthSourceType { get; }
 
     SchemaIntegerType ImmediateLengthType { get; }
-    ISchemaMember? LengthMember { get; }
+    ISchemaValueMember? LengthMember { get; }
     int ConstLength { get; }
   }
 
@@ -144,7 +149,7 @@ namespace schema.binary {
 
     SequenceLengthSourceType LengthSourceType { get; }
     SchemaIntegerType ImmediateLengthType { get; }
-    ISchemaMember? LengthMember { get; }
+    ISchemaValueMember? LengthMember { get; }
     uint ConstLength { get; }
 
     IMemberType ElementType { get; }
@@ -177,11 +182,39 @@ namespace schema.binary {
       var parsedMembers =
           typeInfoParser.ParseMembers(structureSymbol).ToArray();
 
-      var fields = new List<ISchemaMember>();
+      var members = new List<ISchemaMember>();
       foreach (var parsedMember in parsedMembers) {
         var (parseStatus, memberSymbol, _) = parsedMember;
-        if (parseStatus == TypeInfoParser.ParseStatus.NOT_A_FIELD_OR_PROPERTY) {
+        if (parseStatus == TypeInfoParser.ParseStatus
+                                         .NOT_A_FIELD_OR_PROPERTY_OR_METHOD) {
           continue;
+        }
+
+        {
+          var methodSymbol = memberSymbol as IMethodSymbol;
+          var isMethod = methodSymbol != null;
+          var hasRunAtReadTimeAttribute =
+              memberSymbol.HasAttribute<RunAtReadTimeAttribute>(diagnostics);
+          if (hasRunAtReadTimeAttribute) {
+            if (isMethod) {
+              if (methodSymbol.Parameters.Length == 1 && methodSymbol
+                      .Parameters[0]
+                      .Type
+                      .IsExactlyType(typeof(IEndianBinaryReader))) {
+                members.Add(new SchemaMethodMember { Name = methodSymbol.Name });
+              } else {
+                diagnostics.Add(
+                    Rules.CreateDiagnostic(memberSymbol, Rules.NotSupported));
+              }
+            } else {
+              diagnostics.Add(
+                  Rules.CreateDiagnostic(memberSymbol, Rules.NotSupported));
+            }
+          }
+
+          if (isMethod) {
+            continue;
+          }
         }
 
         bool isIgnored =
@@ -200,14 +233,14 @@ namespace schema.binary {
                 : this.ParseIgnoredField_(parsedMember);
 
         if (field != null) {
-          fields.Add(field);
+          members.Add(field);
         }
       }
 
       var schemaStructure = new BinarySchemaStructure {
           Diagnostics = diagnostics,
           TypeSymbol = structureSymbol,
-          Members = fields,
+          Members = members,
           Endianness = structureEndianness,
       };
 
@@ -218,13 +251,15 @@ namespace schema.binary {
       {
         var sizeOfMemberInBytesDependencyFixer =
             new WSizeOfMemberInBytesDependencyFixer();
-        foreach (var member in fields) {
-          if (member.MemberType is IPrimitiveMemberType primitiveMemberType) {
+        foreach (var member in members.OfType<ISchemaValueMember>()) {
+          if (member.MemberType is IPrimitiveMemberType
+              primitiveMemberType) {
             if (primitiveMemberType.AccessChainToSizeOf != null) {
               sizeOfMemberInBytesDependencyFixer.AddDependenciesForStructure(
                   structureByNamedTypeSymbol,
                   primitiveMemberType.AccessChainToSizeOf);
             }
+
             if (primitiveMemberType.AccessChainToPointer != null) {
               sizeOfMemberInBytesDependencyFixer.AddDependenciesForStructure(
                   structureByNamedTypeSymbol,
@@ -237,7 +272,7 @@ namespace schema.binary {
       return schemaStructure;
     }
 
-    private ISchemaMember? ParseNonIgnoredField_(
+    private ISchemaValueMember? ParseNonIgnoredField_(
         IList<Diagnostic> diagnostics,
         INamedTypeSymbol structureSymbol,
         (TypeInfoParser.ParseStatus, ISymbol, ITypeInfo) parsedMember
@@ -363,13 +398,13 @@ namespace schema.binary {
               out var offsetTypeInfo);
 
           offset = new Offset {
-              StartIndexName = new SchemaMember {
+              StartIndexName = new SchemaValueMember {
                   Name = startIndexName,
                   MemberType =
                       MemberReferenceUtil.WrapTypeInfoWithMemberType(
                           startIndexTypeInfo),
               },
-              OffsetName = new SchemaMember {
+              OffsetName = new SchemaValueMember {
                   Name = offsetName,
                   MemberType =
                       MemberReferenceUtil.WrapTypeInfoWithMemberType(
@@ -560,7 +595,7 @@ namespace schema.binary {
           memberSymbol,
           memberType);
 
-      return new SchemaMember {
+      return new SchemaValueMember {
           Name = memberSymbol.Name,
           MemberType = memberType,
           IsIgnored = false,
@@ -572,7 +607,7 @@ namespace schema.binary {
       };
     }
 
-    private ISchemaMember ParseIgnoredField_(
+    private ISchemaValueMember ParseIgnoredField_(
         (TypeInfoParser.ParseStatus, ISymbol, ITypeInfo) parsedMember
     ) {
       var (_, memberSymbol, memberTypeInfo) = parsedMember;
@@ -581,7 +616,7 @@ namespace schema.binary {
       var memberType =
           MemberReferenceUtil.WrapTypeInfoWithMemberType(memberTypeInfo);
 
-      return new SchemaMember {
+      return new SchemaValueMember {
           Name = memberSymbol.Name, MemberType = memberType, IsIgnored = true,
       };
     }
@@ -594,8 +629,11 @@ namespace schema.binary {
       public Endianness? Endianness { get; set; }
     }
 
+    public class SchemaMethodMember : ISchemaMethodMember {
+      public string Name { get; set; }
+    }
 
-    public class SchemaMember : ISchemaMember {
+    public class SchemaValueMember : ISchemaValueMember {
       public string Name { get; set; }
       public IMemberType MemberType { get; set; }
       public bool IsIgnored { get; set; }
@@ -644,8 +682,8 @@ namespace schema.binary {
     }
 
     public class Offset : IOffset {
-      public ISchemaMember StartIndexName { get; set; }
-      public ISchemaMember OffsetName { get; set; }
+      public ISchemaValueMember StartIndexName { get; set; }
+      public ISchemaValueMember OffsetName { get; set; }
     }
 
     public class StringType : IStringType {
@@ -655,7 +693,7 @@ namespace schema.binary {
 
       public StringLengthSourceType LengthSourceType { get; set; }
       public SchemaIntegerType ImmediateLengthType { get; set; }
-      public ISchemaMember? LengthMember { get; set; }
+      public ISchemaValueMember? LengthMember { get; set; }
       public int ConstLength { get; set; }
     }
 
@@ -667,7 +705,7 @@ namespace schema.binary {
 
       public SequenceLengthSourceType LengthSourceType { get; set; }
       public SchemaIntegerType ImmediateLengthType { get; set; }
-      public ISchemaMember? LengthMember { get; set; }
+      public ISchemaValueMember? LengthMember { get; set; }
       public uint ConstLength { get; set; }
 
       public IMemberType ElementType { get; set; }

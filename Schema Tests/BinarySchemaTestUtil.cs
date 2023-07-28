@@ -94,7 +94,7 @@ namespace schema.binary {
       var sizeOfMemberInBytesDependencyFixer =
           new WSizeOfMemberInBytesDependencyFixer();
       foreach (var structure in structures) {
-        foreach (var member in structure.Members) {
+        foreach (var member in structure.Members.OfType<ISchemaValueMember>()) {
           if (member.MemberType is IPrimitiveMemberType primitiveMemberType) {
             if (primitiveMemberType.AccessChainToSizeOf != null) {
               sizeOfMemberInBytesDependencyFixer.AddDependenciesForStructure(

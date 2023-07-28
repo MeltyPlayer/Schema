@@ -61,7 +61,7 @@ namespace schema.binary.parser {
       }
     }
 
-    public static BinarySchemaStructureParser.SchemaMember WrapMemberReference(
+    public static BinarySchemaStructureParser.SchemaValueMember WrapMemberReference(
         IMemberReference memberReference)
       => new() {
           Name = memberReference.Name,

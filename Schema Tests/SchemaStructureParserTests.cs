@@ -23,7 +23,7 @@ namespace foo.bar {
 
       Assert.AreEqual(1, structure.Members.Count);
 
-      var field = structure.Members[0];
+      var field = structure.Members[0] as ISchemaValueMember;
       Assert.AreEqual("field", field.Name);
 
       var memberType = field.MemberType;
@@ -55,7 +55,7 @@ namespace foo.bar {
 
       Assert.AreEqual(1, structure.Members.Count);
 
-      var field = structure.Members[0];
+      var field = structure.Members[0] as ISchemaValueMember;
       Assert.AreEqual("field", field.Name);
 
       var memberType = field.MemberType;
@@ -87,7 +87,7 @@ namespace foo.bar {
 
       Assert.AreEqual(1, structure.Members.Count);
 
-      var field = structure.Members[0];
+      var field = structure.Members[0] as ISchemaValueMember;
       Assert.AreEqual("field", field.Name);
 
       var memberType = field.MemberType;
@@ -126,7 +126,7 @@ namespace foo.bar {
 
       Assert.AreEqual(1, structure.Members.Count);
 
-      var field = structure.Members[0];
+      var field = structure.Members[0] as ISchemaValueMember;
       Assert.AreEqual("field", field.Name);
 
       var memberType = field.MemberType;
@@ -151,7 +151,7 @@ namespace foo.bar {
 
       Assert.IsEmpty(structure.Diagnostics);
 
-      var field = structure.Members[0];
+      var field = structure.Members[0] as ISchemaValueMember;
       Assert.AreEqual("field", field.Name);
 
       var memberType = field.MemberType;
@@ -180,7 +180,7 @@ namespace foo.bar {
 
       Assert.IsEmpty(structure.Diagnostics);
 
-      var field = structure.Members[0];
+      var field = structure.Members[0] as ISchemaValueMember;
       Assert.AreEqual("field", field.Name);
 
       var memberType = field.MemberType;
@@ -216,7 +216,7 @@ namespace foo.bar {
 
       Assert.AreEqual(1, structure.Members.Count);
 
-      var field = structure.Members[0];
+      var field = structure.Members[0] as ISchemaValueMember;
       Assert.AreEqual("field", field.Name);
 
       var memberType = field.MemberType;
@@ -248,7 +248,7 @@ namespace foo.bar {
 
       Assert.AreEqual(1, structure.Members.Count);
 
-      var field = structure.Members[0];
+      var field = structure.Members[0] as ISchemaValueMember;
       Assert.AreEqual("Field", field.Name);
 
       var memberType = field.MemberType;
@@ -280,7 +280,7 @@ namespace foo.bar {
 
       Assert.AreEqual(1, structure.Members.Count);
 
-      var field = structure.Members[0];
+      var field = structure.Members[0] as ISchemaValueMember;
       Assert.AreEqual("field", field.Name);
 
       var memberType = field.MemberType;
@@ -312,7 +312,7 @@ namespace foo.bar {
 
       Assert.AreEqual(1, structure.Members.Count);
 
-      var field = structure.Members[0];
+      var field = structure.Members[0] as ISchemaValueMember;
       Assert.AreEqual("Field", field.Name);
 
       var memberType = field.MemberType;

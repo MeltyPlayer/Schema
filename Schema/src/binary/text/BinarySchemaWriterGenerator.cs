@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 using Microsoft.CodeAnalysis;
@@ -41,8 +42,11 @@ namespace schema.binary.text {
               $"ew.PushStructureEndianness({SchemaGeneratorUtil.GetEndiannessName(structure.Endianness.Value)});");
         }
 
-        foreach (var member in structure.Members) {
-          BinarySchemaWriterGenerator.WriteMember_(cbsb, typeSymbol, member);
+        foreach (var member in structure.Members.OfType<ISchemaValueMember>()) {
+          BinarySchemaWriterGenerator.WriteValueMember_(
+              cbsb,
+              typeSymbol,
+              member);
         }
 
         if (hasEndianness) {
@@ -70,10 +74,10 @@ namespace schema.binary.text {
       return generatedCode;
     }
 
-    private static void WriteMember_(
+    private static void WriteValueMember_(
         ICurlyBracketTextWriter cbsb,
         ITypeSymbol sourceSymbol,
-        ISchemaMember member) {
+        ISchemaValueMember member) {
       if (member.IsIgnored) {
         return;
       }
@@ -142,7 +146,7 @@ namespace schema.binary.text {
 
     private static void Align_(
         ICurlyBracketTextWriter cbsb,
-        ISchemaMember member) {
+        ISchemaValueMember member) {
       var align = member.Align;
       if (align == null) {
         return;
@@ -157,7 +161,7 @@ namespace schema.binary.text {
 
     private static void HandleMemberEndiannessAndTracking_(
         ICurlyBracketTextWriter cbsb,
-        ISchemaMember member,
+        ISchemaValueMember member,
         Action handler) {
       BinarySchemaWriterGenerator.Align_(cbsb, member);
 
@@ -185,7 +189,7 @@ namespace schema.binary.text {
 
     private static void WritePrimitive_(
         ICurlyBracketTextWriter cbsb,
-        ISchemaMember member) {
+        ISchemaValueMember member) {
       var primitiveType =
           Asserts.CastNonnull(member.MemberType as IPrimitiveMemberType);
 
@@ -289,7 +293,7 @@ namespace schema.binary.text {
 
     private static void WriteBoolean_(
         ICurlyBracketTextWriter cbsb,
-        ISchemaMember member) {
+        ISchemaValueMember member) {
       HandleMemberEndiannessAndTracking_(cbsb,
                                          member,
                                          () => {
@@ -322,7 +326,7 @@ namespace schema.binary.text {
 
     private static void WriteString_(
         ICurlyBracketTextWriter cbsb,
-        ISchemaMember member) {
+        ISchemaValueMember member) {
       HandleMemberEndiannessAndTracking_(cbsb,
                                          member,
                                          () => {
@@ -379,7 +383,7 @@ namespace schema.binary.text {
 
     private static void WriteStructure_(
         ICurlyBracketTextWriter cbsb,
-        ISchemaMember member) {
+        ISchemaValueMember member) {
       HandleMemberEndiannessAndTracking_(cbsb,
                                          member,
                                          () => {
@@ -392,7 +396,7 @@ namespace schema.binary.text {
     private static void WriteArray_(
         ICurlyBracketTextWriter cbsb,
         ITypeSymbol sourceSymbol,
-        ISchemaMember member) {
+        ISchemaValueMember member) {
       var arrayType =
           Asserts.CastNonnull(member.MemberType as ISequenceMemberType);
       if (arrayType.LengthSourceType != SequenceLengthSourceType.READ_ONLY) {
@@ -422,7 +426,7 @@ namespace schema.binary.text {
     private static void WriteIntoArray_(
         ICurlyBracketTextWriter cbsb,
         ITypeSymbol sourceSymbol,
-        ISchemaMember member) {
+        ISchemaValueMember member) {
       HandleMemberEndiannessAndTracking_(
           cbsb,
           member,

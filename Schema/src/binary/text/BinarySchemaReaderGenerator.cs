@@ -60,7 +60,14 @@ namespace schema.binary.text {
         }
 
         foreach (var member in structure.Members) {
-          BinarySchemaReaderGenerator.ReadMember_(cbsb, typeSymbol, member);
+          if (member is ISchemaValueMember valueMember) {
+            BinarySchemaReaderGenerator.ReadValueMember_(
+                cbsb,
+                typeSymbol,
+                valueMember);
+          } else if (member is ISchemaMethodMember) {
+            cbsb.WriteLine($"this.{member.Name}(er);");
+          }
         }
 
         if (hasEndianness) {
@@ -88,10 +95,10 @@ namespace schema.binary.text {
       return generatedCode;
     }
 
-    private static void ReadMember_(
+    private static void ReadValueMember_(
         ICurlyBracketTextWriter cbsb,
         ITypeSymbol sourceSymbol,
-        ISchemaMember member) {
+        ISchemaValueMember member) {
       if (member.IsPosition) {
         if (member.MemberType.IsReadOnly) {
           cbsb.WriteLine($"er.AssertPosition(this.{member.Name});");
@@ -200,7 +207,7 @@ namespace schema.binary.text {
 
     private static void Align_(
         ICurlyBracketTextWriter cbsb,
-        ISchemaMember member) {
+        ISchemaValueMember member) {
       var align = member.Align;
       if (align == null) {
         return;
@@ -215,7 +222,7 @@ namespace schema.binary.text {
 
     private static void HandleMemberEndianness_(
         ICurlyBracketTextWriter cbsb,
-        ISchemaMember member,
+        ISchemaValueMember member,
         Action handler) {
       var hasEndianness = member.Endianness != null;
       if (hasEndianness) {
@@ -235,7 +242,7 @@ namespace schema.binary.text {
     private static void ReadPrimitive_(
         ICurlyBracketTextWriter cbsb,
         ITypeSymbol sourceSymbol,
-        ISchemaMember member) {
+        ISchemaValueMember member) {
       var primitiveType =
           Asserts.CastNonnull(member.MemberType as IPrimitiveMemberType);
 
@@ -297,7 +304,7 @@ namespace schema.binary.text {
 
     private static void ReadBoolean_(
         ICurlyBracketTextWriter cbsb,
-        ISchemaMember member) {
+        ISchemaValueMember member) {
       HandleMemberEndianness_(cbsb,
                               member,
                               () => {
@@ -324,7 +331,7 @@ namespace schema.binary.text {
 
     private static void ReadString_(
         ICurlyBracketTextWriter cbsb,
-        ISchemaMember member) {
+        ISchemaValueMember member) {
       HandleMemberEndianness_(cbsb,
                               member,
                               () => {
@@ -381,7 +388,7 @@ namespace schema.binary.text {
     private static void ReadStructure_(
         ICurlyBracketTextWriter cbsb,
         IStructureMemberType structureMemberType,
-        ISchemaMember member) {
+        ISchemaValueMember member) {
       // TODO: Do value types need to be handled differently?
       var memberName = member.Name;
       if (structureMemberType.IsChild) {
@@ -406,7 +413,7 @@ namespace schema.binary.text {
 
     private static void ReadGeneric_(
         ICurlyBracketTextWriter cbsb,
-        ISchemaMember member) {
+        ISchemaValueMember member) {
       // TODO: Handle generic types beyond just IBinaryConvertible
 
       var structureMemberType =
@@ -428,7 +435,7 @@ namespace schema.binary.text {
     private static void ReadArray_(
         ICurlyBracketTextWriter cbsb,
         ITypeSymbol sourceSymbol,
-        ISchemaMember member) {
+        ISchemaValueMember member) {
       var arrayType =
           Asserts.CastNonnull(member.MemberType as ISequenceMemberType);
       var sequenceType = arrayType.SequenceTypeInfo.SequenceType;
@@ -603,7 +610,7 @@ namespace schema.binary.text {
     private static void ReadIntoArray_(
         ICurlyBracketTextWriter cbsb,
         ITypeSymbol sourceSymbol,
-        ISchemaMember member) {
+        ISchemaValueMember member) {
       HandleMemberEndianness_(
           cbsb,
           member,

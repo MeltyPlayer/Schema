@@ -120,8 +120,10 @@ namespace schema.binary {
         var sizeOfMemberInBytesDependencyFixer =
             new WSizeOfMemberInBytesDependencyFixer();
         foreach (var structure in this.queue_) {
-          foreach (var member in structure.Members) {
-            if (member.MemberType is IPrimitiveMemberType primitiveMemberType) {
+          foreach (var member in
+                   structure.Members.OfType<ISchemaValueMember>()) {
+            if (member.MemberType is IPrimitiveMemberType
+                primitiveMemberType) {
               if (primitiveMemberType.AccessChainToSizeOf != null) {
                 sizeOfMemberInBytesDependencyFixer.AddDependenciesForStructure(
                     structureByNamedTypeSymbol,

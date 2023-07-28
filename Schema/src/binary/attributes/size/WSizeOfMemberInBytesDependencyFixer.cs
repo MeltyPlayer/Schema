@@ -16,7 +16,7 @@ namespace schema.binary.attributes {
                                member =>
                                    member.Name ==
                                    typeChainNode.MemberSymbol.Name)
-                           as BinarySchemaStructureParser.SchemaMember;
+                           as BinarySchemaStructureParser.SchemaValueMember;
           member.TrackStartAndEnd = true;
         }
       }
