@@ -36,6 +36,7 @@ namespace foo.bar {
 ",
                                      @"using System;
 using System.IO;
+
 namespace foo.bar {
   public partial class OffsetWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
@@ -86,6 +87,7 @@ namespace foo.bar {
 ",
                                      @"using System;
 using System.IO;
+
 namespace foo.bar {
   public partial class OffsetWrapper {
     public void Write(ISubEndianBinaryWriter ew) {

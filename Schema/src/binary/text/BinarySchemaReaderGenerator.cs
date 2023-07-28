@@ -28,6 +28,10 @@ namespace schema.binary.text {
           dependencies.Add("schema.util.sequences");
         }
 
+        if (structure.DependsOnSystemText()) {
+          dependencies.Add("System.Text");
+        }
+
         if (structure.DependsOnCollectionsImports()) {
           dependencies.Add("System.Collections.Generic");
         }
@@ -340,14 +344,27 @@ namespace schema.binary.text {
                 Asserts.CastNonnull(
                     member.MemberType as IStringType);
 
+            var encodingType = "";
+            if (stringType.EncodingType != StringEncodingType.ASCII) {
+              encodingType = stringType.EncodingType switch {
+                  StringEncodingType.UTF8 => "Encoding.UTF8",
+                  StringEncodingType.UTF16 => "Encoding.Unicode",
+                  StringEncodingType.UTF32 => "Encoding.UTF32",
+                  _ => throw new ArgumentOutOfRangeException()
+              };
+            }
+
+            var encodingTypeWithComma =
+                encodingType.Length > 0 ? $"{encodingType}, " : "";
+
             if (stringType.IsReadOnly) {
               if (stringType.LengthSourceType ==
                   StringLengthSourceType.NULL_TERMINATED) {
                 cbsb.WriteLine(
-                    $"er.AssertStringNT(this.{member.Name});");
+                    $"er.AssertStringNT({encodingTypeWithComma}this.{member.Name});");
               } else {
                 cbsb.WriteLine(
-                    $"er.AssertString(this.{member.Name});");
+                    $"er.AssertString({encodingTypeWithComma}this.{member.Name});");
               }
 
               return;
@@ -356,7 +373,7 @@ namespace schema.binary.text {
             if (stringType.LengthSourceType ==
                 StringLengthSourceType.NULL_TERMINATED) {
               cbsb.WriteLine(
-                  $"this.{member.Name} = er.ReadStringNT();");
+                  $"this.{member.Name} = er.ReadStringNT({encodingType});");
               return;
             }
 
@@ -366,7 +383,7 @@ namespace schema.binary.text {
 
             if (stringType.LengthSourceType == StringLengthSourceType.CONST) {
               cbsb.WriteLine(
-                  $"this.{member.Name} = er.{readMethod}({stringType.ConstLength});");
+                  $"this.{member.Name} = er.{readMethod}({encodingTypeWithComma}{stringType.ConstLength});");
               return;
             }
 
@@ -377,7 +394,7 @@ namespace schema.binary.text {
                       stringType.ImmediateLengthType);
               cbsb.EnterBlock()
                   .WriteLine($"var l = er.Read{readType}();")
-                  .WriteLine($"this.{member.Name} = er.{readMethod}(l);")
+                  .WriteLine($"this.{member.Name} = er.{readMethod}({encodingTypeWithComma}l);")
                   .ExitBlock();
               return;
             }
@@ -385,7 +402,7 @@ namespace schema.binary.text {
             if (stringType.LengthSourceType ==
                 StringLengthSourceType.OTHER_MEMBER) {
               cbsb.WriteLine(
-                  $"this.{member.Name} = er.{readMethod}({stringType.LengthMember.Name});");
+                  $"this.{member.Name} = er.{readMethod}({encodingTypeWithComma}{stringType.LengthMember.Name});");
               return;
             }
 

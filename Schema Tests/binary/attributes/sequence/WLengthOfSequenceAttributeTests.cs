@@ -35,6 +35,7 @@ namespace foo.bar {
 ",
                                            @"using System;
 using System.IO;
+
 namespace foo.bar {
   public partial class SequenceWrapper {
     public void Write(ISubEndianBinaryWriter ew) {

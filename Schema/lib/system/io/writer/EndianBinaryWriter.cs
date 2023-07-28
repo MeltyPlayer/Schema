@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 
 using schema.binary.io;
+using schema.util;
 
 
 namespace System.IO {
@@ -87,7 +88,7 @@ namespace System.IO {
     public void WriteChar(char value) => this.WriteChar(value, Encoding.ASCII);
 
     public void WriteChar(char value, Encoding encoding) {
-      int encodingSize = EndianBinaryWriter.GetEncodingSize_(encoding);
+      int encodingSize = encoding.GetEncodingSize();
       this.CreateBuffer_(encodingSize);
       Array.Copy((Array) encoding.GetBytes(new string(value, 1)),
                  0,
@@ -104,7 +105,7 @@ namespace System.IO {
                            int offset,
                            int count,
                            Encoding encoding) {
-      int encodingSize = EndianBinaryWriter.GetEncodingSize_(encoding);
+      int encodingSize = encoding.GetEncodingSize();
       this.CreateBuffer_(encodingSize * count);
       Array.Copy((Array) encoding.GetBytes(value, offset, count),
                  0,
@@ -112,15 +113,6 @@ namespace System.IO {
                  0,
                  count * encodingSize);
       this.WriteBuffer_(encodingSize * count, encodingSize);
-    }
-
-    private static int GetEncodingSize_(Encoding encoding) {
-      return encoding == Encoding.UTF8 ||
-             encoding == Encoding.ASCII ||
-             encoding != Encoding.Unicode &&
-             encoding != Encoding.BigEndianUnicode
-                 ? 1
-                 : 2;
     }
 
     public void WriteString(string value)

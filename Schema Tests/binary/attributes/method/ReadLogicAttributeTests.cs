@@ -2,7 +2,7 @@
 
 
 namespace schema.binary.attributes {
-  internal class ReadTimeLogicAttributeTests {
+  internal class ReadLogicAttributeTests {
     [Test]
     public void TestAttribute() {
       BinarySchemaTestUtil.AssertGenerated(@"
@@ -15,7 +15,7 @@ namespace foo.bar {
   public partial class Wrapper : IBinaryConvertible {
     public byte Field1 { get; set; }
 
-    [ReadTimeLogic]
+    [ReadLogic]
     public void Method(IEndianBinaryReader er) {}
 
     public byte Field2 { get; set; }
@@ -36,6 +36,7 @@ namespace foo.bar {
 ",
                                            @"using System;
 using System.IO;
+
 namespace foo.bar {
   public partial class Wrapper {
     public void Write(ISubEndianBinaryWriter ew) {

@@ -27,6 +27,7 @@ namespace foo.bar {
 ",
                                      @"using System;
 using System.IO;
+
 namespace foo.bar {
   public partial class StringWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
@@ -63,6 +64,7 @@ namespace foo.bar {
 ",
                                      @"using System;
 using System.IO;
+
 namespace foo.bar {
   public partial class StringWrapper {
     public void Write(ISubEndianBinaryWriter ew) {

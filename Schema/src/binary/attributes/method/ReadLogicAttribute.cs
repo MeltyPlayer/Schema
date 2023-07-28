@@ -2,5 +2,5 @@
 
 namespace schema.binary.attributes {
   [AttributeUsage(AttributeTargets.Method)]
-  public class ReadTimeLogicAttribute : Attribute { }
+  public class ReadLogicAttribute : Attribute { }
 }

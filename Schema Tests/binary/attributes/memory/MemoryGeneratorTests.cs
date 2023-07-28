@@ -23,6 +23,7 @@ namespace foo.bar {
 }",
                                      @"using System;
 using System.IO;
+
 namespace foo.bar {
   public partial class BlockWrapper {
     public void Read(IEndianBinaryReader er) {
@@ -44,6 +45,7 @@ namespace foo.bar {
 ",
                                      @"using System;
 using System.IO;
+
 namespace foo.bar {
   public partial class BlockWrapper {
     public void Write(ISubEndianBinaryWriter ew) {

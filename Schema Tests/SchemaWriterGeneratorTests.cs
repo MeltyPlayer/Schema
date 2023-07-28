@@ -20,6 +20,7 @@ namespace foo.bar {
 }",
                             @"using System;
 using System.IO;
+
 namespace foo.bar {
   public partial class ByteWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
@@ -43,6 +44,7 @@ namespace foo.bar {
 }",
                             @"using System;
 using System.IO;
+
 namespace foo.bar {
   public partial class SByteWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
@@ -66,6 +68,7 @@ namespace foo.bar {
 }",
                             @"using System;
 using System.IO;
+
 namespace foo.bar {
   public partial class ShortWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
@@ -89,6 +92,7 @@ namespace foo.bar {
 }",
                             @"using System;
 using System.IO;
+
 namespace foo.bar {
   public partial class ArrayWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
@@ -116,6 +120,7 @@ namespace foo.bar {
 }",
                             @"using System;
 using System.IO;
+
 namespace foo.bar {
   public partial class ArrayWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
@@ -150,6 +155,7 @@ namespace foo.bar {
 }",
                             @"using System;
 using System.IO;
+
 namespace foo.bar {
   static internal partial class Parent {
     protected partial class Middle {
@@ -178,6 +184,7 @@ namespace foo.bar {
 }",
                             @"using System;
 using System.IO;
+
 namespace foo.bar {
   public partial class CharWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
@@ -201,6 +208,7 @@ namespace foo.bar {
 }",
                             @"using System;
 using System.IO;
+
 namespace foo.bar {
   public partial class ShortWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
@@ -224,6 +232,7 @@ namespace foo.bar {
 }",
                             @"using System;
 using System.IO;
+
 namespace foo.bar {
   public partial class ByteWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
@@ -247,6 +256,7 @@ namespace foo.bar {
 }",
                             @"using System;
 using System.IO;
+
 namespace foo.bar {
   public partial class ByteWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
@@ -270,6 +280,7 @@ namespace foo.bar {
 }",
                             @"using System;
 using System.IO;
+
 namespace foo.bar {
   public partial class ByteWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
@@ -329,6 +340,7 @@ namespace foo {
 }",
                             @"using System;
 using System.IO;
+
 namespace foo.bar {
   public partial class EverythingWrapper {
     public void Write(ISubEndianBinaryWriter ew) {" +

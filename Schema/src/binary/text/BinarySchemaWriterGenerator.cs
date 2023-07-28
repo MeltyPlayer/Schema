@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -6,6 +7,7 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 
 using schema.binary.attributes;
+using schema.binary.dependencies;
 using schema.binary.parser;
 using schema.util;
 
@@ -21,8 +23,21 @@ namespace schema.binary.text {
 
       var sb = new StringBuilder();
       var cbsb = new CurlyBracketTextWriter(new StringWriter(sb));
-      cbsb.WriteLine("using System;")
-          .WriteLine("using System.IO;");
+
+      {
+        var dependencies = new List<string> { "System", "System.IO" };
+
+        if (structure.DependsOnSystemText()) {
+          dependencies.Add("System.Text");
+        }
+
+        dependencies.Sort(StringComparer.Ordinal);
+        foreach (var dependency in dependencies) {
+          cbsb.WriteLine($"using {dependency};");
+        }
+
+        cbsb.WriteLine("");
+      }
 
       // TODO: Handle fancier cases here
       if (typeNamespace != null) {
@@ -325,18 +340,28 @@ namespace schema.binary.text {
           cbsb,
           member,
           () => {
-            var stringType =
-                Asserts.CastNonnull(
-                    member.MemberType as
-                        IStringType);
+            var stringType = Asserts.CastNonnull(member.MemberType as IStringType);
+
+            var encodingType = "";
+            if (stringType.EncodingType != StringEncodingType.ASCII) {
+              encodingType = stringType.EncodingType switch {
+                  StringEncodingType.UTF8 => "Encoding.UTF8",
+                  StringEncodingType.UTF16 => "Encoding.Unicode",
+                  StringEncodingType.UTF32 => "Encoding.UTF32",
+                  _ => throw new ArgumentOutOfRangeException()
+              };
+            }
+
+            var encodingTypeWithComma =
+                encodingType.Length > 0 ? $"{encodingType}, " : "";
 
             if (stringType.LengthSourceType ==
                 StringLengthSourceType.NULL_TERMINATED) {
-              cbsb.WriteLine($"ew.WriteStringNT(this.{member.Name});");
+              cbsb.WriteLine($"ew.WriteStringNT({encodingTypeWithComma}this.{member.Name});");
             } else if (stringType.LengthSourceType ==
                        StringLengthSourceType.CONST) {
               cbsb.WriteLine(
-                  $"ew.WriteStringWithExactLength(this.{member.Name}, {stringType.ConstLength});");
+                  $"ew.WriteStringWithExactLength({encodingTypeWithComma}this.{member.Name}, {stringType.ConstLength});");
             } else if (stringType.LengthSourceType ==
                        StringLengthSourceType.IMMEDIATE_VALUE) {
               var immediateLengthType = stringType.ImmediateLengthType;
@@ -353,10 +378,10 @@ namespace schema.binary.text {
 
               var writeType = stringType.ImmediateLengthType.GetIntLabel();
               cbsb.WriteLine($"ew.Write{writeType}({castText}{accessText});")
-                  .WriteLine($"ew.WriteString(this.{member.Name});");
+                  .WriteLine($"ew.WriteString({encodingTypeWithComma}this.{member.Name});");
             } else {
               cbsb.WriteLine(
-                  $"ew.WriteString(this.{member.Name});");
+                  $"ew.WriteString({encodingTypeWithComma}this.{member.Name});");
             }
           });
     }

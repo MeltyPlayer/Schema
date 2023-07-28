@@ -115,6 +115,7 @@ namespace schema.binary {
     /// </summary>
     StringLengthSourceType LengthSourceType { get; }
 
+    StringEncodingType EncodingType { get; }
     bool IsNullTerminated { get; }
     SchemaIntegerType ImmediateLengthType { get; }
     IMemberReference? LengthMember { get; }
@@ -190,7 +191,7 @@ namespace schema.binary {
           var methodSymbol = memberSymbol as IMethodSymbol;
           var isMethod = methodSymbol != null;
           var hasRunAtReadTimeAttribute =
-              memberSymbol.HasAttribute<ReadTimeLogicAttribute>(diagnostics);
+              memberSymbol.HasAttribute<ReadLogicAttribute>(diagnostics);
           if (hasRunAtReadTimeAttribute) {
             if (isMethod) {
               if (methodSymbol.Parameters.Length == 1 && methodSymbol
@@ -537,15 +538,24 @@ namespace schema.binary {
         var isNullTerminatedString =
             memberSymbol.HasAttribute<NullTerminatedStringAttribute>(
                 diagnostics);
+        var hasStringLengthAttribute = 
+            stringLengthSourceAttribute != null || isNullTerminatedString;
 
-        if (stringLengthSourceAttribute != null || isNullTerminatedString) {
+
+        var encodingTypeAttribute =
+            memberSymbol.GetAttribute<StringEncodingAttribute>(diagnostics);
+
+
+        if (hasStringLengthAttribute || encodingTypeAttribute != null) {
           if (memberType is StringType stringType) {
-            if (memberTypeInfo.IsReadOnly) {
+            if (memberTypeInfo.IsReadOnly && hasStringLengthAttribute) {
               diagnostics.Add(
                   Rules.CreateDiagnostic(memberSymbol,
                                          Rules.UnexpectedAttribute));
             }
 
+            stringType.EncodingType = encodingTypeAttribute?.EncodingType ??
+                                      StringEncodingType.ASCII;
             stringType.IsNullTerminated = isNullTerminatedString;
             stringType.LengthSourceType =
                 stringLengthSourceAttribute?.Method
@@ -681,6 +691,7 @@ namespace schema.binary {
       public ITypeSymbol TypeSymbol => TypeInfo.TypeSymbol;
       public bool IsReadOnly => this.TypeInfo.IsReadOnly;
 
+      public StringEncodingType EncodingType { get; set; }
       public bool IsNullTerminated { get; set; }
       public StringLengthSourceType LengthSourceType { get; set; }
       public SchemaIntegerType ImmediateLengthType { get; set; }

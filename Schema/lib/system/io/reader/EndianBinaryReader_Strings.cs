@@ -1,6 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text;
 
+using schema.util;
+
 namespace System.IO {
   public sealed partial class EndianBinaryReader {
     // TODO: Handle other encodings besides ASCII
@@ -30,7 +32,7 @@ namespace System.IO {
       => EndianBinaryReader.Assert_(expectedValue, this.ReadChar(encoding));
 
     public unsafe char ReadChar(Encoding encoding) {
-      var encodingSize = EndianBinaryReader.GetEncodingSize_(encoding);
+      var encodingSize = encoding.GetEncodingSize();
       Span<byte> bBuffer = stackalloc byte[encodingSize];
       this.BufferedStream_.FillBuffer(bBuffer, encodingSize);
 
@@ -57,23 +59,13 @@ namespace System.IO {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadChars(Encoding encoding, Span<char> dst) {
-      var encodingSize = EndianBinaryReader.GetEncodingSize_(encoding);
+      var encodingSize = encoding.GetEncodingSize();
 
       var lengthInBytes = encodingSize * dst.Length;
       Span<byte> buffer = stackalloc byte[lengthInBytes];
       this.BufferedStream_.FillBuffer(buffer, encodingSize);
-      
-      encoding.GetChars(buffer, dst);
-    }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static int GetEncodingSize_(Encoding encoding) {
-      return encoding == Encoding.UTF8 ||
-             encoding == Encoding.ASCII ||
-             encoding != Encoding.Unicode &&
-             encoding != Encoding.BigEndianUnicode
-          ? 1
-          : 2;
+      encoding.GetChars(buffer, dst);
     }
 
     public string ReadUpTo(char endToken) {
