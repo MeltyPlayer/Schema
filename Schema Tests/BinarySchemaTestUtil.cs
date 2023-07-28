@@ -17,21 +17,22 @@ using schema.binary.text;
 
 namespace schema.binary {
   internal static class BinarySchemaTestUtil {
+    public static CSharpCompilation Compilation =
+        CSharpCompilation
+            .Create("test")
+            .AddReferences(
+                ((string) AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES"))
+                .Split(Path.PathSeparator)
+                .Select(path => MetadataReference.CreateFromFile(path)));
+
     public static IBinarySchemaStructure ParseFirst(string src)
       => ParseAll(src).First();
 
     public static IReadOnlyList<IBinarySchemaStructure> ParseAll(string src) {
       var syntaxTree = CSharpSyntaxTree.ParseText(src);
+      var compilation = BinarySchemaTestUtil.Compilation.Clone()
+                                            .AddSyntaxTrees(syntaxTree);
 
-      var references =
-          ((string) AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES"))
-          .Split(Path.PathSeparator)
-          .Select(path => MetadataReference.CreateFromFile(path));
-
-      var compilation =
-          CSharpCompilation.Create("test")
-                           .AddReferences(references)
-                           .AddSyntaxTrees(syntaxTree);
       var semanticModel = compilation.GetSemanticModel(syntaxTree);
 
       var structures = syntaxTree
