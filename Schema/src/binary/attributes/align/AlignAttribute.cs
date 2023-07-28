@@ -1,12 +1,6 @@
 ﻿using System;
 
 namespace schema.binary.attributes {
-  public enum AlignSourceType {
-    UNSPECIFIED,
-    CONST,
-    OTHER_MEMBER,
-  }
-
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
   public class AlignAttribute : BMemberAttribute {
     private string? otherMemberName_;

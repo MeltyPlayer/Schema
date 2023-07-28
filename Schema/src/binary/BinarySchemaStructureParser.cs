@@ -194,7 +194,7 @@ namespace schema.binary {
           var methodSymbol = memberSymbol as IMethodSymbol;
           var isMethod = methodSymbol != null;
           var hasRunAtReadTimeAttribute =
-              memberSymbol.HasAttribute<RunAtReadTimeAttribute>(diagnostics);
+              memberSymbol.HasAttribute<ReadTimeLogicAttribute>(diagnostics);
           if (hasRunAtReadTimeAttribute) {
             if (isMethod) {
               if (methodSymbol.Parameters.Length == 1 && methodSymbol

@@ -1,7 +1,5 @@
 ﻿using System;
 
-using schema.binary.attributes;
-
 
 namespace schema.binary {
   /// <summary>
@@ -15,22 +13,4 @@ namespace schema.binary {
   /// </summary>
   [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
   public class BinarySchemaAttribute : Attribute { }
-
-  [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-  public class NumberFormatAttribute : Attribute {
-    public NumberFormatAttribute(SchemaNumberType numberType) {
-      this.NumberType = numberType;
-    }
-
-    public SchemaNumberType NumberType { get; }
-  }
-
-  [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-  public class IntegerFormatAttribute : Attribute {
-    public IntegerFormatAttribute(SchemaIntegerType integerType) {
-      this.IntegerType = integerType;
-    }
-
-    public SchemaIntegerType IntegerType { get; }
-  }
 }
