@@ -16,8 +16,7 @@ namespace schema.binary.attributes {
 
     public INamedTypeSymbol? GetParentTypeSymbolOf(
         INamedTypeSymbol childNamedTypeSymbol) {
-      if (!SymbolTypeUtil.ImplementsGeneric(childNamedTypeSymbol,
-                                            typeof(IChildOf<>))) {
+      if (!childNamedTypeSymbol.ImplementsGeneric(typeof(IChildOf<>))) {
         return null;
       }
 

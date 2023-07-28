@@ -318,8 +318,8 @@ namespace schema.binary {
           new SequenceLengthSourceParser(),
           new WLengthOfSequenceParser(),
           new WLengthOfStringParser(),
-          new WSizeOfMemberInBytesParser(),
           new WPointerToParser(),
+          new WSizeOfMemberInBytesParser(),
       };
 
       foreach (var attributeParser in attributeParsers) {
