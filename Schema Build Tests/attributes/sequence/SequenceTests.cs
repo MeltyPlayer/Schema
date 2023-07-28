@@ -4,8 +4,8 @@ using System.Linq;
 using schema.binary;
 using schema.binary.attributes;
 
-namespace build.sequence {
-  public partial class SequenceBuildTests {
+namespace build {
+  public partial class SequenceTests {
     [BinarySchema]
     public partial class SequenceWrapper : IBinaryConvertible {
       [SequenceLengthSource(SchemaIntegerType.BYTE)]

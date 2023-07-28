@@ -1,95 +1,106 @@
-﻿using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
+using schema.binary.attributes;
 
 namespace System.IO {
   public interface IEndianBinaryWriter : ISubEndianBinaryWriter, IDisposable {
     Task CompleteAndCopyToDelayed(Stream stream);
   }
 
-  public interface ISubEndianBinaryWriter {
+  public interface ISubEndianBinaryWriter : IEndiannessStack {
     void Align(uint amt);
 
     void WriteByte(byte value);
-    void WriteBytes(byte[] value);
-    void WriteBytes(byte[] value, int offset, int count);
+    void WriteBytes(ReadOnlySpan<byte> values);
+    void WriteBytes(byte[] values, int offset, int count);
 
     void WriteSByte(sbyte value);
-    void WriteSBytes(sbyte[] value);
-    void WriteSBytes(sbyte[] value, int offset, int count);
+    void WriteSBytes(ReadOnlySpan<sbyte> values);
+    void WriteSBytes(sbyte[] values, int offset, int count);
 
     void WriteChar(char value);
-    void WriteChar(char value, Encoding encoding);
-    void WriteChars(char[] value);
-    void WriteChars(char[] value, int offset, int count, Encoding encoding);
+    void WriteChars(ReadOnlySpan<char> values);
+    void WriteChars(char[] values, int offset, int count);
+
+    void WriteChar(StringEncodingType encodingType, char value);
+    void WriteChars(StringEncodingType encodingType, ReadOnlySpan<char> values);
+
+    void WriteChars(StringEncodingType encodingType,
+                    char[] values,
+                    int offset,
+                    int count);
 
     void WriteString(string value);
     void WriteStringNT(string value);
-    void WriteString(string value, Encoding encoding, bool nullTerminated);
+
+    void WriteString(StringEncodingType encodingType, string value);
+    void WriteStringNT(StringEncodingType encodingType, string value);
 
     void WriteStringWithExactLength(string value, int length);
-    void WriteStringEndian(string value);
-    public void WriteStringEndian(string value, Encoding encoding);
+
+    void WriteStringWithExactLength(StringEncodingType encodingType,
+                                    string value,
+                                    int length);
 
     void WriteDouble(double value);
-    void WriteDoubles(double[] value);
-    void WriteDoubles(double[] value, int offset, int count);
+    void WriteDoubles(ReadOnlySpan<double> values);
+    void WriteDoubles(double[] values, int offset, int count);
 
     void WriteHalf(float value);
-    void WriteHalfs(float[] value);
-    void WriteHalfs(float[] value, int offset, int count);
+    void WriteHalfs(ReadOnlySpan<float> values);
+    void WriteHalfs(float[] values, int offset, int count);
 
     void WriteSingle(float value);
-    void WriteSingles(float[] value);
-    void WriteSingles(float[] value, int offset, int count);
+    void WriteSingles(ReadOnlySpan<float> values);
+    void WriteSingles(float[] values, int offset, int count);
 
     void WriteInt24(int value);
-    void WriteInt24s(int[] value);
-    void WriteInt24s(int[] value, int offset, int count);
+    void WriteInt24s(ReadOnlySpan<int> values);
+    void WriteInt24s(int[] values, int offset, int count);
 
     void WriteInt32(int value);
-    void WriteInt32s(int[] value);
-    void WriteInt32s(int[] value, int offset, int count);
+    void WriteInt32s(ReadOnlySpan<int> values);
+    void WriteInt32s(int[] values, int offset, int count);
 
     void WriteInt64(long value);
-    void WriteInt64s(long[] value);
-    void WriteInt64s(long[] value, int offset, int count);
+    void WriteInt64s(ReadOnlySpan<long> values);
+    void WriteInt64s(long[] values, int offset, int count);
 
     void WriteInt16(short value);
-    void WriteInt16s(short[] value);
-    void WriteInt16s(short[] value, int offset, int count);
+    void WriteInt16s(ReadOnlySpan<short> values);
+    void WriteInt16s(short[] values, int offset, int count);
 
     void WriteUInt16(ushort value);
-    void WriteUInt16s(ushort[] value);
-    void WriteUInt16s(ushort[] value, int offset, int count);
+    void WriteUInt16s(ReadOnlySpan<ushort> values);
+    void WriteUInt16s(ushort[] values, int offset, int count);
 
     void WriteUInt24(uint value);
-    void WriteUInt24s(uint[] value);
-    void WriteUInt24s(uint[] value, int offset, int count);
+    void WriteUInt24s(ReadOnlySpan<uint> values);
+    void WriteUInt24s(uint[] values, int offset, int count);
 
     void WriteUInt32(uint value);
-    void WriteUInt32s(uint[] value);
-    void WriteUInt32s(uint[] value, int offset, int count);
+    void WriteUInt32s(ReadOnlySpan<uint> values);
+    void WriteUInt32s(uint[] values, int offset, int count);
 
     void WriteUInt64(ulong value);
-    void WriteUInt64s(ulong[] value);
-    void WriteUInt64s(ulong[] value, int offset, int count);
+    void WriteUInt64s(ReadOnlySpan<ulong> values);
+    void WriteUInt64s(ulong[] values, int offset, int count);
 
     void WriteUn8(float value);
-    void WriteUn8s(float[] value);
-    void WriteUn8s(float[] value, int offset, int count);
+    void WriteUn8s(ReadOnlySpan<float> values);
+    void WriteUn8s(float[] values, int offset, int count);
 
     void WriteSn8(float value);
-    void WriteSn8s(float[] value);
-    void WriteSn8s(float[] value, int offset, int count);
+    void WriteSn8s(ReadOnlySpan<float> values);
+    void WriteSn8s(float[] values, int offset, int count);
 
     void WriteUn16(float value);
-    void WriteUn16s(float[] value);
-    void WriteUn16s(float[] value, int offset, int count);
+    void WriteUn16s(ReadOnlySpan<float> values);
+    void WriteUn16s(float[] values, int offset, int count);
 
     void WriteSn16(float value);
-    void WriteSn16s(float[] value);
-    void WriteSn16s(float[] value, int offset, int count);
+    void WriteSn16s(ReadOnlySpan<float> values);
+    void WriteSn16s(float[] values, int offset, int count);
 
     void Close();
 
@@ -114,15 +125,6 @@ namespace System.IO {
     void WriteInt64Delayed(Task<long> delayedValue);
     void WriteUInt64Delayed(Task<ulong> delayedValue);
 
-    // Endianness
-
-    Endianness Endianness { get; }
-
-    bool IsOppositeEndiannessOfSystem { get; }
-
-    void PushStructureEndianness(Endianness endianness);
-    void PushMemberEndianness(Endianness endianness);
-    void PopEndianness();
 
     // Position
 

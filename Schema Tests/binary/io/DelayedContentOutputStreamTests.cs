@@ -12,16 +12,16 @@ namespace schema.binary.io {
   public class DelayedContentOutputStreamTests {
     [Test]
     public async Task TestEmptyStream() {
-      var impl = new DelayedContentOutputStream();
+      var impl = new DelayedContentOutputStream(null);
       var actualBytes = await ToBytes_(impl);
       Assert.AreEqual(0, actualBytes.Length);
     }
 
     [Test]
     public async Task TestEmptySynchronousStream() {
-      var impl = new DelayedContentOutputStream();
+      var impl = new DelayedContentOutputStream(null);
 
-      impl.Write(Array.Empty<byte>());
+      impl.WriteBytes(Array.Empty<byte>());
 
       var actualBytes = await ToBytes_(impl);
       Assert.AreEqual(0, actualBytes.Length);
@@ -29,7 +29,7 @@ namespace schema.binary.io {
 
     [Test]
     public async Task TestEmptyDelayedStream() {
-      var impl = new DelayedContentOutputStream();
+      var impl = new DelayedContentOutputStream(null);
 
       impl.WriteDelayed(Task.FromResult(Array.Empty<byte>()));
 
@@ -40,7 +40,7 @@ namespace schema.binary.io {
 
     [Test]
     public async Task TestWriteIndividual() {
-      var impl = new DelayedContentOutputStream();
+      var impl = new DelayedContentOutputStream(null);
 
       impl.WriteByte(1);
       impl.WriteByte(2);
@@ -52,11 +52,11 @@ namespace schema.binary.io {
 
     [Test]
     public async Task TestWriteArrays() {
-      var impl = new DelayedContentOutputStream();
+      var impl = new DelayedContentOutputStream(null);
 
-      impl.Write(new byte[] {1, 2});
-      impl.Write(new byte[] {3, 4});
-      impl.Write(new byte[] {5, 6});
+      impl.WriteBytes(new byte[] {1, 2});
+      impl.WriteBytes(new byte[] {3, 4});
+      impl.WriteBytes(new byte[] {5, 6});
 
       var actualBytes = await ToBytes_(impl);
       AssertSequence_(new byte[] {1, 2, 3, 4, 5, 6}, actualBytes);
@@ -64,7 +64,7 @@ namespace schema.binary.io {
 
     [Test]
     public async Task TestWriteDelayed() {
-      var impl = new DelayedContentOutputStream();
+      var impl = new DelayedContentOutputStream(null);
 
       impl.WriteDelayed(Task.FromResult(new byte[] {1, 2}));
       impl.WriteDelayed(Task.FromResult(new byte[] {3, 4}));
@@ -76,12 +76,12 @@ namespace schema.binary.io {
 
     [Test]
     public async Task TestWriteEverything() {
-      var impl = new DelayedContentOutputStream();
+      var impl = new DelayedContentOutputStream(null);
 
       impl.WriteByte(1);
-      impl.Write(new byte[] {2, 3});
+      impl.WriteBytes(new byte[] {2, 3});
       impl.WriteDelayed(Task.FromResult(new byte[] {4, 5}));
-      impl.Write(new byte[] {6, 7});
+      impl.WriteBytes(new byte[] {6, 7});
       impl.WriteByte(8);
       impl.WriteDelayed(Task.FromResult(new byte[] {9, 10}));
 
@@ -92,7 +92,7 @@ namespace schema.binary.io {
 
     [Test]
     public async Task TestPosition() {
-      var impl = new DelayedContentOutputStream();
+      var impl = new DelayedContentOutputStream(null);
 
       var positionTask1 = impl.GetAbsolutePosition();
       impl.WriteDelayed(
@@ -100,7 +100,7 @@ namespace schema.binary.io {
           Task.FromResult(1L));
 
       impl.WriteByte(1);
-      impl.Write(new byte[] {2, 3});
+      impl.WriteBytes(new byte[] {2, 3});
 
       var positionTask2 = impl.GetAbsolutePosition();
       impl.WriteDelayed(
@@ -108,7 +108,7 @@ namespace schema.binary.io {
           Task.FromResult(1L));
 
       impl.WriteDelayed(Task.FromResult(new byte[] {4, 5}));
-      impl.Write(new byte[] {6, 7});
+      impl.WriteBytes(new byte[] {6, 7});
 
       var positionTask3 = impl.GetAbsolutePosition();
       impl.WriteDelayed(
@@ -131,7 +131,7 @@ namespace schema.binary.io {
 
     [Test]
     public async Task TestLength() {
-      var impl = new DelayedContentOutputStream();
+      var impl = new DelayedContentOutputStream(null);
 
       var lengthTask = impl.GetAbsoluteLength();
       impl.WriteDelayed(
@@ -139,9 +139,9 @@ namespace schema.binary.io {
           Task.FromResult(1L));
 
       impl.WriteByte(1);
-      impl.Write(new byte[] {2, 3});
+      impl.WriteBytes(new byte[] {2, 3});
       impl.WriteDelayed(Task.FromResult(new byte[] {4, 5}));
-      impl.Write(new byte[] {6, 7});
+      impl.WriteBytes(new byte[] {6, 7});
       impl.WriteByte(8);
       impl.WriteDelayed(Task.FromResult(new byte[] {9, 10}));
 
@@ -152,7 +152,7 @@ namespace schema.binary.io {
 
     [Test]
     public async Task TestBlockLength() {
-      var impl = new DelayedContentOutputStream();
+      var impl = new DelayedContentOutputStream(null);
 
       impl.WriteDelayed(
           impl.GetAbsoluteLength()
@@ -229,7 +229,7 @@ namespace schema.binary.io {
 
     [Test]
     public async Task TestAbsoluteDelayedLength() {
-      var impl = new DelayedContentOutputStream();
+      var impl = new DelayedContentOutputStream(null);
 
       var lengthTask = impl.GetAbsoluteLength();
       impl.WriteDelayed(

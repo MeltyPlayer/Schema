@@ -1,18 +1,16 @@
 ﻿namespace System.IO {
   public sealed partial class EndianBinaryWriter : IEndiannessStack {
-    private readonly IEndiannessStack endiannessImpl_;
-
-    public Endianness Endianness => this.endiannessImpl_.Endianness;
+    public Endianness Endianness => this.impl_.Endianness;
 
     public bool IsOppositeEndiannessOfSystem
-      => this.endiannessImpl_.IsOppositeEndiannessOfSystem;
+      => this.impl_.IsOppositeEndiannessOfSystem;
 
     public void PushStructureEndianness(Endianness endianness)
-      => this.endiannessImpl_.PushStructureEndianness(endianness);
+      => this.impl_.PushStructureEndianness(endianness);
 
     public void PushMemberEndianness(Endianness endianness)
-      => this.endiannessImpl_.PushMemberEndianness(endianness);
+      => this.impl_.PushMemberEndianness(endianness);
 
-    public void PopEndianness() => this.endiannessImpl_.PopEndianness();
+    public void PopEndianness() => this.impl_.PopEndianness();
   }
 }

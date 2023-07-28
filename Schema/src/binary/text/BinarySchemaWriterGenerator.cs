@@ -27,8 +27,8 @@ namespace schema.binary.text {
       {
         var dependencies = new List<string> { "System", "System.IO" };
 
-        if (structure.DependsOnSystemText()) {
-          dependencies.Add("System.Text");
+        if (structure.DependsOnSchemaAttributes()) {
+          dependencies.Add("schema.binary.attributes");
         }
 
         dependencies.Sort(StringComparer.Ordinal);
@@ -345,9 +345,9 @@ namespace schema.binary.text {
             var encodingType = "";
             if (stringType.EncodingType != StringEncodingType.ASCII) {
               encodingType = stringType.EncodingType switch {
-                  StringEncodingType.UTF8 => "Encoding.UTF8",
-                  StringEncodingType.UTF16 => "Encoding.Unicode",
-                  StringEncodingType.UTF32 => "Encoding.UTF32",
+                  StringEncodingType.UTF8 => "StringEncodingType.UTF8",
+                  StringEncodingType.UTF16 => "StringEncodingType.UTF16",
+                  StringEncodingType.UTF32 => "StringEncodingType.UTF32",
                   _ => throw new ArgumentOutOfRangeException()
               };
             }

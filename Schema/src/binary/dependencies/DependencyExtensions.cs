@@ -16,7 +16,7 @@ namespace schema.binary.dependencies {
                  SequenceTypeInfo: { IsLengthConst: false },
              });
 
-    public static bool DependsOnSystemText(
+    public static bool DependsOnSchemaAttributes(
         this IBinarySchemaStructure structure)
       => structure
          .Members

@@ -19,24 +19,24 @@ namespace foo.bar {
 }",
                                            @"using System;
 using System.IO;
-using System.Text;
+using schema.binary.attributes;
 
 namespace foo.bar {
   public partial class NtsWrapper {
     public void Read(IEndianBinaryReader er) {
-      this.Field = er.ReadStringNT(Encoding.UTF8);
+      this.Field = er.ReadStringNT(StringEncodingType.UTF8);
     }
   }
 }
 ",
                                            @"using System;
 using System.IO;
-using System.Text;
+using schema.binary.attributes;
 
 namespace foo.bar {
   public partial class NtsWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteStringNT(Encoding.UTF8, this.Field);
+      ew.WriteStringNT(StringEncodingType.UTF8, this.Field);
     }
   }
 }
@@ -60,24 +60,24 @@ namespace foo.bar {
 }",
                                            @"using System;
 using System.IO;
-using System.Text;
+using schema.binary.attributes;
 
 namespace foo.bar {
   public partial class NtsWrapper {
     public void Read(IEndianBinaryReader er) {
-      this.Field = er.ReadStringNT(Encoding.UTF8, 16);
+      this.Field = er.ReadStringNT(StringEncodingType.UTF8, 16);
     }
   }
 }
 ",
                                            @"using System;
 using System.IO;
-using System.Text;
+using schema.binary.attributes;
 
 namespace foo.bar {
   public partial class NtsWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteStringWithExactLength(Encoding.UTF8, this.Field, 16);
+      ew.WriteStringWithExactLength(StringEncodingType.UTF8, this.Field, 16);
     }
   }
 }
@@ -103,26 +103,26 @@ namespace foo.bar {
 }",
                                            @"using System;
 using System.IO;
-using System.Text;
+using schema.binary.attributes;
 
 namespace foo.bar {
   public partial class NtsWrapper {
     public void Read(IEndianBinaryReader er) {
       this.Length = er.ReadUInt32();
-      this.Field = er.ReadStringNT(Encoding.UTF8, Length);
+      this.Field = er.ReadStringNT(StringEncodingType.UTF8, Length);
     }
   }
 }
 ",
                                            @"using System;
 using System.IO;
-using System.Text;
+using schema.binary.attributes;
 
 namespace foo.bar {
   public partial class NtsWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
       ew.WriteUInt32(this.Length);
-      ew.WriteString(Encoding.UTF8, this.Field);
+      ew.WriteString(StringEncodingType.UTF8, this.Field);
     }
   }
 }

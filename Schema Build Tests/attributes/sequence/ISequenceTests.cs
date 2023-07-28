@@ -11,8 +11,8 @@ using schema.util.sequences;
 
 using IgnoreAttribute = schema.binary.attributes.IgnoreAttribute;
 
-namespace build.sequence {
-  public partial class ISequenceBuildTests {
+namespace build {
+  public partial class ISequenceTests {
     [BinarySchema]
     public partial class MutableSequenceWrapper1 : IBinaryConvertible {
       [SequenceLengthSource(SchemaIntegerType.UINT32)]

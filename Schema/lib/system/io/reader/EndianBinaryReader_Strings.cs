@@ -1,12 +1,13 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text;
 
+using CommunityToolkit.HighPerformance;
+
+using schema.binary.attributes;
 using schema.util;
 
 namespace System.IO {
   public sealed partial class EndianBinaryReader {
-    // TODO: Handle other encodings besides ASCII
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AssertChar(char expectedValue)
       => EndianBinaryReader.Assert_(expectedValue, this.ReadChar());
@@ -16,7 +17,7 @@ namespace System.IO {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public char[] ReadChars(long count)
-      => this.ReadChars(Encoding.ASCII, count);
+      => this.ReadChars(StringEncodingType.ASCII, count);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadChars(char[] dst, int start, int length)
@@ -24,48 +25,73 @@ namespace System.IO {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadChars(Span<char> dst)
-      => this.ReadChars(Encoding.ASCII, dst);
+      => this.ReadChars(StringEncodingType.ASCII, dst);
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void AssertChar(Encoding encoding, char expectedValue)
-      => EndianBinaryReader.Assert_(expectedValue, this.ReadChar(encoding));
+    public void AssertChar(StringEncodingType encodingType, char expectedValue)
+      => EndianBinaryReader.Assert_(expectedValue, this.ReadChar(encodingType));
 
-    public unsafe char ReadChar(Encoding encoding) {
-      var encodingSize = encoding.GetEncodingSize();
-      Span<byte> bBuffer = stackalloc byte[encodingSize];
-      this.BufferedStream_.FillBuffer(bBuffer, encodingSize);
-
-      Span<char> cBuffer = stackalloc char[1];
-
-      encoding.GetChars(bBuffer, cBuffer);
-
-      return cBuffer[0];
+    public unsafe char ReadChar(StringEncodingType encodingType) {
+      char c;
+      var ptr = &c;
+      this.ReadChars(encodingType, new Span<char>(ptr, 1));
+      return c;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public char[] ReadChars(Encoding encoding, long count) {
+    public char[] ReadChars(StringEncodingType encodingType, long count) {
       var newArray = new char[count];
-      this.ReadChars(encoding, newArray);
+      this.ReadChars(encodingType, newArray);
       return newArray;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadChars(Encoding encoding,
+    public void ReadChars(StringEncodingType encodingType,
                           char[] dst,
                           int start,
                           int length)
-      => this.ReadChars(encoding, dst.AsSpan(start, length));
+      => this.ReadChars(encodingType, dst.AsSpan(start, length));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadChars(Encoding encoding, Span<char> dst) {
-      var encodingSize = encoding.GetEncodingSize();
+    public unsafe void ReadChars(StringEncodingType encodingType, Span<char> dst) {
+      if (dst.Length == 0) {
+        return;
+      }
 
-      var lengthInBytes = encodingSize * dst.Length;
-      Span<byte> buffer = stackalloc byte[lengthInBytes];
-      this.BufferedStream_.FillBuffer(buffer, encodingSize);
+      var basePosition = this.Position;
 
-      encoding.GetChars(buffer, dst);
+      var encoding = encodingType.GetEncoding(this.Endianness);
+      var maxByteCount = encoding.GetMaxByteCount(dst.Length);
+
+      Span<byte> buffer = stackalloc byte[maxByteCount];
+      var bufferPtr = (byte*) Unsafe.AsPointer(ref buffer.GetPinnableReference());
+      var dstPtr = (char*) Unsafe.AsPointer(ref dst.GetPinnableReference());
+
+      var decoder = encoding.GetDecoder();
+      while (maxByteCount > 0) {
+        this.Position = basePosition;
+        this.BufferedStream_.BaseStream.Read(buffer.Slice(0, maxByteCount));
+
+        decoder.Convert(bufferPtr,
+                        maxByteCount,
+                        dstPtr,
+                        dst.Length,
+                        false,
+                        out var bytesUsed,
+                        out var charsUsed,
+                        out var completed);
+
+        if (charsUsed == dst.Length) {
+          this.Position = basePosition + bytesUsed;
+          encoding.GetChars(buffer.Slice(0, bytesUsed), dst);
+          return;
+        }
+
+        --maxByteCount;
+      }
+
+      this.Position = basePosition;
     }
 
     public string ReadUpTo(char endToken) {
@@ -80,10 +106,10 @@ namespace System.IO {
       return strBuilder.ToString();
     }
 
-    public string ReadUpTo(Encoding encoding, char endToken) {
+    public string ReadUpTo(StringEncodingType encodingType, char endToken) {
       var strBuilder = new StringBuilder();
       while (!Eof) {
-        var c = this.ReadChar(encoding);
+        var c = this.ReadChar(encodingType);
         if (c == endToken) {
           break;
         }
@@ -96,18 +122,19 @@ namespace System.IO {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string ReadUpTo(params string[] endTokens)
-      => ReadUpTo(Encoding.ASCII, endTokens);
+      => ReadUpTo(StringEncodingType.ASCII, endTokens);
 
-    public string ReadUpTo(Encoding encoding, params string[] endTokens) {
+    public string ReadUpTo(StringEncodingType encodingType,
+                           params string[] endTokens) {
       var strBuilder = new StringBuilder();
       while (!Eof) {
-        var firstC = this.ReadChar(encoding);
+        var firstC = this.ReadChar(encodingType);
         var originalOffset = Position;
 
         foreach (var endToken in endTokens) {
           if (firstC == endToken[0]) {
             for (var i = 1; i < endToken.Length; ++i) {
-              var c = this.ReadChar(encoding);
+              var c = this.ReadChar(encodingType);
               if (c != endToken[1]) {
                 Position = originalOffset;
                 break;
@@ -127,31 +154,32 @@ namespace System.IO {
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public string ReadLine() => ReadLine(Encoding.ASCII);
+    public string ReadLine() => ReadLine(StringEncodingType.ASCII);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public string ReadLine(Encoding encoding)
-      => ReadUpTo(encoding, "\n", "\r\n");
+    public string ReadLine(StringEncodingType encodingType)
+      => ReadUpTo(encodingType, "\n", "\r\n");
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AssertString(string expectedValue)
-      => this.AssertString(Encoding.ASCII, expectedValue);
+      => this.AssertString(StringEncodingType.ASCII, expectedValue);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string ReadString(long count)
-      => this.ReadString(Encoding.ASCII, count);
+      => this.ReadString(StringEncodingType.ASCII, count);
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void AssertString(Encoding encoding, string expectedValue)
+    public void AssertString(StringEncodingType encodingType,
+                             string expectedValue)
       => EndianBinaryReader.Assert_(
           expectedValue.TrimEnd('\0'),
-          this.ReadString(encoding, expectedValue.Length));
+          this.ReadString(encodingType, expectedValue.Length));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public string ReadString(Encoding encoding, long count)
-      => new string(this.ReadChars(encoding, count)).TrimEnd('\0');
+    public string ReadString(StringEncodingType encodingType, long count)
+      => new string(this.ReadChars(encodingType, count)).TrimEnd('\0');
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -163,13 +191,15 @@ namespace System.IO {
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void AssertStringNT(Encoding encoding, string expectedValue)
+    public void AssertStringNT(StringEncodingType encodingType,
+                               string expectedValue)
       => EndianBinaryReader.Assert_(
           expectedValue,
-          this.ReadStringNT(encoding));
+          this.ReadStringNT(encodingType));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public string ReadStringNT(Encoding encoding) => ReadUpTo(encoding, '\0');
+    public string ReadStringNT(StringEncodingType encodingType)
+      => ReadUpTo(encodingType, '\0');
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AssertMagicText(string expectedText) {

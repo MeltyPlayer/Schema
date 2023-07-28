@@ -5,8 +5,8 @@ using System.Linq;
 using schema.binary;
 using schema.binary.attributes;
 
-namespace build.sequence {
-  public partial class StructSequenceBuildTests {
+namespace build {
+  public partial class StructSequenceTests {
     [BinarySchema]
     public partial struct SchemaStruct : IBinaryConvertible {
       public int Value { get; set; }

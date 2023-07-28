@@ -4,7 +4,7 @@ using schema.binary;
 using schema.binary.attributes;
 
 namespace build {
-  public partial class StringBuildTests {
+  public partial class StringLengthSourceTests {
     [BinarySchema]
     public partial class StringWrapper : IBinaryConvertible {
       [StringLengthSource(SchemaIntegerType.BYTE)]
@@ -23,6 +23,9 @@ namespace build {
 
         return false;
       }
+
+      public override string ToString()
+        => $"{this.TextWithByteLength}, {this.TextWithConstLength}";
     }
 
     [Test]

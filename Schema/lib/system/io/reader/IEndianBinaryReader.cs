@@ -2,6 +2,8 @@
 
 using System.Text;
 
+using schema.binary.attributes;
+
 namespace System.IO {
   public interface IEndianBinaryReader : IEndiannessStack, IDataReader {
     void Close();
@@ -15,7 +17,9 @@ namespace System.IO {
     string ReadStringAtOffset(long position, int len);
     string ReadStringNTAtOffset(long position);
     T ReadNewAtOffset<T>(long position) where T : IBinaryDeserializable, new();
-    T[] ReadNewArrayAtOffset<T>(long position, int length) where T : IBinaryDeserializable, new();
+
+    T[] ReadNewArrayAtOffset<T>(long position, int length)
+        where T : IBinaryDeserializable, new();
 
 
     void Subread(long position,
@@ -114,29 +118,34 @@ namespace System.IO {
     void ReadUn16s(float[] dst, int start, int length);
     void ReadUn16s(Span<float> dst);
 
-    void AssertChar(Encoding encoding, char expectedValue);
-    char ReadChar(Encoding encoding);
-    char[] ReadChars(Encoding encoding, long count);
-    void ReadChars(Encoding encoding, char[] dst, int start, int length);
-    void ReadChars(Encoding encoding, Span<char> dst);
+    void AssertChar(StringEncodingType encodingType, char expectedValue);
+    char ReadChar(StringEncodingType encodingType);
+    char[] ReadChars(StringEncodingType encodingType, long count);
+
+    void ReadChars(StringEncodingType encodingType,
+                   char[] dst,
+                   int start,
+                   int length);
+
+    void ReadChars(StringEncodingType encodingType, Span<char> dst);
 
     string ReadUpTo(char endToken);
-    string ReadUpTo(Encoding encoding, char endToken);
+    string ReadUpTo(StringEncodingType encodingType, char endToken);
 
     string ReadUpTo(params string[] endTokens);
-    string ReadUpTo(Encoding encoding, params string[] endTokens);
+    string ReadUpTo(StringEncodingType encodingType, params string[] endTokens);
 
     string ReadLine();
-    string ReadLine(Encoding encoding);
+    string ReadLine(StringEncodingType encodingType);
 
-    void AssertString(Encoding encoding, string expectedValue);
-    string ReadString(Encoding encoding, long count);
+    void AssertString(StringEncodingType encodingType, string expectedValue);
+    string ReadString(StringEncodingType encodingType, long count);
 
     void AssertStringNT(string expectedValue);
     string ReadStringNT();
 
-    void AssertStringNT(Encoding encoding, string expectedValue);
-    string ReadStringNT(Encoding encoding);
+    void AssertStringNT(StringEncodingType encodingType, string expectedValue);
+    string ReadStringNT(StringEncodingType encodingType);
 
     void AssertMagicText(string expectedText);
 
