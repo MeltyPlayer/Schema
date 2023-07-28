@@ -19,26 +19,20 @@ namespace schema.binary.attributes {
   ///   <code>
   ///     [BinarySchema]
   ///     public partial class SpecifiedSizeType : IBinaryConvertible {
-  ///       [Position]
+  ///       [RPositionRelativeToStream]
   ///       private long StartPosition_ { get; set; }
   ///
   ///       private long Length_ { get; set; }
   ///
   ///       ...
   /// 
-  ///       [Position]
+  ///       [RPositionRelativeToStream]
   ///       private uint ExpectedPosition_ => this.StartPosition_ + this.Length_;
   ///     }
   ///   </code>
   /// </summary>
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-  public class PositionRelativeToStreamAttribute : BMemberAttribute<long> {
+  public class RPositionRelativeToStreamAttribute : BMemberAttribute<long> {
     protected override void InitFields() { }
   }
-
-  [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-  public class LengthOfStreamAttribute : Attribute { }
-
-  [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-  public class LengthOfContainingStructureAttribute : Attribute { }
 }

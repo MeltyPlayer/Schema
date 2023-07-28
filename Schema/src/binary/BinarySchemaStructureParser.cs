@@ -98,7 +98,6 @@ namespace schema.binary {
   }
 
   public interface IOffset {
-    ISchemaValueMember StartIndexName { get; }
     ISchemaValueMember OffsetName { get; }
   }
 
@@ -342,7 +341,7 @@ namespace schema.binary {
       var isPosition = false;
       {
         var positionAttribute =
-            SymbolTypeUtil.GetAttribute<PositionRelativeToStreamAttribute>(
+            SymbolTypeUtil.GetAttribute<RPositionRelativeToStreamAttribute>(
                 diagnostics, memberSymbol);
         if (positionAttribute != null) {
           isPosition = true;
@@ -373,20 +372,10 @@ namespace schema.binary {
       IOffset? offset = null;
       {
         var offsetAttribute =
-            SymbolTypeUtil.GetAttribute<OffsetAttribute>(
+            SymbolTypeUtil.GetAttribute<RAtOffsetAttribute>(
                 diagnostics, memberSymbol);
 
         if (offsetAttribute != null) {
-          var startIndexName = offsetAttribute.StartIndexName;
-          SymbolTypeUtil.GetMemberRelativeToAnother(
-              diagnostics,
-              structureSymbol,
-              startIndexName,
-              memberSymbol.Name,
-              true,
-              out _,
-              out var startIndexTypeInfo);
-
           var offsetName = offsetAttribute.OffsetName;
           SymbolTypeUtil.GetMemberRelativeToAnother(
               diagnostics,
@@ -398,12 +387,6 @@ namespace schema.binary {
               out var offsetTypeInfo);
 
           offset = new Offset {
-              StartIndexName = new SchemaValueMember {
-                  Name = startIndexName,
-                  MemberType =
-                      MemberReferenceUtil.WrapTypeInfoWithMemberType(
-                          startIndexTypeInfo),
-              },
               OffsetName = new SchemaValueMember {
                   Name = offsetName,
                   MemberType =
@@ -682,7 +665,6 @@ namespace schema.binary {
     }
 
     public class Offset : IOffset {
-      public ISchemaValueMember StartIndexName { get; set; }
       public ISchemaValueMember OffsetName { get; set; }
     }
 

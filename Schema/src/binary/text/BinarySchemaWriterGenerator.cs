@@ -86,11 +86,6 @@ namespace schema.binary.text {
         return;
       }
 
-      if (member.Offset != null) {
-        cbsb.WriteLine("throw new NotImplementedException();");
-        return;
-      }
-
       var ifBoolean = member.IfBoolean;
       if (ifBoolean != null) {
         if (ifBoolean.SourceType == IfBooleanSourceType.IMMEDIATE_VALUE) {

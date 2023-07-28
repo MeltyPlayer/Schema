@@ -2,7 +2,7 @@
 
 
 namespace schema.binary.text {
-  internal class OffsetGeneratorTests {
+  internal class RAtOffsetGeneratorTests {
     [Test] public void TestOffset() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
@@ -11,11 +11,9 @@ using schema.binary.attributes;
 namespace foo.bar {
   [BinarySchema]
   public partial class OffsetWrapper : IBinaryConvertible {
-    public uint BaseLocation { get; set; }
-
     public uint Offset { get; set; }
 
-    [Offset(nameof(BaseLocation), nameof(Offset))]
+    [RAtOffset(nameof(Offset))]
     public byte Field { get; set; }
   }
 }",
@@ -25,11 +23,10 @@ using System.IO;
 namespace foo.bar {
   public partial class OffsetWrapper {
     public void Read(IEndianBinaryReader er) {
-      this.BaseLocation = er.ReadUInt32();
       this.Offset = er.ReadUInt32();
       {
         var tempLocation = er.Position;
-        er.Position = this.BaseLocation + this.Offset;
+        er.Position = this.Offset;
         this.Field = er.ReadByte();
         er.Position = tempLocation;
       }
@@ -42,9 +39,8 @@ using System.IO;
 namespace foo.bar {
   public partial class OffsetWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteUInt32(this.BaseLocation);
       ew.WriteUInt32(this.Offset);
-      throw new NotImplementedException();
+      ew.WriteByte(this.Field);
     }
   }
 }
@@ -62,16 +58,14 @@ namespace foo.bar {
   public partial class OffsetWrapper : IBinaryConvertible, IChildOf<Parent> {
     public Parent Parent { get; set; }
 
-    public uint Offset { get; set; }
-
-    [Offset(nameof(Parent.BaseLocation), nameof(Offset))]
+    [RAtOffset(nameof(Parent.Offset))]
     public byte Field { get; set; }
   }
 
   public partial class Parent : IBinaryConvertible {
-    public OffsetWrapper Child { get; set; }
+    public uint Offset { get; set; }
 
-    public uint BaseLocation { get; set; }
+    public OffsetWrapper Child { get; set; }
   }
 }",
                                      @"using System;
@@ -80,10 +74,9 @@ using System.IO;
 namespace foo.bar {
   public partial class OffsetWrapper {
     public void Read(IEndianBinaryReader er) {
-      this.Offset = er.ReadUInt32();
       {
         var tempLocation = er.Position;
-        er.Position = this.Parent.BaseLocation + this.Offset;
+        er.Position = this.Parent.Offset;
         this.Field = er.ReadByte();
         er.Position = tempLocation;
       }
@@ -96,8 +89,7 @@ using System.IO;
 namespace foo.bar {
   public partial class OffsetWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteUInt32(this.Offset);
-      throw new NotImplementedException();
+      ew.WriteByte(this.Field);
     }
   }
 }

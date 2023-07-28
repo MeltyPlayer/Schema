@@ -120,7 +120,7 @@ namespace schema.binary.text {
         cbsb.EnterBlock()
             .WriteLine("var tempLocation = er.Position;")
             .WriteLine(
-                $"er.Position = this.{offset.StartIndexName.Name} + this.{offset.OffsetName.Name};");
+                $"er.Position = this.{offset.OffsetName.Name};");
       }
 
       var ifBoolean = member.IfBoolean;
