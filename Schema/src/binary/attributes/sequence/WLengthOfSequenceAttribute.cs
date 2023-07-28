@@ -34,7 +34,7 @@ namespace schema.binary.attributes {
     protected override void InitFields() {
       this.OtherMember =
           this.GetMemberRelativeToStructure(this.otherMemberName_)
-              .AssertIsInteger();
+              .AssertIsSequence();
     }
 
     public IMemberReference? OtherMember { get; private set; }

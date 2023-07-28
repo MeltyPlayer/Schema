@@ -237,6 +237,13 @@ namespace schema.binary.text {
                   accessText =
                       $"{primitiveMemberType.LengthOfStringMember.Name}.Length";
                 }
+                if (primitiveMemberType.LengthOfSequenceMember != null) {
+                  var lengthName =
+                      (primitiveMemberType.LengthOfSequenceMember.MemberTypeInfo
+                          as ISequenceTypeInfo).LengthName;
+                  accessText =
+                      $"{primitiveMemberType.LengthOfSequenceMember.Name}.{lengthName}";
+                }
               }
 
               cbsb.WriteLine(
@@ -286,34 +293,29 @@ namespace schema.binary.text {
     private static void WriteBoolean_(
         ICurlyBracketTextWriter cbsb,
         ISchemaValueMember member) {
-      HandleMemberEndiannessAndTracking_(cbsb,
-                                         member,
-                                         () => {
-                                           var primitiveType =
-                                               Asserts.CastNonnull(
-                                                   member.MemberType as
-                                                       IPrimitiveMemberType);
+      HandleMemberEndiannessAndTracking_(
+          cbsb,
+          member,
+          () => {
+            var primitiveType =
+                Asserts.CastNonnull(member.MemberType as IPrimitiveMemberType);
 
-                                           var writeType = SchemaGeneratorUtil
-                                               .GetPrimitiveLabel(
-                                                   SchemaPrimitiveTypesUtil
-                                                       .ConvertNumberToPrimitive(
-                                                           primitiveType
-                                                               .AltFormat));
-                                           var castType = SchemaGeneratorUtil
-                                               .GetTypeName(
-                                                   primitiveType.AltFormat);
+            var writeType = SchemaGeneratorUtil
+                .GetPrimitiveLabel(
+                    SchemaPrimitiveTypesUtil
+                        .ConvertNumberToPrimitive(
+                            primitiveType.AltFormat));
+            var castType =
+                SchemaGeneratorUtil.GetTypeName(primitiveType.AltFormat);
 
-                                           var accessText =
-                                               $"this.{member.Name}";
-                                           if (member.MemberType.TypeInfo
-                                               .IsNullable) {
-                                             accessText = $"{accessText}.Value";
-                                           }
+            var accessText = $"this.{member.Name}";
+            if (member.MemberType.TypeInfo.IsNullable) {
+              accessText = $"{accessText}.Value";
+            }
 
-                                           cbsb.WriteLine(
-                                               $"ew.Write{writeType}(({castType}) ({accessText} ? 1 : 0));");
-                                         });
+            cbsb.WriteLine(
+                $"ew.Write{writeType}(({castType}) ({accessText} ? 1 : 0));");
+          });
     }
 
     private static void WriteString_(
@@ -362,13 +364,13 @@ namespace schema.binary.text {
     private static void WriteStructure_(
         ICurlyBracketTextWriter cbsb,
         ISchemaValueMember member) {
-      HandleMemberEndiannessAndTracking_(cbsb,
-                                         member,
-                                         () => {
-                                           // TODO: Do value types need to be handled differently?
-                                           cbsb.WriteLine(
-                                               $"this.{member.Name}.Write(ew);");
-                                         });
+      HandleMemberEndiannessAndTracking_(
+          cbsb,
+          member,
+          () => {
+            // TODO: Do value types need to be handled differently?
+            cbsb.WriteLine($"this.{member.Name}.Write(ew);");
+          });
     }
 
     private static void WriteArray_(

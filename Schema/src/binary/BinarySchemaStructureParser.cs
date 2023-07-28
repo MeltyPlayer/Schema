@@ -316,6 +316,7 @@ namespace schema.binary {
 
       var attributeParsers = new IAttributeParser[] {
           new SequenceLengthSourceParser(),
+          new WLengthOfSequenceParser(),
           new WLengthOfStringParser(),
           new WSizeOfMemberInBytesParser(),
           new WPointerToParser(),
