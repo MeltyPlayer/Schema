@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../SchemaGenerators/SchemaGenerators.csproj" />
+    <ProjectReference Include="../Schema/Schema.csproj" />
   </ItemGroup>
 
 </Project>

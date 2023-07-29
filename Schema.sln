@@ -3,15 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchemaGenerators", "SchemaGenerators\SchemaGenerators.csproj", "{CC9F9DBB-B1BE-48C7-9D3D-4EBBDC7716D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Schema", "Schema\Schema.csproj", "{CC9F9DBB-B1BE-48C7-9D3D-4EBBDC7716D2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchemaGenerators Tests", "SchemaGenerators Tests\SchemaGenerators Tests.csproj", "{177FC6DA-EA7E-4F99-BFA1-465F3C1FAFD1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Schema Tests", "Schema Tests\Schema Tests.csproj", "{177FC6DA-EA7E-4F99-BFA1-465F3C1FAFD1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchemaGenerators Build Tests", "SchemaGenerators Build Tests\SchemaGenerators Build Tests.csproj", "{27516500-3785-4348-A9B0-93E220F0B7E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Schema Build Tests", "Schema Build Tests\Schema Build Tests.csproj", "{27516500-3785-4348-A9B0-93E220F0B7E5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchemaTypes", "SchemaTypes\SchemaTypes.csproj", "{F4FD95B0-F517-4736-9CB1-CE36EDA73359}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Schema", "Schema\Schema.csproj", "{F58C1C0E-40CE-4505-92A1-72D2863C44EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +33,6 @@ Global
 		{F4FD95B0-F517-4736-9CB1-CE36EDA73359}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4FD95B0-F517-4736-9CB1-CE36EDA73359}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4FD95B0-F517-4736-9CB1-CE36EDA73359}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F58C1C0E-40CE-4505-92A1-72D2863C44EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F58C1C0E-40CE-4505-92A1-72D2863C44EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F58C1C0E-40CE-4505-92A1-72D2863C44EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F58C1C0E-40CE-4505-92A1-72D2863C44EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
