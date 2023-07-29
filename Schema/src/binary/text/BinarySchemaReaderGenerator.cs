@@ -145,12 +145,8 @@ namespace schema.binary.text {
 
       if (ifBoolean != null) {
         if (ifBoolean.SourceType == IfBooleanSourceType.IMMEDIATE_VALUE) {
-          var booleanNumberType =
-              SchemaPrimitiveTypesUtil.ConvertIntToNumber(
-                  ifBoolean.ImmediateBooleanType);
-          var booleanPrimitiveType =
-              SchemaPrimitiveTypesUtil.ConvertNumberToPrimitive(
-                  booleanNumberType);
+          var booleanNumberType = ifBoolean.ImmediateBooleanType.AsNumberType();
+          var booleanPrimitiveType = booleanNumberType.AsPrimitiveType();
           var booleanPrimitiveLabel =
               SchemaGeneratorUtil.GetPrimitiveLabel(booleanPrimitiveType);
           cbsb.WriteLine($"var b = er.Read{booleanPrimitiveLabel}() != 0;")
@@ -270,19 +266,15 @@ namespace schema.binary.text {
                                 var readType =
                                     SchemaGeneratorUtil.GetPrimitiveLabel(
                                         primitiveType.UseAltFormat
-                                            ? SchemaPrimitiveTypesUtil
-                                                .ConvertNumberToPrimitive(
-                                                    primitiveType.AltFormat)
+                                            ? primitiveType.AltFormat.AsPrimitiveType()
                                             : primitiveType.PrimitiveType);
 
                                 var needToCast = primitiveType.UseAltFormat &&
                                                  primitiveType.PrimitiveType !=
                                                  SchemaPrimitiveTypesUtil
                                                      .GetUnderlyingPrimitiveType(
-                                                         SchemaPrimitiveTypesUtil
-                                                             .ConvertNumberToPrimitive(
                                                                  primitiveType
-                                                                     .AltFormat));
+                                                                     .AltFormat.AsPrimitiveType());
 
                                 if (!primitiveType.IsReadOnly) {
                                   var castText = "";
@@ -328,9 +320,8 @@ namespace schema.binary.text {
 
                                 var readType =
                                     SchemaGeneratorUtil.GetPrimitiveLabel(
-                                        SchemaPrimitiveTypesUtil
-                                            .ConvertNumberToPrimitive(
-                                                primitiveType.AltFormat));
+                                        primitiveType.AltFormat
+                                            .AsPrimitiveType());
 
                                 if (!primitiveType.IsReadOnly) {
                                   cbsb.WriteLine(
@@ -506,8 +497,7 @@ namespace schema.binary.text {
             } else {
               // Primitives that *do* need to be cast have to be read individually.
               var readType = SchemaGeneratorUtil.GetPrimitiveLabel(
-                  SchemaPrimitiveTypesUtil.ConvertNumberToPrimitive(
-                      primitiveElementType.AltFormat));
+                  primitiveElementType.AltFormat.AsPrimitiveType());
               var castType =
                   primitiveElementType.PrimitiveType ==
                   SchemaPrimitiveType.ENUM
@@ -557,8 +547,7 @@ namespace schema.binary.text {
               } else {
                 // Primitives that *do* need to be cast have to be read individually.
                 var readType = SchemaGeneratorUtil.GetPrimitiveLabel(
-                    SchemaPrimitiveTypesUtil.ConvertNumberToPrimitive(
-                        primitiveElementType.AltFormat));
+                        primitiveElementType.AltFormat.AsPrimitiveType());
                 var castType =
                     primitiveElementType.PrimitiveType ==
                     SchemaPrimitiveType.ENUM
@@ -606,11 +595,12 @@ namespace schema.binary.text {
 
         var castText = "";
         if ((isImmediate &&
-             arrayType.ImmediateLengthType == SchemaIntegerType.UINT32) ||
+             !arrayType.ImmediateLengthType.CanBeStoredInAnInt32()) ||
             (arrayType.LengthSourceType ==
              SequenceLengthSourceType.OTHER_MEMBER &&
-             (arrayType.LengthMember.MemberType as IPrimitiveMemberType)!
-             .PrimitiveType == SchemaPrimitiveType.UINT32)) {
+             !(arrayType.LengthMember.MemberType as IPrimitiveMemberType)!
+              .PrimitiveType.AsIntegerType()
+              .CanBeStoredInAnInt32())) {
           castText = "(int) ";
         }
 
@@ -690,10 +680,7 @@ namespace schema.binary.text {
               // Primitives that *do* need to be cast have to be read individually.
               var readType = SchemaGeneratorUtil
                   .GetPrimitiveLabel(
-                      SchemaPrimitiveTypesUtil
-                          .ConvertNumberToPrimitive(
-                              primitiveElementType
-                                  .AltFormat));
+                      primitiveElementType.AltFormat.AsPrimitiveType());
               if (!primitiveElementType.IsReadOnly) {
                 var arrayLengthName =
                     sequenceType.SequenceTypeInfo.LengthName;

@@ -23,37 +23,6 @@ namespace schema.binary {
     Endianness? Endianness { get; }
   }
 
-  public enum SchemaPrimitiveType {
-    UNDEFINED,
-
-    BOOLEAN,
-
-    SBYTE,
-    BYTE,
-    INT16,
-    UINT16,
-    INT24,
-    UINT24,
-    INT32,
-    UINT32,
-    INT64,
-    UINT64,
-
-    HALF,
-    SINGLE,
-    DOUBLE,
-
-    SN8,
-    UN8,
-
-    SN16,
-    UN16,
-
-    CHAR,
-
-    ENUM,
-  }
-
   public interface ISchemaMember {
     string Name { get; }
   }
@@ -489,9 +458,7 @@ namespace schema.binary {
 
         if (formatNumberType == SchemaNumberType.UNDEFINED &&
             formatIntegerType != SchemaIntegerType.UNDEFINED) {
-          formatNumberType =
-              SchemaPrimitiveTypesUtil
-                  .ConvertIntToNumber(formatIntegerType);
+          formatNumberType = formatIntegerType.AsNumberType();
         }
 
         if (targetMemberType is PrimitiveMemberType primitiveMemberType) {

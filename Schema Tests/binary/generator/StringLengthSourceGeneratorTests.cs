@@ -36,7 +36,7 @@ using System.IO;
 namespace foo.bar {
   public partial class ImmediateLengthWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteUInt32(this.Field.Length);
+      ew.WriteUInt32((uint) this.Field.Length);
       ew.WriteString(this.Field);
     }
   }

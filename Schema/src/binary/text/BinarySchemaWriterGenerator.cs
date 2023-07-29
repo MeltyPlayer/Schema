@@ -114,12 +114,8 @@ namespace schema.binary.text {
       var ifBoolean = member.IfBoolean;
       if (ifBoolean != null) {
         if (ifBoolean.SourceType == IfBooleanSourceType.IMMEDIATE_VALUE) {
-          var booleanNumberType =
-              SchemaPrimitiveTypesUtil.ConvertIntToNumber(
-                  ifBoolean.ImmediateBooleanType);
-          var booleanPrimitiveType =
-              SchemaPrimitiveTypesUtil.ConvertNumberToPrimitive(
-                  booleanNumberType);
+          var booleanNumberType = ifBoolean.ImmediateBooleanType.AsNumberType();
+          var booleanPrimitiveType = booleanNumberType.AsPrimitiveType();
           var booleanNumberLabel =
               SchemaGeneratorUtil.GetTypeName(booleanNumberType);
           var booleanPrimitiveLabel =
@@ -225,8 +221,7 @@ namespace schema.binary.text {
             var writeType = SchemaGeneratorUtil
                 .GetPrimitiveLabel(
                     primitiveType.UseAltFormat
-                        ? SchemaPrimitiveTypesUtil.ConvertNumberToPrimitive(
-                            primitiveType.AltFormat)
+                        ? primitiveType.AltFormat.AsPrimitiveType()
                         : primitiveType.PrimitiveType);
 
             var isNotDelayed =
@@ -239,9 +234,7 @@ namespace schema.binary.text {
                   primitiveType.PrimitiveType !=
                   SchemaPrimitiveTypesUtil
                       .GetUnderlyingPrimitiveType(
-                          SchemaPrimitiveTypesUtil
-                              .ConvertNumberToPrimitive(
-                                  primitiveType.AltFormat));
+                          primitiveType.AltFormat.AsPrimitiveType());
 
               var castText = "";
               if (needToCast) {
@@ -257,16 +250,30 @@ namespace schema.binary.text {
 
               if (member.MemberType is IPrimitiveMemberType
                   primitiveMemberType) {
-                if (primitiveMemberType.LengthOfStringMember != null) {
+                var isLengthOfString =
+                    primitiveMemberType.LengthOfStringMember != null;
+                var isLengthOfSequence =
+                    primitiveMemberType.LengthOfSequenceMember != null;
+
+                if (isLengthOfString) {
                   accessText =
-                      $"{primitiveMemberType.LengthOfStringMember.Name}.Length";
+                      $"{primitiveMemberType.LengthOfStringMember!.Name}.Length";
                 }
-                if (primitiveMemberType.LengthOfSequenceMember != null) {
+
+                if (isLengthOfSequence) {
                   var lengthName =
                       (primitiveMemberType.LengthOfSequenceMember.MemberTypeInfo
                           as ISequenceTypeInfo).LengthName;
                   accessText =
                       $"{primitiveMemberType.LengthOfSequenceMember.Name}.{lengthName}";
+                }
+
+                if ((isLengthOfString || isLengthOfSequence) &&
+                    primitiveType.PrimitiveType != SchemaPrimitiveType.INT32) {
+                  var castType =
+                      SchemaGeneratorUtil.GetTypeName(
+                          primitiveType.PrimitiveType.AsNumberType());
+                  castText = $"({castType}) ";
                 }
               }
 
@@ -280,12 +287,8 @@ namespace schema.binary.text {
               var castText = "";
               if (needToCast) {
                 var castType =
-                    SchemaGeneratorUtil
-                        .GetTypeName(
-                            SchemaPrimitiveTypesUtil
-                                .ConvertPrimitiveToNumber(
-                                    primitiveType
-                                        .PrimitiveType));
+                    SchemaGeneratorUtil.GetTypeName(
+                        primitiveType.PrimitiveType.AsNumberType());
                 castText =
                     $".ContinueWith(task => ({castType}) task.Result)";
               }
@@ -325,10 +328,7 @@ namespace schema.binary.text {
                 Asserts.CastNonnull(member.MemberType as IPrimitiveMemberType);
 
             var writeType = SchemaGeneratorUtil
-                .GetPrimitiveLabel(
-                    SchemaPrimitiveTypesUtil
-                        .ConvertNumberToPrimitive(
-                            primitiveType.AltFormat));
+                .GetPrimitiveLabel(primitiveType.AltFormat.AsPrimitiveType());
             var castType =
                 SchemaGeneratorUtil.GetTypeName(primitiveType.AltFormat);
 
@@ -349,7 +349,8 @@ namespace schema.binary.text {
           cbsb,
           member,
           () => {
-            var stringType = Asserts.CastNonnull(member.MemberType as IStringType);
+            var stringType =
+                Asserts.CastNonnull(member.MemberType as IStringType);
 
             var encodingType = "";
             if (stringType.EncodingType != StringEncodingType.ASCII) {
@@ -366,7 +367,8 @@ namespace schema.binary.text {
 
             if (stringType.LengthSourceType ==
                 StringLengthSourceType.NULL_TERMINATED) {
-              cbsb.WriteLine($"ew.WriteStringNT({encodingTypeWithComma}this.{member.Name});");
+              cbsb.WriteLine(
+                  $"ew.WriteStringNT({encodingTypeWithComma}this.{member.Name});");
             } else if (stringType.LengthSourceType ==
                        StringLengthSourceType.CONST) {
               cbsb.WriteLine(
@@ -375,7 +377,7 @@ namespace schema.binary.text {
                        StringLengthSourceType.IMMEDIATE_VALUE) {
               var immediateLengthType = stringType.ImmediateLengthType;
 
-              var needToCast = !immediateLengthType.CanAcceptAnInt();
+              var needToCast = !immediateLengthType.CanAcceptAnInt32();
 
               var castText = "";
               if (needToCast) {
@@ -387,7 +389,8 @@ namespace schema.binary.text {
 
               var writeType = stringType.ImmediateLengthType.GetIntLabel();
               cbsb.WriteLine($"ew.Write{writeType}({castText}{accessText});")
-                  .WriteLine($"ew.WriteString({encodingTypeWithComma}this.{member.Name});");
+                  .WriteLine(
+                      $"ew.WriteString({encodingTypeWithComma}this.{member.Name});");
             } else {
               cbsb.WriteLine(
                   $"ew.WriteString({encodingTypeWithComma}this.{member.Name});");
@@ -422,9 +425,9 @@ namespace schema.binary.text {
           var writeType = SchemaGeneratorUtil.GetIntLabel(
               arrayType.ImmediateLengthType);
 
-          var castType = SchemaGeneratorUtil.GetTypeName(
-              SchemaPrimitiveTypesUtil.ConvertIntToNumber(
-                  arrayType.ImmediateLengthType));
+          var castType =
+              SchemaGeneratorUtil.GetTypeName(
+                  arrayType.ImmediateLengthType.AsNumberType());
 
           var arrayLengthName = arrayType.SequenceTypeInfo.LengthName;
           var arrayLengthAccessor = $"this.{member.Name}.{arrayLengthName}";
@@ -484,10 +487,7 @@ namespace schema.binary.text {
               var writeType =
                   SchemaGeneratorUtil
                       .GetPrimitiveLabel(
-                          SchemaPrimitiveTypesUtil
-                              .ConvertNumberToPrimitive(
-                                  primitiveElementType
-                                      .AltFormat));
+                          primitiveElementType.AltFormat.AsPrimitiveType());
               var arrayLengthName =
                   sequenceType.SequenceTypeInfo.LengthName;
               var needToCast =
@@ -497,10 +497,7 @@ namespace schema.binary.text {
                       .PrimitiveType !=
                   SchemaPrimitiveTypesUtil
                       .GetUnderlyingPrimitiveType(
-                          SchemaPrimitiveTypesUtil
-                              .ConvertNumberToPrimitive(
-                                  primitiveElementType
-                                      .AltFormat));
+                          primitiveElementType.AltFormat.AsPrimitiveType());
 
               var castText = "";
               if (needToCast) {

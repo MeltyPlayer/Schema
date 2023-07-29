@@ -84,7 +84,8 @@ namespace schema.binary.parser {
       }
     }
 
-    public ParseStatus ParseMember(ISymbol memberSymbol, out ITypeInfo? typeInfo) {
+    public ParseStatus ParseMember(ISymbol memberSymbol,
+                                   out ITypeInfo? typeInfo) {
       typeInfo = null;
 
       if (memberSymbol is IMethodSymbol) {
@@ -133,9 +134,7 @@ namespace schema.binary.parser {
             typeInfo = new IntegerTypeInfo(
                 typeSymbol,
                 SchemaTypeKind.INTEGER,
-                SchemaPrimitiveTypesUtil.ConvertNumberToInt(
-                    SchemaPrimitiveTypesUtil
-                        .ConvertPrimitiveToNumber(primitiveType)),
+                primitiveType.AsIntegerType(),
                 isReadonly,
                 isNullable);
             return ParseStatus.SUCCESS;
@@ -149,8 +148,7 @@ namespace schema.binary.parser {
             typeInfo = new FloatTypeInfo(
                 typeSymbol,
                 SchemaTypeKind.FLOAT,
-                SchemaPrimitiveTypesUtil
-                    .ConvertPrimitiveToNumber(primitiveType),
+                primitiveType.AsNumberType(),
                 isReadonly,
                 isNullable);
             return ParseStatus.SUCCESS;
@@ -430,7 +428,7 @@ namespace schema.binary.parser {
       public SchemaNumberType NumberType { get; }
 
       public SchemaPrimitiveType PrimitiveType
-        => SchemaPrimitiveTypesUtil.ConvertNumberToPrimitive(this.NumberType);
+        => this.NumberType.AsPrimitiveType();
 
       public bool IsReadOnly { get; }
       public bool IsNullable { get; }
@@ -445,11 +443,10 @@ namespace schema.binary.parser {
       public SchemaTypeKind Kind { get; } = Kind;
       public SchemaIntegerType IntegerType { get; } = IntegerType;
 
-      public SchemaNumberType NumberType
-        => SchemaPrimitiveTypesUtil.ConvertIntToNumber(this.IntegerType);
+      public SchemaNumberType NumberType => this.IntegerType.AsNumberType();
 
       public SchemaPrimitiveType PrimitiveType
-        => SchemaPrimitiveTypesUtil.ConvertNumberToPrimitive(this.NumberType);
+        => this.NumberType.AsPrimitiveType();
 
       public bool IsReadOnly { get; } = IsReadOnly;
       public bool IsNullable { get; } = IsNullable;

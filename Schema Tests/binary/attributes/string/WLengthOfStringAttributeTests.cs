@@ -37,7 +37,7 @@ using System.IO;
 namespace foo.bar {
   public partial class NtsWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteUInt32(Text.Length);
+      ew.WriteUInt32((uint) Text.Length);
       ew.WriteString(this.Text);
     }
   }
