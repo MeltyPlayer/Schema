@@ -29,6 +29,7 @@ namespace schema.binary {
           SchemaIntegerType.UINT32 => SchemaNumberType.UINT32,
           SchemaIntegerType.INT64 => SchemaNumberType.INT64,
           SchemaIntegerType.UINT64 => SchemaNumberType.UINT64,
+          SchemaIntegerType.UNDEFINED => SchemaNumberType.UNDEFINED,
           _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
       };
 

@@ -52,6 +52,7 @@ namespace schema.binary {
           SchemaPrimitiveType.UN8 => SchemaNumberType.UN8,
           SchemaPrimitiveType.SN16 => SchemaNumberType.SN16,
           SchemaPrimitiveType.UN16 => SchemaNumberType.UN16,
+          SchemaPrimitiveType.UNDEFINED => SchemaNumberType.UNDEFINED,
           _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
       };
 

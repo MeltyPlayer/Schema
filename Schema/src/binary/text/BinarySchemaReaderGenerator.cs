@@ -255,82 +255,20 @@ namespace schema.binary.text {
       var primitiveType =
           Asserts.CastNonnull(member.MemberType as IPrimitiveMemberType);
 
-      if (primitiveType.PrimitiveType == SchemaPrimitiveType.BOOLEAN) {
-        BinarySchemaReaderGenerator.ReadBoolean_(cbsb, member);
-        return;
-      }
-
-      HandleMemberEndianness_(cbsb,
-                              member,
-                              () => {
-                                var readType =
-                                    SchemaGeneratorUtil.GetPrimitiveLabel(
-                                        primitiveType.UseAltFormat
-                                            ? primitiveType.AltFormat.AsPrimitiveType()
-                                            : primitiveType.PrimitiveType);
-
-                                var needToCast = primitiveType.UseAltFormat &&
-                                                 primitiveType.PrimitiveType !=
-                                                 SchemaPrimitiveTypesUtil
-                                                     .GetUnderlyingPrimitiveType(
-                                                                 primitiveType
-                                                                     .AltFormat.AsPrimitiveType());
-
-                                if (!primitiveType.IsReadOnly) {
-                                  var castText = "";
-                                  if (needToCast) {
-                                    var castType =
-                                        primitiveType.PrimitiveType ==
-                                        SchemaPrimitiveType.ENUM
-                                            ? SymbolTypeUtil
-                                                .GetQualifiedNameFromCurrentSymbol(
-                                                    sourceSymbol,
-                                                    primitiveType.TypeSymbol)
-                                            : primitiveType.TypeSymbol.Name;
-                                    castText = $"({castType}) ";
-                                  }
-
-                                  cbsb.WriteLine(
-                                      $"this.{member.Name} = {castText}er.Read{readType}();");
-                                } else {
-                                  var castText = "";
-                                  if (needToCast) {
-                                    var castType =
-                                        SchemaGeneratorUtil.GetTypeName(
-                                            primitiveType.AltFormat);
-                                    castText = $"({castType}) ";
-                                  }
-
-                                  cbsb.WriteLine(
-                                      $"er.Assert{readType}({castText}this.{member.Name});");
-                                }
-                              });
-    }
-
-    private static void ReadBoolean_(
-        ICurlyBracketTextWriter cbsb,
-        ISchemaValueMember member) {
-      HandleMemberEndianness_(cbsb,
-                              member,
-                              () => {
-                                var primitiveType =
-                                    Asserts.CastNonnull(
-                                        member.MemberType as
-                                            IPrimitiveMemberType);
-
-                                var readType =
-                                    SchemaGeneratorUtil.GetPrimitiveLabel(
-                                        primitiveType.AltFormat
-                                            .AsPrimitiveType());
-
-                                if (!primitiveType.IsReadOnly) {
-                                  cbsb.WriteLine(
-                                      $"this.{member.Name} = er.Read{readType}() != 0;");
-                                } else {
-                                  cbsb.WriteLine(
-                                      $"er.Assert{readType}(this.{member.Name} ? 1 : 0);");
-                                }
-                              });
+      HandleMemberEndianness_(
+          cbsb,
+          member,
+          () => {
+            if (!primitiveType.IsReadOnly) {
+              cbsb.WriteLine(
+                  $"this.{member.Name} = {GetReadPrimitiveText_(sourceSymbol, primitiveType)};");
+            } else {
+              cbsb.WriteLine($"{GetAssertPrimitiveText_(
+                  sourceSymbol,
+                  primitiveType,
+                  $"this.{member.Name}")};");
+            }
+          });
     }
 
     private static void ReadString_(
@@ -495,22 +433,12 @@ namespace schema.binary.text {
               cbsb.WriteLine(
                   $"{memberAccessor} = er.Read{label}s({readCountAccessor});");
             } else {
-              // Primitives that *do* need to be cast have to be read individually.
-              var readType = SchemaGeneratorUtil.GetPrimitiveLabel(
-                  primitiveElementType.AltFormat.AsPrimitiveType());
-              var castType =
-                  primitiveElementType.PrimitiveType ==
-                  SchemaPrimitiveType.ENUM
-                      ? SymbolTypeUtil.GetQualifiedNameFromCurrentSymbol(
-                          sourceSymbol,
-                          primitiveElementType.TypeSymbol)
-                      : primitiveElementType.TypeSymbol.Name;
               cbsb.WriteLine(
                       $"{memberAccessor} = new {qualifiedElementName}[{readCountAccessor}];")
                   .EnterBlock(
                       $"for (var i = 0; i < {memberAccessor}.Length; ++i)")
                   .WriteLine(
-                      $"{memberAccessor}[i] = ({castType}) er.Read{readType}();")
+                      $"{memberAccessor}[i] = {GetReadPrimitiveText_(sourceSymbol, primitiveElementType)};")
                   .ExitBlock();
             }
 
@@ -538,26 +466,8 @@ namespace schema.binary.text {
             }
 
             if (elementType is IPrimitiveMemberType primitiveElementType) {
-              // Primitives that don't need to be cast are the easiest to read.
-              if (!primitiveElementType.UseAltFormat) {
-                var label =
-                    SchemaGeneratorUtil.GetPrimitiveLabel(
-                        primitiveElementType.PrimitiveType);
-                cbsb.WriteLine($"{target}.Add(er.Read{label}());");
-              } else {
-                // Primitives that *do* need to be cast have to be read individually.
-                var readType = SchemaGeneratorUtil.GetPrimitiveLabel(
-                        primitiveElementType.AltFormat.AsPrimitiveType());
-                var castType =
-                    primitiveElementType.PrimitiveType ==
-                    SchemaPrimitiveType.ENUM
-                        ? SymbolTypeUtil.GetQualifiedNameFromCurrentSymbol(
-                            sourceSymbol,
-                            primitiveElementType.TypeSymbol)
-                        : primitiveElementType.TypeSymbol.Name;
-                cbsb.WriteLine(
-                    $"{target}.Add(({castType}) er.Read{readType}();");
-              }
+              cbsb.WriteLine(
+                  $"{target}.Add({GetReadPrimitiveText_(sourceSymbol, primitiveElementType)});");
             } else if
                 (elementType is IStructureMemberType structureElementType) {
               cbsb.WriteLine($"var e = new {qualifiedElementName}();");
@@ -678,35 +588,23 @@ namespace schema.binary.text {
               }
 
               // Primitives that *do* need to be cast have to be read individually.
-              var readType = SchemaGeneratorUtil
-                  .GetPrimitiveLabel(
-                      primitiveElementType.AltFormat.AsPrimitiveType());
               if (!primitiveElementType.IsReadOnly) {
                 var arrayLengthName =
                     sequenceType.SequenceTypeInfo.LengthName;
-                var castType =
-                    primitiveElementType.PrimitiveType ==
-                    SchemaPrimitiveType.ENUM
-                        ? SymbolTypeUtil
-                            .GetQualifiedNameFromCurrentSymbol(
-                                sourceSymbol,
-                                primitiveElementType
-                                    .TypeSymbol)
-                        : primitiveElementType.TypeSymbol
-                                              .Name;
+
                 cbsb.EnterBlock(
                         $"for (var i = 0; i < this.{member.Name}.{arrayLengthName}; ++i)")
                     .WriteLine(
-                        $"this.{member.Name}[i] = ({castType}) er.Read{readType}();")
+                        $"this.{member.Name}[i] = {GetReadPrimitiveText_(sourceSymbol, primitiveElementType)};")
                     .ExitBlock();
               } else {
-                var castType =
-                    SchemaGeneratorUtil.GetTypeName(
-                        primitiveElementType.AltFormat);
                 cbsb.EnterBlock(
                         $"foreach (var e in this.{member.Name})")
                     .WriteLine(
-                        $"er.Assert{readType}(({castType}) e);")
+                        $"{GetAssertPrimitiveText_(
+                            sourceSymbol,
+                            primitiveElementType,
+                            "e")};")
                     .ExitBlock();
               }
 
@@ -750,6 +648,77 @@ namespace schema.binary.text {
             // Anything that makes it down here probably isn't meant to be read.
             throw new NotImplementedException();
           });
+    }
+
+    private static string GetReadPrimitiveText_(
+        ITypeSymbol sourceSymbol,
+        IPrimitiveMemberType primitiveMemberType) {
+      var primitiveType = primitiveMemberType.PrimitiveType;
+      var altFormat = primitiveMemberType.AltFormat;
+
+      var readType = SchemaGeneratorUtil
+          .GetPrimitiveLabel(primitiveMemberType.UseAltFormat
+                                 ? altFormat.AsPrimitiveType()
+                                 : primitiveType);
+      var readText = $"er.Read{readType}()";
+
+      var isBoolean = primitiveType == SchemaPrimitiveType.BOOLEAN;
+      if (isBoolean) {
+        readText += " != 0";
+      }
+
+      var castText = "";
+      if (primitiveMemberType.UseAltFormat && !isBoolean &&
+          primitiveType != SchemaPrimitiveTypesUtil.GetUnderlyingPrimitiveType(
+              altFormat.AsPrimitiveType())) {
+        var castType = primitiveType == SchemaPrimitiveType.ENUM
+            ? SymbolTypeUtil.GetQualifiedNameFromCurrentSymbol(
+                sourceSymbol,
+                primitiveMemberType.TypeSymbol)
+            : SchemaGeneratorUtil.GetTypeName(
+                primitiveMemberType.PrimitiveType.AsNumberType());
+        castText = $"({castType}) ";
+      }
+
+      return $"{castText}{readText}";
+    }
+
+    private static string GetAssertPrimitiveText_(
+        ITypeSymbol sourceSymbol,
+        IPrimitiveMemberType primitiveMemberType,
+        string accessText) {
+      var primitiveType = primitiveMemberType.PrimitiveType;
+      var altFormat = primitiveMemberType.AltFormat;
+
+      var assertType = primitiveMemberType.UseAltFormat
+          ? altFormat.AsPrimitiveType()
+          : primitiveType;
+      var assertLabel = SchemaGeneratorUtil.GetPrimitiveLabel(assertType);
+      var assertMethod = $"er.Assert{assertLabel}";
+
+      bool needToCast;
+      if (primitiveType == SchemaPrimitiveType.BOOLEAN) {
+        accessText += " ? 1 : 0";
+        needToCast = !assertType.AsIntegerType().CanAcceptAnInt32();
+        if (needToCast) {
+          accessText = $"({accessText})";
+        }
+      } else {
+        needToCast = primitiveMemberType.UseAltFormat &&
+                     primitiveType !=
+                     SchemaPrimitiveTypesUtil.GetUnderlyingPrimitiveType(
+                         altFormat.AsPrimitiveType());
+
+      }
+
+      var castText = "";
+      if (needToCast) {
+        var castType =
+            SchemaGeneratorUtil.GetTypeName(assertType.AsNumberType());
+        castText = $"({castType}) ";
+      }
+
+      return $"{assertMethod}({castText}{accessText})";
     }
   }
 }

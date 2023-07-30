@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -118,14 +119,8 @@ namespace schema.binary.text {
       var ifBoolean = member.IfBoolean;
       if (ifBoolean != null) {
         if (ifBoolean.SourceType == IfBooleanSourceType.IMMEDIATE_VALUE) {
-          var booleanNumberType = ifBoolean.ImmediateBooleanType.AsNumberType();
-          var booleanPrimitiveType = booleanNumberType.AsPrimitiveType();
-          var booleanNumberLabel =
-              SchemaGeneratorUtil.GetTypeName(booleanNumberType);
-          var booleanPrimitiveLabel =
-              SchemaGeneratorUtil.GetPrimitiveLabel(booleanPrimitiveType);
           cbsb.WriteLine(
-                  $"ew.Write{booleanPrimitiveLabel}(({booleanNumberLabel}) (this.{member.Name} != null ? 1 : 0));")
+                  $"{GetWritePrimitiveText_(SchemaPrimitiveType.BOOLEAN, ifBoolean.ImmediateBooleanType.AsNumberType(), $"this.{member.Name} != null")};")
               .EnterBlock($"if (this.{member.Name} != null)");
         } else {
           cbsb.EnterBlock($"if (this.{ifBoolean.OtherMember.Name})");
@@ -210,154 +205,105 @@ namespace schema.binary.text {
     private static void WritePrimitive_(
         ICurlyBracketTextWriter cbsb,
         ISchemaValueMember member) {
-      var primitiveType =
-          Asserts.CastNonnull(member.MemberType as IPrimitiveMemberType);
-
-      if (primitiveType.PrimitiveType == SchemaPrimitiveType.BOOLEAN) {
-        BinarySchemaWriterGenerator.WriteBoolean_(cbsb, member);
+      var primitiveMemberType = member.MemberType as IPrimitiveMemberType;
+      if (primitiveMemberType == null) {
+        Asserts.Fail();
         return;
       }
+
+      var useAltFormat = primitiveMemberType.UseAltFormat;
+      var altFormat = primitiveMemberType.AltFormat;
+      var primitiveType = primitiveMemberType.PrimitiveType;
 
       HandleMemberEndiannessAndTracking_(
           cbsb,
           member,
           () => {
-            var writeType = SchemaGeneratorUtil
-                .GetPrimitiveLabel(
-                    primitiveType.UseAltFormat
-                        ? primitiveType.AltFormat.AsPrimitiveType()
-                        : primitiveType.PrimitiveType);
+            var writeType = useAltFormat
+                ? altFormat.AsPrimitiveType()
+                : primitiveType;
+            var writeTypeLabel =
+                SchemaGeneratorUtil.GetPrimitiveLabel(writeType);
 
             var isNotDelayed =
-                !primitiveType.SizeOfStream
-                && primitiveType.AccessChainToSizeOf == null
-                && primitiveType.AccessChainToPointer == null;
+                !primitiveMemberType.SizeOfStream
+                && primitiveMemberType.AccessChainToSizeOf == null
+                && primitiveMemberType.AccessChainToPointer == null;
             if (isNotDelayed) {
-              var needToCast =
-                  primitiveType.UseAltFormat &&
-                  primitiveType.PrimitiveType !=
-                  SchemaPrimitiveTypesUtil
-                      .GetUnderlyingPrimitiveType(
-                          primitiveType.AltFormat.AsPrimitiveType());
-
-              var castText = "";
-              if (needToCast) {
-                var castType =
-                    SchemaGeneratorUtil.GetTypeName(primitiveType.AltFormat);
-                castText = $"({castType}) ";
-              }
-
               var accessText = $"this.{member.Name}";
               if (member.MemberType.TypeInfo.IsNullable) {
                 accessText = $"{accessText}.Value";
               }
 
-              if (member.MemberType is IPrimitiveMemberType
-                  primitiveMemberType) {
-                var lengthOfStringMembers =
-                    primitiveMemberType.LengthOfStringMembers;
-                var isLengthOfString = lengthOfStringMembers is { Length: > 0 };
-                if (isLengthOfString) {
-                  accessText = $"{lengthOfStringMembers[0].Name}.Length";
-                  if (lengthOfStringMembers.Length > 1) {
-                    cbsb.WriteLine(
-                        $"Asserts.AllEqual({string.Join(", ", lengthOfStringMembers.Select(member => $"{member.Name}.Length"))});");
-                  }
-                }
-
-                var lengthOfSequenceMembers =
-                    primitiveMemberType.LengthOfSequenceMembers;
-                var isLengthOfSequence = lengthOfSequenceMembers is
-                    { Length: > 0 };
-                if (isLengthOfSequence) {
-                  var first = lengthOfSequenceMembers[0];
-                  var firstLengthName =
-                      (first.MemberTypeInfo as ISequenceTypeInfo).LengthName;
-                  accessText = $"{first.Name}.{firstLengthName}";
-                  if (lengthOfSequenceMembers.Length > 1) {
-                    cbsb.WriteLine(
-                        $"Asserts.AllEqual({string.Join(", ", lengthOfSequenceMembers.Select(
-                            member => {
-                              var lengthName =
-                                  (member.MemberTypeInfo as ISequenceTypeInfo).LengthName;
-                              return $"{member.Name}.{lengthName}";
-                            }))});");
-                  }
-                }
-
-                if (isLengthOfSequence) { }
-
-                if ((isLengthOfString || isLengthOfSequence) &&
-                    primitiveType.PrimitiveType != SchemaPrimitiveType.INT32) {
-                  var castType =
-                      SchemaGeneratorUtil.GetTypeName(
-                          primitiveType.PrimitiveType.AsNumberType());
-                  castText = $"({castType}) ";
+              var lengthOfStringMembers =
+                  primitiveMemberType.LengthOfStringMembers;
+              var isLengthOfString = lengthOfStringMembers is { Length: > 0 };
+              if (isLengthOfString) {
+                accessText = $"{lengthOfStringMembers[0].Name}.Length";
+                if (lengthOfStringMembers.Length > 1) {
+                  cbsb.WriteLine(
+                      $"Asserts.AllEqual({string.Join(", ", lengthOfStringMembers.Select(member => $"{member.Name}.Length"))});");
                 }
               }
 
-              cbsb.WriteLine(
-                  $"ew.Write{writeType}({castText}{accessText});");
+              var lengthOfSequenceMembers =
+                  primitiveMemberType.LengthOfSequenceMembers;
+              var isLengthOfSequence = lengthOfSequenceMembers is
+                  { Length: > 0 };
+              if (isLengthOfSequence) {
+                var first = lengthOfSequenceMembers[0];
+                var firstLengthName =
+                    (first.MemberTypeInfo as ISequenceTypeInfo).LengthName;
+                accessText = $"{first.Name}.{firstLengthName}";
+                if (lengthOfSequenceMembers.Length > 1) {
+                  cbsb.WriteLine(
+                      $"Asserts.AllEqual({string.Join(", ", lengthOfSequenceMembers.Select(
+                          member => {
+                            var lengthName =
+                                (member.MemberTypeInfo as ISequenceTypeInfo).LengthName;
+                            return $"{member.Name}.{lengthName}";
+                          }))});");
+                }
+              }
+
+              if ((isLengthOfString || isLengthOfSequence) &&
+                  !primitiveType.AsIntegerType().CanAcceptAnInt32()) {
+                cbsb.WriteLine(
+                    $"{GetWritePrimitiveText_(
+                        SchemaPrimitiveType.INT32,
+                        primitiveType.AsNumberType(),
+                        accessText)};");
+              } else {
+                cbsb.WriteLine(
+                    $"{GetWritePrimitiveText_(primitiveMemberType, accessText)};");
+              }
             } else {
-              var needToCast =
-                  primitiveType.PrimitiveType !=
-                  SchemaPrimitiveType.INT64;
+              var needToCast = primitiveType != SchemaPrimitiveType.INT64;
 
               var castText = "";
               if (needToCast) {
                 var castType =
                     SchemaGeneratorUtil.GetTypeName(
-                        primitiveType.PrimitiveType.AsNumberType());
+                        primitiveType.AsNumberType());
                 castText =
                     $".ContinueWith(task => ({castType}) task.Result)";
               }
 
               string accessText;
-              var typeChain =
-                  primitiveType
-                      .AccessChainToSizeOf ??
-                  primitiveType
-                      .AccessChainToPointer;
+              var typeChain = primitiveMemberType.AccessChainToSizeOf ??
+                              primitiveMemberType.AccessChainToPointer;
               if (typeChain != null) {
-                accessText =
-                    primitiveType
-                        .AccessChainToSizeOf !=
-                    null
-                        ? $"ew.GetSizeOfMemberRelativeToScope(\"{typeChain.Path}\")"
-                        : $"ew.GetPointerToMemberRelativeToScope(\"{typeChain.Path}\")";
+                accessText = primitiveMemberType.AccessChainToSizeOf != null
+                    ? $"ew.GetSizeOfMemberRelativeToScope(\"{typeChain.Path}\")"
+                    : $"ew.GetPointerToMemberRelativeToScope(\"{typeChain.Path}\")";
               } else {
                 accessText =
                     "ew.GetAbsoluteLength()";
               }
 
               cbsb.WriteLine(
-                  $"ew.Write{writeType}Delayed({accessText}{castText});");
+                  $"ew.Write{writeTypeLabel}Delayed({accessText}{castText});");
             }
-          });
-    }
-
-    private static void WriteBoolean_(
-        ICurlyBracketTextWriter cbsb,
-        ISchemaValueMember member) {
-      HandleMemberEndiannessAndTracking_(
-          cbsb,
-          member,
-          () => {
-            var primitiveType =
-                Asserts.CastNonnull(member.MemberType as IPrimitiveMemberType);
-
-            var writeType = SchemaGeneratorUtil
-                .GetPrimitiveLabel(primitiveType.AltFormat.AsPrimitiveType());
-            var castType =
-                SchemaGeneratorUtil.GetTypeName(primitiveType.AltFormat);
-
-            var accessText = $"this.{member.Name}";
-            if (member.MemberType.TypeInfo.IsNullable) {
-              accessText = $"{accessText}.Value";
-            }
-
-            cbsb.WriteLine(
-                $"ew.Write{writeType}(({castType}) ({accessText} ? 1 : 0));");
           });
     }
 
@@ -441,18 +387,11 @@ namespace schema.binary.text {
             SequenceLengthSourceType.IMMEDIATE_VALUE;
 
         if (isImmediate) {
-          var writeType = SchemaGeneratorUtil.GetIntLabel(
-              arrayType.ImmediateLengthType);
-
-          var castType =
-              SchemaGeneratorUtil.GetTypeName(
-                  arrayType.ImmediateLengthType.AsNumberType());
-
           var arrayLengthName = arrayType.SequenceTypeInfo.LengthName;
           var arrayLengthAccessor = $"this.{member.Name}.{arrayLengthName}";
 
           cbsb.WriteLine(
-              $"ew.Write{writeType}(({castType}) {arrayLengthAccessor});");
+              $"{GetWritePrimitiveText_(SchemaPrimitiveType.INT32, arrayType.ImmediateLengthType.AsNumberType(), arrayLengthAccessor)};");
         }
       }
 
@@ -503,35 +442,12 @@ namespace schema.binary.text {
               }
 
               // Primitives that *do* need to be cast have to be written individually.
-              var writeType =
-                  SchemaGeneratorUtil
-                      .GetPrimitiveLabel(
-                          primitiveElementType.AltFormat.AsPrimitiveType());
               var arrayLengthName =
                   sequenceType.SequenceTypeInfo.LengthName;
-              var needToCast =
-                  primitiveElementType
-                      .UseAltFormat &&
-                  primitiveElementType
-                      .PrimitiveType !=
-                  SchemaPrimitiveTypesUtil
-                      .GetUnderlyingPrimitiveType(
-                          primitiveElementType.AltFormat.AsPrimitiveType());
-
-              var castText = "";
-              if (needToCast) {
-                var castType =
-                    SchemaGeneratorUtil
-                        .GetTypeName(
-                            primitiveElementType
-                                .AltFormat);
-                castText = $"({castType}) ";
-              }
-
               cbsb.EnterBlock(
                       $"for (var i = 0; i < this.{member.Name}.{arrayLengthName}; ++i)")
                   .WriteLine(
-                      $"ew.Write{writeType}({castText}this.{member.Name}[i]);")
+                      $"{GetWritePrimitiveText_(primitiveElementType, $"this.{member.Name}[i]")};")
                   .ExitBlock();
               return;
             }
@@ -565,6 +481,77 @@ namespace schema.binary.text {
             // Anything that makes it down here probably isn't meant to be read.
             throw new NotImplementedException();
           });
+    }
+
+    private static string GetWritePrimitiveText_(
+        IPrimitiveMemberType primitiveMemberType,
+        string accessText)
+      => GetWritePrimitiveText_(
+          primitiveMemberType.UseAltFormat,
+          primitiveMemberType.PrimitiveType,
+          primitiveMemberType.AltFormat.AsPrimitiveType(),
+          accessText);
+
+    private static string GetWritePrimitiveText_(
+        bool useAltFormat,
+        SchemaPrimitiveType primitiveType,
+        SchemaPrimitiveType altFormat,
+        string accessText) {
+      var writeType = useAltFormat ? altFormat : primitiveType;
+      var writeMethod =
+          $"ew.Write{SchemaGeneratorUtil.GetPrimitiveLabel(writeType)}";
+
+      bool needToCast = false;
+      if (primitiveType == SchemaPrimitiveType.BOOLEAN) {
+        accessText = $"{accessText} ? 1 : 0";
+        needToCast = !altFormat.AsIntegerType().CanAcceptAnInt32();
+        if (needToCast) {
+          accessText = $"({accessText})";
+        }
+      } else if (useAltFormat) {
+        needToCast = primitiveType != SchemaPrimitiveTypesUtil
+            .GetUnderlyingPrimitiveType(altFormat);
+      }
+
+      var castText = "";
+      if (needToCast) {
+        var castType =
+            SchemaGeneratorUtil.GetTypeName(writeType.AsNumberType());
+        castText = $"({castType}) ";
+      }
+
+
+      return $"{writeMethod}({castText}{accessText})";
+    }
+
+
+    private static string GetWritePrimitiveText_(
+        SchemaPrimitiveType srcType,
+        SchemaNumberType dstType,
+        string accessText) {
+      var dstPrimitiveType = dstType.AsPrimitiveType();
+      var writeType = SchemaGeneratorUtil.GetPrimitiveLabel(dstPrimitiveType);
+      var writeMethod = $"ew.Write{writeType}";
+
+      bool needToCast;
+      if (srcType == SchemaPrimitiveType.BOOLEAN) {
+        accessText = $"{accessText} ? 1 : 0";
+        needToCast = !dstPrimitiveType.AsIntegerType().CanAcceptAnInt32();
+        if (needToCast) {
+          accessText = $"({accessText})";
+        }
+      } else {
+        needToCast = dstType.AsPrimitiveType() != SchemaPrimitiveTypesUtil
+            .GetUnderlyingPrimitiveType(srcType);
+      }
+
+      var castText = "";
+      if (needToCast) {
+        var castType = SchemaGeneratorUtil.GetTypeName(dstType);
+        castText = $"({castType}) ";
+      }
+
+      return $"{writeMethod}({castText}{accessText})";
     }
   }
 }

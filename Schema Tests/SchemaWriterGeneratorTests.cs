@@ -362,7 +362,7 @@ namespace foo.bar {
       ew.WriteInt32s(this.intValues);" +
                             @"
       this.other.Write(ew);
-      ew.WriteInt32((int) this.others.Length);
+      ew.WriteInt32(this.others.Length);
       foreach (var e in this.others) {
         e.Write(ew);
       }

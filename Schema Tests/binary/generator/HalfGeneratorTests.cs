@@ -28,10 +28,10 @@ using System.IO;
 namespace foo.bar {
   public partial class HalfWrapper {
     public void Read(IEndianBinaryReader er) {
-      this.field1 = (Single) er.ReadHalf();
+      this.field1 = (float) er.ReadHalf();
       er.AssertHalf((float) this.field2);
       for (var i = 0; i < this.field3.Length; ++i) {
-        this.field3[i] = (Single) er.ReadHalf();
+        this.field3[i] = (float) er.ReadHalf();
       }
     }
   }
