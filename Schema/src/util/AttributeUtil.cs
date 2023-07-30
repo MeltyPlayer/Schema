@@ -50,11 +50,11 @@ namespace schema.util {
       var argumentText = argumentSyntaxList?.Select(arg => arg.ToString())
                                            .ToArray();
 
-      INamedTypeSymbol parentType;
+      ISymbol parentType;
       if (attachedSymbol is IMethodSymbol or IFieldSymbol or IPropertySymbol) {
         parentType = attachedSymbol.ContainingType;
       } else {
-        parentType = attachedSymbol as INamedTypeSymbol;
+        parentType = attachedSymbol;
       }
 
       var expectedParameterCount = constructor.GetParameters().Length;

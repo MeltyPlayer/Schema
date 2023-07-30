@@ -26,20 +26,36 @@ namespace schema.binary.dependencies {
                  EncodingType: not StringEncodingType.ASCII,
              });
 
+
+    public static bool DependsOnSchemaUtil(
+        this IBinarySchemaStructure structure)
+      => structure
+         .Members
+         .OfType<ISchemaValueMember>()
+         .Any(
+             member
+                 => member.MemberType is
+                     IPrimitiveMemberType {
+                         LengthOfStringMembers.Length: > 1
+                     } or
+                     IPrimitiveMemberType {
+                         LengthOfSequenceMembers.Length: > 1
+                     });
+
     public static bool DependsOnCollectionsImports(
         this IBinarySchemaStructure structure)
       => structure
          .Members
          .OfType<ISchemaValueMember>()
          .Any(
-          member => member is {
-              MemberType: ISequenceMemberType {
-                  LengthSourceType: SequenceLengthSourceType
-                      .UNTIL_END_OF_STREAM
-              }
-          } or {
-              MemberType: ISequenceMemberType,
-              IfBoolean: { },
-          });
+             member => member is {
+                 MemberType: ISequenceMemberType {
+                     LengthSourceType: SequenceLengthSourceType
+                         .UNTIL_END_OF_STREAM
+                 }
+             } or {
+                 MemberType: ISequenceMemberType,
+                 IfBoolean: { },
+             });
   }
 }

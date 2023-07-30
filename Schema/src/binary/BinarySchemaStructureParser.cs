@@ -52,8 +52,8 @@ namespace schema.binary {
     SchemaNumberType AltFormat { get; }
 
     bool SizeOfStream { get; }
-    IMemberReference<string>? LengthOfStringMember { get; }
-    IMemberReference? LengthOfSequenceMember { get; }
+    IMemberReference<string>[]? LengthOfStringMembers { get; }
+    IMemberReference[]? LengthOfSequenceMembers { get; }
     IChain<IAccessChainNode>? AccessChainToSizeOf { get; }
     IChain<IAccessChainNode>? AccessChainToPointer { get; }
   }
@@ -629,8 +629,8 @@ namespace schema.binary {
       public SchemaNumberType AltFormat { get; set; }
 
       public bool SizeOfStream { get; set; }
-      public IMemberReference<string>? LengthOfStringMember { get; set; }
-      public IMemberReference? LengthOfSequenceMember { get; set; }
+      public IMemberReference<string>[]? LengthOfStringMembers { get; set; }
+      public IMemberReference[]? LengthOfSequenceMembers { get; set; }
       public IChain<IAccessChainNode>? AccessChainToSizeOf { get; set; }
       public IChain<IAccessChainNode>? AccessChainToPointer { get; set; }
     }

@@ -23,7 +23,8 @@ namespace schema.binary.attributes {
   ///     length source.
   ///   </para>
   /// </summary>
-  [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+  [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property,
+                  AllowMultiple = true)]
   public class WLengthOfSequenceAttribute : BMemberAttribute {
     private string otherMemberName_;
 

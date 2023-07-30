@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace schema.util {
@@ -9,7 +10,6 @@ namespace schema.util {
      * NOTE: Using $"" to define messages allocates strings, and can be expensive!
      * Try to avoid allocating strings unless an assertion actually fails.
      */
-
     public class AssertionException : Exception {
       public AssertionException(string message) : base(message) { }
 
@@ -41,13 +41,13 @@ namespace schema.util {
         object? instance,
         string? message = null)
       => True(instance != null,
-                      message ?? "Expected reference to be nonnull.");
+              message ?? "Expected reference to be nonnull.");
 
     public static T CastNonnull<T>(
         T? instance,
         string? message = null) {
       True(instance != null,
-                   message ?? "Expected reference to be nonnull.");
+           message ?? "Expected reference to be nonnull.");
       return instance!;
     }
 
@@ -73,9 +73,14 @@ namespace schema.util {
         object? expected,
         object? actual,
         string? message = null) {
-      if (expected?.Equals(actual) ?? false) {
+      if (expected == null && actual == null) {
         return true;
       }
+
+      if (expected?.Equals(actual) ?? actual?.Equals(expected) ?? false) {
+        return true;
+      }
+
       Fail(message ?? $"Expected {actual} to equal {expected}.");
       return false;
     }
@@ -97,6 +102,7 @@ namespace schema.util {
         if (!Equals(currentA, currentB)) {
           Fail($"Expected {currentA} to equal {currentB} at index ${index}.");
         }
+
         index++;
 
         hasA = enumeratorA.MoveNext();
@@ -104,16 +110,38 @@ namespace schema.util {
       }
 
       True(!hasA && !hasB,
-                   "Expected enumerables to be the same length.");
+           "Expected enumerables to be the same length.");
     }
+
+
+    public static bool AllEqual<T>(params T[] values) {
+      if (values.Length <= 1) {
+        return true;
+      }
+
+      var first = values[0];
+      foreach (var value in values.Skip(1)) {
+        if (!Equal<T>(first, value)) {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
 
     public static bool Equal<T>(
         T expected,
         T actual,
         string? message = null) {
-      if (expected?.Equals(actual) ?? false) {
+      if (expected == null && actual == null) {
         return true;
       }
+
+      if (expected?.Equals(actual) ?? actual?.Equals(expected) ?? false) {
+        return true;
+      }
+
       Fail(message ?? $"Expected {actual} to equal {expected}.");
       return false;
     }

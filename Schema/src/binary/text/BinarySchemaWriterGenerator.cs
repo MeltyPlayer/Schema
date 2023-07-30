@@ -31,6 +31,10 @@ namespace schema.binary.text {
           dependencies.Add("schema.binary.attributes");
         }
 
+        if (structure.DependsOnSchemaUtil()) {
+          dependencies.Add("schema.util");
+        }
+
         dependencies.Sort(StringComparer.Ordinal);
         foreach (var dependency in dependencies) {
           cbsb.WriteLine($"using {dependency};");
@@ -250,23 +254,38 @@ namespace schema.binary.text {
 
               if (member.MemberType is IPrimitiveMemberType
                   primitiveMemberType) {
-                var isLengthOfString =
-                    primitiveMemberType.LengthOfStringMember != null;
-                var isLengthOfSequence =
-                    primitiveMemberType.LengthOfSequenceMember != null;
-
+                var lengthOfStringMembers =
+                    primitiveMemberType.LengthOfStringMembers;
+                var isLengthOfString = lengthOfStringMembers is { Length: > 0 };
                 if (isLengthOfString) {
-                  accessText =
-                      $"{primitiveMemberType.LengthOfStringMember!.Name}.Length";
+                  accessText = $"{lengthOfStringMembers[0].Name}.Length";
+                  if (lengthOfStringMembers.Length > 1) {
+                    cbsb.WriteLine(
+                        $"Asserts.AllEqual({string.Join(", ", lengthOfStringMembers.Select(member => $"{member.Name}.Length"))});");
+                  }
                 }
 
+                var lengthOfSequenceMembers =
+                    primitiveMemberType.LengthOfSequenceMembers;
+                var isLengthOfSequence = lengthOfSequenceMembers is
+                    { Length: > 0 };
                 if (isLengthOfSequence) {
-                  var lengthName =
-                      (primitiveMemberType.LengthOfSequenceMember.MemberTypeInfo
-                          as ISequenceTypeInfo).LengthName;
-                  accessText =
-                      $"{primitiveMemberType.LengthOfSequenceMember.Name}.{lengthName}";
+                  var first = lengthOfSequenceMembers[0];
+                  var firstLengthName =
+                      (first.MemberTypeInfo as ISequenceTypeInfo).LengthName;
+                  accessText = $"{first.Name}.{firstLengthName}";
+                  if (lengthOfSequenceMembers.Length > 1) {
+                    cbsb.WriteLine(
+                        $"Asserts.AllEqual({string.Join(", ", lengthOfSequenceMembers.Select(
+                            member => {
+                              var lengthName =
+                                  (member.MemberTypeInfo as ISequenceTypeInfo).LengthName;
+                              return $"{member.Name}.{lengthName}";
+                            }))});");
+                  }
                 }
+
+                if (isLengthOfSequence) { }
 
                 if ((isLengthOfString || isLengthOfSequence) &&
                     primitiveType.PrimitiveType != SchemaPrimitiveType.INT32) {

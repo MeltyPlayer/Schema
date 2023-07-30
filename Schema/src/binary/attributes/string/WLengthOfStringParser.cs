@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 
 using System.Collections.Generic;
+using System.Linq;
 
 using schema.binary.parser;
 
@@ -11,19 +12,19 @@ namespace schema.binary.attributes {
                                     ISymbol memberSymbol,
                                     ITypeInfo memberTypeInfo,
                                     IMemberType memberType) {
-      var lengthOfStringAttribute =
-          SymbolTypeUtil.GetAttribute<WLengthOfStringAttribute>(
-              diagnostics,
-              memberSymbol);
-      if (lengthOfStringAttribute == null) {
+      var lengthOfStringAttributes =
+          memberSymbol.GetAttributes<WLengthOfStringAttribute>(diagnostics)
+                      .ToArray();
+      if (lengthOfStringAttributes.Length == 0) {
         return;
       }
 
       if (memberTypeInfo is IIntegerTypeInfo &&
           memberType is BinarySchemaStructureParser.PrimitiveMemberType
               primitiveMemberType) {
-        primitiveMemberType.LengthOfStringMember =
-            lengthOfStringAttribute.OtherMember;
+        primitiveMemberType.LengthOfStringMembers =
+            lengthOfStringAttributes.Select(attr => attr.OtherMember)
+                                    .ToArray();
       } else {
         diagnostics.Add(
             Rules.CreateDiagnostic(memberSymbol, Rules.NotSupported));
