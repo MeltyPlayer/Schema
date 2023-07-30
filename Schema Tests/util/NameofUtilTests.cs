@@ -8,9 +8,42 @@ namespace schema.util {
 
     [Test]
     public void TestNameof() {
-      Assert.AreEqual("NameofUtilTests.Value",
+      Assert.AreEqual("Value",
                       NameofUtil.GetChainedAccessFromCallerArgumentExpression(
+                          ReturnArgumentText_(nameof(Value))));
+    }
+
+    [Test]
+    public void TestThisAccessorNameof() {
+      Assert.AreEqual("Value",
+                      NameofUtil.GetChainedAccessFromCallerArgumentExpression(
+                          ReturnArgumentText_(nameof(this.Value))));
+    }
+
+    [Test]
+    public void TestStaticAccessorNameof() {
+      Assert.AreEqual("Value",
+                      NameofUtil.GetChainedAccessFromCallerArgumentExpression(
+                          typeof(NameofUtilTests),
                           ReturnArgumentText_(nameof(NameofUtilTests.Value))));
+    }
+
+    [Test]
+    public void TestQualifiedStaticAccessorNameof() {
+      Assert.AreEqual("Value",
+                      NameofUtil.GetChainedAccessFromCallerArgumentExpression(
+                          typeof(NameofUtilTests),
+                          ReturnArgumentText_(
+                              nameof(schema.util.NameofUtilTests.Value))));
+    }
+
+    [Test]
+    public void TestPartiallyQualifiedStaticAccessorNameof() {
+      Assert.AreEqual("Value",
+                      NameofUtil.GetChainedAccessFromCallerArgumentExpression(
+                          typeof(NameofUtilTests),
+                          ReturnArgumentText_(
+                              nameof(util.NameofUtilTests.Value))));
     }
 
     [Test]

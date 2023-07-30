@@ -11,6 +11,7 @@ namespace schema.util {
   public static class AttributeUtil {
     public static TAttribute Instantiate<TAttribute>(
         this AttributeData attributeData,
+        ISymbol attachedSymbol,
         IList<Diagnostic> diagnostics) where TAttribute : Attribute {
       var parameters = attributeData.AttributeConstructor.Parameters;
 
@@ -49,6 +50,13 @@ namespace schema.util {
       var argumentText = argumentSyntaxList?.Select(arg => arg.ToString())
                                            .ToArray();
 
+      INamedTypeSymbol parentType;
+      if (attachedSymbol is IMethodSymbol or IFieldSymbol or IPropertySymbol) {
+        parentType = attachedSymbol.ContainingType;
+      } else {
+        parentType = attachedSymbol as INamedTypeSymbol;
+      }
+
       var expectedParameterCount = constructor.GetParameters().Length;
       var arguments =
           attributeData
@@ -56,7 +64,7 @@ namespace schema.util {
               .Select((a, i) => a.Value is string
                           ? NameofUtil
                               .GetChainedAccessFromCallerArgumentExpression(
-                                  argumentText[i])
+                                  parentType, argumentText[i])
                           : a.Value)
               .Concat(
                   Enumerable.Repeat(Type.Missing,

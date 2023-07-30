@@ -1,8 +1,8 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.text {
-  internal class StringGeneratorTests {
+namespace schema.binary.attributes {
+  internal partial class StringLengthSourceAttributeTests {
     [Test]
     public void TestConstString() {
       BinarySchemaTestUtil.AssertGenerated(@"
@@ -14,7 +14,7 @@ namespace foo.bar {
     public readonly string Field = ""foo"";
   }
 }",
-                                     @"using System;
+                                           @"using System;
 using System.IO;
 
 namespace foo.bar {
@@ -25,7 +25,7 @@ namespace foo.bar {
   }
 }
 ",
-                                     @"using System;
+                                           @"using System;
 using System.IO;
 
 namespace foo.bar {
@@ -51,7 +51,7 @@ namespace foo.bar {
     public string Field;
   }
 }",
-                                     @"using System;
+                                           @"using System;
 using System.IO;
 
 namespace foo.bar {
@@ -62,7 +62,7 @@ namespace foo.bar {
   }
 }
 ",
-                                     @"using System;
+                                           @"using System;
 using System.IO;
 
 namespace foo.bar {

@@ -192,7 +192,7 @@ namespace schema.binary {
       => symbol.GetAttributeData<TAttribute>()
                .Select(attributeData => {
                  var attribute =
-                     attributeData.Instantiate<TAttribute>(diagnostics);
+                     attributeData.Instantiate<TAttribute>(symbol, diagnostics);
                  if (attribute is BMemberAttribute memberAttribute) {
                    memberAttribute.Init(diagnostics,
                                         symbol.ContainingType,

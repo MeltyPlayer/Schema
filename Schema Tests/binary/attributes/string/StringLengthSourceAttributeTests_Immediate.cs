@@ -1,8 +1,8 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.text {
-  internal class StringLengthSourceGeneratorTests {
+namespace schema.binary.attributes {
+  internal partial class StringLengthSourceAttributeTests {
     [Test]
     public void TestImmediateLengthUInt32() {
       BinarySchemaTestUtil.AssertGenerated(@"
