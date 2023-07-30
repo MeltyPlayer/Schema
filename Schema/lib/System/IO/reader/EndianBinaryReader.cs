@@ -110,6 +110,7 @@ namespace System.IO {
             new EndianBinaryReader(
                 new RangedSubstream(this.BaseStream_, position, len),
                 this.Endianness);
+        ser.positionManagerImpl_ = this.positionManagerImpl_;
         subread(ser);
       }
       this.Position = tempPos;
