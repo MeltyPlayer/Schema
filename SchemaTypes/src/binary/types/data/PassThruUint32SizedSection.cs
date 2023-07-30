@@ -28,7 +28,7 @@ namespace schema.binary.types.data {
 
     public void Read(IEndianBinaryReader er) {
       this.size_ = er.ReadUInt32();
-      
+
       var useSize = this.size_ + this.tweakSize_;
       var basePosition = er.Position;
       er.Subread(er.Position, (int) useSize, this.Data.Read);

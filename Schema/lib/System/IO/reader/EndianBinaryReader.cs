@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-using SubstreamSharp;
+using schema.util.streams;
 
 namespace System.IO {
   public sealed partial class EndianBinaryReader : IEndianBinaryReader,
@@ -108,7 +108,7 @@ namespace System.IO {
 
         using var ser =
             new EndianBinaryReader(
-                new Substream(this.BaseStream_, position, len),
+                new RangedSubstream(this.BaseStream_, position, len),
                 this.Endianness);
         subread(ser);
       }
