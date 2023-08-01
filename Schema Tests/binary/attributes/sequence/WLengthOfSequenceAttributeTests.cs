@@ -123,7 +123,9 @@ namespace foo.bar {
       this.Sequence1 = SequencesUtil.CloneAndResizeSequence(this.Sequence1, this.Length);
       er.ReadBytes(this.Sequence1);
       SequencesUtil.ResizeSequenceInPlace(this.Sequence2, this.Length);
-      er.ReadBytes(this.Sequence2);
+      for (var i = 0; i < this.Sequence2.Count; ++i) {
+        this.Sequence2[i] = er.ReadByte();
+      }
     }
   }
 }
@@ -138,7 +140,9 @@ namespace foo.bar {
       Asserts.AllEqual(Sequence1.Length, Sequence2.Count);
       ew.WriteInt32(Sequence1.Length);
       ew.WriteBytes(this.Sequence1);
-      ew.WriteBytes(this.Sequence2);
+      for (var i = 0; i < this.Sequence2.Count; ++i) {
+        ew.WriteByte(this.Sequence2[i]);
+      }
     }
   }
 }

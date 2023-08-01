@@ -551,31 +551,29 @@ namespace schema.binary.text {
           cbsb,
           member,
           () => {
-            var sequenceType =
-                Asserts.CastNonnull(
-                    member.MemberType as
-                        ISequenceMemberType);
+            var sequenceMemberType =
+                Asserts.CastNonnull(member.MemberType as ISequenceMemberType);
+            var sequenceTypeInfo = sequenceMemberType.SequenceTypeInfo;
+            var sequenceType = sequenceTypeInfo.SequenceType;
 
-            if (sequenceType.SequenceTypeInfo.SequenceType is SequenceType
-                    .MUTABLE_SEQUENCE or SequenceType.READ_ONLY_SEQUENCE) {
+            if (sequenceType.IsSequence()) {
               cbsb.WriteLine($"this.{member.Name}.Read(er);");
               return;
             }
 
-            var elementType = sequenceType.ElementType;
+            var elementType = sequenceMemberType.ElementType;
             if (elementType is IGenericMemberType
                 genericElementType) {
               elementType =
                   genericElementType.ConstraintType;
             }
 
-            if (elementType is IPrimitiveMemberType
-                primitiveElementType) {
+            if (elementType is IPrimitiveMemberType primitiveElementType) {
               // Primitives that don't need to be cast are the easiest to read.
-              if (!primitiveElementType.UseAltFormat) {
-                var label =
-                    SchemaGeneratorUtil.GetPrimitiveLabel(
-                        primitiveElementType.PrimitiveType);
+              if (!primitiveElementType.UseAltFormat &&
+                  sequenceType.IsArray()) {
+                var label = SchemaGeneratorUtil.GetPrimitiveLabel(
+                    primitiveElementType.PrimitiveType);
                 if (!primitiveElementType.IsReadOnly) {
                   cbsb.WriteLine(
                       $"er.Read{label}s(this.{member.Name});");
@@ -589,8 +587,7 @@ namespace schema.binary.text {
 
               // Primitives that *do* need to be cast have to be read individually.
               if (!primitiveElementType.IsReadOnly) {
-                var arrayLengthName =
-                    sequenceType.SequenceTypeInfo.LengthName;
+                var arrayLengthName = sequenceTypeInfo.LengthName;
 
                 cbsb.EnterBlock(
                         $"for (var i = 0; i < this.{member.Name}.{arrayLengthName}; ++i)")
@@ -624,8 +621,7 @@ namespace schema.binary.text {
                 cbsb.WriteLine("e.Read(er);");
                 cbsb.ExitBlock();
               } else {
-                var arrayLengthName =
-                    sequenceType.SequenceTypeInfo.LengthName;
+                var arrayLengthName = sequenceTypeInfo.LengthName;
                 cbsb.EnterBlock(
                     $"for (var i = 0; i < this.{member.Name}.{arrayLengthName}; ++i)");
                 cbsb.WriteLine(
@@ -708,7 +704,6 @@ namespace schema.binary.text {
                      primitiveType !=
                      SchemaPrimitiveTypesUtil.GetUnderlyingPrimitiveType(
                          altFormat.AsPrimitiveType());
-
       }
 
       var castText = "";

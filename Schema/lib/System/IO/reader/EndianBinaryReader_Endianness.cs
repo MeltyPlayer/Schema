@@ -2,10 +2,15 @@
 
 namespace System.IO {
   public sealed partial class EndianBinaryReader {
-    public Endianness Endianness => this.BufferedStream_.Endianness;
+    public Endianness Endianness {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => this.BufferedStream_.Endianness;
+    }
 
-    public bool IsOppositeEndiannessOfSystem
-      => this.BufferedStream_.IsOppositeEndiannessOfSystem;
+    public bool IsOppositeEndiannessOfSystem {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => this.BufferedStream_.IsOppositeEndiannessOfSystem;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PushStructureEndianness(Endianness endianness)

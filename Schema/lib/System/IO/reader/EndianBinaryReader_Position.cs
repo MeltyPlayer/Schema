@@ -6,9 +6,11 @@ namespace System.IO {
     public long Position {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => this.positionManagerImpl_.Position;
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       set => this.positionManagerImpl_.Position = value;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AssertPosition(long expectedPosition) {
       EndianBinaryReader.Assert_(expectedPosition, this.Position);
     }

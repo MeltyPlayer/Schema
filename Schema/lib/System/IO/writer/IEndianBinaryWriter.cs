@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using schema.binary.attributes;
 
@@ -17,6 +18,66 @@ namespace System.IO {
     void WriteSByte(sbyte value);
     void WriteSBytes(ReadOnlySpan<sbyte> values);
     void WriteSBytes(sbyte[] values, int offset, int count);
+
+    void WriteInt16(short value);
+    void WriteInt16s(ReadOnlySpan<short> values);
+    void WriteInt16s(short[] values, int offset, int count);
+
+    void WriteUInt16(ushort value);
+    void WriteUInt16s(ReadOnlySpan<ushort> values);
+    void WriteUInt16s(ushort[] values, int offset, int count);
+
+    void WriteInt24(int value);
+    void WriteInt24s(ReadOnlySpan<int> values);
+    void WriteInt24s(int[] values, int offset, int count);
+
+    void WriteUInt24(uint value);
+    void WriteUInt24s(ReadOnlySpan<uint> values);
+    void WriteUInt24s(uint[] values, int offset, int count);
+
+    void WriteInt32(int value);
+    void WriteInt32s(ReadOnlySpan<int> values);
+    void WriteInt32s(int[] values, int offset, int count);
+
+    void WriteUInt32(uint value);
+    void WriteUInt32s(ReadOnlySpan<uint> values);
+    void WriteUInt32s(uint[] values, int offset, int count);
+
+    void WriteInt64(long value);
+    void WriteInt64s(ReadOnlySpan<long> values);
+    void WriteInt64s(long[] values, int offset, int count);
+
+    void WriteUInt64(ulong value);
+    void WriteUInt64s(ReadOnlySpan<ulong> values);
+    void WriteUInt64s(ulong[] values, int offset, int count);
+
+    void WriteHalf(float value);
+    void WriteHalfs(ReadOnlySpan<float> values);
+    void WriteHalfs(float[] values, int offset, int count);
+
+    void WriteSingle(float value);
+    void WriteSingles(ReadOnlySpan<float> values);
+    void WriteSingles(float[] values, int offset, int count);
+
+    void WriteDouble(double value);
+    void WriteDoubles(ReadOnlySpan<double> values);
+    void WriteDoubles(double[] values, int offset, int count);
+
+    void WriteUn8(float value);
+    void WriteUn8s(ReadOnlySpan<float> values);
+    void WriteUn8s(float[] values, int offset, int count);
+
+    void WriteSn8(float value);
+    void WriteSn8s(ReadOnlySpan<float> values);
+    void WriteSn8s(float[] values, int offset, int count);
+
+    void WriteUn16(float value);
+    void WriteUn16s(ReadOnlySpan<float> values);
+    void WriteUn16s(float[] values, int offset, int count);
+
+    void WriteSn16(float value);
+    void WriteSn16s(ReadOnlySpan<float> values);
+    void WriteSn16s(float[] values, int offset, int count);
 
     void WriteChar(char value);
     void WriteChars(ReadOnlySpan<char> values);
@@ -41,66 +102,6 @@ namespace System.IO {
     void WriteStringWithExactLength(StringEncodingType encodingType,
                                     string value,
                                     int length);
-
-    void WriteDouble(double value);
-    void WriteDoubles(ReadOnlySpan<double> values);
-    void WriteDoubles(double[] values, int offset, int count);
-
-    void WriteHalf(float value);
-    void WriteHalfs(ReadOnlySpan<float> values);
-    void WriteHalfs(float[] values, int offset, int count);
-
-    void WriteSingle(float value);
-    void WriteSingles(ReadOnlySpan<float> values);
-    void WriteSingles(float[] values, int offset, int count);
-
-    void WriteInt24(int value);
-    void WriteInt24s(ReadOnlySpan<int> values);
-    void WriteInt24s(int[] values, int offset, int count);
-
-    void WriteInt32(int value);
-    void WriteInt32s(ReadOnlySpan<int> values);
-    void WriteInt32s(int[] values, int offset, int count);
-
-    void WriteInt64(long value);
-    void WriteInt64s(ReadOnlySpan<long> values);
-    void WriteInt64s(long[] values, int offset, int count);
-
-    void WriteInt16(short value);
-    void WriteInt16s(ReadOnlySpan<short> values);
-    void WriteInt16s(short[] values, int offset, int count);
-
-    void WriteUInt16(ushort value);
-    void WriteUInt16s(ReadOnlySpan<ushort> values);
-    void WriteUInt16s(ushort[] values, int offset, int count);
-
-    void WriteUInt24(uint value);
-    void WriteUInt24s(ReadOnlySpan<uint> values);
-    void WriteUInt24s(uint[] values, int offset, int count);
-
-    void WriteUInt32(uint value);
-    void WriteUInt32s(ReadOnlySpan<uint> values);
-    void WriteUInt32s(uint[] values, int offset, int count);
-
-    void WriteUInt64(ulong value);
-    void WriteUInt64s(ReadOnlySpan<ulong> values);
-    void WriteUInt64s(ulong[] values, int offset, int count);
-
-    void WriteUn8(float value);
-    void WriteUn8s(ReadOnlySpan<float> values);
-    void WriteUn8s(float[] values, int offset, int count);
-
-    void WriteSn8(float value);
-    void WriteSn8s(ReadOnlySpan<float> values);
-    void WriteSn8s(float[] values, int offset, int count);
-
-    void WriteUn16(float value);
-    void WriteUn16s(ReadOnlySpan<float> values);
-    void WriteUn16s(float[] values, int offset, int count);
-
-    void WriteSn16(float value);
-    void WriteSn16s(ReadOnlySpan<float> values);
-    void WriteSn16s(float[] values, int offset, int count);
 
     void Close();
 

@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 using schema.binary.attributes;
@@ -18,6 +19,14 @@ namespace System.IO {
     public void WriteChars(ReadOnlySpan<char> values)
       => this.WriteChars(StringEncodingType.ASCII, values);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void WriteChars(IReadOnlyList<char> values)
+      => this.WriteChars(StringEncodingType.ASCII, values);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void WriteChars(IReadOnlyList<char> values, int offset, int count)
+      => this.WriteChars(StringEncodingType.ASCII, values, offset, count);
+
 
     public unsafe void WriteChar(StringEncodingType encodingType, char value) {
       var ptr = &value;
@@ -31,6 +40,7 @@ namespace System.IO {
       this.WriteBytes(dstSpan);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WriteChars(StringEncodingType encodingType,
                            char[] values,
                            int offset,
@@ -48,6 +58,20 @@ namespace System.IO {
       Span<byte> dstSpan = stackalloc byte[byteCount];
       encoding.GetBytes(values, dstSpan);
       this.WriteBytes(dstSpan);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void WriteChars(StringEncodingType encodingType,
+                           IReadOnlyList<char> values)
+      => this.WriteChars(encodingType, values, 0, values.Count);
+
+    public void WriteChars(StringEncodingType encodingType,
+                           IReadOnlyList<char> values,
+                           int offset,
+                           int count) {
+      for (var i = offset; i < offset + count; ++i) {
+        this.WriteChar(encodingType, values[i]);
+      }
     }
 
 

@@ -46,6 +46,7 @@ namespace System.IO {
       this.Dispose(false);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Close() => Dispose();
 
     public void Dispose() {

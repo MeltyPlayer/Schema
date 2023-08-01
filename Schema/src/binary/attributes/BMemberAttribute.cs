@@ -247,7 +247,7 @@ namespace schema.binary.attributes {
 
     public IMemberReference AssertIsSequence() {
       if (!this.IsSequence) {
-        Asserts.Fail($"Expected {this.Name} to refer to an sequence!");
+        Asserts.Fail($"Expected {this.Name} to refer to a sequence!");
       }
 
       return this;

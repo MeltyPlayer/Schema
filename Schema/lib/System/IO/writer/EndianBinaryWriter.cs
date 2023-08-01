@@ -4,6 +4,7 @@
 // MVID: DAEF8B62-698B-42D0-BEDD-3770EB8C9FE8
 // Assembly location: R:\Documents\CSharpWorkspace\Pikmin2Utility\MKDS Course Modifier\MKDS Course Modifier.exe
 
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 using schema.binary.io;
@@ -25,7 +26,7 @@ namespace System.IO {
       this.localPositionStack_.Push(Task.FromResult(0L));
     }
 
-    private EndianBinaryWriter(Endianness? endianness, 
+    private EndianBinaryWriter(Endianness? endianness,
                                ISubDelayedContentOutputStream impl) {
       this.impl_ = impl as IDelayedContentOutputStream;
       this.localPositionStack_.Push(Task.FromResult(0L));
@@ -35,11 +36,11 @@ namespace System.IO {
       this.Dispose(false);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Align(uint amt) => this.impl_.Align(amt);
 
-    public void Close() {
-      this.Dispose();
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Close() => this.Dispose();
 
     public void Dispose() {
       this.Dispose(true);

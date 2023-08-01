@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 
 namespace System.IO {
@@ -15,18 +16,25 @@ namespace System.IO {
                return result[0] - result[1];
              });
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Task<long> GetAbsolutePosition() => this.impl_.GetAbsolutePosition();
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Task<long> GetAbsoluteLength() => this.impl_.GetAbsoluteLength();
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Task<long> GetStartPositionOfSubStream()
       => this.impl_.GetStartPositionOfSubStream();
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Task<long> GetPositionInSubStream()
       => this.impl_.GetPositionInSubStream();
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Task<long> GetLengthOfSubStream()
       => this.impl_.GetLengthOfSubStream();
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Task CompleteAndCopyToDelayed(Stream stream)
       => this.impl_.CompleteAndCopyToDelayed(stream);
 
@@ -58,48 +66,56 @@ namespace System.IO {
           delayedBytesLength);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WriteByteDelayed(Task<byte> delayedValue)
       => this.WriteBufferDelayed_(
           delayedValue.ContinueWith(
               valueTask => new[] { valueTask.Result }),
           Task.FromResult((long) sizeof(byte)));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WriteSByteDelayed(Task<sbyte> delayedValue)
       => this.WriteBufferDelayed_(
           delayedValue.ContinueWith(
               valueTask => new[] { (byte) valueTask.Result }),
           Task.FromResult((long) sizeof(sbyte)));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WriteInt16Delayed(Task<short> delayedValue)
       => this.WriteBufferDelayed_(
           delayedValue.ContinueWith(
               valueTask => BitConverter.GetBytes(valueTask.Result)),
           Task.FromResult((long) sizeof(short)));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WriteUInt16Delayed(Task<ushort> delayedValue)
       => this.WriteBufferDelayed_(
           delayedValue.ContinueWith(
               valueTask => BitConverter.GetBytes(valueTask.Result)),
           Task.FromResult((long) sizeof(ushort)));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WriteInt32Delayed(Task<int> delayedValue)
       => this.WriteBufferDelayed_(
           delayedValue.ContinueWith(
               valueTask => BitConverter.GetBytes(valueTask.Result)),
           Task.FromResult((long) sizeof(int)));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WriteUInt32Delayed(Task<uint> delayedValue)
       => this.WriteBufferDelayed_(
           delayedValue.ContinueWith(
               valueTask => BitConverter.GetBytes(valueTask.Result)),
           Task.FromResult((long) sizeof(uint)));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WriteInt64Delayed(Task<long> delayedValue)
       => this.WriteBufferDelayed_(
           delayedValue.ContinueWith(
               valueTask => BitConverter.GetBytes(valueTask.Result)),
           Task.FromResult((long) sizeof(long)));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WriteUInt64Delayed(Task<ulong> delayedValue)
       => this.WriteBufferDelayed_(
           delayedValue.ContinueWith(

@@ -54,7 +54,9 @@ namespace foo.bar {
       if (this.Toggle) {
         this.IfBooleanList = new System.Collections.Generic.List();
         SequencesUtil.ResizeSequenceInPlace(this.IfBooleanList, 3);
-        er.ReadInt32s(this.IfBooleanList);
+        for (var i = 0; i < this.IfBooleanList.Count; ++i) {
+          this.IfBooleanList[i] = er.ReadInt32();
+        }
       }
       else {
         this.IfBooleanList = null;
@@ -75,7 +77,9 @@ namespace foo.bar {
         ew.WriteInt32s(this.IfBooleanArray);
       }
       if (this.Toggle) {
-        ew.WriteInt32s(this.IfBooleanList);
+        for (var i = 0; i < this.IfBooleanList.Count; ++i) {
+          ew.WriteInt32(this.IfBooleanList[i]);
+        }
       }
     }
   }

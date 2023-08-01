@@ -95,6 +95,7 @@ namespace System.IO {
           this.Endianness != EndiannessUtil.SystemEndianness;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static (EndiannessSource, Endianness)? PickSuperior_(
         (EndiannessSource, Endianness)? prev,
         (EndiannessSource, Endianness) next) {

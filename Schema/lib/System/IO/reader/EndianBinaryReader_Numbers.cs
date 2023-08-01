@@ -156,7 +156,7 @@ namespace System.IO {
       var newArray = new long[count];
       this.ReadInt64s(newArray);
       return newArray;
-    } 
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadInt64s(long[] dst, int start, int length)

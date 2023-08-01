@@ -4,7 +4,6 @@ using System.Text;
 using CommunityToolkit.HighPerformance;
 
 using schema.binary.attributes;
-using schema.util;
 
 namespace System.IO {
   public sealed partial class EndianBinaryReader {
@@ -54,7 +53,8 @@ namespace System.IO {
       => this.ReadChars(encodingType, dst.AsSpan(start, length));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public unsafe void ReadChars(StringEncodingType encodingType, Span<char> dst) {
+    public unsafe void ReadChars(StringEncodingType encodingType,
+                                 Span<char> dst) {
       if (dst.Length == 0) {
         return;
       }
@@ -65,7 +65,8 @@ namespace System.IO {
       var maxByteCount = encoding.GetMaxByteCount(dst.Length);
 
       Span<byte> buffer = stackalloc byte[maxByteCount];
-      var bufferPtr = (byte*) Unsafe.AsPointer(ref buffer.GetPinnableReference());
+      var bufferPtr =
+          (byte*) Unsafe.AsPointer(ref buffer.GetPinnableReference());
       var dstPtr = (char*) Unsafe.AsPointer(ref dst.GetPinnableReference());
 
       var decoder = encoding.GetDecoder();
@@ -93,6 +94,7 @@ namespace System.IO {
 
       this.Position = basePosition;
     }
+
 
     public string ReadUpTo(char endToken) {
       var remainingCharacters = this.Length - this.Position;

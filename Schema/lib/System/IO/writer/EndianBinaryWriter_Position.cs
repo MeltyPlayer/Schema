@@ -21,6 +21,7 @@ namespace System.IO {
       if (fullPath.Length > 0) {
         fullPath += ".";
       }
+
       fullPath += memberPath;
       return this.startPositions_.Get(fullPath);
     }
@@ -31,6 +32,7 @@ namespace System.IO {
       if (fullPath.Length > 0) {
         fullPath += ".";
       }
+
       fullPath += memberPath;
       var startTask = this.startPositions_.Get(fullPath);
       var endTask = this.endPositions_.Get(fullPath);
@@ -63,15 +65,16 @@ namespace System.IO {
         if (totalString.Length > 0) {
           totalString.Append(".");
         }
+
         totalString.Append(scope);
       }
+
       return totalString.ToString();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PushLocalSpace() {
-      this.localPositionStack_.Push(this.impl_.GetAbsolutePosition());
-    }
+    public void PushLocalSpace()
+      => this.localPositionStack_.Push(this.impl_.GetAbsolutePosition());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PopLocalSpace() {

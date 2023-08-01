@@ -101,6 +101,16 @@ namespace schema.binary {
     READ_ONLY_SEQUENCE,
   }
 
+  public static class SequenceTypeExtensions {
+    public static bool IsArray(this SequenceType sequenceType)
+      => sequenceType is SequenceType.MUTABLE_ARRAY
+                         or SequenceType.IMMUTABLE_ARRAY;
+ 
+    public static bool IsSequence(this SequenceType sequenceType)
+      => sequenceType is SequenceType.MUTABLE_SEQUENCE
+                         or SequenceType.READ_ONLY_SEQUENCE;
+  }
+
   public enum SequenceLengthSourceType {
     UNSPECIFIED,
     IMMEDIATE_VALUE,

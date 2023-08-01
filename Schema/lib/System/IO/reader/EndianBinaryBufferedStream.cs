@@ -12,9 +12,10 @@ namespace System.IO {
 
     public Stream BaseStream {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      get; 
+      get;
       set;
     }
+
     public byte[] Buffer { get; private set; }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -63,7 +64,6 @@ namespace System.IO {
     }
 
 
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public T Read<T>() where T : unmanaged {
       Read(out T val);
@@ -85,8 +85,10 @@ namespace System.IO {
     }
 
 
-
-    public Endianness Endianness => this.endiannessImpl_.Endianness;
+    public Endianness Endianness {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => this.endiannessImpl_.Endianness;
+    }
 
     public bool IsOppositeEndiannessOfSystem {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]

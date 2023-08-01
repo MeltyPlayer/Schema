@@ -1,7 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 
-using CommunityToolkit.HighPerformance;
-
 
 namespace System.IO {
   public sealed partial class EndianBinaryReader {
@@ -36,7 +34,6 @@ namespace System.IO {
             EndianBinaryReader.ConvertInt24_(this.BufferedStream_.Buffer, i);
       }
     }
-
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -132,7 +129,6 @@ namespace System.IO {
             EndianBinaryReader.ConvertSn8_(this.BufferedStream_.Buffer, i);
       }
     }
-
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
