@@ -18,9 +18,9 @@ namespace System.IO {
     private readonly Stream impl_;
     private readonly Stack<long> positionStack_ = new();
 
-    public StreamPositionManager(Stream impl) {
+    public StreamPositionManager(Stream impl, long startingPosition = 0) {
       this.impl_ = impl;
-      this.positionStack_.Push(0);
+      this.positionStack_.Push(startingPosition);
     }
 
 
@@ -47,7 +47,7 @@ namespace System.IO {
       this.positionStack_.Pop();
     }
 
-    private long BaseOffset {
+    public long BaseOffset {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => this.positionStack_.Peek();
     }

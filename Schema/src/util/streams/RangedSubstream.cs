@@ -89,7 +89,7 @@ namespace schema.util.streams {
     public override void Flush() => this.impl_.Flush();
 
     /// <inheritdoc />
-    public override long Length => this.length;
+    public override long Length => this.offset + this.length;
 
     /// <inheritdoc />
     public override bool CanRead => this.impl_.CanRead;

@@ -8,7 +8,7 @@ namespace System.IO {
     private bool disposed_;
 
     private EndianBinaryBufferedStream BufferedStream_ { get; set; }
-    private IPositionManager positionManagerImpl_;
+    private StreamPositionManager positionManagerImpl_;
 
     private Stream BaseStream_ {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -39,7 +39,7 @@ namespace System.IO {
       this.BufferedStream_ = new EndianBinaryBufferedStream(endianness) {
           BaseStream = baseStream,
       };
-      this.positionManagerImpl_ = new StreamPositionManager(this.BaseStream_);
+      this.positionManagerImpl_ = new StreamPositionManager(baseStream);
     }
 
     ~EndianBinaryReader() {
@@ -106,11 +106,12 @@ namespace System.IO {
       {
         this.Position = position;
 
-        using var ser =
-            new EndianBinaryReader(
-                new RangedSubstream(this.BaseStream_, position, len),
-                this.Endianness);
-        ser.positionManagerImpl_ = this.positionManagerImpl_;
+        var baseOffset = this.positionManagerImpl_.BaseOffset;
+        var substream =
+            new RangedSubstream(this.BaseStream_, position, baseOffset + len);
+        using var ser = new EndianBinaryReader(substream, this.Endianness);
+        ser.positionManagerImpl_ =
+            new StreamPositionManager(substream, baseOffset);
         subread(ser);
       }
       this.Position = tempPos;

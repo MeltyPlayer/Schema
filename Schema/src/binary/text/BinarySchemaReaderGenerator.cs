@@ -423,7 +423,7 @@ namespace schema.binary.text {
             var remainingLengthAccessor = "er.Length - er.Position";
             var readCountAccessor = size == 1
                 ? remainingLengthAccessor
-                : $"{remainingLengthAccessor} / {size}";
+                : $"({remainingLengthAccessor}) / {size}";
 
             // Primitives that don't need to be cast are the easiest to read.
             if (!primitiveElementType.UseAltFormat) {
