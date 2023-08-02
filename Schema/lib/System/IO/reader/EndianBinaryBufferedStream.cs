@@ -3,11 +3,35 @@
 using CommunityToolkit.HighPerformance;
 
 namespace System.IO {
+  public interface ISpanElementReverser {
+    void Reverse(Span<byte> span);
+    void ReverseElements(Span<byte> span, int stride);
+  }
+
+  public class SpanElementReverser : ISpanElementReverser {
+    public void Reverse(Span<byte> span) => span.Reverse();
+
+    public void ReverseElements(Span<byte> span, int stride) {
+      for (var i = 0; i < span.Length; i += stride) {
+        span.Slice(i, stride).Reverse();
+      }
+    }
+  }
+
+  public class NoopSpanElementReverser : ISpanElementReverser {
+    public void Reverse(Span<byte> span) { }
+    public void ReverseElements(Span<byte> span, int stride) { }
+  }
+
   public class EndianBinaryBufferedStream : IEndiannessStack {
     private readonly EndiannessStackImpl endiannessImpl_;
 
+    private bool isCurrentlyOppositeEndianness_;
+    private ISpanElementReverser reverserImpl_;
+
     public EndianBinaryBufferedStream(Endianness? endianness) {
       this.endiannessImpl_ = new EndiannessStackImpl(endianness);
+      this.UpdateSpanElementReverser_();
     }
 
     public Stream BaseStream {
@@ -36,16 +60,11 @@ namespace System.IO {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public unsafe void FillBufferAndReverse<T>(Span<T> buffer)
         where T : unmanaged {
-      this.BaseStream.Read(buffer.AsBytes());
+      var bSpan = buffer.AsBytes();
+      this.BaseStream.Read(bSpan);
 
       var sizeOf = sizeof(T);
-      if (sizeOf == 1 || !this.IsOppositeEndiannessOfSystem) {
-        return;
-      }
-
-      for (var i = 0; i < buffer.Length; ++i) {
-        buffer.Slice(i, 1).AsBytes().Reverse();
-      }
+      this.reverserImpl_.ReverseElements(bSpan, sizeOf);
     }
 
 
@@ -53,14 +72,7 @@ namespace System.IO {
     public void FillBuffer(Span<byte> buffer, int? optStride = null) {
       var stride = optStride ?? buffer.Length;
       this.BaseStream.Read(buffer);
-
-      if (stride == 1 || !this.IsOppositeEndiannessOfSystem) {
-        return;
-      }
-
-      for (var i = 0L; i < buffer.Length; i += stride) {
-        buffer.Slice((int) i, (int) stride).Reverse();
-      }
+      this.reverserImpl_.ReverseElements(buffer, stride);
     }
 
 
@@ -77,10 +89,7 @@ namespace System.IO {
       fixed (T* ptr = &val) {
         var bSpan = new Span<byte>(ptr, size);
         this.BaseStream.Read(bSpan);
-
-        if (size > 1 && this.IsOppositeEndiannessOfSystem) {
-          bSpan.Reverse();
-        }
+        this.reverserImpl_.Reverse(bSpan);
       }
     }
 
@@ -96,14 +105,35 @@ namespace System.IO {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PushStructureEndianness(Endianness endianness)
-      => this.endiannessImpl_.PushStructureEndianness(endianness);
+    public void PushStructureEndianness(Endianness endianness) {
+      this.endiannessImpl_.PushStructureEndianness(endianness);
+      this.UpdateSpanElementReverser_();
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PushMemberEndianness(Endianness endianness)
-      => this.endiannessImpl_.PushMemberEndianness(endianness);
+    public void PushMemberEndianness(Endianness endianness) {
+      this.endiannessImpl_.PushMemberEndianness(endianness);
+      this.UpdateSpanElementReverser_();
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PopEndianness() => this.endiannessImpl_.PopEndianness();
+    public void PopEndianness() {
+      this.endiannessImpl_.PopEndianness();
+      this.UpdateSpanElementReverser_();
+    } 
+
+    private void UpdateSpanElementReverser_() {
+      var newOppositeEndiannessOfSystem =
+          this.endiannessImpl_.IsOppositeEndiannessOfSystem;
+      if (this.isCurrentlyOppositeEndianness_ ==
+          newOppositeEndiannessOfSystem && this.reverserImpl_ != null) {
+        return;
+      }
+
+      this.isCurrentlyOppositeEndianness_ = newOppositeEndiannessOfSystem;
+      this.reverserImpl_ = newOppositeEndiannessOfSystem
+          ? new SpanElementReverser()
+          : new NoopSpanElementReverser();
+    }
   }
 }
