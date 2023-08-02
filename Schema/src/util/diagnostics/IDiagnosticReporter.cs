@@ -6,9 +6,8 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace schema.util.diagnostics {
   internal interface IDiagnosticReporter {
-    SyntaxNodeAnalysisContext? Context { get; }
+    void WithContext(SyntaxNodeAnalysisContext context);
 
-    ISymbol Symbol { get; }
     IDiagnosticReporter GetSubReporter(ISymbol childSymbol);
 
     void ReportDiagnostic(DiagnosticDescriptor diagnosticDescriptor);

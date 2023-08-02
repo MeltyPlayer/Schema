@@ -1,22 +1,17 @@
-﻿using Microsoft.CodeAnalysis;
-
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 
 using schema.binary.parser;
-using schema.util.diagnostics;
+using schema.util.symbols;
 
 
 namespace schema.binary.attributes {
   internal class WLengthOfStringParser : IAttributeParser {
-    public void ParseIntoMemberType(IDiagnosticReporter diagnosticReporter,
-                                    ISymbol memberSymbol,
+    public void ParseIntoMemberType(IBetterSymbol memberSymbol,
                                     ITypeInfo memberTypeInfo,
                                     IMemberType memberType) {
       var lengthOfStringAttributes =
-          memberSymbol
-              .GetAttributes<WLengthOfStringAttribute>(diagnosticReporter)
-              .ToArray();
+          memberSymbol.GetAttributes<WLengthOfStringAttribute>()
+                      .ToArray();
       if (lengthOfStringAttributes.Length == 0) {
         return;
       }
@@ -28,7 +23,7 @@ namespace schema.binary.attributes {
             lengthOfStringAttributes.Select(attr => attr.OtherMember)
                                     .ToArray();
       } else {
-        diagnosticReporter.ReportDiagnostic(Rules.NotSupported);
+        memberSymbol.ReportDiagnostic(Rules.NotSupported);
       }
     }
   }

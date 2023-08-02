@@ -2,6 +2,7 @@
 
 using schema.binary.attributes;
 using schema.util;
+using schema.util.symbols;
 
 namespace schema.binary.parser {
   internal static class MemberReferenceUtil {

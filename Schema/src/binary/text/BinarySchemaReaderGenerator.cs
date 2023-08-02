@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis;
 using schema.binary.attributes;
 using schema.binary.dependencies;
 using schema.util;
+using schema.util.symbols;
 
 namespace schema.binary.text {
   public class BinarySchemaReaderGenerator {

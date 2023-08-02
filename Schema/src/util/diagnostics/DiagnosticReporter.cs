@@ -9,7 +9,10 @@ using schema.binary;
 
 namespace schema.util.diagnostics {
   internal class DiagnosticReporter : IDiagnosticReporter {
+    private readonly ISymbol symbol_;
+    private SyntaxNodeAnalysisContext? context_;
     private readonly List<Diagnostic> diagnostics_;
+    private List<Diagnostic>? unreportedDiagnostics_;
 
     public DiagnosticReporter(ISymbol symbol,
                               SyntaxNodeAnalysisContext? context = null)
@@ -18,20 +21,31 @@ namespace schema.util.diagnostics {
     private DiagnosticReporter(ISymbol symbol,
                                SyntaxNodeAnalysisContext? context,
                                List<Diagnostic> diagnostics) {
-      this.Symbol = symbol;
-      this.Context = context;
+      this.symbol_ = symbol;
+      this.context_ = context;
       this.diagnostics_ = diagnostics;
+      this.unreportedDiagnostics_ =
+          context == null ? new List<Diagnostic>() : null;
     }
 
-    public SyntaxNodeAnalysisContext? Context { get; }
+    public void WithContext(SyntaxNodeAnalysisContext context) {
+      this.context_ = context;
 
-    public ISymbol Symbol { get; }
+      if (this.unreportedDiagnostics_ != null) {
+        foreach (var diagnostic in this.unreportedDiagnostics_) {
+          this.context_.Value.ReportDiagnostic(diagnostic);
+        }
+
+        this.unreportedDiagnostics_.Clear();
+        this.unreportedDiagnostics_ = null;
+      }
+    }
 
     public IDiagnosticReporter GetSubReporter(ISymbol childSymbol)
-      => new DiagnosticReporter(childSymbol, this.Context, this.diagnostics_);
+      => new DiagnosticReporter(childSymbol, this.context_, this.diagnostics_);
 
     public void ReportDiagnostic(DiagnosticDescriptor diagnosticDescriptor)
-      => this.ReportDiagnostic(this.Symbol, diagnosticDescriptor);
+      => this.ReportDiagnostic(this.symbol_, diagnosticDescriptor);
 
     public void ReportDiagnostic(ISymbol symbol,
                                  DiagnosticDescriptor diagnosticDescriptor)
@@ -43,14 +57,18 @@ namespace schema.util.diagnostics {
     public void ReportException(Exception exception)
       => this.ReportDiagnosticImpl_(
           Diagnostic.Create(Rules.Exception,
-                            this.Symbol.Locations.First(),
+                            this.symbol_.Locations.First(),
                             exception.Message,
                             exception.StackTrace.Replace("\r\n", "")
                                      .Replace("\n", "")));
 
     private void ReportDiagnosticImpl_(Diagnostic diagnostic) {
       this.diagnostics_.Add(diagnostic);
-      this.Context?.ReportDiagnostic(diagnostic);
+      if (this.context_ != null) {
+        this.context_?.ReportDiagnostic(diagnostic);
+      } else {
+        this.unreportedDiagnostics_.Add(diagnostic);
+      }
     }
 
     public IReadOnlyList<Diagnostic> Diagnostics => this.diagnostics_;

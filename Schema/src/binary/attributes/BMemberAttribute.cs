@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using schema.binary.parser;
 using schema.util;
 using schema.util.diagnostics;
+using schema.util.symbols;
 
 namespace schema.binary.attributes {
   public abstract class BMemberAttribute<T> : BMemberAttribute {

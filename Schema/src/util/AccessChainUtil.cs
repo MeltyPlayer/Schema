@@ -11,6 +11,7 @@ using schema.binary.io;
 using schema.binary.parser;
 using schema.util;
 using schema.util.diagnostics;
+using schema.util.symbols;
 
 namespace schema.binary {
   public interface IChain<out T> {

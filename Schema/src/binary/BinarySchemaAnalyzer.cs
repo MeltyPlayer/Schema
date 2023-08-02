@@ -7,6 +7,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
+using schema.util.symbols;
+
 
 namespace schema.binary {
   [DiagnosticAnalyzer(LanguageNames.CSharp)]
@@ -47,6 +49,7 @@ namespace schema.binary {
       /*if (!Debugger.IsAttached) {
         Debugger.Launch();
       }*/
+
       context.RegisterSyntaxNodeAction(
           syntaxNodeContext => {
             var syntax = syntaxNodeContext.Node as ClassDeclarationSyntax;

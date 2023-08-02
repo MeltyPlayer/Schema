@@ -1,26 +1,19 @@
-﻿using Microsoft.CodeAnalysis;
-
-using System.Collections.Generic;
-
-using schema.binary.parser;
-using schema.util.diagnostics;
+﻿using schema.binary.parser;
+using schema.util.symbols;
 
 
 namespace schema.binary.attributes {
   internal class WPointerToParser : IAttributeParser {
-    public void ParseIntoMemberType(IDiagnosticReporter diagnosticReporter,
-                                    ISymbol memberSymbol,
+    public void ParseIntoMemberType(IBetterSymbol memberSymbol,
                                     ITypeInfo memberTypeInfo,
                                     IMemberType memberType) {
-      var pointerToAttribute = SymbolTypeUtil.GetAttribute<WPointerToAttribute>(
-          diagnosticReporter,
-          memberSymbol);
+      var pointerToAttribute = memberSymbol.GetAttribute<WPointerToAttribute>();
       if (pointerToAttribute == null) {
         return;
       }
 
       AccessChainUtil.AssertAllNodesInTypeChainUntilTargetUseBinarySchema(
-          diagnosticReporter,
+          memberSymbol,
           pointerToAttribute.AccessChainToOtherMember);
 
       if (memberTypeInfo is IIntegerTypeInfo &&
@@ -29,7 +22,7 @@ namespace schema.binary.attributes {
         primitiveMemberType.AccessChainToPointer =
             pointerToAttribute.AccessChainToOtherMember;
       } else {
-        diagnosticReporter.ReportDiagnostic(Rules.NotSupported);
+        memberSymbol.ReportDiagnostic(Rules.NotSupported);
       }
     }
   }

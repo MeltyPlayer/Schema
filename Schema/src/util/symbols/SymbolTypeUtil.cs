@@ -10,13 +10,13 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+using schema.binary;
 using schema.binary.attributes;
 using schema.binary.parser;
-using schema.util;
 using schema.util.diagnostics;
 
 
-namespace schema.binary {
+namespace schema.util.symbols {
   internal static class SymbolTypeUtil {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ISymbol GetSymbolFromType(SemanticModel semanticModel,
@@ -202,6 +202,11 @@ namespace schema.binary {
                                                  .GenericTypeParameters.Length;
       return sameName && sameNamespace && sameTypeArguments;
     }
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsSameAs(this ISymbol symbol, ISymbol other)
+      => SymbolEqualityComparer.Default.Equals(symbol, other);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsExactlyType(this ISymbol symbol, Type expectedType)

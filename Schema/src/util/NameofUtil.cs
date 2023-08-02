@@ -3,7 +3,7 @@ using System.Linq;
 
 using Microsoft.CodeAnalysis;
 
-using schema.binary;
+using schema.util.symbols;
 
 namespace schema.util {
   public static class NameofUtil {

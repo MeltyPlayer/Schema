@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 
 using schema.binary.parser;
 using schema.util.diagnostics;
+using schema.util.symbols;
 
 
 namespace schema.binary.attributes {
@@ -48,25 +49,7 @@ namespace schema.binary.attributes {
                         ? sequenceTypeInfo.ElementTypeInfo
                         : memberTypeInfo;
                 var typeSymbol = elementTypeInfo.TypeSymbol;
-
-                var hasSameName =
-                    typeSymbol.Name == childNamedTypeSymbol.Name;
-                var hasSameNamespace =
-                    SymbolTypeUtil
-                        .MergeContainingNamespaces(typeSymbol) ==
-                    SymbolTypeUtil
-                        .MergeContainingNamespaces(
-                            childNamedTypeSymbol);
-                var hasSameAssembly =
-                    typeSymbol.ContainingAssembly ==
-                    childNamedTypeSymbol.ContainingAssembly;
-
-                if (hasSameName && hasSameNamespace &&
-                    hasSameAssembly) {
-                  return true;
-                }
-
-                return false;
+                return typeSymbol.IsSameAs(childNamedTypeSymbol);
               });
 
       if (!containedInClass) {

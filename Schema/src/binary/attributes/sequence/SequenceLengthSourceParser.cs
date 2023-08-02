@@ -1,26 +1,22 @@
-﻿using Microsoft.CodeAnalysis;
-
-using System;
-using System.Collections.Generic;
+﻿using System;
 
 using schema.binary.parser;
-using schema.util.diagnostics;
+using schema.util.symbols;
 
 
 namespace schema.binary.attributes {
   internal class SequenceLengthSourceParser : IAttributeParser {
-    public void ParseIntoMemberType(IDiagnosticReporter diagnosticReporter,
-                                    ISymbol memberSymbol,
+    public void ParseIntoMemberType(IBetterSymbol memberSymbol,
                                     ITypeInfo memberTypeInfo,
                                     IMemberType memberType) {
       var lengthSourceAttribute =
-          (ISequenceLengthSourceAttribute?) memberSymbol
-              .GetAttribute<SequenceLengthSourceAttribute>(
-                  diagnosticReporter) ?? memberSymbol
-              .GetAttribute<RSequenceLengthSourceAttribute>(diagnosticReporter);
+          (ISequenceLengthSourceAttribute?)
+          memberSymbol
+              .GetAttribute<SequenceLengthSourceAttribute>() ??
+          memberSymbol
+              .GetAttribute<RSequenceLengthSourceAttribute>();
       var untilEndOfStreamAttribute =
-          memberSymbol.GetAttribute<RSequenceUntilEndOfStreamAttribute>(
-              diagnosticReporter);
+          memberSymbol.GetAttribute<RSequenceUntilEndOfStreamAttribute>();
 
       if (memberType is BinarySchemaStructureParser.SequenceMemberType
           sequenceMemberType) {
@@ -54,20 +50,20 @@ namespace schema.binary.attributes {
             sequenceMemberType.LengthSourceType =
                 SequenceLengthSourceType.UNTIL_END_OF_STREAM;
           } else {
-            diagnosticReporter.ReportDiagnostic(
+            memberSymbol.ReportDiagnostic(
                 Rules.MutableArrayNeedsLengthSource);
           }
         }
         // Didn't expect attribute b/c length is already specified
         else if (lengthSourceAttribute != null) {
-          diagnosticReporter.ReportDiagnostic(
+          memberSymbol.ReportDiagnostic(
               Rules.UnexpectedAttribute);
         }
       }
 
       // Didn't expect attribute b/c not a sequence
       else if (lengthSourceAttribute != null) {
-        diagnosticReporter.ReportDiagnostic(
+        memberSymbol.ReportDiagnostic(
             Rules.UnexpectedSequenceAttribute);
       }
     }

@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis;
 
 using schema.util;
 using schema.util.sequences;
+using schema.util.symbols;
 
 
 namespace schema.binary.parser {

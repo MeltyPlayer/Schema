@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using schema.binary.attributes;
 using schema.binary.parser;
 using schema.binary.parser.asserts;
-using schema.util.diagnostics;
+using schema.util.symbols;
 
 
 namespace schema.binary {
@@ -140,14 +140,13 @@ namespace schema.binary {
     public IBinarySchemaStructure ParseStructure(
         INamedTypeSymbol structureSymbol,
         SyntaxNodeAnalysisContext? context = null) {
-      var structureDiagnosticReporter =
-          new DiagnosticReporter(structureSymbol, context);
+      var betterStructureSymbol = BetterSymbol.FromType(structureSymbol);
 
       // All of the types that contain the structure need to be partial
-      new PartialContainerAsserter(structureDiagnosticReporter).AssertContainersArePartial(
+      new PartialContainerAsserter(betterStructureSymbol).AssertContainersArePartial(
           structureSymbol);
 
-      var iChildOfParser = new ChildOfParser(structureDiagnosticReporter);
+      var iChildOfParser = new ChildOfParser(betterStructureSymbol);
       var parentTypeSymbol =
           iChildOfParser.GetParentTypeSymbolOf(structureSymbol);
       if (parentTypeSymbol != null) {
@@ -159,11 +158,9 @@ namespace schema.binary {
             structureSymbol);
       }
 
-      var localPositions =
-          structureSymbol.HasAttribute<LocalPositionsAttribute>();
+      var localPositions = betterStructureSymbol.HasAttribute<LocalPositionsAttribute>();
       var structureEndianness =
-          new EndiannessParser().GetEndianness(structureDiagnosticReporter,
-                                               structureSymbol);
+          new EndiannessParser().GetEndianness(betterStructureSymbol);
 
       var typeInfoParser = new TypeInfoParser();
       var parsedMembers =
@@ -177,8 +174,7 @@ namespace schema.binary {
           continue;
         }
 
-        var memberDiagnosticReporter =
-            structureDiagnosticReporter.GetSubReporter(memberSymbol);
+        var betterMemberSymbol = betterStructureSymbol.GetChild(memberSymbol);
 
         {
           var methodSymbol = memberSymbol as IMethodSymbol;
@@ -194,10 +190,10 @@ namespace schema.binary {
                 members.Add(
                     new SchemaMethodMember { Name = methodSymbol.Name });
               } else {
-                memberDiagnosticReporter.ReportDiagnostic(Rules.NotSupported);
+                betterMemberSymbol.ReportDiagnostic(Rules.NotSupported);
               }
             } else {
-              memberDiagnosticReporter.ReportDiagnostic(Rules.NotSupported);
+              betterMemberSymbol.ReportDiagnostic(Rules.NotSupported);
             }
           }
 
@@ -216,8 +212,8 @@ namespace schema.binary {
         var field =
             !isIgnored
                 ? this.ParseNonIgnoredField_(
-                    memberDiagnosticReporter,
-                    structureSymbol,
+                    betterStructureSymbol,
+                    betterMemberSymbol,
                     parsedMember)
                 : this.ParseIgnoredField_(parsedMember);
 
@@ -227,7 +223,7 @@ namespace schema.binary {
       }
 
       var schemaStructure = new BinarySchemaStructure {
-          Diagnostics = structureDiagnosticReporter.Diagnostics,
+          Diagnostics = betterStructureSymbol.Diagnostics,
           TypeSymbol = structureSymbol,
           Members = members,
           LocalPositions = localPositions,
@@ -263,14 +259,15 @@ namespace schema.binary {
     }
 
     private ISchemaValueMember? ParseNonIgnoredField_(
-        IDiagnosticReporter memberDiagnosticReporter,
-        INamedTypeSymbol structureSymbol,
+        IBetterSymbol<INamedTypeSymbol> betterStructureSymbol,
+        IBetterSymbol betterMemberSymbol,
         (TypeInfoParser.ParseStatus, ISymbol, ITypeInfo) parsedMember
     ) {
+      var structureSymbol = betterStructureSymbol.TypedSymbol;
       var (parseStatus, memberSymbol, memberTypeInfo) = parsedMember;
 
       if (parseStatus == TypeInfoParser.ParseStatus.NOT_IMPLEMENTED) {
-        memberDiagnosticReporter.ReportDiagnostic(Rules.NotSupported);
+        betterMemberSymbol.ReportDiagnostic(Rules.NotSupported);
         return null;
       }
 
@@ -287,7 +284,7 @@ namespace schema.binary {
 
           if ((isDeserializable && !isMemberDeserializable) ||
               (isSerializable && !isMemberSerializable)) {
-            memberDiagnosticReporter.ReportDiagnostic(
+            betterMemberSymbol.ReportDiagnostic(
                 Rules.StructureMemberBinaryConvertabilityNeedsToSatisfyParent);
             return null;
           }
@@ -295,7 +292,7 @@ namespace schema.binary {
       }
 
       var memberEndianness =
-          new EndiannessParser().GetEndianness(memberDiagnosticReporter, memberSymbol);
+          new EndiannessParser().GetEndianness(betterMemberSymbol);
 
       // Gets the type of the current member
       var memberType =
@@ -310,27 +307,23 @@ namespace schema.binary {
       };
 
       foreach (var attributeParser in attributeParsers) {
-        attributeParser.ParseIntoMemberType(memberDiagnosticReporter,
-                                            memberSymbol,
+        attributeParser.ParseIntoMemberType(betterMemberSymbol,
                                             memberTypeInfo,
                                             memberType);
       }
 
       // Get attributes
-      var align =
-          memberSymbol.GetAttribute<AlignAttribute>(memberDiagnosticReporter);
+      var align = betterMemberSymbol.GetAttribute<AlignAttribute>();
 
       {
         var sizeOfStreamAttribute =
-            SymbolTypeUtil.GetAttribute<WSizeOfStreamInBytesAttribute>(
-                memberDiagnosticReporter,
-                memberSymbol);
+            betterMemberSymbol.GetAttribute<WSizeOfStreamInBytesAttribute>();
         if (sizeOfStreamAttribute != null) {
           if (memberTypeInfo is IIntegerTypeInfo &&
               memberType is PrimitiveMemberType primitiveMemberType) {
             primitiveMemberType.SizeOfStream = true;
           } else {
-            memberDiagnosticReporter.ReportDiagnostic(Rules.NotSupported);
+            betterMemberSymbol.ReportDiagnostic(Rules.NotSupported);
           }
         }
       }
@@ -338,38 +331,34 @@ namespace schema.binary {
       var isPosition = false;
       {
         var positionAttribute =
-            memberSymbol.GetAttribute<RPositionRelativeToStreamAttribute>(
-                memberDiagnosticReporter);
+            betterMemberSymbol.GetAttribute<RPositionRelativeToStreamAttribute>();
         if (positionAttribute != null) {
           isPosition = true;
           if (memberTypeInfo is not IIntegerTypeInfo {
                   IntegerType: SchemaIntegerType.INT64
               }) {
-            memberDiagnosticReporter.ReportDiagnostic(Rules.NotSupported);
+            betterMemberSymbol.ReportDiagnostic(Rules.NotSupported);
           }
         }
       }
 
       var ifBooleanAttribute =
           (IIfBooleanAttribute?)
-          memberSymbol.GetAttribute<IfBooleanAttribute>(
-              memberDiagnosticReporter) ??
-          memberSymbol.GetAttribute<RIfBooleanAttribute>(
-              memberDiagnosticReporter);
+          betterMemberSymbol.GetAttribute<IfBooleanAttribute>() ??
+          betterMemberSymbol.GetAttribute<RIfBooleanAttribute>();
       if (ifBooleanAttribute != null && !memberTypeInfo.IsNullable) {
-        memberDiagnosticReporter.ReportDiagnostic(Rules.IfBooleanNeedsNullable);
+        betterMemberSymbol.ReportDiagnostic(Rules.IfBooleanNeedsNullable);
       }
 
       IOffset? offset = null;
       {
         var offsetAttribute =
-            memberSymbol.GetAttribute<RAtPositionAttribute>(
-                memberDiagnosticReporter);
+            betterMemberSymbol.GetAttribute<RAtPositionAttribute>();
 
         if (offsetAttribute != null) {
           var offsetName = offsetAttribute.OffsetName;
           SymbolTypeUtil.GetMemberRelativeToAnother(
-              memberDiagnosticReporter,
+              betterMemberSymbol,
               structureSymbol,
               offsetName,
               memberSymbol.Name,
@@ -389,7 +378,7 @@ namespace schema.binary {
       }
 
       new SupportedElementTypeAsserter()
-          .AssertElementTypesAreSupported(memberDiagnosticReporter, memberType);
+          .AssertElementTypesAreSupported(betterMemberSymbol, memberType);
 
       {
         IMemberType? targetMemberType;
@@ -420,8 +409,7 @@ namespace schema.binary {
 
         {
           var numberFormatAttribute =
-              memberSymbol
-                  .GetAttribute<NumberFormatAttribute>(memberDiagnosticReporter);
+              betterMemberSymbol.GetAttribute<NumberFormatAttribute>();
           if (numberFormatAttribute != null) {
             formatNumberType = numberFormatAttribute.NumberType;
 
@@ -430,7 +418,7 @@ namespace schema.binary {
                     targetPrimitiveType);
             if (!(targetMemberType is PrimitiveMemberType &&
                   canPrimitiveTypeBeReadAsNumber)) {
-              memberDiagnosticReporter.ReportDiagnostic(
+              betterMemberSymbol.ReportDiagnostic(
                   Rules.UnexpectedAttribute);
             }
           }
@@ -438,8 +426,7 @@ namespace schema.binary {
 
         {
           var integerFormatAttribute =
-              memberSymbol
-                  .GetAttribute<IntegerFormatAttribute>(memberDiagnosticReporter);
+              betterMemberSymbol.GetAttribute<IntegerFormatAttribute>();
           if (integerFormatAttribute != null) {
             formatIntegerType = integerFormatAttribute.IntegerType;
 
@@ -448,8 +435,7 @@ namespace schema.binary {
                     targetPrimitiveType);
             if (!(targetMemberType is PrimitiveMemberType &&
                   canPrimitiveTypeBeReadAsInteger)) {
-              memberDiagnosticReporter.ReportDiagnostic(
-                  Rules.UnexpectedAttribute);
+              betterMemberSymbol.ReportDiagnostic(Rules.UnexpectedAttribute);
             }
           }
         }
@@ -464,11 +450,9 @@ namespace schema.binary {
             primitiveMemberType.UseAltFormat = true;
             primitiveMemberType.AltFormat = formatNumberType;
           } else if (targetPrimitiveType == SchemaPrimitiveType.ENUM) {
-            memberDiagnosticReporter.ReportDiagnostic(
-                Rules.EnumNeedsIntegerFormat);
+            betterMemberSymbol.ReportDiagnostic(Rules.EnumNeedsIntegerFormat);
           } else if (targetPrimitiveType == SchemaPrimitiveType.BOOLEAN) {
-            memberDiagnosticReporter.ReportDiagnostic(
-                Rules.BooleanNeedsIntegerFormat);
+            betterMemberSymbol.ReportDiagnostic(Rules.BooleanNeedsIntegerFormat);
           }
         }
 
@@ -476,14 +460,14 @@ namespace schema.binary {
         {
           if (targetMemberType is StructureMemberType structureMemberType) {
             var expectedParentTypeSymbol =
-                new ChildOfParser(memberDiagnosticReporter)
+                new ChildOfParser(betterMemberSymbol)
                     .GetParentTypeSymbolOf(
                         structureMemberType.StructureTypeInfo.NamedTypeSymbol);
             if (expectedParentTypeSymbol != null) {
               if (expectedParentTypeSymbol.Equals(structureSymbol)) {
                 structureMemberType.IsChild = true;
               } else {
-                memberDiagnosticReporter.ReportDiagnostic(
+                betterMemberSymbol.ReportDiagnostic(
                     Rules.ChildTypeCanOnlyBeContainedInParent);
               }
             }
@@ -494,11 +478,9 @@ namespace schema.binary {
       {
         // TODO: Implement this, support strings in arrays?
         var stringLengthSourceAttribute =
-            (IStringLengthSourceAttribute?) memberSymbol
-                .GetAttribute<StringLengthSourceAttribute>(
-                    memberDiagnosticReporter) ?? memberSymbol
-                .GetAttribute<RStringLengthSourceAttribute>(
-                    memberDiagnosticReporter);
+            (IStringLengthSourceAttribute?)
+            betterMemberSymbol.GetAttribute<StringLengthSourceAttribute>() ??
+            betterMemberSymbol.GetAttribute<RStringLengthSourceAttribute>();
         var isNullTerminatedString = memberSymbol
             .HasAttribute<NullTerminatedStringAttribute>();
         var hasStringLengthAttribute =
@@ -506,15 +488,13 @@ namespace schema.binary {
 
 
         var encodingTypeAttribute =
-            memberSymbol.GetAttribute<StringEncodingAttribute>(
-                memberDiagnosticReporter);
+            betterMemberSymbol.GetAttribute<StringEncodingAttribute>();
 
 
         if (hasStringLengthAttribute || encodingTypeAttribute != null) {
           if (memberType is StringType stringType) {
             if (memberTypeInfo.IsReadOnly && hasStringLengthAttribute) {
-              memberDiagnosticReporter.ReportDiagnostic(
-                  Rules.UnexpectedAttribute);
+              betterMemberSymbol.ReportDiagnostic(Rules.UnexpectedAttribute);
             }
 
             stringType.EncodingType = encodingTypeAttribute?.EncodingType ??
@@ -543,13 +523,12 @@ namespace schema.binary {
                 break;
               }
               default: {
-                memberDiagnosticReporter.ReportDiagnostic(Rules.NotSupported);
+                betterMemberSymbol.ReportDiagnostic(Rules.NotSupported);
                 break;
               }
             }
           } else {
-            memberDiagnosticReporter.ReportDiagnostic(
-                Rules.UnexpectedAttribute);
+            betterMemberSymbol.ReportDiagnostic(Rules.UnexpectedAttribute);
           }
         }
       }

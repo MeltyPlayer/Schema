@@ -1,12 +1,9 @@
-﻿using Microsoft.CodeAnalysis;
-
-using schema.binary.parser;
-using schema.util.diagnostics;
+﻿using schema.binary.parser;
+using schema.util.symbols;
 
 namespace schema.binary.attributes {
   internal interface IAttributeParser {
-    void ParseIntoMemberType(IDiagnosticReporter diagnosticReporter,
-                             ISymbol memberSymbol,
+    void ParseIntoMemberType(IBetterSymbol memberSymbol,
                              ITypeInfo memberTypeInfo,
                              IMemberType memberType);
   }

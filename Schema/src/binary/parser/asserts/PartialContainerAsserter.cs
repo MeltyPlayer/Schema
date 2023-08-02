@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using schema.util.diagnostics;
+using schema.util.symbols;
 
 
 namespace schema.binary.parser.asserts {

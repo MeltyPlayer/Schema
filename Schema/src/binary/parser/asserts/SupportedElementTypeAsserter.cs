@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-
-using Microsoft.CodeAnalysis;
-
-using schema.util.diagnostics;
+﻿using schema.util.diagnostics;
+using schema.util.symbols;
 
 
 namespace schema.binary.parser.asserts {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,6 +10,7 @@ using schema.binary.attributes;
 using schema.binary.dependencies;
 using schema.binary.parser;
 using schema.util;
+using schema.util.symbols;
 
 namespace schema.binary.text {
   public class BinarySchemaWriterGenerator {
