@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 using Microsoft.CodeAnalysis;
@@ -15,10 +17,12 @@ using schema.util;
 
 namespace schema.binary {
   internal static class SymbolTypeUtil {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ISymbol GetSymbolFromType(SemanticModel semanticModel,
                                             Type type)
       => SymbolTypeUtil.GetSymbolFromIdentifier(semanticModel, type.FullName);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ISymbol GetSymbolFromIdentifier(
         SemanticModel semanticModel,
         string identifier) {
@@ -26,6 +30,7 @@ namespace schema.binary {
       return symbol.First();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool CanBeStoredAs<TType>(this ITypeSymbol symbol)
       => symbol.CanBeStoredAs(typeof(TType));
 
@@ -44,6 +49,7 @@ namespace schema.binary {
     }
 
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ImplementsGeneric(this ITypeSymbol symbol, Type type)
       => symbol.ImplementsGeneric(type, out _);
 
@@ -62,18 +68,75 @@ namespace schema.binary {
     }
 
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsBinaryDeserializable(this ITypeSymbol symbol)
       => symbol.Implements<IBinaryDeserializable>();
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsBinarySerializable(this ITypeSymbol symbol)
       => symbol.Implements<IBinarySerializable>();
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool Implements<TType>(this ITypeSymbol symbol)
       => symbol.Implements(typeof(TType));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool Implements(this ITypeSymbol symbol, Type type)
       => symbol.AllInterfaces.Any(i => i.IsExactlyType(type));
 
+
+    // Namespace
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool IsInSameNamespaceAs(this ISymbol symbol, ISymbol other)
+      => symbol.ContainingNamespace.Equals(other.ContainingNamespace);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool IsInSameNamespaceAs(this ISymbol symbol, Type other)
+      => symbol.IsInNamespace(other.Namespace);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool IsInNamespace(
+        this ISymbol symbol,
+        string fullNamespacePath) {
+      var fullNamespacePathLength = fullNamespacePath.Length;
+
+      var currentNamespace = symbol.ContainingNamespace;
+      var currentNamespaceName = currentNamespace.Name;
+      var currentNamespaceNameLength = currentNamespaceName.Length;
+
+      if (fullNamespacePathLength == 0 && currentNamespaceNameLength == 0) {
+        return true;
+      }
+
+      var fullNamespaceI = fullNamespacePathLength - 1;
+      var currentNamespaceI = currentNamespaceNameLength - 1;
+
+      for (; fullNamespaceI >= 0; --fullNamespaceI, --currentNamespaceI) {
+        if (currentNamespaceI == -1) {
+          if (fullNamespacePath[fullNamespaceI] != '.') {
+            return false;
+          }
+
+          --fullNamespaceI;
+          currentNamespace = currentNamespace.ContainingNamespace;
+          currentNamespaceName = currentNamespace.Name;
+          currentNamespaceNameLength = currentNamespaceName.Length;
+          if (currentNamespaceNameLength == 0) {
+            return false;
+          }
+
+          currentNamespaceI = currentNamespaceNameLength - 1;
+        }
+
+        if (fullNamespacePath[fullNamespaceI] !=
+            currentNamespaceName[currentNamespaceI]) {
+          return false;
+        }
+      }
+
+      return fullNamespaceI == -1 && currentNamespaceI == -1 &&
+             currentNamespace.ContainingNamespace.Name.Length == 0;
+    }
 
     public static string[]? GetContainingNamespaces(this ISymbol symbol) {
       var namespaceSymbol = symbol.ContainingNamespace;
@@ -93,6 +156,7 @@ namespace schema.binary {
       return namespaces.ToArray();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string? MergeContainingNamespaces(ISymbol symbol)
       => MergeNamespaceParts(GetContainingNamespaces(symbol));
 
@@ -138,38 +202,43 @@ namespace schema.binary {
       return sameName && sameNamespace && sameTypeArguments;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsExactlyType(this ISymbol symbol, Type expectedType)
       => symbol.Name == expectedType.Name &&
-         SymbolTypeUtil.MergeContainingNamespaces(symbol) ==
-         expectedType.Namespace;
+         symbol.IsInSameNamespaceAs(expectedType);
 
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static ImmutableArray<AttributeData> GetAttributeData(
+        this ISymbol symbol)
+      => symbol.GetAttributes();
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool HasAttribute(this ISymbol symbol, Type expectedType)
-      => symbol.GetAttributes()
+      => symbol.GetAttributeData()
                .Any(attributeData
                         => attributeData.AttributeClass!.IsExactlyType(
                             expectedType));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static IEnumerable<AttributeData>
         GetAttributeData<TAttribute>(this ISymbol symbol) {
       var attributeType = typeof(TAttribute);
-      return symbol.GetAttributes()
-                   .Where(attributeData => {
-                     var attributeSymbol = attributeData.AttributeClass;
-
-                     return attributeSymbol.Name == attributeType.Name &&
-                            SymbolTypeUtil.MergeContainingNamespaces(
-                                attributeSymbol) ==
-                            attributeType.Namespace;
-                   });
+      return symbol
+             .GetAttributeData()
+             .Where(attributeData
+                        => attributeData.AttributeClass?.IsExactlyType(
+                            attributeType) ?? false);
     }
 
 
-    internal static bool HasAttribute<TAttribute>(
-        this ISymbol symbol,
-        IList<Diagnostic> diagnostics)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool HasAttribute<TAttribute>(this ISymbol symbol)
         where TAttribute : Attribute
-      => symbol.GetAttribute<TAttribute>(diagnostics) != null;
+      => symbol.GetAttributeData<TAttribute>().Any();
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static TAttribute? GetAttribute<TAttribute>(
         this ISymbol symbol,
         IList<Diagnostic> diagnostics)
@@ -178,6 +247,7 @@ namespace schema.binary {
                .SingleOrDefault();
 
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static TAttribute? GetAttribute<TAttribute>(
         IList<Diagnostic> diagnostics,
         ISymbol symbol)
@@ -185,6 +255,7 @@ namespace schema.binary {
       => symbol.GetAttributes<TAttribute>(diagnostics)
                .SingleOrDefault();
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static IEnumerable<TAttribute> GetAttributes<TAttribute>(
         this ISymbol symbol,
         IList<Diagnostic> diagnostics)
@@ -275,6 +346,7 @@ namespace schema.binary {
       return sb.ToString();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string GetSymbolQualifiers(this INamedTypeSymbol typeSymbol)
       => (typeSymbol.IsStatic ? "static " : "") +
          SymbolTypeUtil.AccessibilityToModifier(
@@ -284,6 +356,7 @@ namespace schema.binary {
          "partial " +
          (typeSymbol.TypeKind == TypeKind.Class ? "class" : "struct");
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string AccessibilityToModifier(
         Accessibility accessibility)
       => accessibility switch {
@@ -371,6 +444,7 @@ namespace schema.binary {
           $"{mergedNamespaceText}{mergedContainersText}{referencedSymbol.Name}";
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void GetMemberInStructure(
         this ITypeSymbol structureSymbol,
         string memberName,

@@ -153,7 +153,7 @@ namespace schema.binary {
       }
 
       var localPositions =
-          structureSymbol.HasAttribute<LocalPositionsAttribute>(diagnostics);
+          structureSymbol.HasAttribute<LocalPositionsAttribute>();
       var structureEndianness =
           new EndiannessParser().GetEndianness(diagnostics, structureSymbol);
 
@@ -173,7 +173,7 @@ namespace schema.binary {
           var methodSymbol = memberSymbol as IMethodSymbol;
           var isMethod = methodSymbol != null;
           var hasRunAtReadTimeAttribute =
-              memberSymbol.HasAttribute<ReadLogicAttribute>(diagnostics);
+              memberSymbol.HasAttribute<ReadLogicAttribute>();
           if (hasRunAtReadTimeAttribute) {
             if (isMethod) {
               if (methodSymbol.Parameters.Length == 1 && methodSymbol
@@ -198,7 +198,7 @@ namespace schema.binary {
         }
 
         bool isIgnored =
-            memberSymbol.HasAttribute<IgnoreAttribute>(diagnostics) ||
+            memberSymbol.HasAttribute<IgnoreAttribute>() ||
             (memberSymbol.Name == nameof(IChildOf<IBinaryConvertible>.Parent)
              && parentTypeSymbol != null);
 
@@ -516,9 +516,8 @@ namespace schema.binary {
                 .GetAttribute<RStringLengthSourceAttribute>(
                     diagnostics,
                     memberSymbol);
-        var isNullTerminatedString =
-            memberSymbol.HasAttribute<NullTerminatedStringAttribute>(
-                diagnostics);
+        var isNullTerminatedString = memberSymbol
+            .HasAttribute<NullTerminatedStringAttribute>();
         var hasStringLengthAttribute = 
             stringLengthSourceAttribute != null || isNullTerminatedString;
 

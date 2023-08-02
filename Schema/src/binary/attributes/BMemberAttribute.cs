@@ -177,13 +177,13 @@ namespace schema.binary.attributes {
 
     private bool IsMemberWritePrivateOrIgnored_(ISymbol symbol)
       => symbol switch {
-        IPropertySymbol propertySymbol
-            => (propertySymbol.SetMethod
-                              ?.DeclaredAccessibility ??
-                Accessibility.Private) == Accessibility.Private,
-        IFieldSymbol fieldSymbol
-            => fieldSymbol.DeclaredAccessibility == Accessibility.Private,
-      } || symbol.HasAttribute<IgnoreAttribute>(this.diagnostics_);
+          IPropertySymbol propertySymbol
+              => (propertySymbol.SetMethod
+                                ?.DeclaredAccessibility ??
+                  Accessibility.Private) == Accessibility.Private,
+          IFieldSymbol fieldSymbol
+              => fieldSymbol.DeclaredAccessibility == Accessibility.Private,
+      } || symbol.HasAttribute<IgnoreAttribute>();
   }
 
 
