@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -11,8 +10,7 @@ namespace schema.util {
   public static class AttributeUtil {
     public static TAttribute Instantiate<TAttribute>(
         this AttributeData attributeData,
-        ISymbol attachedSymbol,
-        IList<Diagnostic> diagnostics) where TAttribute : Attribute {
+        ISymbol attachedSymbol) where TAttribute : Attribute {
       var parameters = attributeData.AttributeConstructor.Parameters;
 
       // TODO: Does this still work w/ optional arguments?
@@ -64,7 +62,8 @@ namespace schema.util {
               .Select((a, i) => a.Value is string
                           ? NameofUtil
                               .GetChainedAccessFromCallerArgumentExpression(
-                                  parentType, argumentText[i])
+                                  parentType,
+                                  argumentText[i])
                           : a.Value)
               .Concat(
                   Enumerable.Repeat(Type.Missing,

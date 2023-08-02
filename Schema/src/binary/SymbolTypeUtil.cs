@@ -13,6 +13,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using schema.binary.attributes;
 using schema.binary.parser;
 using schema.util;
+using schema.util.diagnostics;
 
 
 namespace schema.binary {
@@ -241,31 +242,30 @@ namespace schema.binary {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static TAttribute? GetAttribute<TAttribute>(
         this ISymbol symbol,
-        IList<Diagnostic> diagnostics)
+        IDiagnosticReporter diagnosticReporter)
         where TAttribute : Attribute
-      => symbol.GetAttributes<TAttribute>(diagnostics)
+      => symbol.GetAttributes<TAttribute>(diagnosticReporter)
                .SingleOrDefault();
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static TAttribute? GetAttribute<TAttribute>(
-        IList<Diagnostic> diagnostics,
+        IDiagnosticReporter diagnosticReporter,
         ISymbol symbol)
         where TAttribute : Attribute
-      => symbol.GetAttributes<TAttribute>(diagnostics)
+      => symbol.GetAttributes<TAttribute>(diagnosticReporter)
                .SingleOrDefault();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static IEnumerable<TAttribute> GetAttributes<TAttribute>(
         this ISymbol symbol,
-        IList<Diagnostic> diagnostics)
+        IDiagnosticReporter diagnosticReporter)
         where TAttribute : Attribute
       => symbol.GetAttributeData<TAttribute>()
                .Select(attributeData => {
-                 var attribute =
-                     attributeData.Instantiate<TAttribute>(symbol, diagnostics);
+                 var attribute = attributeData.Instantiate<TAttribute>(symbol);
                  if (attribute is BMemberAttribute memberAttribute) {
-                   memberAttribute.Init(diagnostics,
+                   memberAttribute.Init(diagnosticReporter,
                                         symbol.ContainingType,
                                         symbol.Name);
                  }
@@ -456,7 +456,7 @@ namespace schema.binary {
     }
 
     public static void GetMemberRelativeToAnother(
-        IList<Diagnostic> diagnostics,
+        IDiagnosticReporter diagnosticReporter,
         ITypeSymbol structureSymbol,
         string otherMemberName,
         string thisMemberNameForFirstPass,
@@ -464,7 +464,7 @@ namespace schema.binary {
         out ISymbol memberSymbol,
         out ITypeInfo memberTypeInfo) {
       var typeChain = AccessChainUtil.GetAccessChainForRelativeMember(
-          diagnostics,
+          diagnosticReporter,
           structureSymbol,
           otherMemberName,
           thisMemberNameForFirstPass,

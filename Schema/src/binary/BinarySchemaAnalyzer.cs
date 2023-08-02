@@ -93,13 +93,7 @@ namespace schema.binary {
           return;
         }
 
-        var structure = this.parser_.ParseStructure(symbol);
-        var diagnostics = structure.Diagnostics;
-        if (diagnostics.Count > 0) {
-          foreach (var diagnostic in diagnostics) {
-            Rules.ReportDiagnostic(context, diagnostic);
-          }
-        }
+        this.parser_.ParseStructure(symbol, context);
       } catch (Exception exception) {
         if (Debugger.IsAttached) {
           throw;

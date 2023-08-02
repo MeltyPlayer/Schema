@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -136,11 +135,6 @@ namespace schema.binary {
           "Ran into an exception while parsing ({0}),{1}");
 
 
-    public static void ReportDiagnostic(
-        SyntaxNodeAnalysisContext? context,
-        Diagnostic diagnostic)
-      => context?.ReportDiagnostic(diagnostic);
-
     public static Diagnostic CreateDiagnostic(
         ISymbol symbol,
         DiagnosticDescriptor descriptor)
@@ -155,19 +149,6 @@ namespace schema.binary {
         DiagnosticDescriptor descriptor)
       => context?.ReportDiagnostic(
           Rules.CreateDiagnostic(symbol, descriptor));
-
-
-    public static Diagnostic CreateExceptionDiagnostic(
-        Exception exception)
-      => Diagnostic.Create(
-          Rules.Exception,
-          null,
-          exception.ToString());
-
-    public static void ReportExceptionDiagnostic(
-        SyntaxNodeAnalysisContext? context,
-        Exception exception)
-      => context?.ReportDiagnostic(Rules.CreateExceptionDiagnostic(exception));
 
     public static Diagnostic CreateExceptionDiagnostic(
         ISymbol symbol,

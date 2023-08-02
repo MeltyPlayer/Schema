@@ -1,15 +1,16 @@
 ﻿using Microsoft.CodeAnalysis;
-using System.Collections.Generic;
 using System.IO;
+
+using schema.util.diagnostics;
 
 
 namespace schema.binary.attributes {
-  public class EndiannessParser {
+  internal class EndiannessParser {
     public Endianness? GetEndianness(
-        IList<Diagnostic> diagnostics,
+        IDiagnosticReporter diagnosticReporter,
         ISymbol symbol) {
       var endiannessAttribute =
-          SymbolTypeUtil.GetAttribute<EndiannessAttribute>(diagnostics, symbol);
+          symbol.GetAttribute<EndiannessAttribute>(diagnosticReporter);
       return endiannessAttribute?.Endianness;
     }
   }

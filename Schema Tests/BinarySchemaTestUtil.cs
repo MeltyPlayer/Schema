@@ -81,8 +81,7 @@ namespace schema.binary {
                          var namedTypeSymbol = symbol as INamedTypeSymbol;
 
                          return new BinarySchemaStructureParser()
-                             .ParseStructure(
-                                 namedTypeSymbol);
+                             .ParseStructure(namedTypeSymbol);
                        })
                        .ToArray();
 
@@ -116,7 +115,7 @@ namespace schema.binary {
     }
 
     public static void AssertDiagnostics(
-        IList<Diagnostic> actualDiagnostics,
+        IReadOnlyList<Diagnostic> actualDiagnostics,
         params DiagnosticDescriptor[] expectedDiagnostics) {
       var message = "";
 

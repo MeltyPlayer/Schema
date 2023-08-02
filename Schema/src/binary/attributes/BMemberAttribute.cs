@@ -2,10 +2,9 @@
 
 using Microsoft.CodeAnalysis;
 
-using System.Collections.Generic;
-
 using schema.binary.parser;
 using schema.util;
+using schema.util.diagnostics;
 
 namespace schema.binary.attributes {
   public abstract class BMemberAttribute<T> : BMemberAttribute {
@@ -17,7 +16,7 @@ namespace schema.binary.attributes {
 
   public abstract class BMemberAttribute : Attribute {
     private static readonly TypeInfoParser parser_ = new();
-    private IList<Diagnostic> diagnostics_;
+    private IDiagnosticReporter diagnosticReporter_;
 
     private ITypeInfo structureTypeInfo_;
     protected IMemberReference memberThisIsAttachedTo_;
@@ -30,11 +29,11 @@ namespace schema.binary.attributes {
     }
 
 
-    public void Init(
-        IList<Diagnostic> diagnostics,
+    internal void Init(
+        IDiagnosticReporter diagnosticReporter,
         ITypeSymbol structureTypeSymbol,
         string memberName) {
-      this.diagnostics_ = diagnostics;
+      this.diagnosticReporter_ = diagnosticReporter;
       this.structureTypeInfo_ = BMemberAttribute.parser_.AssertParseTypeSymbol(
           structureTypeSymbol);
       this.SetMemberFromName(memberName);
@@ -80,7 +79,7 @@ namespace schema.binary.attributes {
     protected IMemberReference GetOtherMemberRelativeToStructure(
         string otherMemberName) {
       SymbolTypeUtil.GetMemberRelativeToAnother(
-          this.diagnostics_,
+          this.diagnosticReporter_,
           this.structureTypeInfo_.TypeSymbol,
           otherMemberName,
           this.memberThisIsAttachedTo_.Name,
@@ -98,7 +97,7 @@ namespace schema.binary.attributes {
     protected IMemberReference<T> GetOtherMemberRelativeToStructure<T>(
         string otherMemberName) {
       SymbolTypeUtil.GetMemberRelativeToAnother(
-          this.diagnostics_,
+          this.diagnosticReporter_,
           this.structureTypeInfo_.TypeSymbol,
           otherMemberName,
           this.memberThisIsAttachedTo_.Name,
@@ -123,7 +122,7 @@ namespace schema.binary.attributes {
         string otherMemberPath,
         bool assertOrder)
       => AccessChainUtil.GetAccessChainForRelativeMember(
-          this.diagnostics_,
+          this.diagnosticReporter_,
           this.structureTypeInfo_.TypeSymbol,
           otherMemberPath,
           this.memberThisIsAttachedTo_.Name,
@@ -133,7 +132,7 @@ namespace schema.binary.attributes {
         string otherMemberPath,
         bool assertOrder) {
       var typeChain = AccessChainUtil.GetAccessChainForRelativeMember(
-          this.diagnostics_,
+          this.diagnosticReporter_,
           this.structureTypeInfo_.TypeSymbol,
           otherMemberPath,
           this.memberThisIsAttachedTo_.Name,
@@ -154,9 +153,9 @@ namespace schema.binary.attributes {
       var source = this.GetOtherMemberRelativeToStructure(otherMemberName);
 
       if (!IsMemberWritePrivateOrIgnored_(source.MemberSymbol)) {
-        this.diagnostics_.Add(
-            Rules.CreateDiagnostic(source.MemberSymbol,
-                                   Rules.SourceMustBePrivate));
+        this.diagnosticReporter_.ReportDiagnostic(
+            source.MemberSymbol,
+            Rules.SourceMustBePrivate);
       }
 
       return source;
@@ -167,9 +166,9 @@ namespace schema.binary.attributes {
       var source = this.GetOtherMemberRelativeToStructure<T>(otherMemberName);
 
       if (!IsMemberWritePrivateOrIgnored_(source.MemberSymbol)) {
-        this.diagnostics_.Add(
-            Rules.CreateDiagnostic(source.MemberSymbol,
-                                   Rules.SourceMustBePrivate));
+        this.diagnosticReporter_.ReportDiagnostic(
+            source.MemberSymbol,
+            Rules.SourceMustBePrivate);
       }
 
       return source;

@@ -2,17 +2,13 @@
 
 using Microsoft.CodeAnalysis;
 
+using schema.util.diagnostics;
+
 
 namespace schema.binary.parser.asserts {
   internal class SupportedElementTypeAsserter {
-    private readonly IList<Diagnostic> diagnostics_;
-
-    public SupportedElementTypeAsserter(IList<Diagnostic> diagnostics) {
-      this.diagnostics_ = diagnostics;
-    }
-
     public void AssertElementTypesAreSupported(
-        ISymbol memberSymbol,
+        IDiagnosticReporter diagnosticReporter,
         IMemberType memberType) {
       if (memberType is not ISequenceMemberType sequenceMemberType) {
         return;
@@ -28,17 +24,12 @@ namespace schema.binary.parser.asserts {
       if (elementTypeInfo is IStructureTypeInfo structureTypeInfo) {
         if (!SymbolTypeUtil.Implements(structureTypeInfo.NamedTypeSymbol,
                                        typeof(IBinaryConvertible))) {
-          this.diagnostics_.Add(
-              Rules.CreateDiagnostic(
-                  memberSymbol,
-                  Rules.ElementNeedsToImplementIBiSerializable));
+          diagnosticReporter.ReportDiagnostic(
+              Rules.ElementNeedsToImplementIBiSerializable);
         }
       } else {
         if (elementTypeInfo.Kind == SchemaTypeKind.SEQUENCE) {
-          this.diagnostics_.Add(
-              Rules.CreateDiagnostic(
-                  memberSymbol,
-                  Rules.UnsupportedArrayType));
+          diagnosticReporter.ReportDiagnostic(Rules.UnsupportedArrayType);
         }
       }
     }

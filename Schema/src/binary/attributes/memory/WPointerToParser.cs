@@ -3,23 +3,24 @@
 using System.Collections.Generic;
 
 using schema.binary.parser;
+using schema.util.diagnostics;
 
 
 namespace schema.binary.attributes {
   internal class WPointerToParser : IAttributeParser {
-    public void ParseIntoMemberType(IList<Diagnostic> diagnostics,
+    public void ParseIntoMemberType(IDiagnosticReporter diagnosticReporter,
                                     ISymbol memberSymbol,
                                     ITypeInfo memberTypeInfo,
                                     IMemberType memberType) {
       var pointerToAttribute = SymbolTypeUtil.GetAttribute<WPointerToAttribute>(
-          diagnostics,
+          diagnosticReporter,
           memberSymbol);
       if (pointerToAttribute == null) {
         return;
       }
 
       AccessChainUtil.AssertAllNodesInTypeChainUntilTargetUseBinarySchema(
-          diagnostics,
+          diagnosticReporter,
           pointerToAttribute.AccessChainToOtherMember);
 
       if (memberTypeInfo is IIntegerTypeInfo &&
@@ -28,8 +29,7 @@ namespace schema.binary.attributes {
         primitiveMemberType.AccessChainToPointer =
             pointerToAttribute.AccessChainToOtherMember;
       } else {
-        diagnostics.Add(
-            Rules.CreateDiagnostic(memberSymbol, Rules.NotSupported));
+        diagnosticReporter.ReportDiagnostic(Rules.NotSupported);
       }
     }
   }

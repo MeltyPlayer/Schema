@@ -4,17 +4,19 @@ using System.Collections.Generic;
 using System.Linq;
 
 using schema.binary.parser;
+using schema.util.diagnostics;
 
 
 namespace schema.binary.attributes {
   internal class WLengthOfSequenceParser : IAttributeParser {
-    public void ParseIntoMemberType(IList<Diagnostic> diagnostics,
+    public void ParseIntoMemberType(IDiagnosticReporter diagnosticReporter,
                                     ISymbol memberSymbol,
                                     ITypeInfo memberTypeInfo,
                                     IMemberType memberType) {
       var lengthOfSequenceAttributes =
-          memberSymbol.GetAttributes<WLengthOfSequenceAttribute>(diagnostics)
-                      .ToArray();
+          memberSymbol
+              .GetAttributes<WLengthOfSequenceAttribute>(diagnosticReporter)
+              .ToArray();
       if (lengthOfSequenceAttributes.Length == 0) {
         return;
       }
@@ -26,8 +28,7 @@ namespace schema.binary.attributes {
             lengthOfSequenceAttributes.Select(attr => attr.OtherMember)
                                       .ToArray();
       } else {
-        diagnostics.Add(
-            Rules.CreateDiagnostic(memberSymbol, Rules.NotSupported));
+        diagnosticReporter.ReportDiagnostic(Rules.NotSupported);
       }
     }
   }

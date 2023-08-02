@@ -4,26 +4,23 @@ using System;
 using System.Collections.Generic;
 
 using schema.binary.parser;
+using schema.util.diagnostics;
 
 
 namespace schema.binary.attributes {
   internal class SequenceLengthSourceParser : IAttributeParser {
-    public void ParseIntoMemberType(IList<Diagnostic> diagnostics,
+    public void ParseIntoMemberType(IDiagnosticReporter diagnosticReporter,
                                     ISymbol memberSymbol,
                                     ITypeInfo memberTypeInfo,
                                     IMemberType memberType) {
       var lengthSourceAttribute =
-          (ISequenceLengthSourceAttribute?) SymbolTypeUtil
+          (ISequenceLengthSourceAttribute?) memberSymbol
               .GetAttribute<SequenceLengthSourceAttribute>(
-                  diagnostics,
-                  memberSymbol) ?? SymbolTypeUtil
-              .GetAttribute<RSequenceLengthSourceAttribute>(
-                  diagnostics,
-                  memberSymbol);
+                  diagnosticReporter) ?? memberSymbol
+              .GetAttribute<RSequenceLengthSourceAttribute>(diagnosticReporter);
       var untilEndOfStreamAttribute =
-          SymbolTypeUtil.GetAttribute<RSequenceUntilEndOfStreamAttribute>(
-              diagnostics,
-              memberSymbol);
+          memberSymbol.GetAttribute<RSequenceUntilEndOfStreamAttribute>(
+              diagnosticReporter);
 
       if (memberType is BinarySchemaStructureParser.SequenceMemberType
           sequenceMemberType) {
@@ -57,25 +54,21 @@ namespace schema.binary.attributes {
             sequenceMemberType.LengthSourceType =
                 SequenceLengthSourceType.UNTIL_END_OF_STREAM;
           } else {
-            diagnostics.Add(
-                Rules.CreateDiagnostic(
-                    memberSymbol,
-                    Rules.MutableArrayNeedsLengthSource));
+            diagnosticReporter.ReportDiagnostic(
+                Rules.MutableArrayNeedsLengthSource);
           }
         }
         // Didn't expect attribute b/c length is already specified
         else if (lengthSourceAttribute != null) {
-          diagnostics.Add(
-              Rules.CreateDiagnostic(memberSymbol,
-                                     Rules.UnexpectedAttribute));
+          diagnosticReporter.ReportDiagnostic(
+              Rules.UnexpectedAttribute);
         }
       }
 
       // Didn't expect attribute b/c not a sequence
       else if (lengthSourceAttribute != null) {
-        diagnostics.Add(
-            Rules.CreateDiagnostic(memberSymbol,
-                                   Rules.UnexpectedSequenceAttribute));
+        diagnosticReporter.ReportDiagnostic(
+            Rules.UnexpectedSequenceAttribute);
       }
     }
   }

@@ -1,17 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 
 using Microsoft.CodeAnalysis;
 
 using schema.binary.parser;
+using schema.util.diagnostics;
 
 
 namespace schema.binary.attributes {
-  public class ChildOfParser {
-    private readonly IList<Diagnostic> diagnostics_;
+  internal class ChildOfParser {
+    private readonly IDiagnosticReporter diagnosticReporter_;
 
-    public ChildOfParser(IList<Diagnostic> diagnostics) {
-      this.diagnostics_ = diagnostics;
+    public ChildOfParser(IDiagnosticReporter diagnosticReporter) {
+      this.diagnosticReporter_ = diagnosticReporter;
     }
 
     public INamedTypeSymbol? GetParentTypeSymbolOf(
@@ -70,9 +70,9 @@ namespace schema.binary.attributes {
               });
 
       if (!containedInClass) {
-        diagnostics_.Add(
-            Rules.CreateDiagnostic(childNamedTypeSymbol,
-                                   Rules.ChildTypeMustBeContainedInParent));
+        this.diagnosticReporter_.ReportDiagnostic(
+            childNamedTypeSymbol,
+            Rules.ChildTypeMustBeContainedInParent);
       }
     }
 
@@ -83,10 +83,9 @@ namespace schema.binary.attributes {
            !parentNamedTypeSymbol.IsBinaryDeserializable()) ||
           (childNamedTypeSymbol.IsBinarySerializable() &&
            !parentNamedTypeSymbol.IsBinarySerializable())) {
-        this.diagnostics_.Add(
-            Rules.CreateDiagnostic(
-                childNamedTypeSymbol,
-                Rules.ParentBinaryConvertabilityMustSatisfyChild));
+        this.diagnosticReporter_.ReportDiagnostic(
+            childNamedTypeSymbol,
+            Rules.ParentBinaryConvertabilityMustSatisfyChild);
       }
     }
   }

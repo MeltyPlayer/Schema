@@ -1,26 +1,24 @@
 ﻿using Microsoft.CodeAnalysis;
 
-using System.Collections.Generic;
-
 using schema.binary.parser;
+using schema.util.diagnostics;
 
 
 namespace schema.binary.attributes {
   internal class WSizeOfMemberInBytesParser : IAttributeParser {
-    public void ParseIntoMemberType(IList<Diagnostic> diagnostics,
+    public void ParseIntoMemberType(IDiagnosticReporter diagnosticReporter,
                                     ISymbol memberSymbol,
                                     ITypeInfo memberTypeInfo,
                                     IMemberType memberType) {
       var sizeOfAttribute =
-          SymbolTypeUtil.GetAttribute<WSizeOfMemberInBytesAttribute>(
-              diagnostics,
-              memberSymbol);
+          memberSymbol.GetAttribute<WSizeOfMemberInBytesAttribute>(
+              diagnosticReporter);
       if (sizeOfAttribute == null) {
         return;
       }
 
       AccessChainUtil.AssertAllNodesInTypeChainUntilTargetUseBinarySchema(
-          diagnostics,
+          diagnosticReporter,
           sizeOfAttribute.AccessChainToOtherMember);
 
       if (memberTypeInfo is IIntegerTypeInfo &&
@@ -29,8 +27,7 @@ namespace schema.binary.attributes {
         primitiveMemberType.AccessChainToSizeOf =
             sizeOfAttribute.AccessChainToOtherMember;
       } else {
-        diagnostics.Add(
-            Rules.CreateDiagnostic(memberSymbol, Rules.NotSupported));
+        diagnosticReporter.ReportDiagnostic(Rules.NotSupported);
       }
     }
   }

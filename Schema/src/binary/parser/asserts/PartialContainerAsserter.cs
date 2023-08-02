@@ -3,13 +3,15 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+using schema.util.diagnostics;
+
 
 namespace schema.binary.parser.asserts {
-  public class PartialContainerAsserter {
-    private readonly IList<Diagnostic> diagnostics_;
+  internal class PartialContainerAsserter {
+    private readonly IDiagnosticReporter diagnosticReporter_;
 
-    public PartialContainerAsserter(IList<Diagnostic> diagnostics) {
-      this.diagnostics_ = diagnostics;
+    public PartialContainerAsserter(IDiagnosticReporter diagnosticReporter) {
+      this.diagnosticReporter_ = diagnosticReporter;
     }
 
     /// <summary>
@@ -23,9 +25,9 @@ namespace schema.binary.parser.asserts {
                 TypeDeclarationSyntax;
 
         if (!SymbolTypeUtil.IsPartial(typeDeclarationSyntax!)) {
-          this.diagnostics_.Add(Rules.CreateDiagnostic(
-                                    containingType,
-                                    Rules.ContainerTypeMustBePartial));
+          this.diagnosticReporter_.ReportDiagnostic(
+              containingType,
+              Rules.ContainerTypeMustBePartial);
         }
 
         containingType = containingType.ContainingType;

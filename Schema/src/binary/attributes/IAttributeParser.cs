@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 
 using schema.binary.parser;
+using schema.util.diagnostics;
 
 namespace schema.binary.attributes {
   internal interface IAttributeParser {
-    void ParseIntoMemberType(IList<Diagnostic> diagnostics,
+    void ParseIntoMemberType(IDiagnosticReporter diagnosticReporter,
                              ISymbol memberSymbol,
                              ITypeInfo memberTypeInfo,
                              IMemberType memberType);
