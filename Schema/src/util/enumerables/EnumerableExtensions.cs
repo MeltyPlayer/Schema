@@ -2,6 +2,10 @@
 
 namespace schema.util.enumerables {
   public static class EnumerableExtensions {
+    public static IEnumerable<T> Yield<T>(this T value) {
+      yield return value;
+    }
+
     public static IEnumerable<T> Resized<T>(
         this IEnumerable<T>? enumerable,
         int length) where T : new() {

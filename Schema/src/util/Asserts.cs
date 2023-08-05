@@ -152,21 +152,15 @@ namespace schema.util {
         string? message = null)
       => Equal<string>(expected, actual, message);
 
-    public static bool IsA<TExpected>(object? instance, string? message = null)
-      => IsA(instance, typeof(TExpected), message);
-
-    public static bool IsA(
-        object? instance,
-        Type expected,
-        string? message = null)
-      => Nonnull(instance, message) &&
-         Equal(instance!.GetType(), expected, message);
-
     public static TExpected AsA<TExpected>(
         object? instance,
         string? message = null) {
-      IsA<TExpected>(instance, message);
-      return (TExpected) instance!;
+      if (instance is TExpected expected) {
+        return expected;
+      }
+
+      Asserts.Fail(message);
+      return default!;
     }
 
     public static T Assert<T>(T? value) where T : notnull {
