@@ -18,42 +18,6 @@ using schema.util.types;
 namespace schema.util.symbols {
   internal static class SymbolTypeUtil {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool ImplementsGeneric(this ITypeSymbol symbol, Type type)
-      => symbol.ImplementsGeneric(type, out _);
-
-    public static bool ImplementsGeneric(this ITypeSymbol symbol,
-                                         Type type,
-                                         out INamedTypeSymbol outGenericType) {
-      var matchingGenericType =
-          symbol.AllInterfaces.FirstOrDefault(i => i.MatchesGeneric(type));
-      if (matchingGenericType != null) {
-        outGenericType = matchingGenericType;
-        return true;
-      }
-
-      outGenericType = default;
-      return false;
-    }
-
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsBinaryDeserializable(this ITypeSymbol symbol)
-      => symbol.Implements<IBinaryDeserializable>();
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsBinarySerializable(this ITypeSymbol symbol)
-      => symbol.Implements<IBinarySerializable>();
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Implements<TType>(this ITypeSymbol symbol)
-      => symbol.Implements(typeof(TType));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Implements(this ITypeSymbol symbol, Type type)
-      => symbol.AllInterfaces.Any(i => i.IsExactlyType(type));
-
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsInSameNamespaceAs(this ISymbol symbol, Type other)
       => symbol.IsInNamespace(other.Namespace);
 

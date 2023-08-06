@@ -12,6 +12,7 @@ using schema.binary.text;
 using schema.util;
 using schema.util.symbols;
 using schema.util.syntax;
+using schema.util.types;
 
 namespace schema.binary {
   [Generator(LanguageNames.CSharp)]
@@ -23,7 +24,8 @@ namespace schema.binary {
     private readonly BinarySchemaWriterGenerator writerImpl_ = new();
 
     private void Generate_(IBinarySchemaContainer container) {
-      if (SymbolTypeUtil.Implements<IBinaryDeserializable>(container.TypeSymbol)
+      var containerTypeV2 = TypeV2.FromSymbol(container.TypeSymbol);
+      if (containerTypeV2.Implements<IBinaryDeserializable>()
           && container.TypeSymbol.MemberNames.All(member => member != "Read")) {
         var readerCode = this.readerImpl_.Generate(container);
         this.context_.Value.AddSource(
@@ -32,7 +34,7 @@ namespace schema.binary {
             readerCode);
       }
 
-      if (SymbolTypeUtil.Implements<IBinarySerializable>(container.TypeSymbol)
+      if (containerTypeV2.Implements<IBinarySerializable>()
           && container.TypeSymbol.MemberNames.All(
               member => member != "Write")) {
         var writerCode = this.writerImpl_.Generate(container);

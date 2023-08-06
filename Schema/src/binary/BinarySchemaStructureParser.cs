@@ -301,22 +301,12 @@ namespace schema.binary {
       }
 
       // Makes sure the member is serializable
-      {
-        var isDeserializable = containerTypeSymbol.IsBinaryDeserializable();
-        var isSerializable = containerTypeSymbol.IsBinarySerializable();
-
-        if (memberTypeInfo is IContainerTypeInfo) {
-          var isMemberDeserializable =
-              memberTypeInfo.TypeV2.IsBinaryDeserializable;
-          var isMemberSerializable =
-              memberTypeInfo.TypeV2.IsBinarySerializable;
-
-          if ((isDeserializable && !isMemberDeserializable) ||
-              (isSerializable && !isMemberSerializable)) {
-            memberBetterSymbol.ReportDiagnostic(
-                Rules.ContainerMemberBinaryConvertabilityNeedsToSatisfyParent);
-            return null;
-          }
+      if (memberTypeInfo is IContainerTypeInfo) {
+        if (!memberTypeInfo.TypeV2.IsAtLeastAsBinaryConvertibleAs(
+                containerTypeV2)) {
+          memberBetterSymbol.ReportDiagnostic(
+              Rules.ContainerMemberBinaryConvertabilityNeedsToSatisfyParent);
+          return null;
         }
       }
 
