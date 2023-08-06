@@ -28,7 +28,7 @@ namespace schema.binary {
           Rules.ContainerTypeMustBePartial,
           Rules.DependentMustComeAfterSource,
           Rules.EnumNeedsIntegerFormat,
-          Rules.ElementNeedsToImplementIBiSerializable,
+          Rules.ElementBinaryConvertabilityNeedsToSatisfyParent,
           Rules.Exception,
           Rules.FormatOnNonNumber,
           Rules.IfBooleanNeedsNullable,

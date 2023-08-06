@@ -88,10 +88,10 @@ namespace schema.binary {
           "Container member '{0}' must implement at least the same binary serializable/deserializable interface as its parent.");
 
     public static DiagnosticDescriptor
-        ElementNeedsToImplementIBiSerializable { get; } =
+        ElementBinaryConvertabilityNeedsToSatisfyParent { get; } =
       Rules.CreateDiagnosticDescriptor_(
-          "Element needs to implement IBinaryConvertible",
-          "Element of '{0}' must implement IBinaryConvertible.");
+          "Element must satisfy parent's binary convertability",
+          "Element of '{0}' must implement at least the same binary serializable/deserializable interface as its parent.");
 
 
     public static readonly DiagnosticDescriptor ConstUninitialized

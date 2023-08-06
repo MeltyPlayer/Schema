@@ -194,7 +194,7 @@ namespace schema.binary.text {
       handler();
 
       if (shouldTrackStartAndEnd) {
-        cbsb.WriteLine($"ew.MarkEndOfMember();");
+        cbsb.WriteLine("ew.MarkEndOfMember();");
       }
 
       if (hasEndianness) {

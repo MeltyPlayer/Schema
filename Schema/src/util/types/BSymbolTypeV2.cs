@@ -65,7 +65,8 @@ namespace schema.util.types {
         int expectedArity = 0;
         var indexOfBacktick = expectedName.IndexOf('`');
         if (indexOfBacktick != -1) {
-          expectedArity = int.Parse(expectedName.Substring(indexOfBacktick + 1));
+          expectedArity =
+              int.Parse(expectedName.Substring(indexOfBacktick + 1));
           expectedName = expectedName.Substring(0, indexOfBacktick);
         }
 
@@ -88,6 +89,10 @@ namespace schema.util.types {
         => this.Implements(typeof(T), out matchingType);
 
       public bool Implements(Type type) => this.Implements(type, out _);
+
+      public bool IsAtLeastAsBinaryConvertibleAs(ITypeV2 other)
+        => (!other.IsBinaryDeserializable || this.IsBinaryDeserializable) &&
+           (!other.IsBinarySerializable || this.IsBinarySerializable);
 
       public bool IsBinarySerializable
         => this.Implements<IBinarySerializable>();

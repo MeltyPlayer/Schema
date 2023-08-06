@@ -203,15 +203,5 @@ namespace schema.binary {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string ReadStringNT(StringEncodingType encodingType)
       => ReadUpTo(encodingType, '\0');
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void AssertMagicText(string expectedText) {
-      var actualText = this.ReadString(expectedText.Length);
-
-      if (expectedText != actualText) {
-        throw new Exception(
-            $"Expected to find magic text \"{expectedText}\", but found \"{actualText}\"");
-      }
-    }
   }
 }

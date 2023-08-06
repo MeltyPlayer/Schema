@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-using schema.util.symbols;
+﻿using schema.util.symbols;
 
 
 namespace schema.binary.attributes {

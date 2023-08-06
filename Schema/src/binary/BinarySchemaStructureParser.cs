@@ -214,6 +214,7 @@ namespace schema.binary {
             !isIgnored
                 ? this.ParseNonIgnoredField_(
                     containerSymbol,
+                    containerTypeV2,
                     memberBetterSymbol,
                     parsedMember)
                 : this.ParseIgnoredField_(parsedMember);
@@ -261,6 +262,7 @@ namespace schema.binary {
 
     private ISchemaValueMember? ParseNonIgnoredField_(
         INamedTypeSymbol containerTypeSymbol,
+        ITypeV2 containerTypeV2,
         IBetterSymbol memberBetterSymbol,
         (TypeInfoParser.ParseStatus, ISymbol, ITypeSymbol, ITypeInfo)
             parsedMember
@@ -382,7 +384,9 @@ namespace schema.binary {
       }
 
       new SupportedElementTypeAsserter()
-          .AssertElementTypesAreSupported(memberBetterSymbol, memberType);
+          .AssertElementTypesAreSupported(memberBetterSymbol,
+                                          containerTypeV2,
+                                          memberType);
 
       {
         IMemberType? targetMemberType;

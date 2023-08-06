@@ -376,27 +376,6 @@ namespace schema.binary.text {
           });
     }
 
-    private static void ReadGeneric_(
-        ICurlyBracketTextWriter cbsb,
-        ISchemaValueMember member) {
-      // TODO: Handle generic types beyond just IBinaryConvertible
-
-      var containerMemberType =
-          Asserts.CastNonnull(member.MemberType as IContainerMemberType);
-
-      // TODO: Do value types need to be handled differently?
-      var memberName = member.Name;
-      if (containerMemberType.IsChild) {
-        cbsb.WriteLine($"this.{memberName}.Parent = this;");
-      }
-
-      HandleMemberEndianness_(cbsb,
-                              member,
-                              () => {
-                                cbsb.WriteLine($"this.{memberName}.Read(er);");
-                              });
-    }
-
     private static void ReadArray_(
         ICurlyBracketTextWriter cbsb,
         ITypeV2 sourceSymbol,

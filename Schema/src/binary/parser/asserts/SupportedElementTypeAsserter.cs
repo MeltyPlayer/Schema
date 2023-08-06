@@ -1,11 +1,12 @@
 ﻿using schema.util.diagnostics;
-using schema.util.symbols;
+using schema.util.types;
 
 
 namespace schema.binary.parser.asserts {
   internal class SupportedElementTypeAsserter {
     public void AssertElementTypesAreSupported(
         IDiagnosticReporter diagnosticReporter,
+        ITypeV2 containerTypeV2,
         IMemberType memberType) {
       if (memberType is not ISequenceMemberType sequenceMemberType) {
         return;
@@ -18,10 +19,12 @@ namespace schema.binary.parser.asserts {
       }
 
       var elementTypeInfo = sequenceMemberType.ElementType.TypeInfo;
-      if (elementTypeInfo is IContainerTypeInfo containerTypeInfo) {
-        if (!containerTypeInfo.TypeV2.Implements<IBinaryConvertible>()) {
+      if (elementTypeInfo is IContainerTypeInfo elementContainerTypeInfo) {
+        var elementContainerTypeV2 = elementContainerTypeInfo.TypeV2;
+        if (!elementContainerTypeV2.IsAtLeastAsBinaryConvertibleAs(
+                containerTypeV2)) {
           diagnosticReporter.ReportDiagnostic(
-              Rules.ElementNeedsToImplementIBiSerializable);
+              Rules.ElementBinaryConvertabilityNeedsToSatisfyParent);
         }
       } else {
         if (elementTypeInfo.Kind == SchemaTypeKind.SEQUENCE) {

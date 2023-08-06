@@ -32,6 +32,7 @@ namespace schema.util.types {
     IEnumerable<ITypeV2> GenericConstraints { get; }
 
     bool HasNullableAnnotation { get; }
+    bool IsAtLeastAsBinaryConvertibleAs(ITypeV2 other);
     bool IsBinarySerializable { get; }
     bool IsBinaryDeserializable { get; }
     bool IsClass { get; }

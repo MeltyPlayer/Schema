@@ -138,8 +138,6 @@ namespace schema.binary {
     void AssertStringNT(StringEncodingType encodingType, string expectedValue);
     string ReadStringNT(StringEncodingType encodingType);
 
-    void AssertMagicText(string expectedText);
-
     T ReadNew<T>() where T : IBinaryDeserializable, new();
 
     bool TryReadNew<T>(out T? value) where T : IBinaryDeserializable, new();
