@@ -7,8 +7,6 @@ using System.Runtime.CompilerServices;
 using System.Text;
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using schema.binary;
 using schema.binary.attributes;
@@ -19,38 +17,6 @@ using schema.util.types;
 
 namespace schema.util.symbols {
   internal static class SymbolTypeUtil {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ISymbol GetSymbolFromType(SemanticModel semanticModel,
-                                            Type type)
-      => SymbolTypeUtil.GetSymbolFromIdentifier(semanticModel, type.FullName);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ISymbol GetSymbolFromIdentifier(
-        SemanticModel semanticModel,
-        string identifier) {
-      var symbol = semanticModel.LookupSymbols(0, null, identifier);
-      return symbol.First();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool CanBeStoredAs<TType>(this ITypeSymbol symbol)
-      => symbol.CanBeStoredAs(typeof(TType));
-
-    public static bool CanBeStoredAs(this ITypeSymbol symbol, Type type) {
-      if (symbol.IsExactlyType(type) || symbol.Implements(type) ||
-          symbol.ImplementsGeneric(type)) {
-        return true;
-      }
-
-      if (symbol is INamedTypeSymbol namedSymbol &&
-          namedSymbol.MatchesGeneric(type)) {
-        return true;
-      }
-
-      return false;
-    }
-
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ImplementsGeneric(this ITypeSymbol symbol, Type type)
       => symbol.ImplementsGeneric(type, out _);
@@ -86,11 +52,6 @@ namespace schema.util.symbols {
     public static bool Implements(this ITypeSymbol symbol, Type type)
       => symbol.AllInterfaces.Any(i => i.IsExactlyType(type));
 
-
-    // Namespace
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool IsInSameNamespaceAs(this ISymbol symbol, ISymbol other)
-      => symbol.ContainingNamespace.Equals(other.ContainingNamespace);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsInSameNamespaceAs(this ISymbol symbol, Type other)
@@ -163,10 +124,7 @@ namespace schema.util.symbols {
         namespaceSymbol = namespaceSymbol.ContainingNamespace;
       }
     }
-
-    public static bool IsPartial(this TypeDeclarationSyntax syntax)
-      => syntax.Modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword));
-
+    
     public static bool MatchesGeneric(this INamedTypeSymbol symbol,
                                       Type expectedGenericType) {
       var indexOfBacktick = expectedGenericType.Name.IndexOf('`');
@@ -184,10 +142,6 @@ namespace schema.util.symbols {
       return sameName && sameNamespace && sameTypeArguments;
     }
 
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsSameAs(this ISymbol symbol, ISymbol other)
-      => SymbolEqualityComparer.Default.Equals(symbol, other);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsExactlyType(this ISymbol symbol, Type expectedType) {
@@ -235,14 +189,6 @@ namespace schema.util.symbols {
     internal static bool HasAttribute<TAttribute>(this ISymbol symbol)
         where TAttribute : Attribute
       => symbol.GetAttributeData<TAttribute>().Any();
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static TAttribute? GetAttribute<TAttribute>(
-        this ISymbol symbol,
-        IDiagnosticReporter? diagnosticReporter = null)
-        where TAttribute : Attribute
-      => symbol.GetAttributes<TAttribute>(diagnosticReporter)
-               .SingleOrDefault();
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

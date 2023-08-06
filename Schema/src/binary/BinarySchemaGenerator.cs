@@ -11,6 +11,7 @@ using schema.binary.attributes;
 using schema.binary.text;
 using schema.util;
 using schema.util.symbols;
+using schema.util.syntax;
 
 namespace schema.binary {
   [Generator(LanguageNames.CSharp)]
@@ -89,7 +90,7 @@ namespace schema.binary {
           return;
         }
 
-        if (!SymbolTypeUtil.IsPartial(syntax)) {
+        if (!syntax.IsPartial()) {
           return;
         }
 

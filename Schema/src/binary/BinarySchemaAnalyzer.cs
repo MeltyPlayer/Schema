@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 using schema.util.symbols;
+using schema.util.syntax;
 
 
 namespace schema.binary {
@@ -88,7 +89,7 @@ namespace schema.binary {
           return;
         }
 
-        if (!SymbolTypeUtil.IsPartial(syntax)) {
+        if (!syntax.IsPartial()) {
           Rules.ReportDiagnostic(
               context,
               symbol,

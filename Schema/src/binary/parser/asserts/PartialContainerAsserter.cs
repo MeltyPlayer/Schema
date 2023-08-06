@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using schema.util.diagnostics;
-using schema.util.symbols;
+using schema.util.syntax;
 
 
 namespace schema.binary.parser.asserts {
@@ -25,7 +23,7 @@ namespace schema.binary.parser.asserts {
             containingType.DeclaringSyntaxReferences[0].GetSyntax() as
                 TypeDeclarationSyntax;
 
-        if (!SymbolTypeUtil.IsPartial(typeDeclarationSyntax!)) {
+        if (!typeDeclarationSyntax!.IsPartial()) {
           this.diagnosticReporter_.ReportDiagnostic(
               containingType,
               Rules.ContainerTypeMustBePartial);
