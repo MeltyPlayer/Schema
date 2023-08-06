@@ -68,40 +68,6 @@ namespace schema.binary {
       this.disposed_ = true;
     }
 
-    public byte[] ReadBytesAtOffset(long position, int len) {
-      var startingOffset = this.Position;
-      this.Position = position;
-
-      var bytes = this.ReadBytes(len);
-
-      this.Position = startingOffset;
-
-      return bytes;
-    }
-
-    public string ReadStringAtOffset(long position, int len) {
-      var startingOffset = this.Position;
-      this.Position = position;
-
-      var str = this.ReadString(len);
-
-      this.Position = startingOffset;
-
-      return str;
-    }
-
-    public string ReadStringNTAtOffset(long position) {
-      var startingOffset = this.Position;
-      this.Position = position;
-
-      var str = this.ReadStringNT();
-
-      this.Position = startingOffset;
-
-      return str;
-    }
-
-
     public void Subread(long position,
                         int len,
                         Action<IEndianBinaryReader> subread) {

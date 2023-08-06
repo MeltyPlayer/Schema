@@ -39,29 +39,5 @@ namespace schema.binary {
       }
       return array;
     }
-
-    public T ReadNewAtOffset<T>(long position)
-        where T : IBinaryDeserializable, new() {
-      var startingOffset = this.Position;
-      this.Position = position;
-
-      var value = this.ReadNew<T>();
-
-      this.Position = startingOffset;
-
-      return value;
-    }
-
-    public T[] ReadNewArrayAtOffset<T>(long position, int length)
-        where T : IBinaryDeserializable, new() {
-      var startingOffset = this.Position;
-      this.Position = position;
-
-      var values = this.ReadNewArray<T>(length);
-
-      this.Position = startingOffset;
-
-      return values;
-    }
   }
 }

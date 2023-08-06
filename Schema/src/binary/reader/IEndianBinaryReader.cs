@@ -13,15 +13,6 @@ namespace schema.binary {
 
     void Align(uint amt);
 
-    byte[] ReadBytesAtOffset(long position, int len);
-    string ReadStringAtOffset(long position, int len);
-    string ReadStringNTAtOffset(long position);
-    T ReadNewAtOffset<T>(long position) where T : IBinaryDeserializable, new();
-
-    T[] ReadNewArrayAtOffset<T>(long position, int length)
-        where T : IBinaryDeserializable, new();
-
-
     void Subread(long position,
                  int len,
                  Action<IEndianBinaryReader> subread);
