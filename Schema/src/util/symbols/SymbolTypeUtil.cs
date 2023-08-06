@@ -139,44 +139,28 @@ namespace schema.util.symbols {
              currentNamespace.ContainingNamespace.Name.Length == 0;
     }
 
-    public static string[]? GetContainingNamespaces(this ISymbol symbol) {
+
+    public static string GetFullyQualifiedNamespace(this ISymbol symbol)
+      => string.Join(".", symbol.GetContainingNamespaces());
+
+    public static IEnumerable<string> GetContainingNamespaces(
+        this ISymbol symbol)
+      => symbol.GetContainingNamespacesReversed_().Reverse();
+
+    private static IEnumerable<string> GetContainingNamespacesReversed_(
+        this ISymbol symbol) {
       var namespaceSymbol = symbol.ContainingNamespace;
-      if (namespaceSymbol == null) {
-        return null;
+      if (namespaceSymbol.IsGlobalNamespace) {
+        yield break;
       }
 
-      var namespaces = new LinkedList<string>();
-      while (namespaceSymbol != null) {
+      while (!namespaceSymbol.IsGlobalNamespace) {
         if (namespaceSymbol.Name.Length > 0) {
-          namespaces.AddFirst(namespaceSymbol.Name);
+          yield return namespaceSymbol.Name;
         }
 
         namespaceSymbol = namespaceSymbol.ContainingNamespace;
       }
-
-      return namespaces.ToArray();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string? MergeContainingNamespaces(ISymbol symbol)
-      => MergeNamespaceParts(GetContainingNamespaces(symbol));
-
-    public static string? MergeNamespaceParts(IList<string>? namespaces) {
-      if ((namespaces?.Count ?? 0) == 0) {
-        return null;
-      }
-
-      var combined = new StringBuilder();
-      foreach (var space in namespaces) {
-        if (combined.Length == 0) {
-          combined.Append(space);
-        } else {
-          combined.Append(".");
-          combined.Append(space);
-        }
-      }
-
-      return combined.ToString();
     }
 
     public static bool HasEmptyConstructor(this INamedTypeSymbol symbol)
@@ -194,9 +178,8 @@ namespace schema.util.symbols {
 
       var sameName = symbol.Name ==
                      expectedGenericType.Name.Substring(0, indexOfBacktick);
-      var sameNamespace =
-          SymbolTypeUtil.MergeContainingNamespaces(symbol) ==
-          expectedGenericType.Namespace;
+      var sameNamespace = symbol.GetFullyQualifiedNamespace() ==
+                          expectedGenericType.Namespace;
       var sameTypeArguments = symbol.TypeArguments.Length ==
                               expectedGenericType.GetTypeInfo()
                                                  .GenericTypeParameters.Length;
@@ -375,10 +358,9 @@ namespace schema.util.symbols {
               null)
       };
 
-    public static string GetQualifiedName(this ITypeSymbol typeSymbol) {
-      var mergedNamespace =
-          SymbolTypeUtil.MergeContainingNamespaces(typeSymbol);
-      var mergedNamespaceText = mergedNamespace == null
+    public static string GetFullyQualifiedName(this ITypeSymbol typeSymbol) {
+      var mergedNamespace = typeSymbol.GetFullyQualifiedNamespace();
+      var mergedNamespaceText = mergedNamespace.Length == 0
           ? ""
           : $"{mergedNamespace}.";
 
@@ -411,15 +393,16 @@ namespace schema.util.symbols {
         return referencedSymbol.ToDisplayString();
       }
 
-      var currentNamespace = sourceSymbol.GetContainingNamespaces();
-      var referencedNamespace = referencedSymbol.GetContainingNamespaces();
+      var currentNamespace = sourceSymbol.GetContainingNamespaces().ToArray();
+      var referencedNamespace =
+          referencedSymbol.GetContainingNamespaces().ToArray();
 
       string mergedNamespaceText;
-      if (currentNamespace == null && referencedNamespace == null) {
+      if (currentNamespace.Length == 0 && referencedNamespace.Length == 0) {
         mergedNamespaceText = "";
-      } else if (currentNamespace == null) {
+      } else if (currentNamespace.Length == 0) {
         mergedNamespaceText = $"{referencedNamespace!}.";
-      } else if (referencedNamespace == null) {
+      } else if (referencedNamespace.Length == 0) {
         mergedNamespaceText = $"{currentNamespace}.";
       } else {
         var namespaces = new List<string>();
@@ -436,7 +419,7 @@ namespace schema.util.symbols {
         }
 
         mergedNamespaceText = namespaces.Count > 0
-            ? $"{MergeNamespaceParts(namespaces)}."
+            ? $"{string.Join(".", namespaces)}."
             : "";
       }
 

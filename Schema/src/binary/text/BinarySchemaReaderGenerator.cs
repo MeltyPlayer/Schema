@@ -15,7 +15,7 @@ namespace schema.binary.text {
     public string Generate(IBinarySchemaStructure structure) {
       var typeSymbol = structure.TypeSymbol;
 
-      var typeNamespace = SymbolTypeUtil.MergeContainingNamespaces(typeSymbol);
+      var typeNamespace = typeSymbol.GetFullyQualifiedNamespace();
 
       var declaringTypes =
           SymbolTypeUtil.GetDeclaringTypesDownward(typeSymbol);

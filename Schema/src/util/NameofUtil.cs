@@ -38,8 +38,7 @@ namespace schema.util {
           new TypeAndNamespace {
               Defined = true,
               Name = parent.Name,
-              NamespaceParts = parent.GetContainingNamespaces() ??
-                               Array.Empty<string>(),
+              NamespaceParts = parent.GetContainingNamespaces().ToArray(),
           },
           text);
 

@@ -26,7 +26,7 @@ namespace schema.binary {
           && structure.TypeSymbol.MemberNames.All(member => member != "Read")) {
         var readerCode = this.readerImpl_.Generate(structure);
         this.context_.Value.AddSource(
-            SymbolTypeUtil.GetQualifiedName(structure.TypeSymbol) + "_reader.g",
+            SymbolTypeUtil.GetFullyQualifiedName(structure.TypeSymbol) + "_reader.g",
             readerCode);
       }
 
@@ -35,7 +35,7 @@ namespace schema.binary {
               member => member != "Write")) {
         var writerCode = this.writerImpl_.Generate(structure);
         this.context_.Value.AddSource(
-            SymbolTypeUtil.GetQualifiedName(structure.TypeSymbol) + "_writer.g",
+            SymbolTypeUtil.GetFullyQualifiedName(structure.TypeSymbol) + "_writer.g",
             writerCode);
       }
     }
