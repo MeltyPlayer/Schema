@@ -10,14 +10,12 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using schema.binary.attributes;
 using schema.binary.text;
 using schema.util;
-using schema.util.symbols;
 using schema.util.syntax;
 using schema.util.types;
 
 namespace schema.binary {
   [Generator(LanguageNames.CSharp)]
   internal class BinarySchemaGenerator : ISourceGenerator {
-    private readonly Type schemaAttributeType_ = typeof(BinarySchemaAttribute);
     private readonly BinarySchemaContainerParser parser_ = new();
 
     private readonly BinarySchemaReaderGenerator readerImpl_ = new();
@@ -85,8 +83,10 @@ namespace schema.binary {
         GeneratorSyntaxContext context,
         TypeDeclarationSyntax syntax,
         INamedTypeSymbol symbol) {
+      var typeV2 = TypeV2.FromSymbol(symbol);
+
       try {
-        if (!SymbolTypeUtil.HasAttribute(symbol, this.schemaAttributeType_)) {
+        if (!typeV2.HasAttribute<BinarySchemaAttribute>()) {
           return;
         }
 

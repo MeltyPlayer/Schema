@@ -108,24 +108,11 @@ namespace schema.util.symbols {
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ImmutableArray<AttributeData> GetAttributeData(
-        this ISymbol symbol)
-      => symbol.GetAttributes();
-
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool HasAttribute(this ISymbol symbol, Type expectedType)
-      => symbol.GetAttributeData()
-               .Any(attributeData
-                        => attributeData.AttributeClass!.IsExactlyType(
-                            expectedType));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static IEnumerable<AttributeData>
         GetAttributeData<TAttribute>(this ISymbol symbol) {
       var attributeType = typeof(TAttribute);
       return symbol
-             .GetAttributeData()
+             .GetAttributes()
              .Where(attributeData
                         => attributeData.AttributeClass?.IsExactlyType(
                             attributeType) ?? false);

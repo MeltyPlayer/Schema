@@ -206,7 +206,7 @@ namespace schema.binary {
           var methodSymbol = memberSymbol as IMethodSymbol;
           var isMethod = methodSymbol != null;
           var hasRunAtReadTimeAttribute =
-              memberSymbol.HasAttribute<ReadLogicAttribute>();
+              memberBetterSymbol.HasAttribute<ReadLogicAttribute>();
           if (hasRunAtReadTimeAttribute) {
             if (isMethod) {
               if (methodSymbol.Parameters.Length == 1 && methodSymbol
@@ -229,7 +229,7 @@ namespace schema.binary {
         }
 
         bool isIgnored =
-            memberSymbol.HasAttribute<IgnoreAttribute>() ||
+            memberBetterSymbol.HasAttribute<IgnoreAttribute>() ||
             (memberSymbol.Name == nameof(IChildOf<IBinaryConvertible>.Parent)
              && parentTypeV2 != null);
 
@@ -493,7 +493,7 @@ namespace schema.binary {
             (IStringLengthSourceAttribute?)
             memberBetterSymbol.GetAttribute<StringLengthSourceAttribute>() ??
             memberBetterSymbol.GetAttribute<RStringLengthSourceAttribute>();
-        var isNullTerminatedString = memberSymbol
+        var isNullTerminatedString = memberBetterSymbol
             .HasAttribute<NullTerminatedStringAttribute>();
         var hasStringLengthAttribute =
             stringLengthSourceAttribute != null || isNullTerminatedString;

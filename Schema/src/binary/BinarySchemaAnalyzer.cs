@@ -9,12 +9,12 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 using schema.util.symbols;
 using schema.util.syntax;
+using schema.util.types;
 
 
 namespace schema.binary {
   [DiagnosticAnalyzer(LanguageNames.CSharp)]
   public class BinarySchemaAnalyzer : DiagnosticAnalyzer {
-    private readonly Type schemaAttributeType_ = typeof(BinarySchemaAttribute);
     private readonly BinarySchemaContainerParser parser_ = new();
 
     public override ImmutableArray<DiagnosticDescriptor>
@@ -84,8 +84,10 @@ namespace schema.binary {
         SyntaxNodeAnalysisContext context,
         TypeDeclarationSyntax syntax,
         INamedTypeSymbol symbol) {
+      var typeV2 = TypeV2.FromSymbol(symbol);
+
       try {
-        if (!SymbolTypeUtil.HasAttribute(symbol, this.schemaAttributeType_)) {
+        if (!typeV2.HasAttribute<BinarySchemaAttribute>()) {
           return;
         }
 

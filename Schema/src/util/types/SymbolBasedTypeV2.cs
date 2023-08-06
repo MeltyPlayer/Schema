@@ -190,7 +190,7 @@ namespace schema.util.types {
           where TAttribute : Attribute {
         var attributeType = typeof(TAttribute);
         return this.symbol_
-                   .GetAttributeData()
+                   .GetAttributes()
                    .Where(attributeData
                               => attributeData.AttributeClass?.IsExactlyType(
                                   attributeType) ?? false);
