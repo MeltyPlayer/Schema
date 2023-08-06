@@ -26,8 +26,6 @@ namespace schema.binary.parser {
         case IStructureTypeInfo structureTypeInfo: {
           return new BinarySchemaStructureParser.StructureMemberType {
               StructureTypeInfo = structureTypeInfo,
-              IsReferenceType =
-                  structureTypeInfo.NamedTypeSymbol.IsReferenceType,
           };
         }
         case IGenericTypeInfo genericTypeInfo: {

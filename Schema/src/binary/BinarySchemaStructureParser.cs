@@ -64,15 +64,12 @@ namespace schema.binary {
   }
 
   public interface IStructureMemberType : IMemberType {
-    IStructureTypeInfo StructureTypeInfo { get; }
-    bool IsReferenceType { get; }
     bool IsChild { get; }
     bool IsStruct { get; }
   }
 
   public interface IGenericMemberType : IMemberType {
     IMemberType ConstraintType { get; }
-    IGenericTypeInfo GenericTypeInfo { get; }
   }
 
   public interface IOffset {
@@ -609,7 +606,6 @@ namespace schema.binary {
       public ITypeSymbol TypeSymbol => TypeInfo.TypeSymbol;
       public bool IsReadOnly => this.TypeInfo.IsReadOnly;
 
-      public bool IsReferenceType { get; set; }
       public bool IsChild { get; set; }
       public bool IsStruct => StructureTypeInfo.IsStruct;
     }
