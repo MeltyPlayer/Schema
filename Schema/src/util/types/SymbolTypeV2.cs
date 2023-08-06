@@ -66,7 +66,7 @@ namespace schema.util.types {
         }
       }
 
-      public override int GenericArgCount
+      public override int Arity
         => (this.symbol_ as INamedTypeSymbol)?.TypeArguments.Length ?? 0;
 
       public override bool IsClass
@@ -133,7 +133,7 @@ namespace schema.util.types {
 
       public override bool HasGenericArguments(
           out IEnumerable<ITypeV2> genericArguments) {
-        if (this.GenericArgCount == 0) {
+        if (this.Arity == 0) {
           genericArguments = default;
           return false;
         }

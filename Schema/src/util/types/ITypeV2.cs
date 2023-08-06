@@ -25,7 +25,7 @@ namespace schema.util.types {
     bool Implements<T>(out ITypeV2 matchingType);
     bool Implements(Type type, out ITypeV2 matchingType);
 
-    int GenericArgCount { get; }
+    int Arity { get; }
     bool HasGenericArguments(out IEnumerable<ITypeV2> genericArguments);
     IEnumerable<ITypeV2> GenericArguments { get; }
     bool HasGenericConstraints(out IEnumerable<ITypeV2> genericConstraints);

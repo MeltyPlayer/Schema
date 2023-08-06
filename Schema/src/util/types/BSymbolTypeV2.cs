@@ -19,7 +19,7 @@ namespace schema.util.types {
 
       public abstract bool Implements(Type type, out ITypeV2 matchingType);
 
-      public abstract int GenericArgCount { get; }
+      public abstract int Arity { get; }
 
       public virtual bool HasNullableAnnotation => false;
       public abstract bool IsClass { get; }
@@ -52,12 +52,12 @@ namespace schema.util.types {
                             int genericArgCount)
         => this.Name == name &&
            this.FullyQualifiedNamespace == fullyQualifiedNamespace &&
-           this.GenericArgCount == genericArgCount;
+           this.Arity == genericArgCount;
 
       public bool IsExactly(ITypeV2 other) => this.Matches_(
           other.Name,
           other.FullyQualifiedNamespace,
-          other.GenericArgCount);
+          other.Arity);
 
       public bool IsExactly(Type other) {
         var expectedName = other.Name;
