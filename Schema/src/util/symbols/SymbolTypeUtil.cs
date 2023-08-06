@@ -89,23 +89,6 @@ namespace schema.util.symbols {
       }
     }
     
-    public static bool MatchesGeneric(this INamedTypeSymbol symbol,
-                                      Type expectedGenericType) {
-      var indexOfBacktick = expectedGenericType.Name.IndexOf('`');
-      if (indexOfBacktick == -1) {
-        return false;
-      }
-
-      var sameName = symbol.Name ==
-                     expectedGenericType.Name.Substring(0, indexOfBacktick);
-      var sameNamespace = symbol.GetFullyQualifiedNamespace() ==
-                          expectedGenericType.Namespace;
-      var sameTypeArguments = symbol.TypeArguments.Length ==
-                              expectedGenericType.GetTypeInfo()
-                                                 .GenericTypeParameters.Length;
-      return sameName && sameNamespace && sameTypeArguments;
-    }
-
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsExactlyType(this ISymbol symbol, Type expectedType) {
@@ -276,20 +259,6 @@ namespace schema.util.symbols {
               accessibility,
               null)
       };
-
-    public static string GetFullyQualifiedName(this ITypeSymbol typeSymbol) {
-      var mergedNamespace = typeSymbol.GetFullyQualifiedNamespace();
-      var mergedNamespaceText = mergedNamespace.Length == 0
-          ? ""
-          : $"{mergedNamespace}.";
-
-      var mergedContainersText = "";
-      foreach (var container in typeSymbol.GetDeclaringTypesDownward()) {
-        mergedContainersText += $"{container.Name}.";
-      }
-
-      return $"{mergedNamespaceText}{mergedContainersText}{typeSymbol.Name}";
-    }
 
     public static string GetQualifiedNameFromCurrentSymbol(
         this ITypeV2 sourceSymbol,

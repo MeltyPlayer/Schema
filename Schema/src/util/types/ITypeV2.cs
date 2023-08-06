@@ -8,6 +8,7 @@ using schema.binary;
 namespace schema.util.types {
   public interface ITypeV2 {
     string Name { get; }
+    string FullyQualifiedName { get; }
 
     string? FullyQualifiedNamespace { get; }
     IEnumerable<string> NamespaceParts { get; }

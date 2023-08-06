@@ -58,5 +58,71 @@ namespace schema.binary {
 
     public static SchemaIntegerType AsIntegerType(this SchemaPrimitiveType type)
       => type.AsNumberType().AsIntegerType();
+
+    public static bool CanBeReadAsNumber(this SchemaPrimitiveType type)
+      => type switch {
+          SchemaPrimitiveType.BOOLEAN => false,
+          SchemaPrimitiveType.SBYTE   => true,
+          SchemaPrimitiveType.BYTE    => true,
+          SchemaPrimitiveType.INT16   => true,
+          SchemaPrimitiveType.UINT16  => true,
+          SchemaPrimitiveType.INT24   => true,
+          SchemaPrimitiveType.UINT24  => true,
+          SchemaPrimitiveType.INT32   => true,
+          SchemaPrimitiveType.UINT32  => true,
+          SchemaPrimitiveType.INT64   => true,
+          SchemaPrimitiveType.UINT64  => true,
+          SchemaPrimitiveType.HALF    => true,
+          SchemaPrimitiveType.SINGLE  => true,
+          SchemaPrimitiveType.DOUBLE  => true,
+          SchemaPrimitiveType.SN8     => true,
+          SchemaPrimitiveType.UN8     => true,
+          SchemaPrimitiveType.SN16    => true,
+          SchemaPrimitiveType.UN16    => true,
+          SchemaPrimitiveType.ENUM    => false,
+
+          SchemaPrimitiveType.CHAR      => false,
+          SchemaPrimitiveType.UNDEFINED => false,
+          _                             => throw new NotImplementedException(),
+      };
+
+    public static bool CanBeReadAsInteger(this SchemaPrimitiveType type)
+      => type switch {
+          SchemaPrimitiveType.BOOLEAN => true,
+          SchemaPrimitiveType.SBYTE   => true,
+          SchemaPrimitiveType.BYTE    => true,
+          SchemaPrimitiveType.INT16   => true,
+          SchemaPrimitiveType.UINT16  => true,
+          SchemaPrimitiveType.INT24   => true,
+          SchemaPrimitiveType.UINT24  => true,
+          SchemaPrimitiveType.INT32   => true,
+          SchemaPrimitiveType.UINT32  => true,
+          SchemaPrimitiveType.INT64   => true,
+          SchemaPrimitiveType.UINT64  => true,
+          SchemaPrimitiveType.HALF    => true,
+          SchemaPrimitiveType.SINGLE  => true,
+          SchemaPrimitiveType.DOUBLE  => true,
+          SchemaPrimitiveType.SN8     => true,
+          SchemaPrimitiveType.UN8     => true,
+          SchemaPrimitiveType.SN16    => true,
+          SchemaPrimitiveType.UN16    => true,
+          SchemaPrimitiveType.ENUM    => true,
+
+          SchemaPrimitiveType.CHAR      => false,
+          SchemaPrimitiveType.UNDEFINED => false,
+          _                             => throw new NotImplementedException(),
+      };
+
+    public static SchemaPrimitiveType GetUnderlyingPrimitiveType(
+        this SchemaPrimitiveType type)
+      => type switch {
+          SchemaPrimitiveType.INT24  => SchemaPrimitiveType.INT32,
+          SchemaPrimitiveType.UINT24 => SchemaPrimitiveType.UINT32,
+          SchemaPrimitiveType.SN8    => SchemaPrimitiveType.SINGLE,
+          SchemaPrimitiveType.UN8    => SchemaPrimitiveType.SINGLE,
+          SchemaPrimitiveType.UN16   => SchemaPrimitiveType.SINGLE,
+          SchemaPrimitiveType.SN16   => SchemaPrimitiveType.SINGLE,
+          _                          => type
+      };
   }
 }

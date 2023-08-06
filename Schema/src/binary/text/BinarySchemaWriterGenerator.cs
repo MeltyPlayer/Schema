@@ -483,8 +483,7 @@ namespace schema.binary.text {
           accessText = $"({accessText})";
         }
       } else if (useAltFormat) {
-        needToCast = primitiveType != SchemaPrimitiveTypesUtil
-            .GetUnderlyingPrimitiveType(altFormat);
+        needToCast = primitiveType != altFormat.GetUnderlyingPrimitiveType();
       }
 
       var castText = "";
@@ -515,8 +514,8 @@ namespace schema.binary.text {
           accessText = $"({accessText})";
         }
       } else {
-        needToCast = dstType.AsPrimitiveType() != SchemaPrimitiveTypesUtil
-            .GetUnderlyingPrimitiveType(srcType);
+        needToCast = dstType.AsPrimitiveType() !=
+                     srcType.GetUnderlyingPrimitiveType();
       }
 
       var castText = "";

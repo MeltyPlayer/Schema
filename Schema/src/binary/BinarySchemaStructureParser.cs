@@ -431,8 +431,7 @@ namespace schema.binary {
             formatNumberType = numberFormatAttribute.NumberType;
 
             var canPrimitiveTypeBeReadAsNumber =
-                SchemaPrimitiveTypesUtil.CanPrimitiveTypeBeReadAsNumber(
-                    targetPrimitiveType);
+                targetPrimitiveType.CanBeReadAsNumber();
             if (!(targetMemberType is PrimitiveMemberType &&
                   canPrimitiveTypeBeReadAsNumber)) {
               memberBetterSymbol.ReportDiagnostic(
@@ -448,8 +447,7 @@ namespace schema.binary {
             formatIntegerType = integerFormatAttribute.IntegerType;
 
             var canPrimitiveTypeBeReadAsInteger =
-                SchemaPrimitiveTypesUtil.CanPrimitiveTypeBeReadAsInteger(
-                    targetPrimitiveType);
+                targetPrimitiveType.CanBeReadAsInteger();
             if (!(targetMemberType is PrimitiveMemberType &&
                   canPrimitiveTypeBeReadAsInteger)) {
               memberBetterSymbol.ReportDiagnostic(Rules.UnexpectedAttribute);

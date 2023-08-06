@@ -37,58 +37,6 @@ namespace schema.util.types {
       public abstract bool IsPrimitive(out SchemaPrimitiveType primitiveType);
       public abstract bool IsEnum(out SchemaIntegerType underlyingType);
 
-      public bool IsSequence(out ITypeV2 elementType,
-                             out SequenceType sequenceType) {
-        if (this.IsArray(out elementType)) {
-          sequenceType = SequenceType.MUTABLE_ARRAY;
-          return true;
-        }
-
-        if (this.Implements(typeof(ImmutableArray<>),
-                            out var immutableArrayTypeV2)) {
-          elementType = immutableArrayTypeV2.GenericArguments.ToArray()[0];
-          sequenceType = SequenceType.IMMUTABLE_ARRAY;
-          return true;
-        }
-
-        if (this.Implements(typeof(ISequence<,>), out var sequenceTypeV2)) {
-          elementType = sequenceTypeV2.GenericArguments.ToArray()[1];
-          sequenceType = SequenceType.MUTABLE_SEQUENCE;
-          return true;
-        }
-
-        if (this.Implements(typeof(IConstLengthSequence<,>),
-                            out var constLengthSequenceTypeV2)) {
-          elementType = constLengthSequenceTypeV2.GenericArguments.ToArray()[1];
-          sequenceType = SequenceType.MUTABLE_SEQUENCE;
-          return true;
-        }
-
-        if (this.Implements(typeof(IReadOnlySequence<,>),
-                            out var readOnlySequence)) {
-          elementType = readOnlySequence.GenericArguments.ToArray()[1];
-          sequenceType = SequenceType.READ_ONLY_SEQUENCE;
-          return true;
-        }
-
-        if (this.Implements(typeof(List<>), out var listTypeV2)) {
-          elementType = listTypeV2.GenericArguments.ToArray()[0];
-          sequenceType = SequenceType.MUTABLE_LIST;
-          return true;
-        }
-
-        if (this.Implements(typeof(IReadOnlyList<>),
-                            out var readonlyListTypeV2)) {
-          elementType = readonlyListTypeV2.GenericArguments.ToArray()[0];
-          sequenceType = SequenceType.READ_ONLY_LIST;
-          return true;
-        }
-
-        elementType = default;
-        sequenceType = default;
-        return false;
-      }
-
       public abstract bool HasGenericArguments(
           out IEnumerable<ITypeV2> genericArguments);
 
@@ -108,6 +56,24 @@ namespace schema.util.types {
 
 
       // Common
+      public string FullyQualifiedName {
+        get {
+          var namespacePortion = this.FullyQualifiedNamespace ?? "";
+          if (namespacePortion.Length > 0) {
+            namespacePortion += ".";
+          }
+
+          var declaringTypesPortion = "";
+          var declaringTypes = this.DeclaringTypeNamesDownward.ToArray();
+          if (declaringTypes.Length > 0) {
+            declaringTypesPortion = $"{string.Join(".", declaringTypes)}.";
+          }
+
+          var name = this.Name;
+
+          return $"{namespacePortion}{declaringTypesPortion}{name}";
+        }
+      }
       private bool Matches_(string name,
                             string? fullyQualifiedNamespace,
                             int genericArgCount)
@@ -180,6 +146,58 @@ namespace schema.util.types {
         => this.HasGenericConstraints(out var genericConstraints)
             ? genericConstraints
             : Enumerable.Empty<ITypeV2>();
+
+      public bool IsSequence(out ITypeV2 elementType,
+                             out SequenceType sequenceType) {
+        if (this.IsArray(out elementType)) {
+          sequenceType = SequenceType.MUTABLE_ARRAY;
+          return true;
+        }
+
+        if (this.Implements(typeof(ImmutableArray<>),
+                            out var immutableArrayTypeV2)) {
+          elementType = immutableArrayTypeV2.GenericArguments.ToArray()[0];
+          sequenceType = SequenceType.IMMUTABLE_ARRAY;
+          return true;
+        }
+
+        if (this.Implements(typeof(ISequence<,>), out var sequenceTypeV2)) {
+          elementType = sequenceTypeV2.GenericArguments.ToArray()[1];
+          sequenceType = SequenceType.MUTABLE_SEQUENCE;
+          return true;
+        }
+
+        if (this.Implements(typeof(IConstLengthSequence<,>),
+                            out var constLengthSequenceTypeV2)) {
+          elementType = constLengthSequenceTypeV2.GenericArguments.ToArray()[1];
+          sequenceType = SequenceType.MUTABLE_SEQUENCE;
+          return true;
+        }
+
+        if (this.Implements(typeof(IReadOnlySequence<,>),
+                            out var readOnlySequence)) {
+          elementType = readOnlySequence.GenericArguments.ToArray()[1];
+          sequenceType = SequenceType.READ_ONLY_SEQUENCE;
+          return true;
+        }
+
+        if (this.Implements(typeof(List<>), out var listTypeV2)) {
+          elementType = listTypeV2.GenericArguments.ToArray()[0];
+          sequenceType = SequenceType.MUTABLE_LIST;
+          return true;
+        }
+
+        if (this.Implements(typeof(IReadOnlyList<>),
+                            out var readonlyListTypeV2)) {
+          elementType = readonlyListTypeV2.GenericArguments.ToArray()[0];
+          sequenceType = SequenceType.READ_ONLY_LIST;
+          return true;
+        }
+
+        elementType = default;
+        sequenceType = default;
+        return false;
+      }
     }
   }
 }

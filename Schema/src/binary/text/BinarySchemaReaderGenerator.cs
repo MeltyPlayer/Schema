@@ -642,8 +642,8 @@ namespace schema.binary.text {
 
       var castText = "";
       if (primitiveMemberType.UseAltFormat && !isBoolean &&
-          primitiveType != SchemaPrimitiveTypesUtil.GetUnderlyingPrimitiveType(
-              altFormat.AsPrimitiveType())) {
+          primitiveType !=
+          altFormat.AsPrimitiveType().GetUnderlyingPrimitiveType()) {
         var castType = primitiveType == SchemaPrimitiveType.ENUM
             ? SymbolTypeUtil.GetQualifiedNameFromCurrentSymbol(
                 sourceSymbol,
@@ -678,8 +678,7 @@ namespace schema.binary.text {
       } else {
         needToCast = primitiveMemberType.UseAltFormat &&
                      primitiveType !=
-                     SchemaPrimitiveTypesUtil.GetUnderlyingPrimitiveType(
-                         altFormat.AsPrimitiveType());
+                     altFormat.AsPrimitiveType().GetUnderlyingPrimitiveType();
       }
 
       var castText = "";

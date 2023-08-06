@@ -29,8 +29,7 @@ namespace schema.binary {
           && container.TypeSymbol.MemberNames.All(member => member != "Read")) {
         var readerCode = this.readerImpl_.Generate(container);
         this.context_.Value.AddSource(
-            SymbolTypeUtil.GetFullyQualifiedName(container.TypeSymbol) +
-            "_reader.g",
+            $"{containerTypeV2.FullyQualifiedName}_reader.g",
             readerCode);
       }
 
@@ -39,8 +38,7 @@ namespace schema.binary {
               member => member != "Write")) {
         var writerCode = this.writerImpl_.Generate(container);
         this.context_.Value.AddSource(
-            SymbolTypeUtil.GetFullyQualifiedName(container.TypeSymbol) +
-            "_writer.g",
+            $"{containerTypeV2.FullyQualifiedName}_writer.g",
             writerCode);
       }
     }
