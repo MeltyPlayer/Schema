@@ -33,7 +33,7 @@ namespace schema.util.types {
 
       public override string Name => this.symbol_.Name;
 
-      public override string FullyQualifiedNamespace
+      public override string? FullyQualifiedNamespace
         => this.symbol_.GetFullyQualifiedNamespace();
 
       public override IEnumerable<string> NamespaceParts
