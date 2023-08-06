@@ -207,7 +207,7 @@ namespace schema.binary.parser {
         return ParseStatus.SUCCESS;
       }
 
-      if (typeV2.HasGenericConstraints(out var genericConstraints)) {
+      if (typeV2.IsGenericTypeParameter(out var genericConstraints)) {
         var constraintTypeInfos =
             genericConstraints
                 .Select(constraintType => {

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 
 using schema.binary.attributes;
 using schema.util;
+using schema.util.types;
 
 namespace schema.binary.parser {
   internal static class MemberReferenceUtil {
@@ -29,11 +31,34 @@ namespace schema.binary.parser {
           };
         }
         case IGenericTypeInfo genericTypeInfo: {
-          // TODO: Figure out how to find the best constraint
-          var constraintTypeInfo = genericTypeInfo.ConstraintTypeInfos[0];
-          var constraintMemberType =
-              MemberReferenceUtil
-                  .WrapTypeInfoWithMemberType(constraintTypeInfo);
+          var rawConstraintTypeInfos = genericTypeInfo.ConstraintTypeInfos;
+          var rawConstraintTypeVs2s = rawConstraintTypeInfos
+                                       .Select(typeInfo => typeInfo.TypeV2)
+                                       .ToArray();
+
+          var isBinarySerializable = rawConstraintTypeVs2s.Any(
+              typeV2 => typeV2.IsBinarySerializable);
+          var isBinaryDeserializable = rawConstraintTypeVs2s.Any(
+              typeV2 => typeV2.IsBinaryDeserializable);
+
+          ITypeV2? constraintTypeV2 = null;
+          if (isBinarySerializable && isBinaryDeserializable) {
+            constraintTypeV2 = TypeV2.FromType<IBinaryConvertible>();
+          } else if (isBinarySerializable) {
+            constraintTypeV2 = TypeV2.FromType<IBinarySerializable>();
+          } else if (isBinaryDeserializable) {
+            constraintTypeV2 = TypeV2.FromType<IBinaryDeserializable>();
+          }
+
+          IMemberType? constraintMemberType = null;
+          if (constraintTypeV2 != null) {
+            new TypeInfoParser().ParseTypeV2(constraintTypeV2,
+                                             genericTypeInfo.IsReadOnly,
+                                             out var constraintTypeInfo);
+            constraintMemberType =
+                MemberReferenceUtil
+                    .WrapTypeInfoWithMemberType(constraintTypeInfo);
+          }
 
           return new BinarySchemaContainerParser.GenericMemberType {
               ConstraintType = constraintMemberType,
@@ -50,12 +75,12 @@ namespace schema.binary.parser {
                       ? SequenceLengthSourceType.READ_ONLY
                       : sequenceTypeInfo
                         .TypeV2
-                        .HasAttribute<
-                            RSequenceUntilEndOfStreamAttribute>()
+                        .HasAttribute<RSequenceUntilEndOfStreamAttribute>()
                           ? SequenceLengthSourceType.UNTIL_END_OF_STREAM
                           : SequenceLengthSourceType.UNSPECIFIED,
           };
         }
+
         default: throw new ArgumentOutOfRangeException(nameof(memberTypeInfo));
       }
     }

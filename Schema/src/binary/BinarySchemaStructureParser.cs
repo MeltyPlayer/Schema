@@ -70,7 +70,7 @@ namespace schema.binary {
   }
 
   public interface IGenericMemberType : IMemberType {
-    IMemberType ConstraintType { get; }
+    IMemberType? ConstraintType { get; }
   }
 
   public interface IOffset {
@@ -626,7 +626,7 @@ namespace schema.binary {
     }
 
     public class GenericMemberType : IGenericMemberType {
-      public IMemberType ConstraintType { get; set; }
+      public IMemberType? ConstraintType { get; set; }
       public IGenericTypeInfo GenericTypeInfo { get; set; }
       public ITypeInfo TypeInfo => GenericTypeInfo;
       public ITypeV2 TypeV2 => TypeInfo.TypeV2;

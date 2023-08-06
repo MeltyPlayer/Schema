@@ -145,20 +145,18 @@ namespace schema.util.types {
         return true;
       }
 
-      public override bool HasGenericConstraints(
+      public override bool IsGenericTypeParameter(
           out IEnumerable<ITypeV2> genericConstraints) {
-        var constraintTypes =
-            (this.symbol_ as ITypeParameterSymbol)?
-            .ConstraintTypes
-            .Where(constraint => constraint is not IErrorTypeSymbol)
-            .ToArray();
-
-        if (constraintTypes?.Length == 0) {
-          genericConstraints = default;
+        if (this.symbol_ is not ITypeParameterSymbol typeParameterSymbol) {
+          genericConstraints = null;
           return false;
         }
 
-        genericConstraints = constraintTypes.Select(TypeV2.FromSymbol);
+        genericConstraints =
+            typeParameterSymbol
+            .ConstraintTypes
+            .Where(constraint => constraint is not IErrorTypeSymbol)
+            .Select(TypeV2.FromSymbol);
         return true;
       }
 

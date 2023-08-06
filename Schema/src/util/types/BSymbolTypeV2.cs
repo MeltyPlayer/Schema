@@ -40,7 +40,7 @@ namespace schema.util.types {
       public abstract bool HasGenericArguments(
           out IEnumerable<ITypeV2> genericArguments);
 
-      public abstract bool HasGenericConstraints(
+      public abstract bool IsGenericTypeParameter(
           out IEnumerable<ITypeV2> genericConstraints);
 
       public abstract bool ContainsMemberWithType(ITypeV2 other);
@@ -143,7 +143,7 @@ namespace schema.util.types {
             : Enumerable.Empty<ITypeV2>();
 
       public IEnumerable<ITypeV2> GenericConstraints
-        => this.HasGenericConstraints(out var genericConstraints)
+        => this.IsGenericTypeParameter(out var genericConstraints)
             ? genericConstraints
             : Enumerable.Empty<ITypeV2>();
 

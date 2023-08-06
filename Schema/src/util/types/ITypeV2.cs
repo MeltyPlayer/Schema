@@ -29,7 +29,7 @@ namespace schema.util.types {
     int Arity { get; }
     bool HasGenericArguments(out IEnumerable<ITypeV2> genericArguments);
     IEnumerable<ITypeV2> GenericArguments { get; }
-    bool HasGenericConstraints(out IEnumerable<ITypeV2> genericConstraints);
+    bool IsGenericTypeParameter(out IEnumerable<ITypeV2> genericConstraints);
     IEnumerable<ITypeV2> GenericConstraints { get; }
 
     bool HasNullableAnnotation { get; }
