@@ -6,11 +6,11 @@ using schema.util.symbols;
 
 namespace schema.binary.attributes {
   internal class WLengthOfSequenceParser : IAttributeParser {
-    public void ParseIntoMemberType(IBetterSymbol memberSymbol,
+    public void ParseIntoMemberType(IBetterSymbol memberBetterSymbol,
                                     ITypeInfo memberTypeInfo,
                                     IMemberType memberType) {
       var lengthOfSequenceAttributes =
-          memberSymbol.GetAttributes<WLengthOfSequenceAttribute>()
+          memberBetterSymbol.GetAttributes<WLengthOfSequenceAttribute>()
                       .ToArray();
       if (lengthOfSequenceAttributes.Length == 0) {
         return;
@@ -23,7 +23,7 @@ namespace schema.binary.attributes {
             lengthOfSequenceAttributes.Select(attr => attr.OtherMember)
                                       .ToArray();
       } else {
-        memberSymbol.ReportDiagnostic(Rules.NotSupported);
+        memberBetterSymbol.ReportDiagnostic(Rules.NotSupported);
       }
     }
   }

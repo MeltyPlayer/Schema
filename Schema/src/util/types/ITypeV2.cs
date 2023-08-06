@@ -27,12 +27,15 @@ namespace schema.util.types {
 
     int GenericArgCount { get; }
     bool HasGenericArguments(out IEnumerable<ITypeV2> genericArguments);
+    IEnumerable<ITypeV2> GenericArguments { get; }
     bool HasGenericConstraints(out IEnumerable<ITypeV2> genericConstraints);
     IEnumerable<ITypeV2> GenericConstraints { get; }
 
+    bool HasNullableAnnotation { get; }
     bool IsBinarySerializable { get; }
     bool IsBinaryDeserializable { get; }
     bool IsClass { get; }
+    bool IsInterface { get; }
     bool IsStruct { get; }
     bool IsString { get; }
     bool IsArray(out ITypeV2 elementType);
@@ -44,5 +47,8 @@ namespace schema.util.types {
 
     IEnumerable<TAttribute> GetAttributes<TAttribute>()
         where TAttribute : Attribute;
+
+    // TODO: Clean this up
+    ITypeSymbol TypeSymbol { get; }
   }
 }

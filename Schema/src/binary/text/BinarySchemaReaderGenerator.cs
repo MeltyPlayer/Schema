@@ -9,11 +9,13 @@ using schema.binary.attributes;
 using schema.binary.dependencies;
 using schema.util;
 using schema.util.symbols;
+using schema.util.types;
 
 namespace schema.binary.text {
   public class BinarySchemaReaderGenerator {
     public string Generate(IBinarySchemaStructure structure) {
       var typeSymbol = structure.TypeSymbol;
+      var typeV2 = TypeV2.FromSymbol(typeSymbol);
 
       var typeNamespace = typeSymbol.GetFullyQualifiedNamespace();
 
@@ -73,7 +75,7 @@ namespace schema.binary.text {
           if (member is ISchemaValueMember valueMember) {
             BinarySchemaReaderGenerator.ReadValueMember_(
                 cbsb,
-                typeSymbol,
+                typeV2,
                 valueMember);
           } else if (member is ISchemaMethodMember) {
             cbsb.WriteLine($"this.{member.Name}(er);");
@@ -111,7 +113,7 @@ namespace schema.binary.text {
 
     private static void ReadValueMember_(
         ICurlyBracketTextWriter cbsb,
-        ITypeSymbol sourceSymbol,
+        ITypeV2 sourceSymbol,
         ISchemaValueMember member) {
       if (member.IsPosition) {
         if (member.MemberType.IsReadOnly) {
@@ -162,7 +164,7 @@ namespace schema.binary.text {
                     .MUTABLE_ARRAY
             }) {
           cbsb.WriteLine(
-              $"this.{member.Name} = new {sourceSymbol.GetQualifiedNameFromCurrentSymbol(member.MemberType.TypeSymbol)}();");
+              $"this.{member.Name} = new {sourceSymbol.GetQualifiedNameFromCurrentSymbol(member.MemberType.TypeV2)}();");
         }
       }
 
@@ -251,7 +253,7 @@ namespace schema.binary.text {
 
     private static void ReadPrimitive_(
         ICurlyBracketTextWriter cbsb,
-        ITypeSymbol sourceSymbol,
+        ITypeV2 sourceSymbol,
         ISchemaValueMember member) {
       var primitiveType =
           Asserts.CastNonnull(member.MemberType as IPrimitiveMemberType);
@@ -265,7 +267,6 @@ namespace schema.binary.text {
                   $"this.{member.Name} = {GetReadPrimitiveText_(sourceSymbol, primitiveType)};");
             } else {
               cbsb.WriteLine($"{GetAssertPrimitiveText_(
-                  sourceSymbol,
                   primitiveType,
                   $"this.{member.Name}")};");
             }
@@ -365,7 +366,7 @@ namespace schema.binary.text {
           cbsb,
           member,
           () => {
-            if (!structureMemberType.IsStruct) {
+            if (!structureMemberType.TypeV2.IsStruct) {
               cbsb.WriteLine($"this.{memberName}.Read(er);");
             } else {
               cbsb.EnterBlock()
@@ -400,7 +401,7 @@ namespace schema.binary.text {
 
     private static void ReadArray_(
         ICurlyBracketTextWriter cbsb,
-        ITypeSymbol sourceSymbol,
+        ITypeV2 sourceSymbol,
         ISchemaValueMember member) {
       var arrayType =
           Asserts.CastNonnull(member.MemberType as ISequenceMemberType);
@@ -411,7 +412,7 @@ namespace schema.binary.text {
         var qualifiedElementName =
             SymbolTypeUtil.GetQualifiedNameFromCurrentSymbol(
                 sourceSymbol,
-                arrayType.ElementType.TypeSymbol);
+                arrayType.ElementType.TypeV2);
 
         var memberAccessor = $"this.{member.Name}";
 
@@ -546,7 +547,7 @@ namespace schema.binary.text {
 
     private static void ReadIntoArray_(
         ICurlyBracketTextWriter cbsb,
-        ITypeSymbol sourceSymbol,
+        ITypeV2 sourceSymbol,
         ISchemaValueMember member) {
       HandleMemberEndianness_(
           cbsb,
@@ -600,7 +601,6 @@ namespace schema.binary.text {
                         $"foreach (var e in this.{member.Name})")
                     .WriteLine(
                         $"{GetAssertPrimitiveText_(
-                            sourceSymbol,
                             primitiveElementType,
                             "e")};")
                     .ExitBlock();
@@ -609,9 +609,8 @@ namespace schema.binary.text {
               return;
             }
 
-            if (elementType is IStructureMemberType
-                structureElementType) {
-              if (!structureElementType.IsStruct) {
+            if (elementType is IStructureMemberType structureElementType) {
+              if (!structureElementType.TypeV2.IsStruct) {
                 cbsb.EnterBlock(
                     $"foreach (var e in this.{member.Name})");
 
@@ -648,7 +647,7 @@ namespace schema.binary.text {
     }
 
     private static string GetReadPrimitiveText_(
-        ITypeSymbol sourceSymbol,
+        ITypeV2 sourceSymbol,
         IPrimitiveMemberType primitiveMemberType) {
       var primitiveType = primitiveMemberType.PrimitiveType;
       var altFormat = primitiveMemberType.AltFormat;
@@ -671,7 +670,7 @@ namespace schema.binary.text {
         var castType = primitiveType == SchemaPrimitiveType.ENUM
             ? SymbolTypeUtil.GetQualifiedNameFromCurrentSymbol(
                 sourceSymbol,
-                primitiveMemberType.TypeSymbol)
+                primitiveMemberType.TypeV2)
             : SchemaGeneratorUtil.GetTypeName(
                 primitiveMemberType.PrimitiveType.AsNumberType());
         castText = $"({castType}) ";
@@ -681,7 +680,6 @@ namespace schema.binary.text {
     }
 
     private static string GetAssertPrimitiveText_(
-        ITypeSymbol sourceSymbol,
         IPrimitiveMemberType primitiveMemberType,
         string accessText) {
       var primitiveType = primitiveMemberType.PrimitiveType;

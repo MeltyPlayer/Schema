@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 
 using Microsoft.CodeAnalysis;
 
@@ -20,7 +21,9 @@ namespace schema.util.types {
 
       public abstract int GenericArgCount { get; }
 
+      public virtual bool HasNullableAnnotation => false;
       public abstract bool IsClass { get; }
+      public abstract bool IsInterface { get; }
       public abstract bool IsStruct { get; }
       public abstract bool IsString { get; }
       public abstract bool IsArray(out ITypeV2 elementType);
@@ -56,10 +59,21 @@ namespace schema.util.types {
           other.FullyQualifiedNamespace,
           other.GenericArgCount);
 
-      public bool IsExactly(Type other) => this.Matches_(
-          other.Name,
-          other.Namespace,
-          other.GenericTypeArguments.Length);
+      public bool IsExactly(Type other) {
+        var expectedName = other.Name;
+
+        int expectedArity = 0;
+        var indexOfBacktick = expectedName.IndexOf('`');
+        if (indexOfBacktick != -1) {
+          expectedArity = int.Parse(expectedName.Substring(indexOfBacktick + 1));
+          expectedName = expectedName.Substring(0, indexOfBacktick);
+        }
+
+        return this.Matches_(
+            expectedName,
+            other.Namespace,
+            expectedArity);
+      }
 
       public bool IsExactly(ISymbol other) => this.Matches_(
           other.Name,
@@ -81,10 +95,18 @@ namespace schema.util.types {
       public bool IsBinaryDeserializable
         => this.Implements<IBinaryDeserializable>();
 
+      public IEnumerable<ITypeV2> GenericArguments
+        => this.HasGenericArguments(out var genericArguments)
+            ? genericArguments
+            : Enumerable.Empty<ITypeV2>();
+
       public IEnumerable<ITypeV2> GenericConstraints
         => this.HasGenericConstraints(out var genericConstraints)
             ? genericConstraints
             : Enumerable.Empty<ITypeV2>();
+
+      public virtual ITypeSymbol TypeSymbol
+        => throw new NotImplementedException();
     }
   }
 }

@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis;
 using schema.util;
 using schema.util.sequences;
 using schema.util.symbols;
+using schema.util.types;
 
 
 namespace schema.binary.parser {
@@ -23,7 +24,7 @@ namespace schema.binary.parser {
   }
 
   public interface ITypeInfo {
-    ITypeSymbol TypeSymbol { get; }
+    ITypeV2 TypeV2 { get; }
     SchemaTypeKind Kind { get; }
     bool IsReadOnly { get; }
     bool IsNullable { get; }
@@ -49,14 +50,10 @@ namespace schema.binary.parser {
 
   public interface IStringTypeInfo : ITypeInfo { }
 
-  public interface IStructureTypeInfo : ITypeInfo {
-    INamedTypeSymbol NamedTypeSymbol { get; }
-    bool IsStruct { get; }
-  }
+  public interface IStructureTypeInfo : ITypeInfo { }
 
   public interface IGenericTypeInfo : ITypeInfo {
     ITypeInfo[] ConstraintTypeInfos { get; }
-    ITypeParameterSymbol TypeParameterSymbol { get; }
   }
 
   public interface ISequenceTypeInfo : ITypeInfo {
@@ -74,20 +71,25 @@ namespace schema.binary.parser {
       NOT_IMPLEMENTED,
     }
 
-    public IEnumerable<(ParseStatus, ISymbol, ITypeInfo?)> ParseMembers(
-        INamedTypeSymbol structureSymbol) {
+    public IEnumerable<(ParseStatus, ISymbol, ITypeSymbol, ITypeInfo?)>
+        ParseMembers(
+            INamedTypeSymbol structureSymbol) {
       foreach (var memberSymbol in structureSymbol.GetInstanceMembers()) {
         // Tries to parse the type to get info about it
         var parseStatus = this.ParseMember(
             memberSymbol,
+            out var memberTypeSymbol,
             out var memberTypeInfo);
-        yield return (parseStatus, memberSymbol, memberTypeInfo);
+        yield return (parseStatus, memberSymbol, memberTypeSymbol,
+                      memberTypeInfo);
       }
     }
 
     public ParseStatus ParseMember(ISymbol memberSymbol,
-                                   out ITypeInfo? typeInfo) {
-      typeInfo = null;
+                                   out ITypeSymbol? memberTypeSymbol,
+                                   out ITypeInfo? memberTypeInfo) {
+      memberTypeSymbol = null;
+      memberTypeInfo = null;
 
       if (memberSymbol is IMethodSymbol) {
         return ParseStatus.SUCCESS;
@@ -95,31 +97,29 @@ namespace schema.binary.parser {
 
       if (!GetTypeOfMember_(
               memberSymbol,
-              out var memberTypeSymbol,
+              out memberTypeSymbol,
+              out var memberTypeV2,
               out var isReadonly)) {
         return ParseStatus.NOT_A_FIELD_OR_PROPERTY_OR_METHOD;
       }
 
-      return this.ParseTypeSymbol(
-          memberTypeSymbol,
+      return this.ParseTypeV2(
+          memberTypeV2,
           isReadonly,
-          out typeInfo);
+          out memberTypeInfo);
     }
 
-    public ParseStatus ParseTypeSymbol(
-        ITypeSymbol typeSymbol,
+    public ParseStatus ParseTypeV2(
+        ITypeV2 typeV2,
         bool isReadonly,
         out ITypeInfo typeInfo) {
-      this.ParseNullable_(ref typeSymbol, out var isNullable);
+      this.ParseNullable_(ref typeV2, out var isNullable);
 
-      var primitiveType =
-          SchemaPrimitiveTypesUtil.GetPrimitiveTypeFromTypeSymbol(
-              typeSymbol);
-      if (primitiveType != SchemaPrimitiveType.UNDEFINED) {
+      if (typeV2.IsPrimitive(out var primitiveType)) {
         switch (primitiveType) {
           case SchemaPrimitiveType.BOOLEAN: {
             typeInfo = new BoolTypeInfo(
-                typeSymbol,
+                typeV2,
                 isReadonly,
                 isNullable);
             return ParseStatus.SUCCESS;
@@ -133,7 +133,7 @@ namespace schema.binary.parser {
           case SchemaPrimitiveType.INT64:
           case SchemaPrimitiveType.UINT64: {
             typeInfo = new IntegerTypeInfo(
-                typeSymbol,
+                typeV2,
                 SchemaTypeKind.INTEGER,
                 primitiveType.AsIntegerType(),
                 isReadonly,
@@ -147,7 +147,7 @@ namespace schema.binary.parser {
           case SchemaPrimitiveType.SINGLE:
           case SchemaPrimitiveType.DOUBLE: {
             typeInfo = new FloatTypeInfo(
-                typeSymbol,
+                typeV2,
                 SchemaTypeKind.FLOAT,
                 primitiveType.AsNumberType(),
                 isReadonly,
@@ -156,14 +156,14 @@ namespace schema.binary.parser {
           }
           case SchemaPrimitiveType.CHAR: {
             typeInfo = new CharTypeInfo(
-                typeSymbol,
+                typeV2,
                 isReadonly,
                 isNullable);
             return ParseStatus.SUCCESS;
           }
           case SchemaPrimitiveType.ENUM: {
             typeInfo = new EnumTypeInfo(
-                typeSymbol,
+                typeV2,
                 isReadonly,
                 isNullable);
             return ParseStatus.SUCCESS;
@@ -172,19 +172,38 @@ namespace schema.binary.parser {
         }
       }
 
-      if (typeSymbol.SpecialType == SpecialType.System_String) {
+      if (typeV2.IsString) {
         typeInfo = new StringTypeInfo(
-            typeSymbol,
+            typeV2,
             isReadonly,
             isNullable);
         return ParseStatus.SUCCESS;
       }
 
-      if (typeSymbol.TypeKind is TypeKind.Array) {
-        var arrayTypeSymbol = typeSymbol as IArrayTypeSymbol;
+      if (typeV2.IsArray(out var containedTypeV2)) {
+        var containedParseStatus = this.ParseTypeV2(
+            containedTypeV2,
+            false,
+            out var containedTypeInfo);
+        if (containedParseStatus != ParseStatus.SUCCESS) {
+          typeInfo = default;
+          return containedParseStatus;
+        }
 
-        var containedTypeSymbol = arrayTypeSymbol.ElementType;
-        var containedParseStatus = this.ParseTypeSymbol(
+        typeInfo = new SequenceTypeInfo(
+            typeV2,
+            isReadonly,
+            isNullable,
+            SequenceType.MUTABLE_ARRAY,
+            isReadonly,
+            containedTypeInfo);
+        return ParseStatus.SUCCESS;
+      }
+
+      if (typeV2.Implements(typeof(ISequence<,>), out var sequenceTypeV2)) {
+        var containedTypeSymbol =
+            sequenceTypeV2.GenericArguments.ToArray()[1];
+        var containedParseStatus = this.ParseTypeV2(
             containedTypeSymbol,
             false,
             out var containedTypeInfo);
@@ -194,141 +213,118 @@ namespace schema.binary.parser {
         }
 
         typeInfo = new SequenceTypeInfo(
-            typeSymbol,
+            typeV2,
             isReadonly,
             isNullable,
-            SequenceType.MUTABLE_ARRAY,
+            SequenceType.MUTABLE_SEQUENCE,
+            false,
+            containedTypeInfo);
+        return ParseStatus.SUCCESS;
+      }
+
+      if (typeV2.Implements(typeof(IConstLengthSequence<,>),
+                            out var constLengthSequenceTypeV2)) {
+        var containedTypeSymbol =
+            constLengthSequenceTypeV2.GenericArguments.ToArray()[1];
+        var containedParseStatus = this.ParseTypeV2(
+            containedTypeSymbol,
+            false,
+            out var containedTypeInfo);
+        if (containedParseStatus != ParseStatus.SUCCESS) {
+          typeInfo = default;
+          return containedParseStatus;
+        }
+
+        typeInfo = new SequenceTypeInfo(
+            typeV2,
+            isReadonly,
+            isNullable,
+            SequenceType.MUTABLE_SEQUENCE,
+            true,
+            containedTypeInfo);
+        return ParseStatus.SUCCESS;
+      }
+
+      if (typeV2.Implements(typeof(IReadOnlySequence<,>),
+                            out var readOnlySequence)) {
+        var containedTypeSymbol =
+            readOnlySequence.GenericArguments.ToArray()[1];
+        var containedParseStatus = this.ParseTypeV2(
+            containedTypeSymbol,
+            true,
+            out var containedTypeInfo);
+        if (containedParseStatus != ParseStatus.SUCCESS) {
+          typeInfo = default;
+          return containedParseStatus;
+        }
+
+        typeInfo = new SequenceTypeInfo(
+            typeV2,
+            isReadonly,
+            isNullable,
+            SequenceType.READ_ONLY_SEQUENCE,
             isReadonly,
             containedTypeInfo);
         return ParseStatus.SUCCESS;
       }
 
-      if (typeSymbol is INamedTypeSymbol namedTypeSymbol) {
-        if (namedTypeSymbol.ImplementsGeneric(typeof(ISequence<,>),
-                                              out var sequenceTypeSymbol)) {
-          var containedTypeSymbol = sequenceTypeSymbol.TypeArguments[1];
-          var containedParseStatus = this.ParseTypeSymbol(
-              containedTypeSymbol,
-              false,
-              out var containedTypeInfo);
-          if (containedParseStatus != ParseStatus.SUCCESS) {
-            typeInfo = default;
-            return containedParseStatus;
-          }
-
-          typeInfo = new SequenceTypeInfo(
-              typeSymbol,
-              isReadonly,
-              isNullable,
-              SequenceType.MUTABLE_SEQUENCE,
-              false,
-              containedTypeInfo);
-          return ParseStatus.SUCCESS;
+      if (typeV2.Implements(typeof(List<>), out var listTypeV2)) {
+        var containedTypeSymbol = listTypeV2.GenericArguments.ToArray()[0];
+        var containedParseStatus = this.ParseTypeV2(
+            containedTypeSymbol,
+            false,
+            out var containedTypeInfo);
+        if (containedParseStatus != ParseStatus.SUCCESS) {
+          typeInfo = default;
+          return containedParseStatus;
         }
 
-        if (namedTypeSymbol.ImplementsGeneric(typeof(IConstLengthSequence<,>),
-                                              out sequenceTypeSymbol)) {
-          var containedTypeSymbol = sequenceTypeSymbol.TypeArguments[1];
-          var containedParseStatus = this.ParseTypeSymbol(
-              containedTypeSymbol,
-              false,
-              out var containedTypeInfo);
-          if (containedParseStatus != ParseStatus.SUCCESS) {
-            typeInfo = default;
-            return containedParseStatus;
-          }
+        typeInfo = new SequenceTypeInfo(
+            typeV2,
+            isReadonly,
+            isNullable,
+            SequenceType.MUTABLE_LIST,
+            false,
+            containedTypeInfo);
+        return ParseStatus.SUCCESS;
+      }
 
-          typeInfo = new SequenceTypeInfo(
-              typeSymbol,
-              isReadonly,
-              isNullable,
-              SequenceType.MUTABLE_SEQUENCE,
-              true,
-              containedTypeInfo);
-          return ParseStatus.SUCCESS;
+      if (typeV2.Implements(typeof(IReadOnlyList<>),
+                            out var readonlyListTypeV2)) {
+        var containedTypeSymbol =
+            readonlyListTypeV2.GenericArguments.ToArray()[0];
+        var containedParseStatus = this.ParseTypeV2(
+            containedTypeSymbol,
+            false,
+            out var containedTypeInfo);
+        if (containedParseStatus != ParseStatus.SUCCESS) {
+          typeInfo = default;
+          return containedParseStatus;
         }
 
-        if (namedTypeSymbol.ImplementsGeneric(typeof(IReadOnlySequence<,>),
-                                              out sequenceTypeSymbol)) {
-          var containedTypeSymbol = sequenceTypeSymbol.TypeArguments[1];
-          var containedParseStatus = this.ParseTypeSymbol(
-              containedTypeSymbol,
-              true,
-              out var containedTypeInfo);
-          if (containedParseStatus != ParseStatus.SUCCESS) {
-            typeInfo = default;
-            return containedParseStatus;
-          }
+        typeInfo = new SequenceTypeInfo(
+            typeV2,
+            isReadonly,
+            isNullable,
+            SequenceType.MUTABLE_LIST,
+            false,
+            containedTypeInfo);
+        return ParseStatus.SUCCESS;
+      }
 
-          typeInfo = new SequenceTypeInfo(
-              typeSymbol,
-              isReadonly,
-              isNullable,
-              SequenceType.READ_ONLY_SEQUENCE,
-              isReadonly,
-              containedTypeInfo);
-          return ParseStatus.SUCCESS;
-        }
-
-        if (namedTypeSymbol.MatchesGeneric(typeof(List<>))) {
-          var listTypeSymbol = typeSymbol as INamedTypeSymbol;
-
-          var containedTypeSymbol = listTypeSymbol.TypeArguments[0];
-          var containedParseStatus = this.ParseTypeSymbol(
-              containedTypeSymbol,
-              false,
-              out var containedTypeInfo);
-          if (containedParseStatus != ParseStatus.SUCCESS) {
-            typeInfo = default;
-            return containedParseStatus;
-          }
-
-          typeInfo = new SequenceTypeInfo(
-              typeSymbol,
-              isReadonly,
-              isNullable,
-              SequenceType.MUTABLE_LIST,
-              false,
-              containedTypeInfo);
-          return ParseStatus.SUCCESS;
-        }
-
-        if (namedTypeSymbol.MatchesGeneric(typeof(IReadOnlyList<>))) {
-          var listTypeSymbol = typeSymbol as INamedTypeSymbol;
-
-          var containedTypeSymbol = listTypeSymbol.TypeArguments[0];
-          var containedParseStatus = this.ParseTypeSymbol(
-              containedTypeSymbol,
-              true,
-              out var containedTypeInfo);
-          if (containedParseStatus != ParseStatus.SUCCESS) {
-            typeInfo = default;
-            return containedParseStatus;
-          }
-
-          typeInfo = new SequenceTypeInfo(
-              typeSymbol,
-              isReadonly,
-              isNullable,
-              SequenceType.READ_ONLY_LIST,
-              isReadonly,
-              containedTypeInfo);
-          return ParseStatus.SUCCESS;
-        }
-
+      if (typeV2.IsClass || typeV2.IsInterface || typeV2.IsStruct) {
         typeInfo = new StructureTypeInfo(
-            namedTypeSymbol,
+            typeV2,
             isReadonly,
             isNullable);
         return ParseStatus.SUCCESS;
       }
 
-      if (typeSymbol is ITypeParameterSymbol typeParameterSymbol) {
+      if (typeV2.HasGenericConstraints(out var genericConstraints)) {
         var constraintTypeInfos =
-            typeParameterSymbol
-                .ConstraintTypes
+            genericConstraints
                 .Select(constraintType => {
-                  var parseStatus = this.ParseTypeSymbol(
+                  var parseStatus = this.ParseTypeV2(
                       constraintType,
                       isReadonly,
                       out var constraintTypeInfo);
@@ -339,7 +335,7 @@ namespace schema.binary.parser {
 
         typeInfo = new GenericTypeInfo(
             constraintTypeInfos,
-            typeParameterSymbol,
+            typeV2,
             isReadonly,
             isNullable);
         return ParseStatus.SUCCESS;
@@ -349,10 +345,9 @@ namespace schema.binary.parser {
       return ParseStatus.NOT_IMPLEMENTED;
     }
 
-    public ITypeInfo AssertParseTypeSymbol(
-        ITypeSymbol typeSymbol) {
-      var parseStatus =
-          this.ParseTypeSymbol(typeSymbol, true, out var typeInfo);
+    public ITypeInfo AssertParseTypeV2(
+        ITypeV2 typeV2) {
+      var parseStatus = this.ParseTypeV2(typeV2, true, out var typeInfo);
       if (parseStatus != ParseStatus.SUCCESS) {
         throw new NotImplementedException();
       }
@@ -363,44 +358,46 @@ namespace schema.binary.parser {
     private bool GetTypeOfMember_(
         ISymbol memberSymbol,
         out ITypeSymbol memberTypeSymbol,
+        out ITypeV2 memberTypeV2,
         out bool isMemberReadonly) {
       switch (memberSymbol) {
         case IPropertySymbol propertySymbol: {
           isMemberReadonly = propertySymbol.SetMethod == null;
           memberTypeSymbol = propertySymbol.Type;
+          memberTypeV2 = TypeV2.FromSymbol(memberTypeSymbol);
           return true;
         }
         case IFieldSymbol fieldSymbol: {
           isMemberReadonly = fieldSymbol.IsReadOnly;
           memberTypeSymbol = fieldSymbol.Type;
+          memberTypeV2 = TypeV2.FromSymbol(memberTypeSymbol);
           return true;
         }
         default: {
           isMemberReadonly = false;
           memberTypeSymbol = default;
+          memberTypeV2 = default;
           return false;
         }
       }
     }
 
-    private void ParseNullable_(ref ITypeSymbol typeSymbol,
-                                out bool isNullable) {
+    private void ParseNullable_(ref ITypeV2 typeV2, out bool isNullable) {
       isNullable = false;
-      if (typeSymbol is INamedTypeSymbol {
-              Name: "Nullable"
-          } fieldNamedTypeSymbol) {
-        typeSymbol = fieldNamedTypeSymbol.TypeArguments[0];
+      if (typeV2.IsExactly(typeof(Nullable<>))) {
+        Asserts.True(typeV2.HasGenericArguments(out var genericArguments));
+        typeV2 = genericArguments.ToArray()[0];
         isNullable = true;
-      } else if (typeSymbol.NullableAnnotation ==
-                 NullableAnnotation.Annotated) {
+      } else if (typeV2.HasNullableAnnotation) {
         isNullable = true;
       }
     }
 
-    private record BoolTypeInfo(ITypeSymbol TypeSymbol,
+    private record BoolTypeInfo(ITypeV2 TypeV2,
                                 bool IsReadOnly,
-                                bool IsNullable) : IBoolTypeInfo {
-      public ITypeSymbol TypeSymbol { get; } = TypeSymbol;
+                                bool IsNullable) :
+        IBoolTypeInfo {
+      public ITypeV2 TypeV2 { get; } = TypeV2;
 
       public SchemaPrimitiveType PrimitiveType => SchemaPrimitiveType.BOOLEAN;
       public SchemaTypeKind Kind => SchemaTypeKind.BOOL;
@@ -410,37 +407,29 @@ namespace schema.binary.parser {
     }
 
 
-    private class FloatTypeInfo : INumberTypeInfo {
-      public FloatTypeInfo(
-          ITypeSymbol typeSymbol,
-          SchemaTypeKind kind,
-          SchemaNumberType numberType,
-          bool isReadonly,
-          bool isNullable) {
-        this.TypeSymbol = typeSymbol;
-        this.Kind = kind;
-        this.NumberType = numberType;
-        this.IsReadOnly = isReadonly;
-        this.IsNullable = isNullable;
-      }
-
-      public ITypeSymbol TypeSymbol { get; }
-      public SchemaTypeKind Kind { get; }
-      public SchemaNumberType NumberType { get; }
+    private class FloatTypeInfo(ITypeV2 typeV2,
+                                SchemaTypeKind kind,
+                                SchemaNumberType numberType,
+                                bool isReadonly,
+                                bool isNullable)
+        : INumberTypeInfo {
+      public ITypeV2 TypeV2 { get; } = typeV2;
+      public SchemaTypeKind Kind { get; } = kind;
+      public SchemaNumberType NumberType { get; } = numberType;
 
       public SchemaPrimitiveType PrimitiveType
         => this.NumberType.AsPrimitiveType();
 
-      public bool IsReadOnly { get; }
-      public bool IsNullable { get; }
+      public bool IsReadOnly { get; } = isReadonly;
+      public bool IsNullable { get; } = isNullable;
     }
 
-    private record IntegerTypeInfo(ITypeSymbol TypeSymbol,
+    private record IntegerTypeInfo(ITypeV2 TypeV2,
                                    SchemaTypeKind Kind,
                                    SchemaIntegerType IntegerType,
                                    bool IsReadOnly,
                                    bool IsNullable) : IIntegerTypeInfo {
-      public ITypeSymbol TypeSymbol { get; } = TypeSymbol;
+      public ITypeV2 TypeV2 { get; } = TypeV2;
       public SchemaTypeKind Kind { get; } = Kind;
       public SchemaIntegerType IntegerType { get; } = IntegerType;
 
@@ -453,100 +442,77 @@ namespace schema.binary.parser {
       public bool IsNullable { get; } = IsNullable;
     }
 
-    private record CharTypeInfo(ITypeSymbol TypeSymbol,
+    private record CharTypeInfo(ITypeV2 TypeV2,
                                 bool IsReadOnly,
                                 bool IsNullable) : ICharTypeInfo {
       public SchemaPrimitiveType PrimitiveType => SchemaPrimitiveType.CHAR;
       public SchemaTypeKind Kind => SchemaTypeKind.CHAR;
 
-      public ITypeSymbol TypeSymbol { get; } = TypeSymbol;
+      public ITypeV2 TypeV2 { get; } = TypeV2;
 
       public bool IsReadOnly { get; } = IsReadOnly;
       public bool IsNullable { get; } = IsNullable;
     }
 
-    private record StringTypeInfo(ITypeSymbol TypeSymbol,
+    private record StringTypeInfo(ITypeV2 TypeV2,
                                   bool IsReadOnly,
                                   bool IsNullable) : IStringTypeInfo {
       public SchemaTypeKind Kind => SchemaTypeKind.STRING;
 
-      public ITypeSymbol TypeSymbol { get; } = TypeSymbol;
+      public ITypeV2 TypeV2 { get; } = TypeV2;
 
       public bool IsReadOnly { get; } = IsReadOnly;
       public bool IsNullable { get; } = IsNullable;
     }
 
-    private class EnumTypeInfo : IEnumTypeInfo {
-      public EnumTypeInfo(
-          ITypeSymbol typeSymbol,
-          bool isReadonly,
-          bool isNullable) {
-        this.TypeSymbol = typeSymbol;
-        this.IsReadOnly = isReadonly;
-        this.IsNullable = isNullable;
-      }
-
+    private class EnumTypeInfo(ITypeV2 typeV2,
+                               bool isReadonly,
+                               bool isNullable)
+        : IEnumTypeInfo {
       public SchemaPrimitiveType PrimitiveType => SchemaPrimitiveType.ENUM;
       public SchemaTypeKind Kind => SchemaTypeKind.ENUM;
 
-      public ITypeSymbol TypeSymbol { get; }
+      public ITypeV2 TypeV2 { get; } = typeV2;
 
-      public bool IsReadOnly { get; }
-      public bool IsNullable { get; }
+      public bool IsReadOnly { get; } = isReadonly;
+      public bool IsNullable { get; } = isNullable;
     }
 
-    private class StructureTypeInfo : IStructureTypeInfo {
-      public StructureTypeInfo(
-          INamedTypeSymbol namedTypeSymbol,
-          bool isReadonly,
-          bool isNullable) {
-        this.NamedTypeSymbol = namedTypeSymbol;
-        this.IsReadOnly = isReadonly;
-        this.IsNullable = isNullable;
-      }
-
+    private class StructureTypeInfo(ITypeV2 typeV2,
+                                    bool isReadonly,
+                                    bool isNullable)
+        : IStructureTypeInfo {
       public SchemaTypeKind Kind => SchemaTypeKind.STRUCTURE;
 
-      public INamedTypeSymbol NamedTypeSymbol { get; }
-      public ITypeSymbol TypeSymbol => this.NamedTypeSymbol;
+      public ITypeV2 TypeV2 { get; } = typeV2;
 
-      public bool IsReadOnly { get; }
-      public bool IsNullable { get; }
-
-      public bool IsStruct => this.NamedTypeSymbol.TypeKind == TypeKind.Struct;
+      public bool IsReadOnly { get; } = isReadonly;
+      public bool IsNullable { get; } = isNullable;
     }
 
-    private class GenericTypeInfo : IGenericTypeInfo {
-      public GenericTypeInfo(
-          ITypeInfo[] constraintTypeInfos,
-          ITypeParameterSymbol typeParameterSymbol,
-          bool isReadonly,
-          bool isNullable) {
-        this.ConstraintTypeInfos = constraintTypeInfos;
-        this.TypeParameterSymbol = typeParameterSymbol;
-        this.IsReadOnly = isReadonly;
-        this.IsNullable = isNullable;
-      }
-
+    private class GenericTypeInfo(ITypeInfo[] constraintTypeInfos,
+                                  ITypeV2 typeV2,
+                                  bool isReadonly,
+                                  bool isNullable)
+        : IGenericTypeInfo {
       public SchemaTypeKind Kind => SchemaTypeKind.GENERIC;
 
-      public ITypeInfo[] ConstraintTypeInfos { get; }
-      public ITypeParameterSymbol TypeParameterSymbol { get; }
-      public ITypeSymbol TypeSymbol => this.TypeParameterSymbol;
+      public ITypeInfo[] ConstraintTypeInfos { get; } = constraintTypeInfos;
+      public ITypeV2 TypeV2 { get; } = typeV2;
 
-      public bool IsReadOnly { get; }
-      public bool IsNullable { get; }
+      public bool IsReadOnly { get; } = isReadonly;
+      public bool IsNullable { get; } = isNullable;
     }
 
     private class SequenceTypeInfo : ISequenceTypeInfo {
       public SequenceTypeInfo(
-          ITypeSymbol typeSymbol,
+          ITypeV2 typeV2,
           bool isReadonly,
           bool isNullable,
           SequenceType sequenceType,
           bool isLengthConst,
           ITypeInfo containedType) {
-        this.TypeSymbol = typeSymbol;
+        this.TypeV2 = typeV2;
         this.IsReadOnly = isReadonly;
         this.IsNullable = isNullable;
         this.SequenceType = sequenceType;
@@ -556,7 +522,7 @@ namespace schema.binary.parser {
 
       public SchemaTypeKind Kind => SchemaTypeKind.SEQUENCE;
 
-      public ITypeSymbol TypeSymbol { get; }
+      public ITypeV2 TypeV2 { get; }
 
       public bool IsReadOnly { get; }
       public bool IsNullable { get; }

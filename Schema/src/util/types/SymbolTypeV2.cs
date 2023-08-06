@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 using Microsoft.CodeAnalysis;
 
@@ -47,7 +46,8 @@ namespace schema.util.types {
             this.symbol_.Yield()
                 .Concat(
                     (this.symbol_ as ITypeSymbol)?.AllInterfaces ??
-                    Enumerable.Empty<ISymbol>())
+                    Enumerable.Empty<ITypeSymbol>())
+                .Concat(BaseTypes)
                 .SingleOrDefault(
                     symbol => symbol.IsExactlyType(type));
         matchingType = matchingTypeImpl != null
@@ -56,11 +56,24 @@ namespace schema.util.types {
         return matchingType != null;
       }
 
+      private IEnumerable<INamedTypeSymbol> BaseTypes {
+        get {
+          var baseType = this.symbol_.BaseType;
+          while (baseType != null) {
+            yield return baseType;
+            baseType = baseType.BaseType;
+          }
+        }
+      }
+
       public override int GenericArgCount
         => (this.symbol_ as INamedTypeSymbol)?.TypeArguments.Length ?? 0;
 
       public override bool IsClass
         => (this.symbol_ as INamedTypeSymbol)?.TypeKind == TypeKind.Class;
+
+      public override bool IsInterface
+        => (this.symbol_ as INamedTypeSymbol)?.TypeKind == TypeKind.Interface;
 
       public override bool IsStruct
         => (this.symbol_ as INamedTypeSymbol)?.TypeKind == TypeKind.Struct;
@@ -134,16 +147,22 @@ namespace schema.util.types {
       public override bool HasGenericConstraints(
           out IEnumerable<ITypeV2> genericConstraints) {
         var constraintTypes =
-            (this.symbol_ as ITypeParameterSymbol)?.ConstraintTypes;
+            (this.symbol_ as ITypeParameterSymbol)?
+            .ConstraintTypes
+            .Where(constraint => constraint is not IErrorTypeSymbol)
+            .ToArray();
+
         if (constraintTypes?.Length == 0) {
           genericConstraints = default;
           return false;
         }
 
-        genericConstraints = constraintTypes.Value.Select(TypeV2.FromSymbol);
+        genericConstraints = constraintTypes.Select(TypeV2.FromSymbol);
         return true;
       }
 
+      public override bool HasNullableAnnotation
+        => this.symbol_.NullableAnnotation == NullableAnnotation.Annotated;
 
       public override bool HasAttribute<TAttribute>()
         => this.GetAttributeData_<TAttribute>().Any();
@@ -159,8 +178,7 @@ namespace schema.util.types {
                      attributeData.Instantiate<TAttribute>(this.symbol_);
                  if (attribute is BMemberAttribute memberAttribute) {
                    memberAttribute.Init(this.diagnosticReporter_,
-                                        TypeV2.FromSymbol(
-                                            this.symbol_.ContainingType),
+                                        this.symbol_.ContainingType,
                                         this.symbol_.Name);
                  }
 
@@ -176,6 +194,8 @@ namespace schema.util.types {
                               => attributeData.AttributeClass?.IsExactlyType(
                                   attributeType) ?? false);
       }
+
+      public override ITypeSymbol TypeSymbol => this.symbol_;
     }
   }
 }

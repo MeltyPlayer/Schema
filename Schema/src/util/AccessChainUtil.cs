@@ -25,6 +25,7 @@ namespace schema.binary {
   public interface IAccessChainNode {
     INamedTypeSymbol StructureSymbol { get; }
     ISymbol MemberSymbol { get; }
+    ITypeSymbol MemberTypeSymbol { get; }
     ITypeInfo MemberTypeInfo { get; }
     bool IsOrderValid { get; }
   }
@@ -32,7 +33,7 @@ namespace schema.binary {
 
   internal static class AccessChainUtil {
     public static IChain<IAccessChainNode> GetAccessChainForRelativeMember(
-        IDiagnosticReporter diagnosticReporter,
+        IDiagnosticReporter? diagnosticReporter,
         ITypeSymbol structureSymbol,
         string otherMemberPath,
         string thisMemberName,
@@ -86,6 +87,7 @@ namespace schema.binary {
         ITypeSymbol structureSymbol,
         string memberName,
         out ISymbol memberSymbol,
+        out ITypeSymbol memberTypeSymbol,
         out ITypeInfo memberTypeInfo
     ) {
       memberSymbol = structureSymbol.GetMembers(memberName).SingleOrDefault();
@@ -94,13 +96,15 @@ namespace schema.binary {
             $"Expected to find member \"{memberName}\" in class {structureSymbol.Name}");
       }
 
-      new TypeInfoParser().ParseMember(memberSymbol, out memberTypeInfo);
+      new TypeInfoParser().ParseMember(memberSymbol,
+                                       out memberTypeSymbol,
+                                       out memberTypeInfo);
     }
 
 
     private static IChain<IAccessChainNode>
         GetAccessChainForRelativeMemberImpl_(
-            IDiagnosticReporter diagnosticReporter,
+            IDiagnosticReporter? diagnosticReporter,
             ITypeSymbol structureSymbol,
             string otherMemberPath,
             string thisMemberName,
@@ -113,6 +117,7 @@ namespace schema.binary {
             structureSymbol,
             thisMemberName,
             out var rootSymbol,
+            out var rootTypeSymbol,
             out var rootTypeInfo);
 
         accessChain = new AccessChain(new AccessChainNode {
@@ -120,6 +125,7 @@ namespace schema.binary {
                 (structureSymbol as
                     INamedTypeSymbol)!,
             MemberSymbol = rootSymbol,
+            MemberTypeSymbol = rootTypeSymbol,
             MemberTypeInfo = rootTypeInfo,
             IsOrderValid = true,
         });
@@ -138,6 +144,7 @@ namespace schema.binary {
           structureSymbol,
           currentMemberName,
           out var memberSymbol,
+          out var memberTypeSymbol,
           out var memberTypeInfo);
 
       var comesAfter = true;
@@ -167,6 +174,7 @@ namespace schema.binary {
           StructureSymbol =
               (structureSymbol as INamedTypeSymbol)!,
           MemberSymbol = memberSymbol,
+          MemberTypeSymbol = memberTypeSymbol,
           MemberTypeInfo = memberTypeInfo,
           IsOrderValid = comesAfter,
       });
@@ -184,7 +192,7 @@ namespace schema.binary {
         var subMemberPath = otherMemberPath.Substring(periodIndex + 1);
         return GetAccessChainForRelativeMemberImpl_(
             diagnosticReporter,
-            (memberTypeInfo.TypeSymbol as INamedTypeSymbol)!,
+            memberTypeSymbol,
             subMemberPath,
             thisMemberName,
             upDownStack,
@@ -234,6 +242,7 @@ namespace schema.binary {
     private class AccessChainNode : IAccessChainNode {
       public INamedTypeSymbol StructureSymbol { get; set; }
       public ISymbol MemberSymbol { get; set; }
+      public ITypeSymbol MemberTypeSymbol { get; set; }
       public ITypeInfo MemberTypeInfo { get; set; }
       public bool IsOrderValid { get; set; }
     }

@@ -14,6 +14,7 @@ using schema.binary;
 using schema.binary.attributes;
 using schema.binary.parser;
 using schema.util.diagnostics;
+using schema.util.types;
 
 
 namespace schema.util.symbols {
@@ -163,9 +164,6 @@ namespace schema.util.symbols {
       }
     }
 
-    public static bool HasEmptyConstructor(this INamedTypeSymbol symbol)
-      => symbol.InstanceConstructors.Any(c => c.Parameters.Length == 0);
-
     public static bool IsPartial(this TypeDeclarationSyntax syntax)
       => syntax.Modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword));
 
@@ -192,9 +190,20 @@ namespace schema.util.symbols {
       => SymbolEqualityComparer.Default.Equals(symbol, other);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsExactlyType(this ISymbol symbol, Type expectedType)
-      => symbol.Name == expectedType.Name &&
-         symbol.IsInSameNamespaceAs(expectedType);
+    public static bool IsExactlyType(this ISymbol symbol, Type expectedType) {
+      var expectedName = expectedType.Name;
+
+      int expectedArity = 0;
+      var indexOfBacktick = expectedName.IndexOf('`');
+      if (indexOfBacktick != -1) {
+        expectedArity = int.Parse(expectedName.Substring(indexOfBacktick + 1));
+        expectedName = expectedName.Substring(0, indexOfBacktick);
+      }
+
+      return symbol.Name == expectedName &&
+             symbol.IsInSameNamespaceAs(expectedType) &&
+             ((symbol as INamedTypeSymbol)?.Arity ?? 0) == expectedArity;
+    }
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -230,7 +239,7 @@ namespace schema.util.symbols {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static TAttribute? GetAttribute<TAttribute>(
         this ISymbol symbol,
-        IDiagnosticReporter diagnosticReporter)
+        IDiagnosticReporter? diagnosticReporter = null)
         where TAttribute : Attribute
       => symbol.GetAttributes<TAttribute>(diagnosticReporter)
                .SingleOrDefault();
@@ -238,7 +247,7 @@ namespace schema.util.symbols {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static TAttribute? GetAttribute<TAttribute>(
-        IDiagnosticReporter diagnosticReporter,
+        IDiagnosticReporter? diagnosticReporter,
         ISymbol symbol)
         where TAttribute : Attribute
       => symbol.GetAttributes<TAttribute>(diagnosticReporter)
@@ -247,7 +256,7 @@ namespace schema.util.symbols {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static IEnumerable<TAttribute> GetAttributes<TAttribute>(
         this ISymbol symbol,
-        IDiagnosticReporter diagnosticReporter)
+        IDiagnosticReporter? diagnosticReporter = null)
         where TAttribute : Attribute
       => symbol.GetAttributeData<TAttribute>()
                .Select(attributeData => {
@@ -373,29 +382,33 @@ namespace schema.util.symbols {
     }
 
     public static string GetQualifiedNameFromCurrentSymbol(
-        this ITypeSymbol sourceSymbol,
-        ITypeSymbol referencedSymbol) {
-      if (referencedSymbol.SpecialType
-          is SpecialType.System_Byte
-             or SpecialType.System_SByte
-             or SpecialType.System_Int16
-             or SpecialType.System_UInt16
-             or SpecialType.System_Int32
-             or SpecialType.System_UInt32
-             or SpecialType.System_Int64
-             or SpecialType.System_UInt64
-             or SpecialType.System_Single
-             or SpecialType.System_Double
-             or SpecialType.System_Char
-             or SpecialType.System_String
-             or SpecialType.System_Boolean
-         ) {
-        return referencedSymbol.ToDisplayString();
+        this ITypeV2 sourceSymbol,
+        ITypeV2 referencedSymbol) {
+      if (referencedSymbol.IsPrimitive(out var primitiveType) &&
+          !referencedSymbol.IsEnum(out _)) {
+        // TODO: Is there a built-in for this?
+        return primitiveType switch {
+            SchemaPrimitiveType.BOOLEAN => "boolean",
+            SchemaPrimitiveType.SBYTE   => "sbyte",
+            SchemaPrimitiveType.BYTE    => "byte",
+            SchemaPrimitiveType.INT16   => "short",
+            SchemaPrimitiveType.UINT16  => "ushort",
+            SchemaPrimitiveType.INT32   => "int",
+            SchemaPrimitiveType.UINT32  => "uint",
+            SchemaPrimitiveType.INT64   => "long",
+            SchemaPrimitiveType.UINT64  => "ulong",
+            SchemaPrimitiveType.SINGLE  => "single",
+            SchemaPrimitiveType.DOUBLE  => "double",
+            SchemaPrimitiveType.CHAR    => "char",
+        };
       }
 
-      var currentNamespace = sourceSymbol.GetContainingNamespaces().ToArray();
-      var referencedNamespace =
-          referencedSymbol.GetContainingNamespaces().ToArray();
+      if (referencedSymbol.IsString) {
+        return "string";
+      }
+
+      var currentNamespace = sourceSymbol.NamespaceParts.ToArray();
+      var referencedNamespace = referencedSymbol.NamespaceParts.ToArray();
 
       string mergedNamespaceText;
       if (currentNamespace.Length == 0 && referencedNamespace.Length == 0) {
@@ -424,8 +437,8 @@ namespace schema.util.symbols {
       }
 
       var mergedContainersText = "";
-      foreach (var container in referencedSymbol.GetDeclaringTypesDownward()) {
-        mergedContainersText += $"{container.Name}.";
+      foreach (var container in referencedSymbol.DeclaringTypeNamesDownward) {
+        mergedContainersText += $"{container}.";
       }
 
       return
@@ -437,29 +450,34 @@ namespace schema.util.symbols {
         this ITypeSymbol structureSymbol,
         string memberName,
         out ISymbol memberSymbol,
+        out ITypeSymbol memberTypeSymbol,
         out ITypeInfo memberTypeInfo
     ) {
       memberSymbol = structureSymbol.GetMembers(memberName).Single();
-      new TypeInfoParser().ParseMember(memberSymbol, out memberTypeInfo);
+      new TypeInfoParser().ParseMember(memberSymbol,
+                                       out memberTypeSymbol,
+                                       out memberTypeInfo);
     }
 
     public static void GetMemberRelativeToAnother(
-        IDiagnosticReporter diagnosticReporter,
-        ITypeSymbol structureSymbol,
+        IDiagnosticReporter? diagnosticReporter,
+        INamedTypeSymbol structureTypeSymbol,
         string otherMemberName,
         string thisMemberNameForFirstPass,
         bool assertOrder,
         out ISymbol memberSymbol,
+        out ITypeSymbol memberTypeSymbol,
         out ITypeInfo memberTypeInfo) {
       var typeChain = AccessChainUtil.GetAccessChainForRelativeMember(
           diagnosticReporter,
-          structureSymbol,
+          structureTypeSymbol,
           otherMemberName,
           thisMemberNameForFirstPass,
           assertOrder);
 
       var target = typeChain.Target;
       memberSymbol = target.MemberSymbol;
+      memberTypeSymbol = target.MemberTypeSymbol;
       memberTypeInfo = target.MemberTypeInfo;
     }
   }

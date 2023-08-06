@@ -2,12 +2,12 @@
 
 using schema.binary.attributes;
 using schema.util;
-using schema.util.symbols;
 
 namespace schema.binary.parser {
   internal static class MemberReferenceUtil {
-    public static IMemberType WrapTypeInfoWithMemberType(ITypeInfo typeInfo) {
-      switch (typeInfo) {
+    public static IMemberType WrapTypeInfoWithMemberType(
+        ITypeInfo memberTypeInfo) {
+      switch (memberTypeInfo) {
         case IIntegerTypeInfo integerTypeInfo:
         case INumberTypeInfo numberTypeInfo:
         case IBoolTypeInfo boolTypeInfo:
@@ -15,12 +15,12 @@ namespace schema.binary.parser {
         case IEnumTypeInfo enumTypeInfo: {
           return new BinarySchemaStructureParser.PrimitiveMemberType {
               PrimitiveTypeInfo =
-                  Asserts.CastNonnull(typeInfo as IPrimitiveTypeInfo),
+                  Asserts.CastNonnull(memberTypeInfo as IPrimitiveTypeInfo),
           };
         }
         case IStringTypeInfo stringTypeInfo: {
           return new BinarySchemaStructureParser.StringType {
-              TypeInfo = typeInfo,
+              TypeInfo = memberTypeInfo,
           };
         }
         case IStructureTypeInfo structureTypeInfo: {
@@ -48,20 +48,21 @@ namespace schema.binary.parser {
               LengthSourceType =
                   sequenceTypeInfo.IsLengthConst
                       ? SequenceLengthSourceType.READ_ONLY
-                      : SymbolTypeUtil
-                          .GetAttribute<RSequenceUntilEndOfStreamAttribute>(
-                              null,
-                              sequenceTypeInfo.TypeSymbol) != null
+                      : sequenceTypeInfo
+                        .TypeV2
+                        .HasAttribute<
+                            RSequenceUntilEndOfStreamAttribute>()
                           ? SequenceLengthSourceType.UNTIL_END_OF_STREAM
                           : SequenceLengthSourceType.UNSPECIFIED,
           };
         }
-        default: throw new ArgumentOutOfRangeException(nameof(typeInfo));
+        default: throw new ArgumentOutOfRangeException(nameof(memberTypeInfo));
       }
     }
 
-    public static BinarySchemaStructureParser.SchemaValueMember WrapMemberReference(
-        IMemberReference memberReference)
+    public static BinarySchemaStructureParser.SchemaValueMember
+        WrapMemberReference(
+            IMemberReference memberReference)
       => new() {
           Name = memberReference.Name,
           MemberType = MemberReferenceUtil.WrapTypeInfoWithMemberType(

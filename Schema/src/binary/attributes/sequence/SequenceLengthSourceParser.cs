@@ -6,17 +6,17 @@ using schema.util.symbols;
 
 namespace schema.binary.attributes {
   internal class SequenceLengthSourceParser : IAttributeParser {
-    public void ParseIntoMemberType(IBetterSymbol memberSymbol,
+    public void ParseIntoMemberType(IBetterSymbol memberBetterSymbol,
                                     ITypeInfo memberTypeInfo,
                                     IMemberType memberType) {
       var lengthSourceAttribute =
           (ISequenceLengthSourceAttribute?)
-          memberSymbol
+          memberBetterSymbol
               .GetAttribute<SequenceLengthSourceAttribute>() ??
-          memberSymbol
+          memberBetterSymbol
               .GetAttribute<RSequenceLengthSourceAttribute>();
       var untilEndOfStreamAttribute =
-          memberSymbol.GetAttribute<RSequenceUntilEndOfStreamAttribute>();
+          memberBetterSymbol.GetAttribute<RSequenceUntilEndOfStreamAttribute>();
 
       if (memberType is BinarySchemaStructureParser.SequenceMemberType
           sequenceMemberType) {
@@ -50,20 +50,20 @@ namespace schema.binary.attributes {
             sequenceMemberType.LengthSourceType =
                 SequenceLengthSourceType.UNTIL_END_OF_STREAM;
           } else {
-            memberSymbol.ReportDiagnostic(
+            memberBetterSymbol.ReportDiagnostic(
                 Rules.MutableArrayNeedsLengthSource);
           }
         }
         // Didn't expect attribute b/c length is already specified
         else if (lengthSourceAttribute != null) {
-          memberSymbol.ReportDiagnostic(
+          memberBetterSymbol.ReportDiagnostic(
               Rules.UnexpectedAttribute);
         }
       }
 
       // Didn't expect attribute b/c not a sequence
       else if (lengthSourceAttribute != null) {
-        memberSymbol.ReportDiagnostic(
+        memberBetterSymbol.ReportDiagnostic(
             Rules.UnexpectedSequenceAttribute);
       }
     }

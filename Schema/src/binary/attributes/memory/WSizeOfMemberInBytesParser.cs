@@ -4,17 +4,17 @@ using schema.util.symbols;
 
 namespace schema.binary.attributes {
   internal class WSizeOfMemberInBytesParser : IAttributeParser {
-    public void ParseIntoMemberType(IBetterSymbol memberSymbol,
+    public void ParseIntoMemberType(IBetterSymbol memberBetterSymbol,
                                     ITypeInfo memberTypeInfo,
                                     IMemberType memberType) {
       var sizeOfAttribute =
-          memberSymbol.GetAttribute<WSizeOfMemberInBytesAttribute>();
+          memberBetterSymbol.GetAttribute<WSizeOfMemberInBytesAttribute>();
       if (sizeOfAttribute == null) {
         return;
       }
 
       AccessChainUtil.AssertAllNodesInTypeChainUntilTargetUseBinarySchema(
-          memberSymbol,
+          memberBetterSymbol,
           sizeOfAttribute.AccessChainToOtherMember);
 
       if (memberTypeInfo is IIntegerTypeInfo &&
@@ -23,7 +23,7 @@ namespace schema.binary.attributes {
         primitiveMemberType.AccessChainToSizeOf =
             sizeOfAttribute.AccessChainToOtherMember;
       } else {
-        memberSymbol.ReportDiagnostic(Rules.NotSupported);
+        memberBetterSymbol.ReportDiagnostic(Rules.NotSupported);
       }
     }
   }

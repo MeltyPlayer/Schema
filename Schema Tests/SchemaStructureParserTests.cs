@@ -27,8 +27,6 @@ namespace foo.bar {
       Assert.AreEqual("field", field.Name);
 
       var memberType = field.MemberType;
-      Assert.AreEqual(SpecialType.System_Byte, memberType.TypeSymbol.SpecialType);
-
       var primitiveType = (memberType as IPrimitiveMemberType)!;
       Assert.AreEqual(SchemaPrimitiveType.BYTE, primitiveType.PrimitiveType);
       Assert.AreEqual(false, primitiveType.IsReadOnly);
@@ -59,8 +57,6 @@ namespace foo.bar {
       Assert.AreEqual("field", field.Name);
 
       var memberType = field.MemberType;
-      Assert.AreEqual(SpecialType.System_SByte, memberType.TypeSymbol.SpecialType);
-
       var primitiveType = (memberType as IPrimitiveMemberType)!;
       Assert.AreEqual(SchemaPrimitiveType.SBYTE, primitiveType.PrimitiveType);
       Assert.AreEqual(false, primitiveType.IsReadOnly);
@@ -91,8 +87,6 @@ namespace foo.bar {
       Assert.AreEqual("field", field.Name);
 
       var memberType = field.MemberType;
-      Assert.AreEqual(SpecialType.System_Int16, memberType.TypeSymbol.SpecialType);
-
       var primitiveType = (memberType as IPrimitiveMemberType)!;
       Assert.AreEqual(SchemaPrimitiveType.INT16, primitiveType.PrimitiveType);
       Assert.AreEqual(false, primitiveType.IsReadOnly);
@@ -131,8 +125,6 @@ namespace foo.bar {
       Assert.AreEqual("field", field.Name);
 
       var memberType = field.MemberType;
-      Assert.AreEqual(TypeKind.Enum, memberType.TypeSymbol.TypeKind);
-
       var primitiveType = (memberType as IPrimitiveMemberType)!;
       Assert.AreEqual(SchemaPrimitiveType.ENUM, primitiveType.PrimitiveType);
       Assert.AreEqual(false, primitiveType.IsReadOnly);
@@ -156,8 +148,6 @@ namespace foo.bar {
       Assert.AreEqual("field", field.Name);
 
       var memberType = field.MemberType;
-      Assert.AreEqual(TypeKind.Array, memberType.TypeSymbol.TypeKind);
-
       var arrayType = (memberType as ISequenceMemberType)!;
       Assert.AreEqual(SequenceType.MUTABLE_ARRAY, arrayType.SequenceTypeInfo.SequenceType);
       Assert.AreEqual(SequenceLengthSourceType.READ_ONLY, arrayType.LengthSourceType);
@@ -185,8 +175,6 @@ namespace foo.bar {
       Assert.AreEqual("field", field.Name);
 
       var memberType = field.MemberType;
-      Assert.AreEqual(TypeKind.Array, memberType.TypeSymbol.TypeKind);
-
       var arrayType = (memberType as ISequenceMemberType)!;
       Assert.AreEqual(SequenceType.MUTABLE_ARRAY, arrayType.SequenceTypeInfo.SequenceType);
       Assert.AreEqual(SequenceLengthSourceType.READ_ONLY, arrayType.LengthSourceType);
@@ -221,8 +209,6 @@ namespace foo.bar {
       Assert.AreEqual("field", field.Name);
 
       var memberType = field.MemberType;
-      Assert.AreEqual(SpecialType.System_Byte, memberType.TypeSymbol.SpecialType);
-
       var primitiveType = (memberType as IPrimitiveMemberType)!;
       Assert.AreEqual(SchemaPrimitiveType.BYTE, primitiveType.PrimitiveType);
       Assert.AreEqual(false, primitiveType.IsReadOnly);
@@ -253,8 +239,6 @@ namespace foo.bar {
       Assert.AreEqual("Field", field.Name);
 
       var memberType = field.MemberType;
-      Assert.AreEqual(SpecialType.System_Byte, memberType.TypeSymbol.SpecialType);
-
       var primitiveType = (memberType as IPrimitiveMemberType)!;
       Assert.AreEqual(SchemaPrimitiveType.BYTE, primitiveType.PrimitiveType);
       Assert.AreEqual(false, primitiveType.IsReadOnly);
@@ -285,8 +269,6 @@ namespace foo.bar {
       Assert.AreEqual("field", field.Name);
 
       var memberType = field.MemberType;
-      Assert.AreEqual(SpecialType.System_Byte, memberType.TypeSymbol.SpecialType);
-
       var primitiveType = (memberType as IPrimitiveMemberType)!;
       Assert.AreEqual(SchemaPrimitiveType.BYTE, primitiveType.PrimitiveType);
       Assert.AreEqual(true, primitiveType.IsReadOnly);
@@ -317,8 +299,6 @@ namespace foo.bar {
       Assert.AreEqual("Field", field.Name);
 
       var memberType = field.MemberType;
-      Assert.AreEqual(SpecialType.System_Byte, memberType.TypeSymbol.SpecialType);
-
       var primitiveType = (memberType as IPrimitiveMemberType)!;
       Assert.AreEqual(SchemaPrimitiveType.BYTE, primitiveType.PrimitiveType);
       Assert.AreEqual(true, primitiveType.IsReadOnly);

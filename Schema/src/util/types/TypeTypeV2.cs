@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+using Microsoft.CodeAnalysis;
+
 using schema.binary;
 using schema.util.enumerables;
 
@@ -43,6 +45,7 @@ namespace schema.util.types {
       public override bool Implements(Type other, out ITypeV2 matchingType) {
         var matchingTypeImpl = this.type_.Yield()
                                    .Concat(this.type_.GetInterfaces())
+                                   .Concat(BaseTypes)
                                    .SingleOrDefault(type => type == other);
         matchingType = matchingTypeImpl != null
             ? TypeV2.FromType(matchingTypeImpl)
@@ -50,10 +53,22 @@ namespace schema.util.types {
         return matchingType != null;
       }
 
+      private IEnumerable<Type> BaseTypes {
+        get {
+          var baseType = this.type_.BaseType;
+          while (baseType != null) {
+            yield return baseType;
+            baseType = baseType.BaseType;
+          }
+        }
+      }
+
       public override int GenericArgCount
         => this.type_.GetGenericParameterConstraints().Length;
 
       public override bool IsClass => this.type_.IsClass;
+
+      public override bool IsInterface => this.type_.IsInterface;
 
       public override bool IsStruct => this.type_ is
           { IsValueType: true, IsEnum: false };

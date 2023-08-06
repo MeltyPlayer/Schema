@@ -3,7 +3,7 @@ using schema.util.symbols;
 
 namespace schema.binary.attributes {
   internal interface IAttributeParser {
-    void ParseIntoMemberType(IBetterSymbol memberSymbol,
+    void ParseIntoMemberType(IBetterSymbol memberBetterSymbol,
                              ITypeInfo memberTypeInfo,
                              IMemberType memberType);
   }

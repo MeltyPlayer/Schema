@@ -6,6 +6,7 @@ using schema.binary.parser;
 using schema.util;
 using schema.util.diagnostics;
 using schema.util.symbols;
+using schema.util.types;
 
 namespace schema.binary.attributes {
   public abstract class BMemberAttribute<T> : BMemberAttribute {
@@ -17,8 +18,9 @@ namespace schema.binary.attributes {
 
   public abstract class BMemberAttribute : Attribute {
     private static readonly TypeInfoParser parser_ = new();
-    private IDiagnosticReporter diagnosticReporter_;
+    private IDiagnosticReporter? diagnosticReporter_;
 
+    private INamedTypeSymbol structureTypeSymbol_;
     private ITypeInfo structureTypeInfo_;
     protected IMemberReference memberThisIsAttachedTo_;
 
@@ -31,12 +33,13 @@ namespace schema.binary.attributes {
 
 
     internal void Init(
-        IDiagnosticReporter diagnosticReporter,
-        ITypeSymbol structureTypeSymbol,
+        IDiagnosticReporter? diagnosticReporter,
+        INamedTypeSymbol structureTypeSymbol,
         string memberName) {
       this.diagnosticReporter_ = diagnosticReporter;
-      this.structureTypeInfo_ = BMemberAttribute.parser_.AssertParseTypeSymbol(
-          structureTypeSymbol);
+      this.structureTypeSymbol_ = structureTypeSymbol;
+      this.structureTypeInfo_ = BMemberAttribute.parser_.AssertParseTypeV2(
+          TypeV2.FromSymbol(structureTypeSymbol));
       this.SetMemberFromName(memberName);
       this.InitFields();
     }
@@ -45,14 +48,16 @@ namespace schema.binary.attributes {
     protected IMemberReference GetMemberRelativeToStructure(
         string memberName) {
       SymbolTypeUtil.GetMemberInStructure(
-          this.structureTypeInfo_.TypeSymbol,
+          this.structureTypeSymbol_,
           memberName,
           out var memberSymbol,
+          out var memberTypeSymbol,
           out var memberTypeInfo);
 
       return new MemberReference(memberName,
                                  this.structureTypeInfo_,
                                  memberSymbol,
+                                 memberTypeSymbol,
                                  memberTypeInfo);
     }
 
@@ -60,20 +65,22 @@ namespace schema.binary.attributes {
     protected IMemberReference<T> GetMemberRelativeToStructure<T>(
         string memberName) {
       SymbolTypeUtil.GetMemberInStructure(
-          this.structureTypeInfo_.TypeSymbol,
+          this.structureTypeSymbol_,
           memberName,
           out var memberSymbol,
+          out var memberTypeSymbol,
           out var memberTypeInfo);
 
-      if (!SymbolTypeUtil.CanBeStoredAs(memberTypeInfo.TypeSymbol, typeof(T))) {
+      if (!memberTypeInfo.TypeV2.Implements<T>()) {
         Asserts.Fail(
-            $"Type of member, {memberTypeInfo.TypeSymbol}, does not match expected type: {typeof(T)}");
+            $"Type of member, {memberTypeInfo.TypeV2}, does not match expected type: {typeof(T)}");
       }
 
       return new MemberReference<T>(
           memberName,
           this.structureTypeInfo_,
           memberSymbol,
+          memberTypeSymbol,
           memberTypeInfo);
     }
 
@@ -81,17 +88,19 @@ namespace schema.binary.attributes {
         string otherMemberName) {
       SymbolTypeUtil.GetMemberRelativeToAnother(
           this.diagnosticReporter_,
-          this.structureTypeInfo_.TypeSymbol,
+          this.structureTypeSymbol_,
           otherMemberName,
           this.memberThisIsAttachedTo_.Name,
           true,
           out var memberSymbol,
+          out var memberTypeSymbol,
           out var memberTypeInfo);
 
       return new MemberReference(
           otherMemberName,
           this.structureTypeInfo_,
           memberSymbol,
+          memberTypeSymbol,
           memberTypeInfo);
     }
 
@@ -99,22 +108,24 @@ namespace schema.binary.attributes {
         string otherMemberName) {
       SymbolTypeUtil.GetMemberRelativeToAnother(
           this.diagnosticReporter_,
-          this.structureTypeInfo_.TypeSymbol,
+          this.structureTypeSymbol_,
           otherMemberName,
           this.memberThisIsAttachedTo_.Name,
           true,
           out var memberSymbol,
+          out var memberTypeSymbol,
           out var memberTypeInfo);
 
-      if (!SymbolTypeUtil.CanBeStoredAs(memberTypeInfo.TypeSymbol, typeof(T))) {
+      if (!memberTypeInfo.TypeV2.Implements<T>()) {
         Asserts.Fail(
-            $"Type of other member, {memberTypeInfo.TypeSymbol}, does not match expected type: {typeof(T)}");
+            $"Type of other member, {memberTypeInfo.TypeV2}, does not match expected type: {typeof(T)}");
       }
 
       return new MemberReference<T>(
           otherMemberName,
           this.structureTypeInfo_,
           memberSymbol,
+          memberTypeSymbol,
           memberTypeInfo);
     }
 
@@ -124,7 +135,7 @@ namespace schema.binary.attributes {
         bool assertOrder)
       => AccessChainUtil.GetAccessChainForRelativeMember(
           this.diagnosticReporter_,
-          this.structureTypeInfo_.TypeSymbol,
+          this.structureTypeSymbol_,
           otherMemberPath,
           this.memberThisIsAttachedTo_.Name,
           assertOrder);
@@ -134,13 +145,13 @@ namespace schema.binary.attributes {
         bool assertOrder) {
       var typeChain = AccessChainUtil.GetAccessChainForRelativeMember(
           this.diagnosticReporter_,
-          this.structureTypeInfo_.TypeSymbol,
+          this.structureTypeSymbol_,
           otherMemberPath,
           this.memberThisIsAttachedTo_.Name,
           assertOrder);
 
-      var targetTypeSymbol = typeChain.Target.MemberTypeInfo.TypeSymbol;
-      if (!SymbolTypeUtil.CanBeStoredAs(targetTypeSymbol, typeof(T))) {
+      var targetTypeSymbol = typeChain.Target.MemberTypeInfo.TypeV2;
+      if (!targetTypeSymbol.Implements<T>()) {
         Asserts.Fail(
             $"Type of other member, {targetTypeSymbol}, does not match expected type: {typeof(T)}");
       }
@@ -191,6 +202,7 @@ namespace schema.binary.attributes {
     string Name { get; }
     ITypeInfo StructureTypeInfo { get; }
     ISymbol MemberSymbol { get; }
+    ITypeSymbol MemberTypeSymbol { get; }
     ITypeInfo MemberTypeInfo { get; }
 
     bool IsInteger { get; }
@@ -211,16 +223,19 @@ namespace schema.binary.attributes {
         string name,
         ITypeInfo structureTypeInfo,
         ISymbol memberSymbol,
+        ITypeSymbol memberTypeSymbol,
         ITypeInfo memberTypeInfo) {
       this.Name = name;
       this.StructureTypeInfo = structureTypeInfo;
       this.MemberSymbol = memberSymbol;
+      this.MemberTypeSymbol = memberTypeSymbol;
       this.MemberTypeInfo = memberTypeInfo;
     }
 
     public string Name { get; }
     public ITypeInfo StructureTypeInfo { get; }
     public ISymbol MemberSymbol { get; }
+    public ITypeSymbol MemberTypeSymbol { get; }
     public ITypeInfo MemberTypeInfo { get; }
 
     public bool IsInteger => this.MemberTypeInfo is IIntegerTypeInfo;
@@ -259,10 +274,12 @@ namespace schema.binary.attributes {
         string name,
         ITypeInfo structureTypeInfo,
         ISymbol memberSymbol,
+        ITypeSymbol memberTypeSymbol,
         ITypeInfo memberTypeInfo)
         : base(name,
                structureTypeInfo,
                memberSymbol,
+               memberTypeSymbol,
                memberTypeInfo) { }
   }
 }

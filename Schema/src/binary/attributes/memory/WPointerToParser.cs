@@ -4,16 +4,16 @@ using schema.util.symbols;
 
 namespace schema.binary.attributes {
   internal class WPointerToParser : IAttributeParser {
-    public void ParseIntoMemberType(IBetterSymbol memberSymbol,
+    public void ParseIntoMemberType(IBetterSymbol memberBetterSymbol,
                                     ITypeInfo memberTypeInfo,
                                     IMemberType memberType) {
-      var pointerToAttribute = memberSymbol.GetAttribute<WPointerToAttribute>();
+      var pointerToAttribute = memberBetterSymbol.GetAttribute<WPointerToAttribute>();
       if (pointerToAttribute == null) {
         return;
       }
 
       AccessChainUtil.AssertAllNodesInTypeChainUntilTargetUseBinarySchema(
-          memberSymbol,
+          memberBetterSymbol,
           pointerToAttribute.AccessChainToOtherMember);
 
       if (memberTypeInfo is IIntegerTypeInfo &&
@@ -22,7 +22,7 @@ namespace schema.binary.attributes {
         primitiveMemberType.AccessChainToPointer =
             pointerToAttribute.AccessChainToOtherMember;
       } else {
-        memberSymbol.ReportDiagnostic(Rules.NotSupported);
+        memberBetterSymbol.ReportDiagnostic(Rules.NotSupported);
       }
     }
   }

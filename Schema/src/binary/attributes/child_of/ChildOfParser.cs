@@ -9,9 +9,9 @@ using schema.util.symbols;
 
 namespace schema.binary.attributes {
   internal class ChildOfParser {
-    private readonly IDiagnosticReporter diagnosticReporter_;
+    private readonly IDiagnosticReporter? diagnosticReporter_;
 
-    public ChildOfParser(IDiagnosticReporter diagnosticReporter) {
+    public ChildOfParser(IDiagnosticReporter? diagnosticReporter) {
       this.diagnosticReporter_ = diagnosticReporter;
     }
 
@@ -39,7 +39,7 @@ namespace schema.binary.attributes {
               .ParseMembers(parentNamedTypeSymbol)
               .Where(tuple => tuple.Item2 is not IMethodSymbol)
               .Any(tuple => {
-                var (parseStatus, _, memberTypeInfo) = tuple;
+                var (parseStatus, _, _, memberTypeInfo) = tuple;
                 if (parseStatus != TypeInfoParser.ParseStatus.SUCCESS) {
                   return false;
                 }
@@ -48,8 +48,8 @@ namespace schema.binary.attributes {
                     (memberTypeInfo is ISequenceTypeInfo sequenceTypeInfo)
                         ? sequenceTypeInfo.ElementTypeInfo
                         : memberTypeInfo;
-                var typeSymbol = elementTypeInfo.TypeSymbol;
-                return typeSymbol.IsSameAs(childNamedTypeSymbol);
+                var typeSymbol = elementTypeInfo.TypeV2;
+                return typeSymbol.IsExactly(childNamedTypeSymbol);
               });
 
       if (!containedInClass) {
