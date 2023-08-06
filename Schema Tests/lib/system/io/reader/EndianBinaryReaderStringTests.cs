@@ -1,7 +1,9 @@
+using System.IO;
+
 using NUnit.Framework;
 
 
-namespace System.IO {
+namespace schema.binary {
   public class EndianBinaryReaderStringTests {
     [Test]
     public void TestReadNT() {

@@ -6,7 +6,6 @@ namespace schema.binary.attributes {
     [Test]
     public void TestAttribute() {
       BinarySchemaTestUtil.AssertGenerated(@"
-using System.IO;
 using schema.binary;
 using schema.binary.attributes;
 
@@ -22,7 +21,7 @@ namespace foo.bar {
   }
 }",
                                            @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
@@ -35,7 +34,7 @@ namespace foo.bar {
 }
 ",
                                            @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {

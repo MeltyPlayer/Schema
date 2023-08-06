@@ -9,8 +9,7 @@ namespace schema.binary.text {
 
     [Test]
     public void TestByte() {
-      this.AssertGenerated_(@"
-using schema.binary;
+      this.AssertGenerated_(@"using schema.binary;
 
 namespace foo.bar {
   [BinarySchema]
@@ -19,7 +18,7 @@ namespace foo.bar {
   }
 }",
                             @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
@@ -43,7 +42,7 @@ namespace foo.bar {
   }
 }",
                             @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class SByteWrapper {
@@ -67,7 +66,7 @@ namespace foo.bar {
   }
 }",
                             @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class ShortWrapper {
@@ -91,7 +90,7 @@ namespace foo.bar {
   }
 }",
                             @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class ArrayWrapper {
@@ -105,8 +104,7 @@ namespace foo.bar {
 
     [Test]
     public void TestArrayOtherMemberLength() {
-      this.AssertGenerated_(@"
-using schema.binary;
+      this.AssertGenerated_(@"using schema.binary;
 using schema.binary.attributes;
 
 namespace foo.bar {
@@ -119,7 +117,7 @@ namespace foo.bar {
   }
 }",
                             @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class ArrayWrapper {
@@ -154,7 +152,7 @@ namespace foo.bar {
   }
 }",
                             @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   static internal partial class Parent {
@@ -183,7 +181,7 @@ namespace foo.bar {
   }
 }",
                             @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class CharWrapper {
@@ -207,7 +205,7 @@ namespace foo.bar {
   }
 }",
                             @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class ShortWrapper {
@@ -231,7 +229,7 @@ namespace foo.bar {
   }
 }",
                             @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
@@ -255,7 +253,7 @@ namespace foo.bar {
   }
 }",
                             @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
@@ -279,7 +277,7 @@ namespace foo.bar {
   }
 }",
                             @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
@@ -339,7 +337,7 @@ namespace foo {
   }
 }",
                             @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class EverythingWrapper {

@@ -7,7 +7,6 @@ namespace schema.binary.text {
     public void TestConstLength() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using System.Collections.Generic;
-
 using schema.binary;
 using schema.binary.attributes;
 
@@ -34,7 +33,7 @@ namespace foo.bar {
 }",
                                            @"using System;
 using System.Collections.Generic;
-using System.IO;
+using schema.binary;
 using schema.util.sequences;
 
 namespace foo.bar {
@@ -66,7 +65,7 @@ namespace foo.bar {
 }
 ",
                                            @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class ConstLengthWrapper {
@@ -105,7 +104,7 @@ namespace foo.bar {
   }
 }",
                                            @"using System;
-using System.IO;
+using schema.binary;
 using schema.util.sequences;
 
 namespace foo.bar {
@@ -118,7 +117,7 @@ namespace foo.bar {
 }
 ",
                                            @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class ConstLengthWrapper {

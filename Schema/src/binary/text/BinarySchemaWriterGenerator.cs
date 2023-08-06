@@ -26,7 +26,7 @@ namespace schema.binary.text {
       var cbsb = new CurlyBracketTextWriter(new StringWriter(sb));
 
       {
-        var dependencies = new List<string> { "System", "System.IO" };
+        var dependencies = new List<string> { "System", "schema.binary" };
 
         if (structure.DependsOnSchemaAttributes()) {
           dependencies.Add("schema.binary.attributes");

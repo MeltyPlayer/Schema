@@ -21,7 +21,7 @@ namespace foo.bar {
   }
 }",
                                            @"using System;
-using System.IO;
+using schema.binary;
 using schema.util.sequences;
 
 namespace foo.bar {
@@ -37,7 +37,7 @@ namespace foo.bar {
 }
 ",
                                            @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class ReadonlyListClass {

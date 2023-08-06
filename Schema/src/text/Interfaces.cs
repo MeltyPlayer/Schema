@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace schema.text {
+﻿namespace schema.text {
   public interface ITextDeserializable {
     void Read(ITextReader tr);
   }

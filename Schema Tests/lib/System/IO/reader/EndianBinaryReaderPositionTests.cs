@@ -1,6 +1,8 @@
+using System.IO;
+
 using NUnit.Framework;
 
-namespace System.IO {
+namespace schema.binary {
   public class EndianBinaryReaderPositionTests {
     [Test]
     public void TestNestedSpaces() {

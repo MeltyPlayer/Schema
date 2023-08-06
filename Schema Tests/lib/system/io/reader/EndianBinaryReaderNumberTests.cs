@@ -1,8 +1,9 @@
+using System;
 using System.Numerics;
 
 using NUnit.Framework;
 
-namespace System.IO {
+namespace schema.binary {
   public class EndianBinaryReaderNumberTests {
     private void ReadAndAssert_<T>(
         IEndianBinaryReader er,

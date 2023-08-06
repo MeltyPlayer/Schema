@@ -18,7 +18,7 @@ namespace foo.bar {
   }
 }",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
@@ -29,7 +29,7 @@ namespace foo.bar {
 }
 ",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
@@ -58,7 +58,7 @@ namespace foo {
   }
 }",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
@@ -69,7 +69,7 @@ namespace foo.bar {
 }
 ",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
@@ -98,7 +98,7 @@ namespace foo.bar {
   }
 }",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
@@ -109,7 +109,7 @@ namespace foo.bar {
 }
 ",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
@@ -140,7 +140,7 @@ namespace foo.bar {
   }
 }",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar.gar {
   public partial class Wrapper {
@@ -151,7 +151,7 @@ namespace foo.bar.gar {
 }
 ",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar.gar {
   public partial class Wrapper {

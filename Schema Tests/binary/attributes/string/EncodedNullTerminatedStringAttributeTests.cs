@@ -18,7 +18,7 @@ namespace foo.bar {
   }
 }",
                                            @"using System;
-using System.IO;
+using schema.binary;
 using schema.binary.attributes;
 
 namespace foo.bar {
@@ -30,7 +30,7 @@ namespace foo.bar {
 }
 ",
                                            @"using System;
-using System.IO;
+using schema.binary;
 using schema.binary.attributes;
 
 namespace foo.bar {
@@ -59,7 +59,7 @@ namespace foo.bar {
   }
 }",
                                            @"using System;
-using System.IO;
+using schema.binary;
 using schema.binary.attributes;
 
 namespace foo.bar {
@@ -71,7 +71,7 @@ namespace foo.bar {
 }
 ",
                                            @"using System;
-using System.IO;
+using schema.binary;
 using schema.binary.attributes;
 
 namespace foo.bar {
@@ -102,7 +102,7 @@ namespace foo.bar {
   }
 }",
                                            @"using System;
-using System.IO;
+using schema.binary;
 using schema.binary.attributes;
 
 namespace foo.bar {
@@ -115,7 +115,7 @@ namespace foo.bar {
 }
 ",
                                            @"using System;
-using System.IO;
+using schema.binary;
 using schema.binary.attributes;
 
 namespace foo.bar {

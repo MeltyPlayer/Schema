@@ -22,7 +22,6 @@ namespace foo.bar {
   }
 }",
                                      @"using System;
-using System.IO;
 
 namespace foo.bar {
   public partial class BlockWrapper {
@@ -44,7 +43,6 @@ namespace foo.bar {
 }
 ",
                                      @"using System;
-using System.IO;
 
 namespace foo.bar {
   public partial class BlockWrapper {

@@ -15,7 +15,7 @@ namespace foo.bar {
   }
 }",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class EndiannessWrapper {
@@ -26,7 +26,7 @@ namespace foo.bar {
 }
 ",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class EndiannessWrapper {
@@ -40,10 +40,7 @@ namespace foo.bar {
 
     [Test]
     public void TestEndiannessOnField() {
-      BinarySchemaTestUtil.AssertGenerated(@"
-using System.IO;
-
-using schema.binary;
+      BinarySchemaTestUtil.AssertGenerated(@"using schema.binary;
 using schema.binary.attributes;
 
 namespace foo.bar {
@@ -59,7 +56,7 @@ namespace foo.bar {
   }
 }",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class EndiannessWrapper {
@@ -74,7 +71,7 @@ namespace foo.bar {
 }
 ",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class EndiannessWrapper {
@@ -92,10 +89,7 @@ namespace foo.bar {
 
     [Test]
     public void TestEndiannessOnClass() {
-      BinarySchemaTestUtil.AssertGenerated(@"
-using System.IO;
-
-using schema.binary;
+      BinarySchemaTestUtil.AssertGenerated(@"using schema.binary;
 using schema.binary.attributes;
 
 namespace foo.bar {
@@ -108,7 +102,7 @@ namespace foo.bar {
   }
 }",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class EndiannessWrapper {
@@ -123,7 +117,7 @@ namespace foo.bar {
 }
 ",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class EndiannessWrapper {

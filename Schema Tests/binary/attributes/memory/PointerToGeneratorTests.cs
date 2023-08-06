@@ -19,7 +19,7 @@ namespace foo.bar {
   }
 }",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class SizeWrapper {
@@ -31,7 +31,7 @@ namespace foo.bar {
 }
 ",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class SizeWrapper {
@@ -67,7 +67,7 @@ namespace foo.bar {
   }
 }",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class SizeWrapper {
@@ -79,7 +79,7 @@ namespace foo.bar {
 }
 ",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class SizeWrapper {
@@ -118,7 +118,7 @@ namespace foo.bar {
 }",
 // Size Wrapper                                           
                                            (@"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class SizeWrapper {
@@ -129,7 +129,7 @@ namespace foo.bar {
 }
 ",
                                             @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class SizeWrapper {
@@ -141,7 +141,7 @@ namespace foo.bar {
 "),
 // Parent Impl
                                            (@"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class ParentImpl {
@@ -154,7 +154,7 @@ namespace foo.bar {
 }
 ",
                                             @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class ParentImpl {

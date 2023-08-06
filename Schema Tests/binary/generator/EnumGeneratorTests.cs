@@ -24,7 +24,7 @@ namespace foo.bar {
   }
 }",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class EnumWrapper {
@@ -36,7 +36,7 @@ namespace foo.bar {
 }
 ",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class EnumWrapper {
@@ -70,7 +70,7 @@ namespace foo.bar {
   }
 }",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class EnumWrapper {
@@ -86,7 +86,7 @@ namespace foo.bar {
 }
 ",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class EnumWrapper {

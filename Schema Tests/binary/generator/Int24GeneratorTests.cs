@@ -20,7 +20,7 @@ namespace foo.bar {
   }
 }",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class Int24Wrapper {
@@ -32,7 +32,7 @@ namespace foo.bar {
 }
 ",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class Int24Wrapper {
@@ -62,7 +62,7 @@ namespace foo.bar {
   }
 }",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class UInt24Wrapper {
@@ -74,7 +74,7 @@ namespace foo.bar {
 }
 ",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class UInt24Wrapper {

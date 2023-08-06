@@ -15,7 +15,7 @@ namespace foo.bar {
   }
 }",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class GenericWrapper<T> {
@@ -26,7 +26,7 @@ namespace foo.bar {
 }
 ",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class GenericWrapper<T> {
@@ -53,7 +53,7 @@ namespace foo.bar {
   }
 }",
                                            @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class GenericWrapper<T1, T2> {
@@ -65,7 +65,7 @@ namespace foo.bar {
 }
 ",
                                            @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class GenericWrapper<T1, T2> {
@@ -90,7 +90,7 @@ namespace foo.bar {
   }
 }",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class GenericWrapper<T> {
@@ -103,7 +103,7 @@ namespace foo.bar {
 }
 ",
                                      @"using System;
-using System.IO;
+using schema.binary;
 
 namespace foo.bar {
   public partial class GenericWrapper<T> {
