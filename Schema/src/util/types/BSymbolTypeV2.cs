@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Microsoft.CodeAnalysis;
 
@@ -13,10 +14,34 @@ namespace schema.util.types {
 
       public abstract string? FullyQualifiedNamespace { get; }
       public abstract IEnumerable<string> NamespaceParts { get; }
+      public abstract IEnumerable<string> DeclaringTypeNamesDownward { get; }
 
-      public abstract bool Implements(Type type);
+      public abstract bool Implements(Type type, out ITypeV2 matchingType);
 
       public abstract int GenericArgCount { get; }
+
+      public abstract bool IsClass { get; }
+      public abstract bool IsStruct { get; }
+      public abstract bool IsString { get; }
+      public abstract bool IsArray(out ITypeV2 elementType);
+      public abstract bool IsPrimitive(out SchemaPrimitiveType primitiveType);
+      public abstract bool IsEnum(out SchemaIntegerType underlyingType);
+
+      public abstract bool HasGenericArguments(
+          out IEnumerable<ITypeV2> genericArguments);
+
+      public abstract bool HasGenericConstraints(
+          out IEnumerable<ITypeV2> genericConstraints);
+
+      public abstract bool HasAttribute<TAttribute>()
+          where TAttribute : Attribute;
+
+      public abstract TAttribute GetAttribute<TAttribute>()
+          where TAttribute : Attribute;
+
+      public abstract IEnumerable<TAttribute> GetAttributes<TAttribute>()
+          where TAttribute : Attribute;
+
 
       // Common
       private bool Matches_(string name,
@@ -42,13 +67,24 @@ namespace schema.util.types {
           (other as INamedTypeSymbol)?.TypeParameters.Length ?? 0);
 
       public bool IsExactly<T>() => this.IsExactly(typeof(T));
+
       public bool Implements<T>() => this.Implements(typeof(T));
+
+      public bool Implements<T>(out ITypeV2 matchingType)
+        => this.Implements(typeof(T), out matchingType);
+
+      public bool Implements(Type type) => this.Implements(type, out _);
 
       public bool IsBinarySerializable
         => this.Implements<IBinarySerializable>();
 
       public bool IsBinaryDeserializable
         => this.Implements<IBinaryDeserializable>();
+
+      public IEnumerable<ITypeV2> GenericConstraints
+        => this.HasGenericConstraints(out var genericConstraints)
+            ? genericConstraints
+            : Enumerable.Empty<ITypeV2>();
     }
   }
 }
