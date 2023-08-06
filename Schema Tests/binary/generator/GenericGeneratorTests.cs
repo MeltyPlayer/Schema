@@ -14,7 +14,7 @@ namespace foo.bar {
     public T Data { get; } = new();
   }
 }",
-                                     @"using System;
+                                           @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -25,7 +25,7 @@ namespace foo.bar {
   }
 }
 ",
-                                     @"using System;
+                                           @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -89,7 +89,7 @@ namespace foo.bar {
     public T[] Data { get; } = {};
   }
 }",
-                                     @"using System;
+                                           @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -102,7 +102,7 @@ namespace foo.bar {
   }
 }
 ",
-                                     @"using System;
+                                           @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -147,6 +147,56 @@ namespace foo.bar {
   public partial class GenericWrapper<T> {
     public void Write(ISubEndianBinaryWriter ew) {
     }
+  }
+}
+");
+    }
+
+    [Test]
+    public void TestIgnoresIgnoredFieldsThatFailedToParse() {
+      BinarySchemaTestUtil.AssertGenerated(@"
+using schema.binary;
+using schema.binary.attributes;
+
+public interface IMagicSection<T> {
+  T Data { get; }
+}
+
+public class MagicSectionStub<T> : IMagicSection<T>, IBinaryConvertible {
+  public T Data { get; set; }
+  public void Write(ISubEndianBinaryWriter ew) { }
+  public void Read(IEndianBinaryReader er) { }
+}
+
+[BinarySchema]
+public partial class SwitchMagicStringUInt32SizedSection<T> : IMagicSection<T>
+    where T : IBinaryConvertible {
+  [Ignore]
+  private readonly int magicLength_;
+
+  [Ignore]
+  private readonly Func<string, T> createTypeHandler_;
+
+  private readonly MagicSectionStub<T> impl_ = new();
+
+  [Ignore]
+  public T Data => this.impl_.Data;
+}",
+                                           @"using System;
+using schema.binary;
+
+public partial class SwitchMagicStringUInt32SizedSection<T> {
+  public void Read(IEndianBinaryReader er) {
+    this.impl_.Read(er);
+  }
+}
+",
+                                           @"using System;
+using schema.binary;
+
+public partial class SwitchMagicStringUInt32SizedSection<T> {
+  public void Write(ISubEndianBinaryWriter ew) {
+    this.impl_.Write(ew);
   }
 }
 ");

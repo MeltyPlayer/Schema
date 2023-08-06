@@ -1,5 +1,7 @@
 ﻿using System.IO;
 
+using NUnit.Framework;
+
 using schema.binary;
 using schema.binary.attributes;
 

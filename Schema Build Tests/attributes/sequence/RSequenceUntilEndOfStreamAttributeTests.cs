@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
-using System.Runtime.ConstrainedExecution;
+
+using NUnit.Framework;
 
 using schema.binary;
 using schema.binary.attributes;

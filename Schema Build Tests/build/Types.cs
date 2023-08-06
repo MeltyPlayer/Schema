@@ -1,4 +1,6 @@
-﻿using schema.binary;
+﻿using System;
+
+using schema.binary;
 using schema.binary.attributes;
 
 namespace build {
@@ -65,5 +67,33 @@ namespace build {
 
     [SequenceLengthSource(4)]
     public char[] ReadonlyChars { get; set; }
+  }
+
+
+  public interface IMagicSection<T> {
+    T Data { get; }
+  }
+
+  public class MagicSectionStub<T> : IMagicSection<T>, IBinaryConvertible {
+    public T Data { get; set; }
+    public void Write(ISubEndianBinaryWriter ew) { }
+    public void Read(IEndianBinaryReader er) { }
+  }
+
+  [BinarySchema]
+  public partial class SwitchMagicStringUInt32SizedSection<T> : IMagicSection<T>
+      where T : IBinaryConvertible {
+    [Ignore]
+    private readonly int magicLength_;
+
+    [Ignore]
+    private readonly Func<string, T> createTypeHandler_;
+
+    private readonly MagicSectionStub<T> impl_ = new();
+
+    [Ignore]
+    public T Data => this.impl_.Data;
+
+    public void Read(IEndianBinaryReader er) { }
   }
 }

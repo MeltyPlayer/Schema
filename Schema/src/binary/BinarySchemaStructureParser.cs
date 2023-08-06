@@ -557,11 +557,14 @@ namespace schema.binary {
       };
     }
 
-    private ISchemaValueMember ParseIgnoredField_(
+    private ISchemaValueMember? ParseIgnoredField_(
         (TypeInfoParser.ParseStatus, ISymbol, ITypeSymbol, ITypeInfo)
             parsedMember
     ) {
-      var (_, memberSymbol, memberTypeSymbol, memberTypeInfo) = parsedMember;
+      var (parseStatus, memberSymbol, _, memberTypeInfo) = parsedMember;
+      if (parseStatus == TypeInfoParser.ParseStatus.NOT_IMPLEMENTED) {
+        return null;
+      }
 
       // Gets the type of the current member
       var memberType =

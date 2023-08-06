@@ -1,23 +1,20 @@
 ﻿using System;
 using System.IO;
 
+using NUnit.Framework;
+
 using schema.binary;
 
-namespace build
-{
-  public partial class StructBuildTests
-  {
+namespace build {
+  public partial class StructBuildTests {
     [BinarySchema]
-    public partial struct SchemaStruct : IBinaryConvertible
-    {
+    public partial struct SchemaStruct : IBinaryConvertible {
       public int Value { get; set; }
 
       public override String ToString() => this.Value.ToString();
 
-      public override bool Equals(object other)
-      {
-        if (other is SchemaStruct otherStruct)
-        {
+      public override bool Equals(object other) {
+        if (other is SchemaStruct otherStruct) {
           return this.Value.Equals(otherStruct.Value);
         }
 
@@ -26,16 +23,13 @@ namespace build
     }
 
     [BinarySchema]
-    public partial class StructWrapper : IBinaryConvertible
-    {
+    public partial class StructWrapper : IBinaryConvertible {
       public SchemaStruct Value { get; set; }
 
       public override String ToString() => this.Value.ToString();
 
-      public override bool Equals(object other)
-      {
-        if (other is StructWrapper otherWrapper)
-        {
+      public override bool Equals(object other) {
+        if (other is StructWrapper otherWrapper) {
           return this.Value.Equals(otherWrapper.Value);
         }
 
@@ -44,12 +38,9 @@ namespace build
     }
 
     [Test]
-    public void TestWriteAndRead()
-    {
-      var expectedSw = new StructWrapper
-      {
-        Value = new SchemaStruct { Value = 1 }
-      };
+    public void TestWriteAndRead() {
+      var expectedSw =
+          new StructWrapper { Value = new SchemaStruct { Value = 1 } };
 
       var ms = new MemoryStream();
 

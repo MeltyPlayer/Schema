@@ -66,8 +66,14 @@ namespace schema.util.symbols {
     }
 
 
-    public static string GetFullyQualifiedNamespace(this ISymbol symbol)
-      => string.Join(".", symbol.GetContainingNamespaces());
+    public static string? GetFullyQualifiedNamespace(this ISymbol symbol) {
+      var containingNamespaces = symbol.GetContainingNamespaces().ToArray();
+      if (containingNamespaces.Length == 0) {
+        return null;
+      }
+      
+      return string.Join(".", containingNamespaces);
+    }
 
     public static IEnumerable<string> GetContainingNamespaces(
         this ISymbol symbol)
@@ -88,7 +94,7 @@ namespace schema.util.symbols {
         namespaceSymbol = namespaceSymbol.ContainingNamespace;
       }
     }
-    
+
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsExactlyType(this ISymbol symbol, Type expectedType) {

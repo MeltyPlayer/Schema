@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
 
+using NUnit.Framework;
+
 using schema.binary;
 using schema.binary.attributes;
 using schema.binary.testing;
