@@ -271,10 +271,10 @@ namespace schema.util.symbols {
                });
 
     public static IEnumerable<ISymbol> GetInstanceMembers(
-        this INamedTypeSymbol structureSymbol) {
+        this INamedTypeSymbol containerSymbol) {
       var baseClassesAndSelf = new LinkedList<INamedTypeSymbol>();
       {
-        var currentSymbol = structureSymbol;
+        var currentSymbol = containerSymbol;
         while (currentSymbol != null) {
           baseClassesAndSelf.AddFirst(currentSymbol);
           currentSymbol = currentSymbol.BaseType;
@@ -446,14 +446,14 @@ namespace schema.util.symbols {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void GetMemberInStructure(
-        this ITypeSymbol structureSymbol,
+    public static void GetMemberInContainer(
+        this ITypeSymbol containerSymbol,
         string memberName,
         out ISymbol memberSymbol,
         out ITypeSymbol memberTypeSymbol,
         out ITypeInfo memberTypeInfo
     ) {
-      memberSymbol = structureSymbol.GetMembers(memberName).Single();
+      memberSymbol = containerSymbol.GetMembers(memberName).Single();
       new TypeInfoParser().ParseMember(memberSymbol,
                                        out memberTypeSymbol,
                                        out memberTypeInfo);
@@ -461,7 +461,7 @@ namespace schema.util.symbols {
 
     public static void GetMemberRelativeToAnother(
         IDiagnosticReporter? diagnosticReporter,
-        INamedTypeSymbol structureTypeSymbol,
+        INamedTypeSymbol containerTypeSymbol,
         string otherMemberName,
         string thisMemberNameForFirstPass,
         bool assertOrder,
@@ -470,7 +470,7 @@ namespace schema.util.symbols {
         out ITypeInfo memberTypeInfo) {
       var typeChain = AccessChainUtil.GetAccessChainForRelativeMember(
           diagnosticReporter,
-          structureTypeSymbol,
+          containerTypeSymbol,
           otherMemberName,
           thisMemberNameForFirstPass,
           assertOrder);

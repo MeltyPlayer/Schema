@@ -12,7 +12,7 @@ using System.Runtime.CompilerServices;
 namespace schema.binary {
   public enum EndiannessSource {
     STREAM,
-    STRUCTURE,
+    CONTAINER,
     MEMBER
   }
 
@@ -33,7 +33,7 @@ namespace schema.binary {
 
     bool IsOppositeEndiannessOfSystem { get; }
 
-    void PushStructureEndianness(Endianness endianness);
+    void PushContainerEndianness(Endianness endianness);
 
     void PushMemberEndianness(Endianness endianness);
 
@@ -60,16 +60,16 @@ namespace schema.binary {
     public bool IsOppositeEndiannessOfSystem { get; private set; }
 
     /// <summary>
-    ///   Pushes a structure's endianness. This will override the reader/writer
+    ///   Pushes a container's endianness. This will override the reader/writer
     ///   endianness, but will be overwritten by the field endianness if those
     ///   were already pushed.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PushStructureEndianness(Endianness endianness) {
+    public void PushContainerEndianness(Endianness endianness) {
       this.endiannessStack_.Push(
           PickSuperior_(
               this.endiannessStack_.Peek(),
-              (EndiannessSource.STRUCTURE, endianness)));
+              (EndiannessSource.CONTAINER, endianness)));
       this.UpdateReverse_();
     }
 

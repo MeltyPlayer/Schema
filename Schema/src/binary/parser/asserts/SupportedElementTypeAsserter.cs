@@ -18,8 +18,8 @@ namespace schema.binary.parser.asserts {
       }
 
       var elementTypeInfo = sequenceMemberType.ElementType.TypeInfo;
-      if (elementTypeInfo is IStructureTypeInfo structureTypeInfo) {
-        if (!structureTypeInfo.TypeV2.Implements<IBinaryConvertible>()) {
+      if (elementTypeInfo is IContainerTypeInfo containerTypeInfo) {
+        if (!containerTypeInfo.TypeV2.Implements<IBinaryConvertible>()) {
           diagnosticReporter.ReportDiagnostic(
               Rules.ElementNeedsToImplementIBiSerializable);
         }

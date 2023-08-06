@@ -19,7 +19,7 @@ namespace schema.binary.attributes {
     protected override void InitFields() {
       if (this.otherMemberName_ != null) {
         this.OtherMember =
-            this.GetReadTimeOnlySourceRelativeToStructure(this.otherMemberName_)
+            this.GetReadTimeOnlySourceRelativeToContainer(this.otherMemberName_)
                 .AssertIsInteger();
       }
     }

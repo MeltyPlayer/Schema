@@ -17,7 +17,7 @@ namespace schema.binary.attributes {
       }
 
       if (memberTypeInfo is IIntegerTypeInfo &&
-          memberType is BinarySchemaStructureParser.PrimitiveMemberType
+          memberType is BinarySchemaContainerParser.PrimitiveMemberType
               primitiveMemberType) {
         primitiveMemberType.LengthOfStringMembers =
             lengthOfStringAttributes.Select(attr => attr.OtherMember)

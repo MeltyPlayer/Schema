@@ -18,7 +18,7 @@ namespace schema.binary.parser {
     CHAR,
     STRING,
     ENUM,
-    STRUCTURE,
+    CONTAINER,
     GENERIC,
     SEQUENCE,
   }
@@ -50,7 +50,7 @@ namespace schema.binary.parser {
 
   public interface IStringTypeInfo : ITypeInfo { }
 
-  public interface IStructureTypeInfo : ITypeInfo { }
+  public interface IContainerTypeInfo : ITypeInfo { }
 
   public interface IGenericTypeInfo : ITypeInfo {
     ITypeInfo[] ConstraintTypeInfos { get; }
@@ -73,8 +73,8 @@ namespace schema.binary.parser {
 
     public IEnumerable<(ParseStatus, ISymbol, ITypeSymbol, ITypeInfo?)>
         ParseMembers(
-            INamedTypeSymbol structureSymbol) {
-      foreach (var memberSymbol in structureSymbol.GetInstanceMembers()) {
+            INamedTypeSymbol containerSymbol) {
+      foreach (var memberSymbol in containerSymbol.GetInstanceMembers()) {
         // Tries to parse the type to get info about it
         var parseStatus = this.ParseMember(
             memberSymbol,
@@ -313,7 +313,7 @@ namespace schema.binary.parser {
       }
 
       if (typeV2.IsClass || typeV2.IsInterface || typeV2.IsStruct) {
-        typeInfo = new StructureTypeInfo(
+        typeInfo = new ContainerTypeInfo(
             typeV2,
             isReadonly,
             isNullable);
@@ -478,11 +478,11 @@ namespace schema.binary.parser {
       public bool IsNullable { get; } = isNullable;
     }
 
-    private class StructureTypeInfo(ITypeV2 typeV2,
+    private class ContainerTypeInfo(ITypeV2 typeV2,
                                     bool isReadonly,
                                     bool isNullable)
-        : IStructureTypeInfo {
-      public SchemaTypeKind Kind => SchemaTypeKind.STRUCTURE;
+        : IContainerTypeInfo {
+      public SchemaTypeKind Kind => SchemaTypeKind.CONTAINER;
 
       public ITypeV2 TypeV2 { get; } = typeV2;
 

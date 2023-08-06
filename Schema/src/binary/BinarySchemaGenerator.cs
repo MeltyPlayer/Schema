@@ -16,26 +16,28 @@ namespace schema.binary {
   [Generator(LanguageNames.CSharp)]
   internal class BinarySchemaGenerator : ISourceGenerator {
     private readonly Type schemaAttributeType_ = typeof(BinarySchemaAttribute);
-    private readonly BinarySchemaStructureParser parser_ = new();
+    private readonly BinarySchemaContainerParser parser_ = new();
 
     private readonly BinarySchemaReaderGenerator readerImpl_ = new();
     private readonly BinarySchemaWriterGenerator writerImpl_ = new();
 
-    private void Generate_(IBinarySchemaStructure structure) {
-      if (SymbolTypeUtil.Implements<IBinaryDeserializable>(structure.TypeSymbol)
-          && structure.TypeSymbol.MemberNames.All(member => member != "Read")) {
-        var readerCode = this.readerImpl_.Generate(structure);
+    private void Generate_(IBinarySchemaContainer container) {
+      if (SymbolTypeUtil.Implements<IBinaryDeserializable>(container.TypeSymbol)
+          && container.TypeSymbol.MemberNames.All(member => member != "Read")) {
+        var readerCode = this.readerImpl_.Generate(container);
         this.context_.Value.AddSource(
-            SymbolTypeUtil.GetFullyQualifiedName(structure.TypeSymbol) + "_reader.g",
+            SymbolTypeUtil.GetFullyQualifiedName(container.TypeSymbol) +
+            "_reader.g",
             readerCode);
       }
 
-      if (SymbolTypeUtil.Implements<IBinarySerializable>(structure.TypeSymbol)
-          && structure.TypeSymbol.MemberNames.All(
+      if (SymbolTypeUtil.Implements<IBinarySerializable>(container.TypeSymbol)
+          && container.TypeSymbol.MemberNames.All(
               member => member != "Write")) {
-        var writerCode = this.writerImpl_.Generate(structure);
+        var writerCode = this.writerImpl_.Generate(container);
         this.context_.Value.AddSource(
-            SymbolTypeUtil.GetFullyQualifiedName(structure.TypeSymbol) + "_writer.g",
+            SymbolTypeUtil.GetFullyQualifiedName(container.TypeSymbol) +
+            "_writer.g",
             writerCode);
       }
     }
@@ -91,12 +93,12 @@ namespace schema.binary {
           return;
         }
 
-        var structure = this.parser_.ParseStructure(symbol);
-        if (structure.Diagnostics.Count > 0) {
+        var container = this.parser_.ParseContainer(symbol);
+        if (container.Diagnostics.Count > 0) {
           return;
         }
 
-        this.EnqueueStructure(structure);
+        this.EnqueueContainer(container);
       } catch (Exception exception) {
         if (Debugger.IsAttached) {
           throw;
@@ -109,31 +111,31 @@ namespace schema.binary {
     public void Execute(GeneratorExecutionContext context) {
       this.context_ = context;
 
-      // Gathers up a map of all structures by named type symbol.
-      var structureByNamedTypeSymbol =
-          new Dictionary<INamedTypeSymbol, IBinarySchemaStructure>();
-      foreach (var structure in this.queue_) {
-        structureByNamedTypeSymbol[structure.TypeSymbol] = structure;
+      // Gathers up a map of all containers by named type symbol.
+      var containerByNamedTypeSymbol =
+          new Dictionary<INamedTypeSymbol, IBinarySchemaContainer>();
+      foreach (var container in this.queue_) {
+        containerByNamedTypeSymbol[container.TypeSymbol] = container;
       }
 
       // Hooks up size of dependencies.
       {
         var sizeOfMemberInBytesDependencyFixer =
             new WSizeOfMemberInBytesDependencyFixer();
-        foreach (var structure in this.queue_) {
+        foreach (var container in this.queue_) {
           foreach (var member in
-                   structure.Members.OfType<ISchemaValueMember>()) {
+                   container.Members.OfType<ISchemaValueMember>()) {
             if (member.MemberType is IPrimitiveMemberType
                 primitiveMemberType) {
               if (primitiveMemberType.AccessChainToSizeOf != null) {
-                sizeOfMemberInBytesDependencyFixer.AddDependenciesForStructure(
-                    structureByNamedTypeSymbol,
+                sizeOfMemberInBytesDependencyFixer.AddDependenciesForContainer(
+                    containerByNamedTypeSymbol,
                     primitiveMemberType.AccessChainToSizeOf);
               }
 
               if (primitiveMemberType.AccessChainToPointer != null) {
-                sizeOfMemberInBytesDependencyFixer.AddDependenciesForStructure(
-                    structureByNamedTypeSymbol,
+                sizeOfMemberInBytesDependencyFixer.AddDependenciesForContainer(
+                    containerByNamedTypeSymbol,
                     primitiveMemberType.AccessChainToPointer);
               }
             }
@@ -141,10 +143,10 @@ namespace schema.binary {
         }
       }
 
-      // Generates code for each structure.
-      foreach (var structure in this.queue_) {
+      // Generates code for each container.
+      foreach (var container in this.queue_) {
         try {
-          this.Generate_(structure);
+          this.Generate_(container);
         } catch (Exception e) {
           ;
         }
@@ -161,13 +163,13 @@ namespace schema.binary {
     }
 
     private GeneratorExecutionContext? context_;
-    private readonly List<IBinarySchemaStructure> queue_ = new();
+    private readonly List<IBinarySchemaContainer> queue_ = new();
 
-    public void EnqueueStructure(IBinarySchemaStructure structure) {
+    public void EnqueueContainer(IBinarySchemaContainer container) {
       // If this assertion fails, then it means that syntax nodes are added
       // after the execution started.
       Asserts.Null(this.context_, "Syntax node added after execution!");
-      this.queue_.Add(structure);
+      this.queue_.Add(container);
     }
 
     private readonly List<(ISymbol, Exception)> errorSymbols_ = new();

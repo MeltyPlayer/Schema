@@ -14,7 +14,7 @@ namespace schema.binary {
   [DiagnosticAnalyzer(LanguageNames.CSharp)]
   public class BinarySchemaAnalyzer : DiagnosticAnalyzer {
     private readonly Type schemaAttributeType_ = typeof(BinarySchemaAttribute);
-    private readonly BinarySchemaStructureParser parser_ = new();
+    private readonly BinarySchemaContainerParser parser_ = new();
 
     public override ImmutableArray<DiagnosticDescriptor>
         SupportedDiagnostics { get; } =
@@ -38,7 +38,7 @@ namespace schema.binary {
           Rules.ReadAlreadyDefined,
           Rules.SchemaTypeMustBePartial,
           Rules.SourceMustBePrivate,
-          Rules.StructureMemberBinaryConvertabilityNeedsToSatisfyParent,
+          Rules.ContainerMemberBinaryConvertabilityNeedsToSatisfyParent,
           Rules.UnexpectedAttribute,
           Rules.UnexpectedSequenceAttribute,
           Rules.UnsupportedArrayType,
@@ -96,7 +96,7 @@ namespace schema.binary {
           return;
         }
 
-        this.parser_.ParseStructure(symbol, context);
+        this.parser_.ParseContainer(symbol, context);
       } catch (Exception exception) {
         if (Debugger.IsAttached) {
           throw;

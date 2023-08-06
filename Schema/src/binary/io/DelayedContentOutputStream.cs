@@ -85,8 +85,8 @@ namespace schema.binary.io {
     public bool IsOppositeEndiannessOfSystem
       => this.endiannessImpl_.IsOppositeEndiannessOfSystem;
 
-    public void PushStructureEndianness(Endianness endianness)
-      => this.endiannessImpl_.PushStructureEndianness(endianness);
+    public void PushContainerEndianness(Endianness endianness)
+      => this.endiannessImpl_.PushContainerEndianness(endianness);
 
     public void PushMemberEndianness(Endianness endianness)
       => this.endiannessImpl_.PushMemberEndianness(endianness);

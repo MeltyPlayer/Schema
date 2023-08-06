@@ -5,8 +5,8 @@ using schema.binary.attributes;
 namespace schema.binary.dependencies {
   public static class DependencyExtensions {
     public static bool DependsOnSequenceImports(
-        this IBinarySchemaStructure structure)
-      => structure
+        this IBinarySchemaContainer container)
+      => container
          .Members
          .OfType<ISchemaValueMember>()
          .Any(
@@ -17,8 +17,8 @@ namespace schema.binary.dependencies {
              });
 
     public static bool DependsOnSchemaAttributes(
-        this IBinarySchemaStructure structure)
-      => structure
+        this IBinarySchemaContainer container)
+      => container
          .Members
          .OfType<ISchemaValueMember>()
          .Any(
@@ -28,8 +28,8 @@ namespace schema.binary.dependencies {
 
 
     public static bool DependsOnSchemaUtil(
-        this IBinarySchemaStructure structure)
-      => structure
+        this IBinarySchemaContainer container)
+      => container
          .Members
          .OfType<ISchemaValueMember>()
          .Any(
@@ -43,8 +43,8 @@ namespace schema.binary.dependencies {
                      });
 
     public static bool DependsOnCollectionsImports(
-        this IBinarySchemaStructure structure)
-      => structure
+        this IBinarySchemaContainer container)
+      => container
          .Members
          .OfType<ISchemaValueMember>()
          .Any(

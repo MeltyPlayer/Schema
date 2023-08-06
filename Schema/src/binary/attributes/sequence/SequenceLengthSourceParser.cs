@@ -18,7 +18,7 @@ namespace schema.binary.attributes {
       var untilEndOfStreamAttribute =
           memberBetterSymbol.GetAttribute<RSequenceUntilEndOfStreamAttribute>();
 
-      if (memberType is BinarySchemaStructureParser.SequenceMemberType
+      if (memberType is BinarySchemaContainerParser.SequenceMemberType
           sequenceMemberType) {
         if (sequenceMemberType.LengthSourceType ==
             SequenceLengthSourceType.UNSPECIFIED) {

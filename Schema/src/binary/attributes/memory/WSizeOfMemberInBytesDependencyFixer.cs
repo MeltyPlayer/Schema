@@ -5,18 +5,18 @@ using System.Linq;
 
 namespace schema.binary.attributes {
   public class WSizeOfMemberInBytesDependencyFixer {
-    public void AddDependenciesForStructure(
-        IDictionary<INamedTypeSymbol, IBinarySchemaStructure>
-            structureByNamedTypeSymbol,
+    public void AddDependenciesForContainer(
+        IDictionary<INamedTypeSymbol, IBinarySchemaContainer>
+            containerByNamedTypeSymbol,
         IChain<IAccessChainNode> accessChain) {
       foreach (var typeChainNode in accessChain.RootToTarget.Skip(1)) {
-        if (structureByNamedTypeSymbol.TryGetValue(
-                typeChainNode.StructureSymbol, out var structure)) {
-          var member = structure.Members.Single(
+        if (containerByNamedTypeSymbol.TryGetValue(
+                typeChainNode.ContainerSymbol, out var container)) {
+          var member = container.Members.Single(
                                member =>
                                    member.Name ==
                                    typeChainNode.MemberSymbol.Name)
-                           as BinarySchemaStructureParser.SchemaValueMember;
+                           as BinarySchemaContainerParser.SchemaValueMember;
           member.TrackStartAndEnd = true;
         }
       }

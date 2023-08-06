@@ -15,13 +15,13 @@ using schema.util.types;
 
 
 namespace schema.binary {
-  public interface IBinarySchemaStructureParser {
-    IBinarySchemaStructure ParseStructure(
-        INamedTypeSymbol symbol,
+  public interface IBinarySchemaContainerParser {
+    IBinarySchemaContainer ParseContainer(
+        INamedTypeSymbol containerSymbol,
         SyntaxNodeAnalysisContext? context = null);
   }
 
-  public interface IBinarySchemaStructure {
+  public interface IBinarySchemaContainer {
     IReadOnlyList<Diagnostic> Diagnostics { get; }
     INamedTypeSymbol TypeSymbol { get; }
     IReadOnlyList<ISchemaMember> Members { get; }
@@ -64,7 +64,7 @@ namespace schema.binary {
     IChain<IAccessChainNode>? AccessChainToPointer { get; }
   }
 
-  public interface IStructureMemberType : IMemberType {
+  public interface IContainerMemberType : IMemberType {
     bool IsChild { get; }
   }
 
@@ -133,39 +133,39 @@ namespace schema.binary {
     IMemberType ElementType { get; }
   }
 
-  public class BinarySchemaStructureParser : IBinarySchemaStructureParser {
-    public IBinarySchemaStructure ParseStructure(
-        INamedTypeSymbol structureSymbol,
+  public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
+    public IBinarySchemaContainer ParseContainer(
+        INamedTypeSymbol containerSymbol,
         SyntaxNodeAnalysisContext? context = null) {
-      var structureBetterSymbol = BetterSymbol.FromType(structureSymbol);
-      var structureTypeV2 =
-          TypeV2.FromSymbol(structureBetterSymbol.TypedSymbol,
-                            structureBetterSymbol);
+      var containerBetterSymbol = BetterSymbol.FromType(containerSymbol);
+      var containerTypeV2 =
+          TypeV2.FromSymbol(containerBetterSymbol.TypedSymbol,
+                            containerBetterSymbol);
 
-      // All of the types that contain the structure need to be partial
-      new PartialContainerAsserter(structureBetterSymbol)
-          .AssertContainersArePartial(structureSymbol);
+      // All of the types that contain the container need to be partial
+      new PartialContainerAsserter(containerBetterSymbol)
+          .AssertContainersArePartial(containerSymbol);
 
-      var iChildOfParser = new ChildOfParser(structureBetterSymbol);
+      var iChildOfParser = new ChildOfParser(containerBetterSymbol);
       var parentTypeSymbol =
-          iChildOfParser.GetParentTypeSymbolOf(structureSymbol);
+          iChildOfParser.GetParentTypeSymbolOf(containerSymbol);
       if (parentTypeSymbol != null) {
         iChildOfParser.AssertParentContainsChild(
             parentTypeSymbol,
-            structureSymbol);
+            containerSymbol);
         iChildOfParser.AssertParentBinaryConvertabilityMatchesChild(
             parentTypeSymbol,
-            structureSymbol);
+            containerSymbol);
       }
 
       var localPositions =
-          structureTypeV2.HasAttribute<LocalPositionsAttribute>();
-      var structureEndianness =
-          new EndiannessParser().GetEndianness(structureBetterSymbol);
+          containerTypeV2.HasAttribute<LocalPositionsAttribute>();
+      var containerEndianness =
+          new EndiannessParser().GetEndianness(containerBetterSymbol);
 
       var typeInfoParser = new TypeInfoParser();
       var parsedMembers =
-          typeInfoParser.ParseMembers(structureSymbol).ToArray();
+          typeInfoParser.ParseMembers(containerSymbol).ToArray();
 
       var members = new List<ISchemaMember>();
       foreach (var parsedMember in parsedMembers) {
@@ -175,7 +175,7 @@ namespace schema.binary {
           continue;
         }
 
-        var memberBetterSymbol = structureBetterSymbol.GetChild(memberSymbol);
+        var memberBetterSymbol = containerBetterSymbol.GetChild(memberSymbol);
 
         {
           var methodSymbol = memberSymbol as IMethodSymbol;
@@ -213,7 +213,7 @@ namespace schema.binary {
         var field =
             !isIgnored
                 ? this.ParseNonIgnoredField_(
-                    structureSymbol,
+                    containerSymbol,
                     memberBetterSymbol,
                     parsedMember)
                 : this.ParseIgnoredField_(parsedMember);
@@ -223,18 +223,18 @@ namespace schema.binary {
         }
       }
 
-      var schemaStructure = new BinarySchemaStructure {
-          Diagnostics = structureBetterSymbol.Diagnostics,
-          TypeSymbol = structureSymbol,
+      var schemaContainer = new BinarySchemaContainer {
+          Diagnostics = containerBetterSymbol.Diagnostics,
+          TypeSymbol = containerSymbol,
           Members = members,
           LocalPositions = localPositions,
-          Endianness = structureEndianness,
+          Endianness = containerEndianness,
       };
 
       // Hooks up size of dependencies.
-      var structureByNamedTypeSymbol =
-          new Dictionary<INamedTypeSymbol, IBinarySchemaStructure>();
-      structureByNamedTypeSymbol[structureSymbol] = schemaStructure;
+      var containerByNamedTypeSymbol =
+          new Dictionary<INamedTypeSymbol, IBinarySchemaContainer>();
+      containerByNamedTypeSymbol[containerSymbol] = schemaContainer;
       {
         var sizeOfMemberInBytesDependencyFixer =
             new WSizeOfMemberInBytesDependencyFixer();
@@ -242,25 +242,25 @@ namespace schema.binary {
           if (member.MemberType is IPrimitiveMemberType
               primitiveMemberType) {
             if (primitiveMemberType.AccessChainToSizeOf != null) {
-              sizeOfMemberInBytesDependencyFixer.AddDependenciesForStructure(
-                  structureByNamedTypeSymbol,
+              sizeOfMemberInBytesDependencyFixer.AddDependenciesForContainer(
+                  containerByNamedTypeSymbol,
                   primitiveMemberType.AccessChainToSizeOf);
             }
 
             if (primitiveMemberType.AccessChainToPointer != null) {
-              sizeOfMemberInBytesDependencyFixer.AddDependenciesForStructure(
-                  structureByNamedTypeSymbol,
+              sizeOfMemberInBytesDependencyFixer.AddDependenciesForContainer(
+                  containerByNamedTypeSymbol,
                   primitiveMemberType.AccessChainToPointer);
             }
           }
         }
       }
 
-      return schemaStructure;
+      return schemaContainer;
     }
 
     private ISchemaValueMember? ParseNonIgnoredField_(
-        INamedTypeSymbol structureTypeSymbol,
+        INamedTypeSymbol containerTypeSymbol,
         IBetterSymbol memberBetterSymbol,
         (TypeInfoParser.ParseStatus, ISymbol, ITypeSymbol, ITypeInfo)
             parsedMember
@@ -275,10 +275,10 @@ namespace schema.binary {
 
       // Makes sure the member is serializable
       {
-        var isDeserializable = structureTypeSymbol.IsBinaryDeserializable();
-        var isSerializable = structureTypeSymbol.IsBinarySerializable();
+        var isDeserializable = containerTypeSymbol.IsBinaryDeserializable();
+        var isSerializable = containerTypeSymbol.IsBinarySerializable();
 
-        if (memberTypeInfo is IStructureTypeInfo) {
+        if (memberTypeInfo is IContainerTypeInfo) {
           var isMemberDeserializable =
               memberTypeInfo.TypeV2.IsBinaryDeserializable;
           var isMemberSerializable =
@@ -287,7 +287,7 @@ namespace schema.binary {
           if ((isDeserializable && !isMemberDeserializable) ||
               (isSerializable && !isMemberSerializable)) {
             memberBetterSymbol.ReportDiagnostic(
-                Rules.StructureMemberBinaryConvertabilityNeedsToSatisfyParent);
+                Rules.ContainerMemberBinaryConvertabilityNeedsToSatisfyParent);
             return null;
           }
         }
@@ -362,7 +362,7 @@ namespace schema.binary {
           var offsetName = offsetAttribute.OffsetName;
           SymbolTypeUtil.GetMemberRelativeToAnother(
               memberBetterSymbol,
-              structureTypeSymbol,
+              containerTypeSymbol,
               offsetName,
               memberSymbol.Name,
               true,
@@ -457,15 +457,15 @@ namespace schema.binary {
 
         // Checks if the member is a child of the current type
         {
-          if (targetMemberType is StructureMemberType structureMemberType) {
+          if (targetMemberType is ContainerMemberType containerMemberType) {
             var expectedParentTypeSymbol =
                 new ChildOfParser(memberBetterSymbol)
                     .GetParentTypeSymbolOf(
                         (targetMemberType.TypeV2.TypeSymbol as INamedTypeSymbol)
                         !);
             if (expectedParentTypeSymbol != null) {
-              if (expectedParentTypeSymbol.Equals(structureTypeSymbol)) {
-                structureMemberType.IsChild = true;
+              if (expectedParentTypeSymbol.Equals(containerTypeSymbol)) {
+                containerMemberType.IsChild = true;
               } else {
                 memberBetterSymbol.ReportDiagnostic(
                     Rules.ChildTypeCanOnlyBeContainedInParent);
@@ -561,7 +561,7 @@ namespace schema.binary {
     }
 
 
-    private class BinarySchemaStructure : IBinarySchemaStructure {
+    private class BinarySchemaContainer : IBinarySchemaContainer {
       public IReadOnlyList<Diagnostic> Diagnostics { get; set; }
       public INamedTypeSymbol TypeSymbol { get; set; }
       public IReadOnlyList<ISchemaMember> Members { get; set; }
@@ -604,9 +604,9 @@ namespace schema.binary {
       public IChain<IAccessChainNode>? AccessChainToPointer { get; set; }
     }
 
-    public class StructureMemberType : IStructureMemberType {
-      public IStructureTypeInfo StructureTypeInfo { get; set; }
-      public ITypeInfo TypeInfo => StructureTypeInfo;
+    public class ContainerMemberType : IContainerMemberType {
+      public IContainerTypeInfo ContainerTypeInfo { get; set; }
+      public ITypeInfo TypeInfo => this.ContainerTypeInfo;
       public ITypeV2 TypeV2 => TypeInfo.TypeV2;
       public bool IsReadOnly => this.TypeInfo.IsReadOnly;
 

@@ -13,19 +13,19 @@ namespace schema.binary.parser {
         case IBoolTypeInfo boolTypeInfo:
         case ICharTypeInfo charTypeInfo:
         case IEnumTypeInfo enumTypeInfo: {
-          return new BinarySchemaStructureParser.PrimitiveMemberType {
+          return new BinarySchemaContainerParser.PrimitiveMemberType {
               PrimitiveTypeInfo =
                   Asserts.CastNonnull(memberTypeInfo as IPrimitiveTypeInfo),
           };
         }
         case IStringTypeInfo stringTypeInfo: {
-          return new BinarySchemaStructureParser.StringType {
+          return new BinarySchemaContainerParser.StringType {
               TypeInfo = memberTypeInfo,
           };
         }
-        case IStructureTypeInfo structureTypeInfo: {
-          return new BinarySchemaStructureParser.StructureMemberType {
-              StructureTypeInfo = structureTypeInfo,
+        case IContainerTypeInfo containerTypeInfo: {
+          return new BinarySchemaContainerParser.ContainerMemberType {
+              ContainerTypeInfo = containerTypeInfo,
           };
         }
         case IGenericTypeInfo genericTypeInfo: {
@@ -35,13 +35,13 @@ namespace schema.binary.parser {
               MemberReferenceUtil
                   .WrapTypeInfoWithMemberType(constraintTypeInfo);
 
-          return new BinarySchemaStructureParser.GenericMemberType {
+          return new BinarySchemaContainerParser.GenericMemberType {
               ConstraintType = constraintMemberType,
               GenericTypeInfo = genericTypeInfo,
           };
         }
         case ISequenceTypeInfo sequenceTypeInfo: {
-          return new BinarySchemaStructureParser.SequenceMemberType {
+          return new BinarySchemaContainerParser.SequenceMemberType {
               SequenceTypeInfo = sequenceTypeInfo,
               ElementType =
                   WrapTypeInfoWithMemberType(sequenceTypeInfo.ElementTypeInfo),
@@ -60,7 +60,7 @@ namespace schema.binary.parser {
       }
     }
 
-    public static BinarySchemaStructureParser.SchemaValueMember
+    public static BinarySchemaContainerParser.SchemaValueMember
         WrapMemberReference(
             IMemberReference memberReference)
       => new() {

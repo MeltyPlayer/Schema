@@ -17,7 +17,7 @@ namespace schema.binary.attributes {
           pointerToAttribute.AccessChainToOtherMember);
 
       if (memberTypeInfo is IIntegerTypeInfo &&
-          memberType is BinarySchemaStructureParser.PrimitiveMemberType
+          memberType is BinarySchemaContainerParser.PrimitiveMemberType
               primitiveMemberType) {
         primitiveMemberType.AccessChainToPointer =
             pointerToAttribute.AccessChainToOtherMember;

@@ -13,8 +13,8 @@ namespace schema.binary {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PushStructureEndianness(Endianness endianness)
-      => this.BufferedStream_.PushStructureEndianness(endianness);
+    public void PushContainerEndianness(Endianness endianness)
+      => this.BufferedStream_.PushContainerEndianness(endianness);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PushMemberEndianness(Endianness endianness)

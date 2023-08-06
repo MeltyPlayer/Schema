@@ -18,7 +18,7 @@ namespace schema.binary.attributes {
     protected override void InitFields() {
       if (this.otherMemberName_ != null) {
         this.OtherMember =
-            this.GetOtherMemberRelativeToStructure(this.otherMemberName_)
+            this.GetOtherMemberRelativeToContainer(this.otherMemberName_)
                 .AssertIsInteger();
       }
     }

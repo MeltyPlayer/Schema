@@ -12,7 +12,7 @@ namespace schema.binary.attributes {
   public abstract class BMemberAttribute<T> : BMemberAttribute {
     protected override void SetMemberFromName(string memberName) {
       this.memberThisIsAttachedTo_ =
-          this.GetMemberRelativeToStructure<T>(memberName);
+          this.GetMemberRelativeToContainer<T>(memberName);
     }
   }
 
@@ -20,52 +20,52 @@ namespace schema.binary.attributes {
     private static readonly TypeInfoParser parser_ = new();
     private IDiagnosticReporter? diagnosticReporter_;
 
-    private INamedTypeSymbol structureTypeSymbol_;
-    private ITypeInfo structureTypeInfo_;
+    private INamedTypeSymbol containerTypeSymbol_;
+    private ITypeInfo containerTypeInfo_;
     protected IMemberReference memberThisIsAttachedTo_;
 
     protected abstract void InitFields();
 
     protected virtual void SetMemberFromName(string memberName) {
       this.memberThisIsAttachedTo_ =
-          this.GetMemberRelativeToStructure(memberName);
+          this.GetMemberRelativeToContainer(memberName);
     }
 
 
     internal void Init(
         IDiagnosticReporter? diagnosticReporter,
-        INamedTypeSymbol structureTypeSymbol,
+        INamedTypeSymbol containerTypeSymbol,
         string memberName) {
       this.diagnosticReporter_ = diagnosticReporter;
-      this.structureTypeSymbol_ = structureTypeSymbol;
-      this.structureTypeInfo_ = BMemberAttribute.parser_.AssertParseTypeV2(
-          TypeV2.FromSymbol(structureTypeSymbol));
+      this.containerTypeSymbol_ = containerTypeSymbol;
+      this.containerTypeInfo_ = BMemberAttribute.parser_.AssertParseTypeV2(
+          TypeV2.FromSymbol(containerTypeSymbol));
       this.SetMemberFromName(memberName);
       this.InitFields();
     }
 
 
-    protected IMemberReference GetMemberRelativeToStructure(
+    protected IMemberReference GetMemberRelativeToContainer(
         string memberName) {
-      SymbolTypeUtil.GetMemberInStructure(
-          this.structureTypeSymbol_,
+      SymbolTypeUtil.GetMemberInContainer(
+          this.containerTypeSymbol_,
           memberName,
           out var memberSymbol,
           out var memberTypeSymbol,
           out var memberTypeInfo);
 
       return new MemberReference(memberName,
-                                 this.structureTypeInfo_,
+                                 this.containerTypeInfo_,
                                  memberSymbol,
                                  memberTypeSymbol,
                                  memberTypeInfo);
     }
 
 
-    protected IMemberReference<T> GetMemberRelativeToStructure<T>(
+    protected IMemberReference<T> GetMemberRelativeToContainer<T>(
         string memberName) {
-      SymbolTypeUtil.GetMemberInStructure(
-          this.structureTypeSymbol_,
+      SymbolTypeUtil.GetMemberInContainer(
+          this.containerTypeSymbol_,
           memberName,
           out var memberSymbol,
           out var memberTypeSymbol,
@@ -78,17 +78,17 @@ namespace schema.binary.attributes {
 
       return new MemberReference<T>(
           memberName,
-          this.structureTypeInfo_,
+          this.containerTypeInfo_,
           memberSymbol,
           memberTypeSymbol,
           memberTypeInfo);
     }
 
-    protected IMemberReference GetOtherMemberRelativeToStructure(
+    protected IMemberReference GetOtherMemberRelativeToContainer(
         string otherMemberName) {
       SymbolTypeUtil.GetMemberRelativeToAnother(
           this.diagnosticReporter_,
-          this.structureTypeSymbol_,
+          this.containerTypeSymbol_,
           otherMemberName,
           this.memberThisIsAttachedTo_.Name,
           true,
@@ -98,17 +98,17 @@ namespace schema.binary.attributes {
 
       return new MemberReference(
           otherMemberName,
-          this.structureTypeInfo_,
+          this.containerTypeInfo_,
           memberSymbol,
           memberTypeSymbol,
           memberTypeInfo);
     }
 
-    protected IMemberReference<T> GetOtherMemberRelativeToStructure<T>(
+    protected IMemberReference<T> GetOtherMemberRelativeToContainer<T>(
         string otherMemberName) {
       SymbolTypeUtil.GetMemberRelativeToAnother(
           this.diagnosticReporter_,
-          this.structureTypeSymbol_,
+          this.containerTypeSymbol_,
           otherMemberName,
           this.memberThisIsAttachedTo_.Name,
           true,
@@ -123,29 +123,29 @@ namespace schema.binary.attributes {
 
       return new MemberReference<T>(
           otherMemberName,
-          this.structureTypeInfo_,
+          this.containerTypeInfo_,
           memberSymbol,
           memberTypeSymbol,
           memberTypeInfo);
     }
 
 
-    protected IChain<IAccessChainNode> GetAccessChainRelativeToStructure(
+    protected IChain<IAccessChainNode> GetAccessChainRelativeToContainer(
         string otherMemberPath,
         bool assertOrder)
       => AccessChainUtil.GetAccessChainForRelativeMember(
           this.diagnosticReporter_,
-          this.structureTypeSymbol_,
+          this.containerTypeSymbol_,
           otherMemberPath,
           this.memberThisIsAttachedTo_.Name,
           assertOrder);
 
-    protected IChain<IAccessChainNode> GetAccessChainRelativeToStructure<T>(
+    protected IChain<IAccessChainNode> GetAccessChainRelativeToContainer<T>(
         string otherMemberPath,
         bool assertOrder) {
       var typeChain = AccessChainUtil.GetAccessChainForRelativeMember(
           this.diagnosticReporter_,
-          this.structureTypeSymbol_,
+          this.containerTypeSymbol_,
           otherMemberPath,
           this.memberThisIsAttachedTo_.Name,
           assertOrder);
@@ -160,9 +160,9 @@ namespace schema.binary.attributes {
     }
 
 
-    protected IMemberReference GetReadTimeOnlySourceRelativeToStructure(
+    protected IMemberReference GetReadTimeOnlySourceRelativeToContainer(
         string otherMemberName) {
-      var source = this.GetOtherMemberRelativeToStructure(otherMemberName);
+      var source = this.GetOtherMemberRelativeToContainer(otherMemberName);
 
       if (!IsMemberWritePrivateOrIgnored_(source.MemberSymbol)) {
         this.diagnosticReporter_.ReportDiagnostic(
@@ -173,9 +173,9 @@ namespace schema.binary.attributes {
       return source;
     }
 
-    protected IMemberReference<T> GetReadTimeOnlySourceRelativeToStructure<T>(
+    protected IMemberReference<T> GetReadTimeOnlySourceRelativeToContainer<T>(
         string otherMemberName) {
-      var source = this.GetOtherMemberRelativeToStructure<T>(otherMemberName);
+      var source = this.GetOtherMemberRelativeToContainer<T>(otherMemberName);
 
       if (!IsMemberWritePrivateOrIgnored_(source.MemberSymbol)) {
         this.diagnosticReporter_.ReportDiagnostic(
@@ -200,7 +200,7 @@ namespace schema.binary.attributes {
 
   public interface IMemberReference {
     string Name { get; }
-    ITypeInfo StructureTypeInfo { get; }
+    ITypeInfo ContainerTypeInfo { get; }
     ISymbol MemberSymbol { get; }
     ITypeSymbol MemberTypeSymbol { get; }
     ITypeInfo MemberTypeInfo { get; }
@@ -221,19 +221,19 @@ namespace schema.binary.attributes {
   public class MemberReference : IMemberReference {
     public MemberReference(
         string name,
-        ITypeInfo structureTypeInfo,
+        ITypeInfo containerTypeInfo,
         ISymbol memberSymbol,
         ITypeSymbol memberTypeSymbol,
         ITypeInfo memberTypeInfo) {
       this.Name = name;
-      this.StructureTypeInfo = structureTypeInfo;
+      this.ContainerTypeInfo = containerTypeInfo;
       this.MemberSymbol = memberSymbol;
       this.MemberTypeSymbol = memberTypeSymbol;
       this.MemberTypeInfo = memberTypeInfo;
     }
 
     public string Name { get; }
-    public ITypeInfo StructureTypeInfo { get; }
+    public ITypeInfo ContainerTypeInfo { get; }
     public ISymbol MemberSymbol { get; }
     public ITypeSymbol MemberTypeSymbol { get; }
     public ITypeInfo MemberTypeInfo { get; }
@@ -272,12 +272,12 @@ namespace schema.binary.attributes {
   public class MemberReference<T> : MemberReference, IMemberReference<T> {
     public MemberReference(
         string name,
-        ITypeInfo structureTypeInfo,
+        ITypeInfo containerTypeInfo,
         ISymbol memberSymbol,
         ITypeSymbol memberTypeSymbol,
         ITypeInfo memberTypeInfo)
         : base(name,
-               structureTypeInfo,
+               containerTypeInfo,
                memberSymbol,
                memberTypeSymbol,
                memberTypeInfo) { }

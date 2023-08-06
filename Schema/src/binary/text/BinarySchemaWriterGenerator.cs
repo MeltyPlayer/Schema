@@ -14,8 +14,8 @@ using schema.util.symbols;
 
 namespace schema.binary.text {
   public class BinarySchemaWriterGenerator {
-    public string Generate(IBinarySchemaStructure structure) {
-      var typeSymbol = structure.TypeSymbol;
+    public string Generate(IBinarySchemaContainer container) {
+      var typeSymbol = container.TypeSymbol;
 
       var typeNamespace = typeSymbol.GetFullyQualifiedNamespace();
 
@@ -28,11 +28,11 @@ namespace schema.binary.text {
       {
         var dependencies = new List<string> { "System", "schema.binary" };
 
-        if (structure.DependsOnSchemaAttributes()) {
+        if (container.DependsOnSchemaAttributes()) {
           dependencies.Add("schema.binary.attributes");
         }
 
-        if (structure.DependsOnSchemaUtil()) {
+        if (container.DependsOnSchemaUtil()) {
           dependencies.Add("schema.util");
         }
 
@@ -57,18 +57,18 @@ namespace schema.binary.text {
 
       cbsb.EnterBlock("public void Write(ISubEndianBinaryWriter ew)");
       {
-        var hasLocalPositions = structure.LocalPositions;
+        var hasLocalPositions = container.LocalPositions;
         if (hasLocalPositions) {
           cbsb.WriteLine("ew.PushLocalSpace();");
         }
 
-        var hasEndianness = structure.Endianness != null;
+        var hasEndianness = container.Endianness != null;
         if (hasEndianness) {
           cbsb.WriteLine(
-              $"ew.PushStructureEndianness({SchemaGeneratorUtil.GetEndiannessName(structure.Endianness.Value)});");
+              $"ew.PushContainerEndianness({SchemaGeneratorUtil.GetEndiannessName(container.Endianness.Value)});");
         }
 
-        foreach (var member in structure.Members.OfType<ISchemaValueMember>()) {
+        foreach (var member in container.Members.OfType<ISchemaValueMember>()) {
           BinarySchemaWriterGenerator.WriteValueMember_(
               cbsb,
               typeSymbol,
@@ -141,8 +141,8 @@ namespace schema.binary.text {
           BinarySchemaWriterGenerator.WriteString_(cbsb, member);
           break;
         }
-        case IStructureMemberType structureMemberType: {
-          BinarySchemaWriterGenerator.WriteStructure_(cbsb, member);
+        case IContainerMemberType: {
+          BinarySchemaWriterGenerator.WriteContainer_(cbsb, member);
           break;
         }
         case ISequenceMemberType: {
@@ -363,7 +363,7 @@ namespace schema.binary.text {
           });
     }
 
-    private static void WriteStructure_(
+    private static void WriteContainer_(
         ICurlyBracketTextWriter cbsb,
         ISchemaValueMember member) {
       HandleMemberEndiannessAndTracking_(
@@ -444,7 +444,7 @@ namespace schema.binary.text {
               return;
             }
 
-            if (elementType is IStructureMemberType) {
+            if (elementType is IContainerMemberType) {
               cbsb.EnterBlock(
                       $"foreach (var e in this.{member.Name})")
                   .WriteLine("e.Write(ew);")

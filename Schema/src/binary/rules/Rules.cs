@@ -82,10 +82,10 @@ namespace schema.binary {
           "Member '{0}' must be a nullable type to use IfBoolean.");
 
     public static DiagnosticDescriptor
-        StructureMemberBinaryConvertabilityNeedsToSatisfyParent { get; } =
+        ContainerMemberBinaryConvertabilityNeedsToSatisfyParent { get; } =
       Rules.CreateDiagnosticDescriptor_(
-          "Structure member must satisfy parent's binary convertability",
-          "Structure member '{0}' must implement at least the same binary serializable/deserializable interface as its parent.");
+          "Container member must satisfy parent's binary convertability",
+          "Container member '{0}' must implement at least the same binary serializable/deserializable interface as its parent.");
 
     public static DiagnosticDescriptor
         ElementNeedsToImplementIBiSerializable { get; } =

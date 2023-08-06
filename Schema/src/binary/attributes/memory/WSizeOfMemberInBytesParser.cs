@@ -18,7 +18,7 @@ namespace schema.binary.attributes {
           sizeOfAttribute.AccessChainToOtherMember);
 
       if (memberTypeInfo is IIntegerTypeInfo &&
-          memberType is BinarySchemaStructureParser.PrimitiveMemberType
+          memberType is BinarySchemaContainerParser.PrimitiveMemberType
               primitiveMemberType) {
         primitiveMemberType.AccessChainToSizeOf =
             sizeOfAttribute.AccessChainToOtherMember;

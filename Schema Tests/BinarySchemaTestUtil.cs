@@ -25,10 +25,10 @@ namespace schema.binary {
                 .Split(Path.PathSeparator)
                 .Select(path => MetadataReference.CreateFromFile(path)));
 
-    public static IBinarySchemaStructure ParseFirst(string src)
+    public static IBinarySchemaContainer ParseFirst(string src)
       => ParseAll(src).First();
 
-    public static IReadOnlyList<IBinarySchemaStructure> ParseAll(string src) {
+    public static IReadOnlyList<IBinarySchemaContainer> ParseAll(string src) {
       var syntaxTree = CSharpSyntaxTree.ParseText(src);
       var compilation = BinarySchemaTestUtil.Compilation.Clone()
                                             .AddSyntaxTrees(syntaxTree);
@@ -80,13 +80,13 @@ namespace schema.binary {
                          var symbol = semanticModel.GetDeclaredSymbol(typeNode);
                          var namedTypeSymbol = symbol as INamedTypeSymbol;
 
-                         return new BinarySchemaStructureParser()
-                             .ParseStructure(namedTypeSymbol);
+                         return new BinarySchemaContainerParser()
+                             .ParseContainer(namedTypeSymbol);
                        })
                        .ToArray();
 
       var structureByNamedTypeSymbol =
-          new Dictionary<INamedTypeSymbol, IBinarySchemaStructure>();
+          new Dictionary<INamedTypeSymbol, IBinarySchemaContainer>();
       foreach (var structure in structures) {
         structureByNamedTypeSymbol[structure.TypeSymbol] = structure;
       }
@@ -97,13 +97,13 @@ namespace schema.binary {
         foreach (var member in structure.Members.OfType<ISchemaValueMember>()) {
           if (member.MemberType is IPrimitiveMemberType primitiveMemberType) {
             if (primitiveMemberType.AccessChainToSizeOf != null) {
-              sizeOfMemberInBytesDependencyFixer.AddDependenciesForStructure(
+              sizeOfMemberInBytesDependencyFixer.AddDependenciesForContainer(
                   structureByNamedTypeSymbol,
                   primitiveMemberType.AccessChainToSizeOf);
             }
 
             if (primitiveMemberType.AccessChainToPointer != null) {
-              sizeOfMemberInBytesDependencyFixer.AddDependenciesForStructure(
+              sizeOfMemberInBytesDependencyFixer.AddDependenciesForContainer(
                   structureByNamedTypeSymbol,
                   primitiveMemberType.AccessChainToPointer);
             }

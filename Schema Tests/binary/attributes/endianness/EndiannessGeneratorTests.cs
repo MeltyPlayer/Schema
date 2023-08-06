@@ -107,7 +107,7 @@ using schema.binary;
 namespace foo.bar {
   public partial class EndiannessWrapper {
     public void Read(IEndianBinaryReader er) {
-      er.PushStructureEndianness(Endianness.BigEndian);
+      er.PushContainerEndianness(Endianness.BigEndian);
       this.Field1 = er.ReadUInt32();
       this.Field2 = er.ReadUInt32();
       this.Field3 = er.ReadUInt32();
@@ -122,7 +122,7 @@ using schema.binary;
 namespace foo.bar {
   public partial class EndiannessWrapper {
     public void Write(ISubEndianBinaryWriter ew) {
-      ew.PushStructureEndianness(Endianness.BigEndian);
+      ew.PushContainerEndianness(Endianness.BigEndian);
       ew.WriteUInt32(this.Field1);
       ew.WriteUInt32(this.Field2);
       ew.WriteUInt32(this.Field3);

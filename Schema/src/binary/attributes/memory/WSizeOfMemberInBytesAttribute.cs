@@ -4,7 +4,7 @@
 namespace schema.binary.attributes {
   /// <summary>
   ///   Attribute for specifying that an integer represents the size of some
-  ///   structure.
+  ///   member.
   ///
   ///   <para>
   ///     Used at write-time to substitute that length in instead of the raw
@@ -25,7 +25,7 @@ namespace schema.binary.attributes {
 
     protected override void InitFields() {
       this.AccessChainToOtherMember =
-          this.GetAccessChainRelativeToStructure(
+          this.GetAccessChainRelativeToContainer(
               this.otherMemberName_, false);
     }
 

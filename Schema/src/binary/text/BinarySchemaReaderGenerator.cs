@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-using Microsoft.CodeAnalysis;
-
 using schema.binary.attributes;
 using schema.binary.dependencies;
 using schema.util;
@@ -13,8 +11,8 @@ using schema.util.types;
 
 namespace schema.binary.text {
   public class BinarySchemaReaderGenerator {
-    public string Generate(IBinarySchemaStructure structure) {
-      var typeSymbol = structure.TypeSymbol;
+    public string Generate(IBinarySchemaContainer container) {
+      var typeSymbol = container.TypeSymbol;
       var typeV2 = TypeV2.FromSymbol(typeSymbol);
 
       var typeNamespace = typeSymbol.GetFullyQualifiedNamespace();
@@ -27,15 +25,15 @@ namespace schema.binary.text {
 
       {
         var dependencies = new List<string> { "System", "schema.binary" };
-        if (structure.DependsOnSequenceImports()) {
+        if (container.DependsOnSequenceImports()) {
           dependencies.Add("schema.util.sequences");
         }
 
-        if (structure.DependsOnSchemaAttributes()) {
+        if (container.DependsOnSchemaAttributes()) {
           dependencies.Add("schema.binary.attributes");
         }
 
-        if (structure.DependsOnCollectionsImports()) {
+        if (container.DependsOnCollectionsImports()) {
           dependencies.Add("System.Collections.Generic");
         }
 
@@ -60,18 +58,18 @@ namespace schema.binary.text {
 
       cbsb.EnterBlock("public void Read(IEndianBinaryReader er)");
       {
-        var hasLocalPositions = structure.LocalPositions;
+        var hasLocalPositions = container.LocalPositions;
         if (hasLocalPositions) {
           cbsb.WriteLine("er.PushLocalSpace();");
         }
 
-        var hasEndianness = structure.Endianness != null;
+        var hasEndianness = container.Endianness != null;
         if (hasEndianness) {
           cbsb.WriteLine(
-              $"er.PushStructureEndianness({SchemaGeneratorUtil.GetEndiannessName(structure.Endianness.Value)});");
+              $"er.PushContainerEndianness({SchemaGeneratorUtil.GetEndiannessName(container.Endianness.Value)});");
         }
 
-        foreach (var member in structure.Members) {
+        foreach (var member in container.Members) {
           if (member is ISchemaValueMember valueMember) {
             BinarySchemaReaderGenerator.ReadValueMember_(
                 cbsb,
@@ -185,9 +183,9 @@ namespace schema.binary.text {
           BinarySchemaReaderGenerator.ReadString_(cbsb, member);
           break;
         }
-        case IStructureMemberType structureMemberType: {
-          BinarySchemaReaderGenerator.ReadStructure_(cbsb,
-            structureMemberType,
+        case IContainerMemberType containerMemberType: {
+          BinarySchemaReaderGenerator.ReadContainer_(cbsb,
+            containerMemberType,
             member);
           break;
         }
@@ -352,13 +350,13 @@ namespace schema.binary.text {
           });
     }
 
-    private static void ReadStructure_(
+    private static void ReadContainer_(
         ICurlyBracketTextWriter cbsb,
-        IStructureMemberType structureMemberType,
+        IContainerMemberType containerMemberType,
         ISchemaValueMember member) {
       // TODO: Do value types need to be handled differently?
       var memberName = member.Name;
-      if (structureMemberType.IsChild) {
+      if (containerMemberType.IsChild) {
         cbsb.WriteLine($"this.{memberName}.Parent = this;");
       }
 
@@ -366,7 +364,7 @@ namespace schema.binary.text {
           cbsb,
           member,
           () => {
-            if (!structureMemberType.TypeV2.IsStruct) {
+            if (!containerMemberType.TypeV2.IsStruct) {
               cbsb.WriteLine($"this.{memberName}.Read(er);");
             } else {
               cbsb.EnterBlock()
@@ -383,12 +381,12 @@ namespace schema.binary.text {
         ISchemaValueMember member) {
       // TODO: Handle generic types beyond just IBinaryConvertible
 
-      var structureMemberType =
-          Asserts.CastNonnull(member.MemberType as IStructureMemberType);
+      var containerMemberType =
+          Asserts.CastNonnull(member.MemberType as IContainerMemberType);
 
       // TODO: Do value types need to be handled differently?
       var memberName = member.Name;
-      if (structureMemberType.IsChild) {
+      if (containerMemberType.IsChild) {
         cbsb.WriteLine($"this.{memberName}.Parent = this;");
       }
 
@@ -471,10 +469,10 @@ namespace schema.binary.text {
               cbsb.WriteLine(
                   $"{target}.Add({GetReadPrimitiveText_(sourceSymbol, primitiveElementType)});");
             } else if
-                (elementType is IStructureMemberType structureElementType) {
+                (elementType is IContainerMemberType containerElementType) {
               cbsb.WriteLine($"var e = new {qualifiedElementName}();");
 
-              if (structureElementType.IsChild) {
+              if (containerElementType.IsChild) {
                 cbsb.WriteLine("e.Parent = this;");
               }
 
@@ -609,12 +607,12 @@ namespace schema.binary.text {
               return;
             }
 
-            if (elementType is IStructureMemberType structureElementType) {
-              if (!structureElementType.TypeV2.IsStruct) {
+            if (elementType is IContainerMemberType containerElementType) {
+              if (!containerElementType.TypeV2.IsStruct) {
                 cbsb.EnterBlock(
                     $"foreach (var e in this.{member.Name})");
 
-                if (structureElementType.IsChild) {
+                if (containerElementType.IsChild) {
                   cbsb.WriteLine("e.Parent = this;");
                 }
 
@@ -627,7 +625,7 @@ namespace schema.binary.text {
                 cbsb.WriteLine(
                     $"var e = this.{member.Name}[i];");
 
-                if (structureElementType.IsChild) {
+                if (containerElementType.IsChild) {
                   cbsb.WriteLine("e.Parent = this;");
                 }
 

@@ -107,8 +107,8 @@ namespace schema.binary {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PushStructureEndianness(Endianness endianness) {
-      this.endiannessImpl_.PushStructureEndianness(endianness);
+    public void PushContainerEndianness(Endianness endianness) {
+      this.endiannessImpl_.PushContainerEndianness(endianness);
       this.UpdateSpanElementReverser_();
     }
 
