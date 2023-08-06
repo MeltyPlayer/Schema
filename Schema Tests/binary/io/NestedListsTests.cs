@@ -22,7 +22,7 @@ namespace schema.binary.io {
     }
 
     [Test]
-    public async Task TestValues() {
+    public void TestValues() {
       var impl = new NestedList<string>();
 
       impl.Add("first");
@@ -33,7 +33,7 @@ namespace schema.binary.io {
     }
 
     [Test]
-    public async Task TestNestedValues() {
+    public void TestNestedValues() {
       var impl = new NestedList<string>();
 
       impl.Add("before children");

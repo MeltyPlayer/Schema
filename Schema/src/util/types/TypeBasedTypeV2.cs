@@ -98,6 +98,35 @@ namespace schema.util.types {
       }
 
 
+      public override bool ContainsMemberWithType(ITypeV2 other) {
+        var fieldTypeV2s =
+            this.type_.GetFields(BindingFlags.Public | BindingFlags.Instance)
+                .Concat(
+                    this.type_.GetFields(BindingFlags.NonPublic |
+                                         BindingFlags.Instance))
+                .Where(field => !field.Name.Contains("k__BackingField"))
+                .Select(field => field.FieldType)
+                .Distinct()
+                .Select(TypeV2.FromType);
+        var propertyTypeV2s =
+            this.type_.GetProperties(
+                    BindingFlags.Public | BindingFlags.Instance)
+                .Concat(
+                    this.type_.GetProperties(BindingFlags.NonPublic |
+                                             BindingFlags.Instance))
+                .Where(property => property.GetIndexParameters().Length == 0)
+                .Select(property => property.PropertyType)
+                .Distinct()
+                .Select(TypeV2.FromType);
+
+        return fieldTypeV2s
+               .Concat(propertyTypeV2s)
+               .Select(typeV2 => typeV2.IsSequence(out var elementTypeV2, out _)
+                           ? elementTypeV2
+                           : typeV2)
+               .Any(other.IsExactly);
+      }
+
       public override bool HasAttribute<TAttribute>()
         => this.GetAttribute<TAttribute>() != null;
 

@@ -10,7 +10,7 @@ namespace schema.binary {
     [TestCase(typeof(IBinarySerializable), typeof(IBinarySerializable))]
     [TestCase(typeof(IBinaryDeserializable), typeof(IBinaryConvertible))]
     [TestCase(typeof(IBinarySerializable), typeof(IBinaryConvertible))]
-    public void TestSatisfyingBinaryConvertability(
+    public void TestSatisfyingBinaryConvertibility(
         Type childInterface,
         Type parentInterface) {
       var structure = BinarySchemaTestUtil.ParseFirst(@$"
@@ -37,7 +37,7 @@ namespace foo.bar {{
     [TestCase(typeof(IBinaryDeserializable), typeof(IBinarySerializable))]
     [TestCase(typeof(IBinaryConvertible), typeof(IBinarySerializable))]
     [TestCase(typeof(IBinaryConvertible), typeof(IBinaryDeserializable))]
-    public void TestNonSatisfyingBinaryConvertability(
+    public void TestNonSatisfyingBinaryConvertibility(
         Type childInterface,
         Type parentInterface) {
       var structure = BinarySchemaTestUtil.ParseFirst(@$"

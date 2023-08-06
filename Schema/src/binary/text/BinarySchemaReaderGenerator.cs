@@ -535,7 +535,7 @@ namespace schema.binary.text {
             var sequenceTypeInfo = sequenceMemberType.SequenceTypeInfo;
             var sequenceType = sequenceTypeInfo.SequenceType;
 
-            if (sequenceType.IsSequence()) {
+            if (sequenceType.IsISequence()) {
               cbsb.WriteLine($"this.{member.Name}.Read(er);");
               return;
             }

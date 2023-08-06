@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 using Microsoft.CodeAnalysis;
 
@@ -25,7 +26,7 @@ namespace schema.util.types {
       private IDiagnosticReporter? diagnosticReporter_;
 
       public SymbolBasedTypeV2(ITypeSymbol symbol,
-                          IDiagnosticReporter? diagnosticReporter) {
+                               IDiagnosticReporter? diagnosticReporter) {
         this.symbol_ = symbol;
         this.diagnosticReporter_ = diagnosticReporter;
       }
@@ -195,7 +196,25 @@ namespace schema.util.types {
                                   attributeType) ?? false);
       }
 
-      public override ITypeSymbol TypeSymbol => this.symbol_;
+      public override bool ContainsMemberWithType(ITypeV2 other)
+        => this.symbol_
+               .GetMembers()
+               .Select(member => {
+                 switch (member) {
+                   case IFieldSymbol fieldSymbol: return fieldSymbol.Type;
+                   case IPropertySymbol propertySymbol:
+                     return propertySymbol.Type;
+                   default: return null;
+                 }
+               })
+               .Where(type => type != null)
+               .Distinct()
+               .Select(TypeV2.FromSymbol)
+               .Select(
+                   typeV2 => typeV2.IsSequence(out var elementTypeV2, out _)
+                       ? elementTypeV2
+                       : typeV2)
+               .Any(other.IsExactly);
     }
   }
 }

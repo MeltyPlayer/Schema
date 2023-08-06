@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.CodeAnalysis;
@@ -100,16 +101,40 @@ namespace schema.binary {
     MUTABLE_LIST,
     READ_ONLY_LIST,
     MUTABLE_SEQUENCE,
+    CONST_LENGTH_MUTABLE_SEQUENCE,
     READ_ONLY_SEQUENCE,
   }
 
   public static class SequenceTypeExtensions {
+    public static bool IsConstLength(this SequenceType sequenceType)
+      => sequenceType switch {
+          SequenceType.MUTABLE_ARRAY                 => true,
+          SequenceType.IMMUTABLE_ARRAY               => true,
+          SequenceType.MUTABLE_LIST                  => false,
+          SequenceType.READ_ONLY_LIST                => true,
+          SequenceType.MUTABLE_SEQUENCE              => false,
+          SequenceType.CONST_LENGTH_MUTABLE_SEQUENCE => true,
+          SequenceType.READ_ONLY_SEQUENCE            => true,
+      };
+
+    public static bool IsReadOnly(this SequenceType sequenceType)
+      => sequenceType switch {
+          SequenceType.MUTABLE_ARRAY                 => false,
+          SequenceType.IMMUTABLE_ARRAY               => true,
+          SequenceType.MUTABLE_LIST                  => false,
+          SequenceType.READ_ONLY_LIST                => true,
+          SequenceType.MUTABLE_SEQUENCE              => false,
+          SequenceType.CONST_LENGTH_MUTABLE_SEQUENCE => false,
+          SequenceType.READ_ONLY_SEQUENCE            => true,
+      };
+
     public static bool IsArray(this SequenceType sequenceType)
       => sequenceType is SequenceType.MUTABLE_ARRAY
                          or SequenceType.IMMUTABLE_ARRAY;
 
-    public static bool IsSequence(this SequenceType sequenceType)
+    public static bool IsISequence(this SequenceType sequenceType)
       => sequenceType is SequenceType.MUTABLE_SEQUENCE
+                         or SequenceType.CONST_LENGTH_MUTABLE_SEQUENCE
                          or SequenceType.READ_ONLY_SEQUENCE;
   }
 
@@ -146,16 +171,16 @@ namespace schema.binary {
       new PartialContainerAsserter(containerBetterSymbol)
           .AssertContainersArePartial(containerSymbol);
 
-      var iChildOfParser = new ChildOfParser(containerBetterSymbol);
-      var parentTypeSymbol =
-          iChildOfParser.GetParentTypeSymbolOf(containerSymbol);
-      if (parentTypeSymbol != null) {
-        iChildOfParser.AssertParentContainsChild(
-            parentTypeSymbol,
-            containerSymbol);
-        iChildOfParser.AssertParentBinaryConvertabilityMatchesChild(
-            parentTypeSymbol,
-            containerSymbol);
+      if (containerTypeV2.IsChild(out var parentTypeV2)) {
+        if (!parentTypeV2.ContainsMemberWithType(containerTypeV2)) {
+          containerBetterSymbol.ReportDiagnostic(
+              Rules.ChildTypeMustBeContainedInParent);
+        }
+
+        if (!parentTypeV2.IsAtLeastAsBinaryConvertibleAs(containerTypeV2)) {
+          containerBetterSymbol.ReportDiagnostic(
+              Rules.ParentBinaryConvertabilityMustSatisfyChild);
+        }
       }
 
       var localPositions =
@@ -206,7 +231,7 @@ namespace schema.binary {
         bool isIgnored =
             memberSymbol.HasAttribute<IgnoreAttribute>() ||
             (memberSymbol.Name == nameof(IChildOf<IBinaryConvertible>.Parent)
-             && parentTypeSymbol != null);
+             && parentTypeV2 != null);
 
         // Skips parent field for child types
 
@@ -462,13 +487,8 @@ namespace schema.binary {
         // Checks if the member is a child of the current type
         {
           if (targetMemberType is ContainerMemberType containerMemberType) {
-            var expectedParentTypeSymbol =
-                new ChildOfParser(memberBetterSymbol)
-                    .GetParentTypeSymbolOf(
-                        (targetMemberType.TypeV2.TypeSymbol as INamedTypeSymbol)
-                        !);
-            if (expectedParentTypeSymbol != null) {
-              if (expectedParentTypeSymbol.Equals(containerTypeSymbol)) {
+            if (targetMemberType.TypeV2.IsChild(out var expectedParentTypeV2)) {
+              if (expectedParentTypeV2.IsExactly(containerTypeV2)) {
                 containerMemberType.IsChild = true;
               } else {
                 memberBetterSymbol.ReportDiagnostic(

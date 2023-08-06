@@ -112,11 +112,11 @@ namespace schema.util.symbols {
     private static IEnumerable<string> GetContainingNamespacesReversed_(
         this ISymbol symbol) {
       var namespaceSymbol = symbol.ContainingNamespace;
-      if (namespaceSymbol.IsGlobalNamespace) {
+      if (namespaceSymbol?.IsGlobalNamespace ?? true) {
         yield break;
       }
 
-      while (!namespaceSymbol.IsGlobalNamespace) {
+      while (!namespaceSymbol?.IsGlobalNamespace ?? true) {
         if (namespaceSymbol.Name.Length > 0) {
           yield return namespaceSymbol.Name;
         }

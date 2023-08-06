@@ -5,7 +5,6 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 
 using schema.util;
-using schema.util.sequences;
 using schema.util.symbols;
 using schema.util.types;
 
@@ -180,135 +179,23 @@ namespace schema.binary.parser {
         return ParseStatus.SUCCESS;
       }
 
-      if (typeV2.IsArray(out var containedTypeV2)) {
-        var containedParseStatus = this.ParseTypeV2(
-            containedTypeV2,
-            false,
-            out var containedTypeInfo);
-        if (containedParseStatus != ParseStatus.SUCCESS) {
+      if (typeV2.IsSequence(out var elementTypeV2, out var sequenceType)) {
+        var elementParseStatus = this.ParseTypeV2(
+            elementTypeV2,
+            sequenceType.IsReadOnly(),
+            out var elementTypeInfo);
+        if (elementParseStatus != ParseStatus.SUCCESS) {
           typeInfo = default;
-          return containedParseStatus;
+          return elementParseStatus;
         }
 
         typeInfo = new SequenceTypeInfo(
             typeV2,
             isReadonly,
             isNullable,
-            SequenceType.MUTABLE_ARRAY,
-            isReadonly,
-            containedTypeInfo);
-        return ParseStatus.SUCCESS;
-      }
-
-      if (typeV2.Implements(typeof(ISequence<,>), out var sequenceTypeV2)) {
-        var containedTypeSymbol =
-            sequenceTypeV2.GenericArguments.ToArray()[1];
-        var containedParseStatus = this.ParseTypeV2(
-            containedTypeSymbol,
-            false,
-            out var containedTypeInfo);
-        if (containedParseStatus != ParseStatus.SUCCESS) {
-          typeInfo = default;
-          return containedParseStatus;
-        }
-
-        typeInfo = new SequenceTypeInfo(
-            typeV2,
-            isReadonly,
-            isNullable,
-            SequenceType.MUTABLE_SEQUENCE,
-            false,
-            containedTypeInfo);
-        return ParseStatus.SUCCESS;
-      }
-
-      if (typeV2.Implements(typeof(IConstLengthSequence<,>),
-                            out var constLengthSequenceTypeV2)) {
-        var containedTypeSymbol =
-            constLengthSequenceTypeV2.GenericArguments.ToArray()[1];
-        var containedParseStatus = this.ParseTypeV2(
-            containedTypeSymbol,
-            false,
-            out var containedTypeInfo);
-        if (containedParseStatus != ParseStatus.SUCCESS) {
-          typeInfo = default;
-          return containedParseStatus;
-        }
-
-        typeInfo = new SequenceTypeInfo(
-            typeV2,
-            isReadonly,
-            isNullable,
-            SequenceType.MUTABLE_SEQUENCE,
-            true,
-            containedTypeInfo);
-        return ParseStatus.SUCCESS;
-      }
-
-      if (typeV2.Implements(typeof(IReadOnlySequence<,>),
-                            out var readOnlySequence)) {
-        var containedTypeSymbol =
-            readOnlySequence.GenericArguments.ToArray()[1];
-        var containedParseStatus = this.ParseTypeV2(
-            containedTypeSymbol,
-            true,
-            out var containedTypeInfo);
-        if (containedParseStatus != ParseStatus.SUCCESS) {
-          typeInfo = default;
-          return containedParseStatus;
-        }
-
-        typeInfo = new SequenceTypeInfo(
-            typeV2,
-            isReadonly,
-            isNullable,
-            SequenceType.READ_ONLY_SEQUENCE,
-            isReadonly,
-            containedTypeInfo);
-        return ParseStatus.SUCCESS;
-      }
-
-      if (typeV2.Implements(typeof(List<>), out var listTypeV2)) {
-        var containedTypeSymbol = listTypeV2.GenericArguments.ToArray()[0];
-        var containedParseStatus = this.ParseTypeV2(
-            containedTypeSymbol,
-            false,
-            out var containedTypeInfo);
-        if (containedParseStatus != ParseStatus.SUCCESS) {
-          typeInfo = default;
-          return containedParseStatus;
-        }
-
-        typeInfo = new SequenceTypeInfo(
-            typeV2,
-            isReadonly,
-            isNullable,
-            SequenceType.MUTABLE_LIST,
-            false,
-            containedTypeInfo);
-        return ParseStatus.SUCCESS;
-      }
-
-      if (typeV2.Implements(typeof(IReadOnlyList<>),
-                            out var readonlyListTypeV2)) {
-        var containedTypeSymbol =
-            readonlyListTypeV2.GenericArguments.ToArray()[0];
-        var containedParseStatus = this.ParseTypeV2(
-            containedTypeSymbol,
-            false,
-            out var containedTypeInfo);
-        if (containedParseStatus != ParseStatus.SUCCESS) {
-          typeInfo = default;
-          return containedParseStatus;
-        }
-
-        typeInfo = new SequenceTypeInfo(
-            typeV2,
-            isReadonly,
-            isNullable,
-            SequenceType.MUTABLE_LIST,
-            false,
-            containedTypeInfo);
+            sequenceType,
+            isReadonly && sequenceType.IsConstLength(),
+            elementTypeInfo);
         return ParseStatus.SUCCESS;
       }
 

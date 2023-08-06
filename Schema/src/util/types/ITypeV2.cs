@@ -43,13 +43,16 @@ namespace schema.util.types {
     bool IsPrimitive(out SchemaPrimitiveType primitiveType);
     bool IsEnum(out SchemaIntegerType underlyingType);
 
+    bool IsSequence(out ITypeV2 elementType,
+                    out SequenceType sequenceType);
+
+    bool IsChild(out ITypeV2 parent);
+    bool ContainsMemberWithType(ITypeV2 other);
+
     bool HasAttribute<TAttribute>() where TAttribute : Attribute;
     TAttribute GetAttribute<TAttribute>() where TAttribute : Attribute;
 
     IEnumerable<TAttribute> GetAttributes<TAttribute>()
         where TAttribute : Attribute;
-
-    // TODO: Clean this up
-    ITypeSymbol TypeSymbol { get; }
   }
 }

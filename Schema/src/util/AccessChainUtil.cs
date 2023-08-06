@@ -12,6 +12,7 @@ using schema.binary.parser;
 using schema.util;
 using schema.util.diagnostics;
 using schema.util.symbols;
+using schema.util.types;
 
 namespace schema.binary {
   public interface IChain<out T> {
@@ -177,9 +178,9 @@ namespace schema.binary {
           IsOrderValid = comesAfter,
       });
 
+      var containerTypeV2 = TypeV2.FromSymbol(containerSymbol);
       if (currentMemberName == nameof(IChildOf<IBinaryConvertible>.Parent) &&
-          new ChildOfParser(diagnosticReporter).GetParentTypeSymbolOf(
-              (containerSymbol as INamedTypeSymbol)!) != null) {
+          containerTypeV2.IsChild(out _)) {
         upDownStack.PushUpFrom(prevMemberName);
       } else {
         upDownStack.PushDownTo(currentMemberName);
