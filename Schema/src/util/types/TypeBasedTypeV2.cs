@@ -13,12 +13,12 @@ namespace schema.util.types {
     public static ITypeV2 FromType<T>() => FromType(typeof(T));
 
     public static ITypeV2 FromType(Type type)
-      => new TypeTypeV2(type);
+      => new TypeBasedTypeV2(type);
 
-    private class TypeTypeV2 : BSymbolTypeV2 {
+    private class TypeBasedTypeV2 : BSymbolTypeV2 {
       private readonly Type type_;
 
-      public TypeTypeV2(Type type) {
+      public TypeBasedTypeV2(Type type) {
         this.type_ = type;
       }
 

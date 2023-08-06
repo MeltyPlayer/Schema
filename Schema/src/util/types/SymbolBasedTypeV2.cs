@@ -13,18 +13,18 @@ using schema.util.symbols;
 namespace schema.util.types {
   public static partial class TypeV2 {
     public static ITypeV2 FromSymbol(ITypeSymbol symbol)
-      => new SymbolTypeV2(symbol, null);
+      => new SymbolBasedTypeV2(symbol, null);
 
     internal static ITypeV2 FromSymbol(
         ITypeSymbol symbol,
         IDiagnosticReporter diagnosticReporter)
-      => new SymbolTypeV2(symbol, diagnosticReporter);
+      => new SymbolBasedTypeV2(symbol, diagnosticReporter);
 
-    private class SymbolTypeV2 : BSymbolTypeV2 {
+    private class SymbolBasedTypeV2 : BSymbolTypeV2 {
       private readonly ITypeSymbol symbol_;
       private IDiagnosticReporter? diagnosticReporter_;
 
-      public SymbolTypeV2(ITypeSymbol symbol,
+      public SymbolBasedTypeV2(ITypeSymbol symbol,
                           IDiagnosticReporter? diagnosticReporter) {
         this.symbol_ = symbol;
         this.diagnosticReporter_ = diagnosticReporter;
