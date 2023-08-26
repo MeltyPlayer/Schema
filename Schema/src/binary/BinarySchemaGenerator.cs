@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -114,7 +115,8 @@ namespace schema.binary {
 
       // Gathers up a map of all containers by named type symbol.
       var containerByNamedTypeSymbol =
-          new Dictionary<INamedTypeSymbol, IBinarySchemaContainer>();
+          new ConcurrentDictionary<INamedTypeSymbol, IBinarySchemaContainer>(
+              SymbolEqualityComparer.Default);
       foreach (var container in this.queue_) {
         containerByNamedTypeSymbol[container.TypeSymbol] = container;
       }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -7,10 +7,11 @@ using schema.util.diagnostics;
 
 namespace schema.util.symbols {
   internal static partial class BetterSymbol {
-    private static Dictionary<INamedTypeSymbol, IBetterSymbol<INamedTypeSymbol>>
+    private static ConcurrentDictionary<INamedTypeSymbol,
+            IBetterSymbol<INamedTypeSymbol>>
         typeCache_ = new(SymbolEqualityComparer.Default);
 
-    private static Dictionary<ISymbol, IBetterSymbol> memberCache_ =
+    private static ConcurrentDictionary<ISymbol, IBetterSymbol> memberCache_ =
         new(SymbolEqualityComparer.Default);
 
 
