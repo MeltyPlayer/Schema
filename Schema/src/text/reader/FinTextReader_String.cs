@@ -62,7 +62,8 @@ namespace schema.text.reader {
         this.IndexInLine = 0;
         ++this.LineNumber;
       } else if (c == '\t') {
-        this.IndexInLine += this.TabWidth;
+        var remainderToNextTabPosition = this.IndexInLine % this.TabWidth;
+        this.IndexInLine += this.TabWidth - remainderToNextTabPosition;
       } else if (!char.IsControl(c)) {
         ++this.IndexInLine;
       }

@@ -18,7 +18,7 @@ namespace schema.text.reader {
 
     private void ReleaseUnmanagedResources_() => this.baseStream_.Dispose();
 
-    public int TabWidth { get; set; } = 2;
+    public int TabWidth { get; } = 4;
     public int LineNumber { get; private set; }
     public int IndexInLine { get; private set; }
 

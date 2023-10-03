@@ -1,11 +1,11 @@
-﻿using NUnit.Framework;
+﻿using System;
+
+using NUnit.Framework;
 
 using schema.util;
-using schema.text;
-using schema.text.reader;
 
 
-namespace System.IO {
+namespace schema.text.reader {
   internal class FinTextReaderNumberTests {
     private void ReadAndAssert_<T>(
         FinTextReader tr,
@@ -14,7 +14,6 @@ namespace System.IO {
         Action<T> assertValue) {
       Asserts.Equal(expectedValue, readHandler());
 
-      tr.Position = 0;
       assertValue(expectedValue);
     }
 

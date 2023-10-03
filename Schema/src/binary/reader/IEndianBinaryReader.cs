@@ -8,6 +8,7 @@ namespace schema.binary {
                                          ILocalSpaceStack {
     void Close();
 
+    new long Position { get; set; }
     void AssertPosition(long expectedPosition);
     void AssertNotEof();
 
