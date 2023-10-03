@@ -1,6 +1,7 @@
 ﻿using System;
 
 using schema.binary.attributes;
+using schema.util.streams;
 
 namespace schema.binary {
   public interface IEndianBinaryReader : IDataReader,
@@ -14,18 +15,20 @@ namespace schema.binary {
 
     void Align(uint amt);
 
-    void Subread(long position,
-                 int len,
-                 Action<IEndianBinaryReader> subread);
+    void Subread(int len, Action<IEndianBinaryReader> subread);
+    T Subread<T>(int len, Func<IEndianBinaryReader, T> subread);
 
-    void Subread(long position, Action<IEndianBinaryReader> subread);
+    void SubreadAt(long position, Action<IEndianBinaryReader> subread);
 
+    void SubreadAt(long position,
+                   int len,
+                   Action<IEndianBinaryReader> subread);
 
-    T Subread<T>(long position,
-                 int len,
-                 Func<IEndianBinaryReader, T> subread);
+    T SubreadAt<T>(long position, Func<IEndianBinaryReader, T> subread);
 
-    T Subread<T>(long position, Func<IEndianBinaryReader, T> subread);
+    T SubreadAt<T>(long position,
+                   int len,
+                   Func<IEndianBinaryReader, T> subread);
 
 
     byte[] ReadBytes(long count);

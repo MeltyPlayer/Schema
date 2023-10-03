@@ -55,16 +55,16 @@ namespace build {
       var er = new EndianBinaryReader(ms);
 
       ByteSequenceWrapper actualSw = default;
-      er.Subread(3,
-                 expectedSw.Values.Length,
-                 ser => {
-                   Assert.AreEqual(3, ser.Position);
-                   Assert.AreEqual(9, ser.Length);
+      er.SubreadAt(3,
+                   expectedSw.Values.Length,
+                   ser => {
+                     Assert.AreEqual(3, ser.Position);
+                     Assert.AreEqual(9, ser.Length);
 
-                   actualSw = ser.ReadNew<ByteSequenceWrapper>();
+                     actualSw = ser.ReadNew<ByteSequenceWrapper>();
 
-                   Assert.AreEqual(9, ser.Position);
-                 });
+                     Assert.AreEqual(9, ser.Position);
+                   });
 
       Assert.AreEqual(expectedSw, actualSw);
     }
@@ -84,16 +84,16 @@ namespace build {
       Assert.AreEqual(0, er.Position);
 
       ByteSequenceWrapper actualSw = default;
-      er.Subread(2,
-                 expectedSw.Values.Length,
-                 ser => {
-                   Assert.AreEqual(2, ser.Position);
-                   Assert.AreEqual(8, ser.Length);
+      er.SubreadAt(2,
+                   expectedSw.Values.Length,
+                   ser => {
+                     Assert.AreEqual(2, ser.Position);
+                     Assert.AreEqual(8, ser.Length);
 
-                   actualSw = ser.ReadNew<ByteSequenceWrapper>();
+                     actualSw = ser.ReadNew<ByteSequenceWrapper>();
 
-                   Assert.AreEqual(8, ser.Position);
-                 });
+                     Assert.AreEqual(8, ser.Position);
+                   });
 
       Assert.AreEqual(expectedSw, actualSw);
     }
@@ -251,16 +251,16 @@ namespace build {
       Assert.AreEqual(0, er.Position);
 
       ByteClassSequenceWrapper actualSw = default;
-      er.Subread(2,
-                 3 * expectedSw.Values.Length,
-                 ser => {
-                   Assert.AreEqual(2, ser.Position);
-                   Assert.AreEqual(11, ser.Length);
+      er.SubreadAt(2,
+                   3 * expectedSw.Values.Length,
+                   ser => {
+                     Assert.AreEqual(2, ser.Position);
+                     Assert.AreEqual(11, ser.Length);
 
-                   actualSw = ser.ReadNew<ByteClassSequenceWrapper>();
+                     actualSw = ser.ReadNew<ByteClassSequenceWrapper>();
 
-                   Assert.AreEqual(11, ser.Position);
-                 });
+                     Assert.AreEqual(11, ser.Position);
+                   });
 
       Assert.AreEqual(expectedSw, actualSw);
     }

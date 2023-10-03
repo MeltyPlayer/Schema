@@ -72,59 +72,6 @@ namespace schema.binary {
       this.disposed_ = true;
     }
 
-    public void Subread(long position,
-                        int len,
-                        Action<IEndianBinaryReader> subread) {
-      var tempPos = this.Position;
-      {
-        this.Position = position;
-
-        var baseOffset = this.positionManagerImpl_.BaseOffset;
-        var substream =
-            new RangedReadableSubstream(this.BaseStream_,
-                                        position,
-                                        baseOffset + len);
-        using var ser = new EndianBinaryReader(substream, this.Endianness);
-        ser.positionManagerImpl_ =
-            new StreamPositionManager(substream, baseOffset);
-        subread(ser);
-      }
-      this.Position = tempPos;
-    }
-
-    public void Subread(long position, Action<IEndianBinaryReader> subread) {
-      var tempPos = this.Position;
-      {
-        this.Position = position;
-        subread(this);
-      }
-      this.Position = tempPos;
-    }
-
-
-    public T Subread<T>(long position,
-                        int len,
-                        Func<IEndianBinaryReader, T> subread) {
-      T value = default;
-
-      this.Subread(
-          position,
-          len,
-          ser => { value = subread(ser); });
-
-      return value!;
-    }
-
-    public T Subread<T>(long position, Func<IEndianBinaryReader, T> subread) {
-      T value = default;
-
-      this.Subread(
-          position,
-          ser => { value = subread(ser); });
-
-      return value!;
-    }
-
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void Assert_<T>(T expectedValue, T actualValue) {

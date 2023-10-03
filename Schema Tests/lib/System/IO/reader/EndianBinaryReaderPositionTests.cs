@@ -60,12 +60,10 @@ namespace schema.binary {
         er.Position = 3;
         Assert.AreEqual(3, er.Position);
 
-        er.Subread(
+        er.SubreadAt(
             3,
             50,
-            ser => {
-              Assert.AreEqual(3, ser.Position);
-            });
+            ser => { Assert.AreEqual(3, ser.Position); });
       }
     }
   }

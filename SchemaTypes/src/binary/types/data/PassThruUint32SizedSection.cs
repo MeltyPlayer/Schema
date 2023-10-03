@@ -31,7 +31,7 @@ namespace schema.binary.types.data {
 
       var useSize = this.size_ + this.tweakSize_;
       var basePosition = er.Position;
-      er.Subread(er.Position, (int) useSize, this.Data.Read);
+      er.SubreadAt(er.Position, (int) useSize, this.Data.Read);
       er.Position = basePosition + useSize;
     }
   }
