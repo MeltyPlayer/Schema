@@ -1,11 +1,16 @@
 ﻿using System;
 using System.IO;
 
+using schema.util.streams;
+
 namespace schema.text.reader {
   public sealed partial class FinTextReader : ITextReader, IDisposable {
-    private readonly Stream baseStream_;
+    private readonly ISeekableReadableStream baseStream_;
 
-    public FinTextReader(Stream baseStream, int tabWidth = 4) {
+    public FinTextReader(Stream baseStream, int tabWidth = 4)
+        : this(new ReadableStream(baseStream), tabWidth) { }
+
+    public FinTextReader(ISeekableReadableStream baseStream, int tabWidth = 4) {
       this.baseStream_ = baseStream;
       this.TabWidth = tabWidth;
     }
@@ -38,7 +43,8 @@ namespace schema.text.reader {
       return value;
     }
 
-    public bool TryReadNew<T>(out T? value) where T : ITextDeserializable, new() {
+    public bool TryReadNew<T>(out T? value)
+        where T : ITextDeserializable, new() {
       var originalLineNumber = this.LineNumber;
       var originalIndexInLine = this.IndexInLine;
       var originalPosition = this.Position;
@@ -65,6 +71,7 @@ namespace schema.text.reader {
       for (var i = 0; i < length; ++i) {
         array[i] = this.ReadNew<T>();
       }
+
       return array;
     }
   }

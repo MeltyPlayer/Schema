@@ -3,6 +3,8 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
+using schema.util.streams;
+
 
 namespace schema.binary {
   public sealed partial class EndianBinaryWriter {
@@ -38,6 +40,10 @@ namespace schema.binary {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Task CompleteAndCopyToDelayed(Stream stream)
+      => this.CompleteAndCopyToDelayed(new WritableStream(stream));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Task CompleteAndCopyToDelayed(ISizedWritableStream stream)
       => this.impl_.CompleteAndCopyToDelayed(stream);
 
     private void WriteBufferDelayed_(Task<byte[]> delayedBytes) {

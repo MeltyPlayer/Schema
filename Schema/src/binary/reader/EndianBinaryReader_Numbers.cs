@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-using CommunityToolkit.HighPerformance;
-
-using schema.src.util;
+using schema.util.streams;
 
 
 namespace schema.binary {
@@ -13,11 +11,7 @@ namespace schema.binary {
       => EndianBinaryReader.Assert_(expectedValue, this.ReadByte());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public unsafe byte ReadByte() {
-      byte dst = default;
-      this.bufferedStream_.BaseStream.Read(UnsafeUtil.AsSpan(ref dst));
-      return dst;
-    }
+    public byte ReadByte() => this.bufferedStream_.BaseStream.ReadByte();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte[] ReadBytes(long count) {

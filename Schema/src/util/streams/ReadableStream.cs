@@ -17,14 +17,7 @@ namespace schema.util.streams {
 
     public ReadableStream(byte[] impl) : this(new MemoryStream(impl)) { }
 
-    ~ReadableStream() => this.ReleaseUnmanagedResources_();
-
-    public void Dispose() {
-      this.ReleaseUnmanagedResources_();
-      GC.SuppressFinalize(this);
-    }
-
-    private void ReleaseUnmanagedResources_() => this.impl_.Dispose();
+    public void Dispose() => this.impl_.Dispose();
 
     public long Position {
       get => this.impl_.Position;

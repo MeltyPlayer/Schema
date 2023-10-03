@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -8,11 +7,12 @@ using System.Threading.Tasks;
 using CommunityToolkit.HighPerformance;
 
 using schema.util;
+using schema.util.streams;
 
 namespace schema.binary.io {
   public interface IDelayedContentOutputStream :
       ISubDelayedContentOutputStream {
-    Task CompleteAndCopyToDelayed(Stream stream);
+    Task CompleteAndCopyToDelayed(ISizedWritableStream stream);
   }
 
   public interface ISubDelayedContentOutputStream : IEndiannessStack {
@@ -241,7 +241,7 @@ namespace schema.binary.io {
     }
 
 
-    public async Task CompleteAndCopyToDelayed(Stream stream) {
+    public async Task CompleteAndCopyToDelayed(ISizedWritableStream stream) {
       this.AssertNotCompleted_();
       this.isCompleted_ = true;
 
@@ -298,10 +298,9 @@ namespace schema.binary.io {
             break;
           }
           case BytesDataChunk bytesDataChunk: {
-            var bytes = bytesDataChunk.Bytes;
-            await stream.WriteAsync(bytes,
-                                    bytesDataChunk.Offset,
-                                    bytesDataChunk.Count);
+            stream.Write(
+                bytesDataChunk.Bytes.AsSpan(bytesDataChunk.Offset,
+                                            bytesDataChunk.Count));
             break;
           }
         }

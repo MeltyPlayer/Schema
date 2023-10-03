@@ -3,10 +3,12 @@ using System.IO;
 using System.Threading.Tasks;
 
 using schema.binary.attributes;
+using schema.util.streams;
 
 namespace schema.binary {
   public interface IEndianBinaryWriter : ISubEndianBinaryWriter, IDisposable {
     Task CompleteAndCopyToDelayed(Stream stream);
+    Task CompleteAndCopyToDelayed(ISizedWritableStream stream);
   }
 
   public interface ISubEndianBinaryWriter

@@ -1,9 +1,9 @@
 ﻿using System;
 
+using schema.util.streams;
+
 namespace schema {
-  public interface IDataReader {
-    long Position { get; }
-    long Length { get; }
+  public interface IDataReader : ISizedStream {
     bool Eof { get; }
 
     void AssertByte(byte expectedValue);

@@ -6,6 +6,7 @@ using System.Text;
 using CommunityToolkit.HighPerformance;
 
 using schema.util;
+using schema.util.streams;
 
 namespace schema.text.reader {
   public sealed partial class FinTextReader {
