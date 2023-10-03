@@ -48,4 +48,21 @@ namespace schema {
     string ReadString(long count);
     string ReadLine();
   }
+
+  public interface IDataWriter {
+    void WriteByte(byte value);
+    void WriteSByte(sbyte value);
+    void WriteInt16(short value);
+    void WriteUInt16(ushort value);
+    void WriteInt32(int value);
+    void WriteUInt32(uint value);
+    void WriteSingle(float value);
+    void WriteDouble(double value);
+
+    void WriteChar(char value);
+    void WriteChars(ReadOnlySpan<char> values);
+    void WriteChars(char[] values, int offset, int count);
+
+    void WriteString(string value);
+  }
 }

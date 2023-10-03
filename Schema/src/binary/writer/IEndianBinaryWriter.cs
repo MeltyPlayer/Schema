@@ -9,22 +9,19 @@ namespace schema.binary {
     Task CompleteAndCopyToDelayed(Stream stream);
   }
 
-  public interface ISubEndianBinaryWriter : IEndiannessStack, ILocalSpaceStack {
+  public interface ISubEndianBinaryWriter
+      : IDataWriter, IEndiannessStack, ILocalSpaceStack {
     void Align(uint amt);
 
-    void WriteByte(byte value);
     void WriteBytes(ReadOnlySpan<byte> values);
     void WriteBytes(byte[] values, int offset, int count);
 
-    void WriteSByte(sbyte value);
     void WriteSBytes(ReadOnlySpan<sbyte> values);
     void WriteSBytes(sbyte[] values, int offset, int count);
 
-    void WriteInt16(short value);
     void WriteInt16s(ReadOnlySpan<short> values);
     void WriteInt16s(short[] values, int offset, int count);
 
-    void WriteUInt16(ushort value);
     void WriteUInt16s(ReadOnlySpan<ushort> values);
     void WriteUInt16s(ushort[] values, int offset, int count);
 
@@ -36,11 +33,9 @@ namespace schema.binary {
     void WriteUInt24s(ReadOnlySpan<uint> values);
     void WriteUInt24s(uint[] values, int offset, int count);
 
-    void WriteInt32(int value);
     void WriteInt32s(ReadOnlySpan<int> values);
     void WriteInt32s(int[] values, int offset, int count);
 
-    void WriteUInt32(uint value);
     void WriteUInt32s(ReadOnlySpan<uint> values);
     void WriteUInt32s(uint[] values, int offset, int count);
 
@@ -56,11 +51,9 @@ namespace schema.binary {
     void WriteHalfs(ReadOnlySpan<float> values);
     void WriteHalfs(float[] values, int offset, int count);
 
-    void WriteSingle(float value);
     void WriteSingles(ReadOnlySpan<float> values);
     void WriteSingles(float[] values, int offset, int count);
 
-    void WriteDouble(double value);
     void WriteDoubles(ReadOnlySpan<double> values);
     void WriteDoubles(double[] values, int offset, int count);
 
@@ -80,10 +73,6 @@ namespace schema.binary {
     void WriteSn16s(ReadOnlySpan<float> values);
     void WriteSn16s(float[] values, int offset, int count);
 
-    void WriteChar(char value);
-    void WriteChars(ReadOnlySpan<char> values);
-    void WriteChars(char[] values, int offset, int count);
-
     void WriteChar(StringEncodingType encodingType, char value);
     void WriteChars(StringEncodingType encodingType, ReadOnlySpan<char> values);
 
@@ -92,7 +81,6 @@ namespace schema.binary {
                     int offset,
                     int count);
 
-    void WriteString(string value);
     void WriteStringNT(string value);
 
     void WriteString(StringEncodingType encodingType, string value);
