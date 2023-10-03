@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace schema.text {
+namespace schema.text.reader {
   public sealed partial class FinTextReader : ITextReader, IDisposable {
     private readonly Stream baseStream_;
 
@@ -18,9 +18,13 @@ namespace schema.text {
 
     private void ReleaseUnmanagedResources_() => this.baseStream_.Dispose();
 
+    public int TabWidth { get; set; } = 2;
+    public int LineNumber { get; private set; }
+    public int IndexInLine { get; private set; }
+
     public long Position {
       get => this.baseStream_.Position;
-      set => this.baseStream_.Position = value;
+      private set => this.baseStream_.Position = value;
     }
 
     public long Length => this.baseStream_.Length;
@@ -34,11 +38,16 @@ namespace schema.text {
     }
 
     public bool TryReadNew<T>(out T? value) where T : ITextDeserializable, new() {
+      var originalLineNumber = this.LineNumber;
+      var originalIndexInLine = this.IndexInLine;
       var originalPosition = this.Position;
+
       try {
         value = this.ReadNew<T>();
         return true;
       } catch {
+        this.LineNumber = originalLineNumber;
+        this.IndexInLine = originalIndexInLine;
         this.Position = originalPosition;
         value = default;
         return false;
@@ -47,7 +56,7 @@ namespace schema.text {
 
     public void ReadNewArray<T>(out T[] array, int length)
         where T : ITextDeserializable, new()
-      => array = ReadNewArray<T>(length);
+      => array = this.ReadNewArray<T>(length);
 
     public T[] ReadNewArray<T>(int length)
         where T : ITextDeserializable, new() {

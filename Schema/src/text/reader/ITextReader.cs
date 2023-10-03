@@ -1,5 +1,5 @@
-﻿namespace schema.text {
-  public interface ITextReader : IDataReader {
+﻿namespace schema.text.reader {
+  public interface ITextReader : ITextStream, IDataReader {
     bool Matches(out string text, params string[] matches);
 
     string ReadUpToStartOfTerminator(params string[] terminators);

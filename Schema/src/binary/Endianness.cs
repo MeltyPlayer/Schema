@@ -34,9 +34,7 @@ namespace schema.binary {
     bool IsOppositeEndiannessOfSystem { get; }
 
     void PushContainerEndianness(Endianness endianness);
-
     void PushMemberEndianness(Endianness endianness);
-
     void PopEndianness();
   }
 

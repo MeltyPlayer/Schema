@@ -2,7 +2,7 @@
 
 using schema.util;
 
-namespace schema.text {
+namespace schema.text.reader {
   public sealed partial class FinTextReader {
     public void AssertByte(byte expectedValue)
       => Asserts.Equal(expectedValue, this.ReadByte());
@@ -85,18 +85,18 @@ namespace schema.text {
         negativeIntegerMatches_.Concat(new[] { "." }).ToArray();
 
     private string ReadPositiveIntegerChars_() {
-      IgnoreManyIfPresent(TextReaderConstants.WHITESPACE_STRINGS);
-      return ReadWhile(FinTextReader.positiveIntegerMatches_);
+      this.IgnoreManyIfPresent(TextReaderConstants.WHITESPACE_STRINGS);
+      return this.ReadWhile(FinTextReader.positiveIntegerMatches_);
     }
 
     private string ReadNegativeIntegerChars_() {
-      IgnoreManyIfPresent(TextReaderConstants.WHITESPACE_STRINGS);
-      return ReadWhile(FinTextReader.negativeIntegerMatches_);
+      this.IgnoreManyIfPresent(TextReaderConstants.WHITESPACE_STRINGS);
+      return this.ReadWhile(FinTextReader.negativeIntegerMatches_);
     }
 
     private string ReadFloatChars_() {
-      IgnoreManyIfPresent(TextReaderConstants.WHITESPACE_STRINGS);
-      return ReadWhile(FinTextReader.floatMatches_);
+      this.IgnoreManyIfPresent(TextReaderConstants.WHITESPACE_STRINGS);
+      return this.ReadWhile(FinTextReader.floatMatches_);
     }
   }
 }

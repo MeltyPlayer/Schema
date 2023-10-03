@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace schema.text {
+namespace schema.text.reader {
   public sealed class TextReaderConstants {
     public static readonly string[] COMMA_STRINGS = { "," };
 

@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Text;
 
-namespace schema.text {
+namespace schema.text.reader {
   public sealed partial class FinTextReader {
     public bool Matches(out string text, string[] matches) {
+      var originalLineNumber = this.LineNumber;
+      var originalIndexInLine = this.IndexInLine;
       var originalPosition = this.Position;
+
       foreach (var match in matches) {
         foreach (var c in match) {
           if (c != this.ReadChar()) {
@@ -16,6 +19,8 @@ namespace schema.text {
         return true;
 
         DidNotMatch:
+        this.LineNumber = originalLineNumber;
+        this.IndexInLine = originalIndexInLine;
         this.Position = originalPosition;
       }
 
@@ -26,13 +31,19 @@ namespace schema.text {
     public string ReadUpToStartOfTerminator(params string[] terminators) {
       var sb = new StringBuilder();
 
-      while (!Eof) {
-        if (!Matches(out var text, terminators)) {
-          sb.Append(this.ReadChar());
-        } else {
-          this.Position -= text.Length;
+      while (!this.Eof) {
+        var originalLineNumber = this.LineNumber;
+        var originalIndexInLine = this.IndexInLine;
+        var originalPosition = this.Position;
+
+        if (this.Matches(out _, terminators)) {
+          this.LineNumber = originalLineNumber;
+          this.IndexInLine = originalIndexInLine;
+          this.Position = originalPosition;
           break;
         }
+
+        sb.Append(this.ReadChar());
       }
 
       return sb.ToString();
@@ -41,16 +52,13 @@ namespace schema.text {
     public string ReadUpToAndPastTerminator(params string[] terminators) {
       var sb = new StringBuilder();
 
-      while (!Eof) {
-        if (!Matches(out var text, terminators)) {
-          sb.Append(this.ReadChar());
-        } else {
-          this.Position -= text.Length;
+      while (!this.Eof) {
+        if (this.Matches(out _, terminators)) {
           break;
         }
-      }
 
-      this.IgnoreOnceIfPresent(terminators);
+        sb.Append(this.ReadChar());
+      }
 
       return sb.ToString();
     }
@@ -58,7 +66,7 @@ namespace schema.text {
     public string ReadWhile(params string[] matches) {
       var sb = new StringBuilder();
 
-      while (!Eof && this.Matches(out var text, matches)) {
+      while (!this.Eof && this.Matches(out var text, matches)) {
         sb.Append(text);
       }
 
@@ -66,10 +74,10 @@ namespace schema.text {
     }
 
     public void IgnoreManyIfPresent(params string[] matches) {
-      while (Matches(out _, matches)) { }
+      while (this.Matches(out _, matches)) { }
     }
 
     public void IgnoreOnceIfPresent(params string[] matches)
-      => Matches(out _, matches);
+      => this.Matches(out _, matches);
   }
 }

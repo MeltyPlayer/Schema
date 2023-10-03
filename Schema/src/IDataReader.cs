@@ -1,11 +1,13 @@
 ﻿using System;
 
 namespace schema {
-  public interface IDataReader {
-    long Position { get; set; }
+  public interface IDataStream {
+    long Position { get; }
     long Length { get; }
     bool Eof { get; }
+  }
 
+  public interface IDataReader : IDataStream {
     void AssertByte(byte expectedValue);
     byte ReadByte();
 

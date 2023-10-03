@@ -2,7 +2,7 @@
 
 using schema.util;
 
-namespace schema.text {
+namespace schema.text.reader {
   public sealed partial class FinTextReader {
     public void AssertHexByte(byte expectedValue)
       => Asserts.Equal(expectedValue, this.ReadHexByte());
@@ -13,18 +13,18 @@ namespace schema.text {
     public void AssertHexSByte(sbyte expectedValue)
       => Asserts.Equal(expectedValue, this.ReadHexSByte());
 
-    public sbyte ReadHexSByte() => ConvertHexSByte_(this.ReadHexChars_());
+    public sbyte ReadHexSByte() => this.ConvertHexSByte_(this.ReadHexChars_());
 
 
     public void AssertHexInt16(short expectedValue)
       => Asserts.Equal(expectedValue, this.ReadHexInt16());
 
-    public short ReadHexInt16() => ConvertHexInt16_(this.ReadHexChars_());
+    public short ReadHexInt16() => this.ConvertHexInt16_(this.ReadHexChars_());
 
     public void AssertHexUInt16(ushort expectedValue)
       => Asserts.Equal(expectedValue, this.ReadHexUInt16());
 
-    public ushort ReadHexUInt16() => ConvertHexUInt16_(this.ReadHexChars_());
+    public ushort ReadHexUInt16() => this.ConvertHexUInt16_(this.ReadHexChars_());
 
 
     public void AssertHexInt32(int expectedValue)
@@ -62,8 +62,8 @@ namespace schema.text {
             .ToArray();
 
     private string ReadHexChars_() {
-      IgnoreManyIfPresent(TextReaderConstants.WHITESPACE_STRINGS);
-      IgnoreOnceIfPresent(hexSpecifierMatches_);
+      this.IgnoreManyIfPresent(TextReaderConstants.WHITESPACE_STRINGS);
+      this.IgnoreOnceIfPresent(hexSpecifierMatches_);
       return this.ReadWhile(FinTextReader.hexMatches);
     }
   }

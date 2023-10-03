@@ -1,5 +1,7 @@
 ﻿using System.IO;
 
+using schema.text.reader;
+
 namespace schema.text {
   internal static class TextSchemaTestUtil {
     public static FinTextReader CreateTextReader(string text) {

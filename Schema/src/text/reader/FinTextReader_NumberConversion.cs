@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace schema.text {
+namespace schema.text.reader {
   public sealed partial class FinTextReader {
     private byte ConvertByte_(string text) => byte.Parse(text);
 

@@ -32,4 +32,8 @@
     <ProjectReference Include="../Schema/Schema.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="text\reader\" />
+  </ItemGroup>
+
 </Project>

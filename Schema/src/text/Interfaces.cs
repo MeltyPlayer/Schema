@@ -1,4 +1,6 @@
-﻿namespace schema.text {
+﻿using schema.text.reader;
+
+namespace schema.text {
   public interface ITextDeserializable {
     void Read(ITextReader tr);
   }
