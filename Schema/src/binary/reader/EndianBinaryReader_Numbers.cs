@@ -3,6 +3,8 @@ using System.Runtime.CompilerServices;
 
 using CommunityToolkit.HighPerformance;
 
+using schema.src.util;
+
 
 namespace schema.binary {
   public sealed partial class EndianBinaryReader {
@@ -11,8 +13,11 @@ namespace schema.binary {
       => EndianBinaryReader.Assert_(expectedValue, this.ReadByte());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte ReadByte()
-      => (byte) this.BufferedStream_.BaseStream.ReadByte();
+    public unsafe byte ReadByte() {
+      byte dst = default;
+      this.bufferedStream_.BaseStream.Read(UnsafeUtil.AsSpan(ref dst));
+      return dst;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte[] ReadBytes(long count) {
@@ -27,7 +32,7 @@ namespace schema.binary {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadBytes(Span<byte> dst)
-      => this.BufferedStream_.BaseStream.Read(dst);
+      => this.bufferedStream_.BaseStream.Read(dst);
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -50,7 +55,7 @@ namespace schema.binary {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadSBytes(Span<sbyte> dst)
-      => this.BufferedStream_.FillBuffer(dst);
+      => this.bufferedStream_.FillBuffer(dst);
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -58,7 +63,7 @@ namespace schema.binary {
       => EndianBinaryReader.Assert_(expectedValue, this.ReadInt16());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public short ReadInt16() => this.BufferedStream_.Read<short>();
+    public short ReadInt16() => this.bufferedStream_.Read<short>();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public short[] ReadInt16s(long count) {
@@ -73,7 +78,7 @@ namespace schema.binary {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadInt16s(Span<short> dst)
-      => this.BufferedStream_.FillBufferAndReverse(dst);
+      => this.bufferedStream_.FillBufferAndReverse(dst);
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -81,7 +86,7 @@ namespace schema.binary {
       => EndianBinaryReader.Assert_(expectedValue, this.ReadUInt16());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public ushort ReadUInt16() => this.BufferedStream_.Read<ushort>();
+    public ushort ReadUInt16() => this.bufferedStream_.Read<ushort>();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ushort[] ReadUInt16s(long count) {
@@ -96,7 +101,7 @@ namespace schema.binary {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadUInt16s(Span<ushort> dst)
-      => this.BufferedStream_.FillBufferAndReverse(dst);
+      => this.bufferedStream_.FillBufferAndReverse(dst);
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -104,7 +109,7 @@ namespace schema.binary {
       => EndianBinaryReader.Assert_(expectedValue, this.ReadInt32());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int ReadInt32() => this.BufferedStream_.Read<int>();
+    public int ReadInt32() => this.bufferedStream_.Read<int>();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int[] ReadInt32s(long count) {
@@ -119,7 +124,7 @@ namespace schema.binary {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadInt32s(Span<int> dst)
-      => this.BufferedStream_.FillBufferAndReverse(dst);
+      => this.bufferedStream_.FillBufferAndReverse(dst);
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -127,7 +132,7 @@ namespace schema.binary {
       => EndianBinaryReader.Assert_(expectedValue, this.ReadUInt32());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public uint ReadUInt32() => this.BufferedStream_.Read<uint>();
+    public uint ReadUInt32() => this.bufferedStream_.Read<uint>();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public uint[] ReadUInt32s(long count) {
@@ -142,7 +147,7 @@ namespace schema.binary {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadUInt32s(Span<uint> dst)
-      => this.BufferedStream_.FillBufferAndReverse(dst);
+      => this.bufferedStream_.FillBufferAndReverse(dst);
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -150,7 +155,7 @@ namespace schema.binary {
       => EndianBinaryReader.Assert_(expectedValue, this.ReadInt64());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public long ReadInt64() => this.BufferedStream_.Read<long>();
+    public long ReadInt64() => this.bufferedStream_.Read<long>();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public long[] ReadInt64s(long count) {
@@ -165,7 +170,7 @@ namespace schema.binary {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadInt64s(Span<long> dst)
-      => this.BufferedStream_.FillBufferAndReverse(dst);
+      => this.bufferedStream_.FillBufferAndReverse(dst);
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -173,7 +178,7 @@ namespace schema.binary {
       => EndianBinaryReader.Assert_(expectedValue, this.ReadUInt64());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public ulong ReadUInt64() => this.BufferedStream_.Read<ulong>();
+    public ulong ReadUInt64() => this.bufferedStream_.Read<ulong>();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ulong[] ReadUInt64s(long count) {
@@ -188,7 +193,7 @@ namespace schema.binary {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadUInt64s(Span<ulong> dst)
-      => this.BufferedStream_.FillBufferAndReverse(dst);
+      => this.bufferedStream_.FillBufferAndReverse(dst);
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -196,7 +201,7 @@ namespace schema.binary {
       => EndianBinaryReader.AssertAlmost_(expectedValue, this.ReadSingle());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public float ReadSingle() => this.BufferedStream_.Read<float>();
+    public float ReadSingle() => this.bufferedStream_.Read<float>();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public float[] ReadSingles(long count) {
@@ -211,7 +216,7 @@ namespace schema.binary {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadSingles(Span<float> dst)
-      => this.BufferedStream_.FillBufferAndReverse(dst);
+      => this.bufferedStream_.FillBufferAndReverse(dst);
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -219,7 +224,7 @@ namespace schema.binary {
       => EndianBinaryReader.AssertAlmost_(expectedValue, this.ReadDouble());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public double ReadDouble() => this.BufferedStream_.Read<double>();
+    public double ReadDouble() => this.bufferedStream_.Read<double>();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public double[] ReadDoubles(long count) {
@@ -234,6 +239,6 @@ namespace schema.binary {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadDoubles(Span<double> dst)
-      => this.BufferedStream_.FillBufferAndReverse(dst);
+      => this.bufferedStream_.FillBufferAndReverse(dst);
   }
 }

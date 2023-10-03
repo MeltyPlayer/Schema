@@ -11,7 +11,7 @@ namespace schema.binary {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int ReadInt24() {
       Span<byte> buffer = stackalloc byte[3];
-      this.BufferedStream_.FillBuffer(buffer, 3);
+      this.bufferedStream_.FillBuffer(buffer, 3);
       return EndianBinaryReader.ConvertInt24_(buffer, 0);
     }
 
@@ -32,7 +32,7 @@ namespace schema.binary {
       this.FillBuffer_(size * dst.Length, size);
       for (var i = 0; i < dst.Length; ++i) {
         dst[i] =
-            EndianBinaryReader.ConvertInt24_(this.BufferedStream_.Buffer, i);
+            EndianBinaryReader.ConvertInt24_(this.bufferedStream_.Buffer, i);
       }
     }
 
@@ -44,7 +44,7 @@ namespace schema.binary {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public uint ReadUInt24() {
       Span<byte> buffer = stackalloc byte[3];
-      this.BufferedStream_.FillBuffer(buffer, 3);
+      this.bufferedStream_.FillBuffer(buffer, 3);
       return EndianBinaryReader.ConvertUInt24_(buffer, 0);
     }
 
@@ -65,7 +65,7 @@ namespace schema.binary {
       this.FillBuffer_(size * dst.Length, size);
       for (var i = 0; i < dst.Length; ++i) {
         dst[i] =
-            EndianBinaryReader.ConvertUInt24_(this.BufferedStream_.Buffer, i);
+            EndianBinaryReader.ConvertUInt24_(this.bufferedStream_.Buffer, i);
       }
     }
 
@@ -107,7 +107,7 @@ namespace schema.binary {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public float ReadSn8() {
       this.FillBuffer_(sizeof(byte));
-      return EndianBinaryReader.ConvertSn8_(this.BufferedStream_.Buffer, 0);
+      return EndianBinaryReader.ConvertSn8_(this.bufferedStream_.Buffer, 0);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -127,7 +127,7 @@ namespace schema.binary {
       this.FillBuffer_(size * dst.Length, size);
       for (var i = 0; i < dst.Length; ++i) {
         dst[i] =
-            EndianBinaryReader.ConvertSn8_(this.BufferedStream_.Buffer, i);
+            EndianBinaryReader.ConvertSn8_(this.bufferedStream_.Buffer, i);
       }
     }
 
@@ -139,7 +139,7 @@ namespace schema.binary {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public float ReadUn8() {
       this.FillBuffer_(sizeof(byte));
-      return EndianBinaryReader.ConvertUn8_(this.BufferedStream_.Buffer, 0);
+      return EndianBinaryReader.ConvertUn8_(this.bufferedStream_.Buffer, 0);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -159,7 +159,7 @@ namespace schema.binary {
       this.FillBuffer_(size * dst.Length, size);
       for (var i = 0; i < dst.Length; ++i) {
         dst[i] =
-            EndianBinaryReader.ConvertUn8_(this.BufferedStream_.Buffer, i);
+            EndianBinaryReader.ConvertUn8_(this.bufferedStream_.Buffer, i);
       }
     }
 

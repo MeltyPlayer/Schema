@@ -4,23 +4,23 @@ namespace schema.binary {
   public sealed partial class EndianBinaryReader {
     public Endianness Endianness {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      get => this.BufferedStream_.Endianness;
+      get => this.bufferedStream_.Endianness;
     }
 
     public bool IsOppositeEndiannessOfSystem {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      get => this.BufferedStream_.IsOppositeEndiannessOfSystem;
+      get => this.bufferedStream_.IsOppositeEndiannessOfSystem;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PushContainerEndianness(Endianness endianness)
-      => this.BufferedStream_.PushContainerEndianness(endianness);
+      => this.bufferedStream_.PushContainerEndianness(endianness);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PushMemberEndianness(Endianness endianness)
-      => this.BufferedStream_.PushMemberEndianness(endianness);
+      => this.bufferedStream_.PushMemberEndianness(endianness);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PopEndianness() => this.BufferedStream_.PopEndianness();
+    public void PopEndianness() => this.bufferedStream_.PopEndianness();
   }
 }

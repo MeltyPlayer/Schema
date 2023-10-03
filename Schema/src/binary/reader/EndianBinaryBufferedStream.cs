@@ -1,8 +1,10 @@
 ﻿using System;
-using System.IO;
 using System.Runtime.CompilerServices;
 
 using CommunityToolkit.HighPerformance;
+
+using schema.src.util;
+using schema.util.streams;
 
 namespace schema.binary {
   public interface ISpanElementReverser {
@@ -36,7 +38,7 @@ namespace schema.binary {
       this.UpdateSpanElementReverser_();
     }
 
-    public Stream BaseStream {
+    public ISeekableReadableStream BaseStream {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get;
       set;
@@ -80,19 +82,16 @@ namespace schema.binary {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public T Read<T>() where T : unmanaged {
-      Read(out T val);
+      this.Read(out T val);
       return val;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public unsafe void Read<T>(out T val) where T : unmanaged {
-      var size = sizeof(T);
-
-      fixed (T* ptr = &val) {
-        var bSpan = new Span<byte>(ptr, size);
-        this.BaseStream.Read(bSpan);
-        this.reverserImpl_.Reverse(bSpan);
-      }
+    public void Read<T>(out T val) where T : unmanaged {
+      val = default;
+      var bSpan = UnsafeUtil.AsSpan(ref val).AsBytes();
+      this.BaseStream.Read(bSpan);
+      this.reverserImpl_.Reverse(bSpan);
     }
 
 
@@ -122,7 +121,7 @@ namespace schema.binary {
     public void PopEndianness() {
       this.endiannessImpl_.PopEndianness();
       this.UpdateSpanElementReverser_();
-    } 
+    }
 
     private void UpdateSpanElementReverser_() {
       var newOppositeEndiannessOfSystem =

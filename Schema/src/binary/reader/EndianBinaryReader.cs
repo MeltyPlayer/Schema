@@ -9,36 +9,40 @@ namespace schema.binary {
                                                    IDisposable {
     private bool disposed_;
 
-    private EndianBinaryBufferedStream BufferedStream_ { get; set; }
+    private readonly EndianBinaryBufferedStream bufferedStream_;
     private StreamPositionManager positionManagerImpl_;
 
-    private Stream BaseStream_ {
+    private ISeekableReadableStream BaseStream_ {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      get => this.BufferedStream_.BaseStream;
+      get => this.bufferedStream_.BaseStream;
     }
 
     public EndianBinaryReader(byte[] data)
-      => this.Init_(new MemoryStream(data), null);
+        : this(new ReadableStream(data), null) { }
 
     public EndianBinaryReader(byte[] data, Endianness endianness)
-      => this.Init_(new MemoryStream(data), endianness);
+        : this(new ReadableStream(data), endianness) { }
 
     public EndianBinaryReader(Stream baseStream)
-      => this.Init_(baseStream, null);
+        : this(new ReadableStream(baseStream), null) { }
 
     public EndianBinaryReader(Stream baseStream, Endianness endianness)
-      => this.Init_(baseStream, endianness);
+        : this(new ReadableStream(baseStream), endianness) { }
 
-    private void Init_(Stream baseStream, Endianness? endianness) {
+    public EndianBinaryReader(ISeekableReadableStream baseStream)
+        : this(baseStream, null) { }
+
+    public EndianBinaryReader(ISeekableReadableStream baseStream,
+                              Endianness endianness)
+        : this(baseStream, (Endianness?) endianness) { }
+
+    private EndianBinaryReader(ISeekableReadableStream baseStream,
+                               Endianness? endianness) {
       if (baseStream == null) {
         throw new ArgumentNullException(nameof(baseStream));
       }
 
-      if (!baseStream.CanRead) {
-        throw new ArgumentException(nameof(baseStream));
-      }
-
-      this.BufferedStream_ = new EndianBinaryBufferedStream(endianness) {
+      this.bufferedStream_ = new EndianBinaryBufferedStream(endianness) {
           BaseStream = baseStream,
       };
       this.positionManagerImpl_ = new StreamPositionManager(baseStream);
@@ -62,7 +66,7 @@ namespace schema.binary {
       }
 
       if (disposing && this.BaseStream_ != null) {
-        this.BaseStream_.Close();
+        this.BaseStream_.Dispose();
       }
 
       this.disposed_ = true;
@@ -77,7 +81,9 @@ namespace schema.binary {
 
         var baseOffset = this.positionManagerImpl_.BaseOffset;
         var substream =
-            new RangedSubstream(this.BaseStream_, position, baseOffset + len);
+            new RangedReadableSubstream(this.BaseStream_,
+                                        position,
+                                        baseOffset + len);
         using var ser = new EndianBinaryReader(substream, this.Endianness);
         ser.positionManagerImpl_ =
             new StreamPositionManager(substream, baseOffset);
@@ -140,6 +146,6 @@ namespace schema.binary {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void FillBuffer_(long count, int? optStride = null)
-      => this.BufferedStream_.FillBuffer(count, optStride);
+      => this.bufferedStream_.FillBuffer(count, optStride);
   }
 }

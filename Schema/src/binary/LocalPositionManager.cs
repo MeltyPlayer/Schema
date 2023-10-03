@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Runtime.CompilerServices;
 
 using schema.util;
+using schema.util.streams;
 
 namespace schema.binary {
   public interface ILocalSpaceStack {
@@ -16,10 +16,11 @@ namespace schema.binary {
   }
 
   public class StreamPositionManager : IPositionManager {
-    private readonly Stream impl_;
+    private readonly ISeekableStream impl_;
     private readonly Stack<long> positionStack_ = new();
 
-    public StreamPositionManager(Stream impl, long startingPosition = 0) {
+    public StreamPositionManager(ISeekableStream impl,
+                                 long startingPosition = 0) {
       this.impl_ = impl;
       this.positionStack_.Push(startingPosition);
     }
