@@ -1,5 +1,5 @@
 ﻿namespace schema.text {
-  public interface ITextStream : IDataStream {
+  public interface ITextStream {
     int TabWidth { get; }
 
     int LineNumber { get; }

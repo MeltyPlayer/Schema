@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace schema.text.writer {
-  public interface ITextWriter : ITextStream, IDataStream, IDataWriter {
+  public interface ITextWriter : ITextStream, IDataWriter, IIndentable {
     void WriteBytes(ReadOnlySpan<byte> values, string separator);
     void WriteHexByte(byte value);
     void WriteHexByte(ReadOnlySpan<byte> values, string separator);

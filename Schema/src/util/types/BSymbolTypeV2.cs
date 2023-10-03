@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Data.SqlTypes;
 using System.Linq;
-using System.Reflection;
 
 using Microsoft.CodeAnalysis;
 
 using schema.binary;
 using schema.binary.attributes;
-using schema.binary.parser;
 using schema.util.sequences;
 using schema.util.symbols;
-
-using static schema.binary.parser.TypeInfoParser;
 
 namespace schema.util.types {
   public static partial class TypeV2 {

@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace schema.util {
-  public class Asserts {
+  public sealed class Asserts {
     /**
      * NOTE: Using $"" to define messages allocates strings, and can be expensive!
      * Try to avoid allocating strings unless an assertion actually fails.
      */
-    public class AssertionException : Exception {
+    public sealed class AssertionException : Exception {
       public AssertionException(string message) : base(message) { }
 
       public override string StackTrace {

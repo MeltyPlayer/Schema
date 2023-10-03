@@ -2,7 +2,6 @@
 using System.IO;
 
 namespace schema.util.text {
-
   public interface ICurlyBracketTextWriter {
     public ICurlyBracketTextWriter EnterBlock(string prefix = "");
     public ICurlyBracketTextWriter Write(string text);
@@ -10,7 +9,7 @@ namespace schema.util.text {
     public ICurlyBracketTextWriter ExitBlock();
   }
 
-  public class CurlyBracketTextWriter : ICurlyBracketTextWriter {
+  public sealed class CurlyBracketTextWriter : ICurlyBracketTextWriter {
     private readonly TextWriter impl_;
     private int indentLevel_ = 0;
 
