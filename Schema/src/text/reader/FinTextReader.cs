@@ -5,8 +5,9 @@ namespace schema.text.reader {
   public sealed partial class FinTextReader : ITextReader, IDisposable {
     private readonly Stream baseStream_;
 
-    public FinTextReader(Stream baseStream) {
+    public FinTextReader(Stream baseStream, int tabWidth = 4) {
       this.baseStream_ = baseStream;
+      this.TabWidth = tabWidth;
     }
 
     ~FinTextReader() => this.ReleaseUnmanagedResources_();

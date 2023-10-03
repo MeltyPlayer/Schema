@@ -11,6 +11,7 @@ using schema.binary.dependencies;
 using schema.binary.parser;
 using schema.util;
 using schema.util.symbols;
+using schema.util.text;
 
 namespace schema.binary.text {
   public class BinarySchemaWriterGenerator {

@@ -7,6 +7,7 @@ using schema.binary.attributes;
 using schema.binary.dependencies;
 using schema.util;
 using schema.util.symbols;
+using schema.util.text;
 using schema.util.types;
 
 namespace schema.binary.text {

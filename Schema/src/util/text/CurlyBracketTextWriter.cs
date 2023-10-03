@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
 
-namespace schema.binary.text {
+namespace schema.util.text {
+
   public interface ICurlyBracketTextWriter {
     public ICurlyBracketTextWriter EnterBlock(string prefix = "");
     public ICurlyBracketTextWriter Write(string text);
