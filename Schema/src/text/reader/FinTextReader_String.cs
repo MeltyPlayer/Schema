@@ -56,18 +56,5 @@ namespace schema.text.reader {
 
     public string ReadLine()
       => this.ReadUpToAndPastTerminator(TextReaderConstants.NEWLINE_STRINGS);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void IncrementLineIndicesForChar_(char c) {
-      if (c == '\n') {
-        this.IndexInLine = 0;
-        ++this.LineNumber;
-      } else if (c == '\t') {
-        var remainderToNextTabPosition = this.IndexInLine % this.TabWidth;
-        this.IndexInLine += this.TabWidth - remainderToNextTabPosition;
-      } else if (!char.IsControl(c)) {
-        ++this.IndexInLine;
-      }
-    }
   }
 }

@@ -13,6 +13,7 @@ namespace schema.text.reader {
         Func<T> readHandler,
         Action<T> assertValue) {
       Asserts.Equal(expectedValue, readHandler());
+      tr.Position = 0;
 
       assertValue(expectedValue);
     }

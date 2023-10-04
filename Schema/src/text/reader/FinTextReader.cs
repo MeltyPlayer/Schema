@@ -24,19 +24,6 @@ namespace schema.text.reader {
 
     private void ReleaseUnmanagedResources_() => this.baseStream_.Dispose();
 
-    public int TabWidth { get; } = 4;
-    public int LineNumber { get; private set; }
-    public int IndexInLine { get; private set; }
-
-    public long Position {
-      get => this.baseStream_.Position;
-      private set => this.baseStream_.Position = value;
-    }
-
-    public long Length => this.baseStream_.Length;
-    public bool Eof => this.Position >= this.Length;
-
-
     public T ReadNew<T>() where T : ITextDeserializable, new() {
       var value = new T();
       value.Read(this);

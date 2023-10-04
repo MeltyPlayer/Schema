@@ -3,7 +3,7 @@
 using schema.util.streams;
 
 namespace schema {
-  public interface IDataReader : ISizedStream {
+  public interface IDataReader : ISeekableStream {
     bool Eof { get; }
 
     void AssertByte(byte expectedValue);
