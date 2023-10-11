@@ -9,5 +9,8 @@ namespace schema.text.reader {
     public static readonly string[] WHITESPACE_STRINGS =
         TextReaderConstants.NEWLINE_STRINGS.Concat(new[] { " ", "\t" })
                            .ToArray();
+
+    public static readonly string[] TERMINATORS =
+        TextReaderConstants.WHITESPACE_STRINGS.Concat(COMMA_STRINGS).ToArray();
   }
 }
