@@ -130,7 +130,7 @@ namespace schema.text.reader {
       if (match.Length == 0) {
         return Enumerable.Empty<string>();
       }
-      return match.SplitViaSpans(separators, false);
+      return match.SplitViaString(separators, false);
     }
 
     private T[] ConvertSplitUpToAndPastTerminators_<T>(

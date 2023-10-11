@@ -113,7 +113,7 @@ namespace schema.text.reader {
         return Array.Empty<string>();
       }
 
-      return match.SplitViaSpans(separators, true);
+      return match.SplitViaString(separators, true);
     }
 
     private T?[] ConvertSplitUpToAndPastTerminatorsIncludingEmpty_<T>(
