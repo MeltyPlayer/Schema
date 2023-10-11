@@ -1,9 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 using schema.util;
 
 namespace schema.text.reader {
-  public sealed partial class FinTextReader {
+  public sealed partial class TextReader {
     public void AssertByte(byte expectedValue)
       => Asserts.Equal(expectedValue, this.ReadByte());
 
@@ -84,19 +85,22 @@ namespace schema.text.reader {
     private static readonly string[] floatMatches_ =
         negativeIntegerMatches_.Concat(new[] { "." }).ToArray();
 
-    private string ReadPositiveIntegerChars_() {
-      this.IgnoreManyIfPresent(TextReaderConstants.WHITESPACE_STRINGS);
-      return this.ReadWhile(FinTextReader.positiveIntegerMatches_);
-    }
+    private string ReadPositiveIntegerChars_()
+      => this.ReadMatchingNonWhitespaceChars_(
+          TextReader.positiveIntegerMatches_);
 
-    private string ReadNegativeIntegerChars_() {
-      this.IgnoreManyIfPresent(TextReaderConstants.WHITESPACE_STRINGS);
-      return this.ReadWhile(FinTextReader.negativeIntegerMatches_);
-    }
+    private string ReadNegativeIntegerChars_()
+      => this.ReadMatchingNonWhitespaceChars_(
+          TextReader.negativeIntegerMatches_);
 
-    private string ReadFloatChars_() {
+    private string ReadFloatChars_()
+      => this.ReadMatchingNonWhitespaceChars_(TextReader.floatMatches_);
+
+    private string ReadMatchingNonWhitespaceChars_(string[] matches) {
       this.IgnoreManyIfPresent(TextReaderConstants.WHITESPACE_STRINGS);
-      return this.ReadWhile(FinTextReader.floatMatches_);
+      var matching = this.ReadWhile(TextReader.floatMatches_);
+      this.IgnoreManyIfPresent(TextReaderConstants.WHITESPACE_STRINGS);
+      return matching;
     }
   }
 }

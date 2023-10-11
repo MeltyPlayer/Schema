@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 
 namespace schema.text.reader {
-  public sealed partial class FinTextReader {
+  public sealed partial class TextReader {
     private byte ConvertByte_(string text) => byte.Parse(text);
 
     private byte ConvertHexByte_(string text)

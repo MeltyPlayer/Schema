@@ -2,9 +2,11 @@
 
 using schema.text.reader;
 
+using TextReader = schema.text.reader.TextReader;
+
 namespace schema.text {
   internal static class TextSchemaTestUtil {
-    public static FinTextReader CreateTextReader(string text) {
+    public static TextReader CreateTextReader(string text) {
       var ms = new MemoryStream();
 
       var sw = new StreamWriter(ms);
@@ -12,7 +14,7 @@ namespace schema.text {
       sw.Flush();
       ms.Position = 0;
 
-      return new FinTextReader(ms);
+      return new TextReader(ms);
     }
   }
 }

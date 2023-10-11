@@ -1,0 +1,36 @@
+﻿using NUnit.Framework;
+
+using schema.util;
+
+namespace schema.text.reader {
+  internal class TextReaderMultilineTests {
+    [Test]
+    public void TestReadAcrossMultipleLinesSeparately() {
+      var inputText = "1 2 3\n4\n5\n6\nfoobar";
+
+      using var tr = TextSchemaTestUtil.CreateTextReader(inputText);
+      Assert.AreEqual(1, tr.ReadInt32());
+      Assert.AreEqual(2, tr.ReadInt32());
+      Assert.AreEqual(3, tr.ReadInt32());
+
+      Assert.AreEqual(4, tr.ReadInt32());
+      Assert.AreEqual(5, tr.ReadInt32());
+      Assert.AreEqual(6, tr.ReadInt32());
+
+      Assert.AreEqual("foobar", tr.ReadLine());
+    }
+
+    [Test]
+    public void TestReadAcrossMultipleLinesCombined() {
+      var inputText = "1 2 3\nfoobar";
+
+      using var tr = TextSchemaTestUtil.CreateTextReader(inputText);
+      Assert.AreEqual(new[] { 1, 2, 3 },
+                      tr.ReadInt32s(
+                          TextReaderConstants.WHITESPACE_STRINGS,
+                          TextReaderConstants.NEWLINE_STRINGS));
+
+      Assert.AreEqual("foobar", tr.ReadLine());
+    }
+  }
+}

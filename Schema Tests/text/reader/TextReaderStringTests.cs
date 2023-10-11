@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 
 namespace schema.text.reader {
-  internal class FinTextReaderStringTests {
+  internal class TextReaderStringTests {
     [Test]
     public void TestReadChar() {
       using var tr = TextSchemaTestUtil.CreateTextReader("abc");

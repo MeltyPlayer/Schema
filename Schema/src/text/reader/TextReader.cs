@@ -4,18 +4,18 @@ using System.IO;
 using schema.util.streams;
 
 namespace schema.text.reader {
-  public sealed partial class FinTextReader : ITextReader, IDisposable {
+  public sealed partial class TextReader : ITextReader, IDisposable {
     private readonly ISeekableReadableStream baseStream_;
 
-    public FinTextReader(Stream baseStream, int tabWidth = 4)
+    public TextReader(Stream baseStream, int tabWidth = 4)
         : this(new ReadableStream(baseStream), tabWidth) { }
 
-    public FinTextReader(ISeekableReadableStream baseStream, int tabWidth = 4) {
+    public TextReader(ISeekableReadableStream baseStream, int tabWidth = 4) {
       this.baseStream_ = baseStream;
       this.TabWidth = tabWidth;
     }
 
-    ~FinTextReader() => this.ReleaseUnmanagedResources_();
+    ~TextReader() => this.ReleaseUnmanagedResources_();
 
     public void Dispose() {
       this.ReleaseUnmanagedResources_();

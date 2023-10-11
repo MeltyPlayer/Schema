@@ -6,9 +6,9 @@ using schema.util;
 
 
 namespace schema.text.reader {
-  internal class FinTextReaderNumberTests {
+  internal class TextReaderNumberTests {
     private void ReadAndAssert_<T>(
-        FinTextReader tr,
+        TextReader tr,
         T expectedValue,
         Func<T> readHandler,
         Action<T> assertValue) {

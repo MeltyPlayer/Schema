@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace schema.text.reader {
-  public sealed partial class FinTextReader {
+  public sealed partial class TextReader {
     public byte?[] ReadBytesIncludingEmpty(string[] separators, string[] terminators)
       => this.ConvertSplitUpToAndPastTerminatorsIncludingEmpty_(separators,
                                                   terminators,

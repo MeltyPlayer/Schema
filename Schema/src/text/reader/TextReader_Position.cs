@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 
 namespace schema.text.reader {
-  public partial class FinTextReader {
+  public partial class TextReader {
     public int TabWidth { get; } = 4;
     public int LineNumber { get; private set; }
     public int IndexInLine { get; private set; }

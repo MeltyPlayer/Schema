@@ -2,7 +2,7 @@
 using System.Text;
 
 namespace schema.text.reader {
-  public sealed partial class FinTextReader {
+  public sealed partial class TextReader {
     public bool Matches(out string text, string[] matches) {
       var originalLineNumber = this.LineNumber;
       var originalIndexInLine = this.IndexInLine;

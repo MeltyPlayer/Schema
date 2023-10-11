@@ -3,7 +3,7 @@
 using schema.util;
 
 namespace schema.text.reader {
-  public sealed partial class FinTextReader {
+  public sealed partial class TextReader {
     public void AssertHexByte(byte expectedValue)
       => Asserts.Equal(expectedValue, this.ReadHexByte());
 
@@ -64,7 +64,7 @@ namespace schema.text.reader {
     private string ReadHexChars_() {
       this.IgnoreManyIfPresent(TextReaderConstants.WHITESPACE_STRINGS);
       this.IgnoreOnceIfPresent(hexSpecifierMatches_);
-      return this.ReadWhile(FinTextReader.hexMatches);
+      return this.ReadWhile(TextReader.hexMatches);
     }
   }
 }

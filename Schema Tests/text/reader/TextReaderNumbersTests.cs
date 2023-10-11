@@ -3,7 +3,7 @@
 using schema.util;
 
 namespace schema.text.reader {
-  internal class FinTextReaderNumbersTests {
+  internal class TextReaderNumbersTests {
     [Test]
     public void TestReadBytesNull() {
       using var tr = TextSchemaTestUtil.CreateTextReader("0,, ,255");

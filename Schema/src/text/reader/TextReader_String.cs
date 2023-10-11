@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 
 using CommunityToolkit.HighPerformance;
@@ -9,7 +8,7 @@ using schema.util;
 using schema.util.streams;
 
 namespace schema.text.reader {
-  public sealed partial class FinTextReader {
+  public sealed partial class TextReader {
     public void AssertChar(char expectedValue)
       => Asserts.Equal(expectedValue, this.ReadChar());
 
