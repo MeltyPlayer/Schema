@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace schema.text.reader {
   public partial class TextReader {
@@ -9,23 +10,34 @@ namespace schema.text.reader {
     public long Position {
       get => this.PositionInternal_;
       set {
-        this.IndexInLine = 0;
-        this.LineNumber = 0;
-        this.PositionInternal_ = 0;
+        if (value == this.PositionInternal_) {
+          return;
+        }
 
-        for (var i = 0; i < value; i++) {
+        long charsToRead;
+        if (value > this.PositionInternal_) {
+          charsToRead = value - this.PositionInternal_;
+        } else {
+          this.IndexInLine = 0;
+          this.LineNumber = 0;
+          this.PositionInternal_ = 0;
+
+          charsToRead = value;
+        }
+
+        for (var i = 0; i < charsToRead; i++) {
           this.ReadChar();
         }
       }
     }
 
     private long PositionInternal_ {
-      get => this.baseStream_.Position; 
+      get => this.baseStream_.Position;
       set => this.baseStream_.Position = value;
     }
 
     public long Length => this.baseStream_.Length;
-    public bool Eof => this.Position >= this.Length;
+    public bool Eof => this.PositionInternal_ >= this.Length;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void IncrementLineIndicesForChar_(char c) {
@@ -38,6 +50,20 @@ namespace schema.text.reader {
       } else if (!char.IsControl(c)) {
         ++this.IndexInLine;
       }
+    }
+
+    public void AdvanceIfTrue(Func<ITextReader, bool> handler) {
+      var originalLineNumber = this.LineNumber;
+      var originalIndexInLine = this.IndexInLine;
+      var originalPosition = this.PositionInternal_;
+
+      if (handler(this)) {
+        return;
+      }
+
+      this.LineNumber = originalLineNumber;
+      this.IndexInLine = originalIndexInLine;
+      this.PositionInternal_ = originalPosition;
     }
   }
 }

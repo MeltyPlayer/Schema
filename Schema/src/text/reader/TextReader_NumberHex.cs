@@ -24,7 +24,8 @@ namespace schema.text.reader {
     public void AssertHexUInt16(ushort expectedValue)
       => Asserts.Equal(expectedValue, this.ReadHexUInt16());
 
-    public ushort ReadHexUInt16() => this.ConvertHexUInt16_(this.ReadHexChars_());
+    public ushort ReadHexUInt16()
+      => this.ConvertHexUInt16_(this.ReadHexChars_());
 
 
     public void AssertHexInt32(int expectedValue)
@@ -54,11 +55,11 @@ namespace schema.text.reader {
 
     private static readonly string[] hexSpecifierMatches_ = { "0x", "0X" };
 
-    private static readonly string[] hexMatches =
+    private static readonly char[] hexMatches =
         digitMatches_
             .Concat(
-                new[] { "a", "b", "c", "d", "e", "f" }.SelectMany(
-                    c => new[] { c.ToLower(), c.ToUpper() }))
+                new[] { 'a', 'b', 'c', 'd', 'e', 'f' }.SelectMany(
+                    c => new[] { char.ToLower(c), char.ToUpper(c) }))
             .ToArray();
 
     private string ReadHexChars_() {

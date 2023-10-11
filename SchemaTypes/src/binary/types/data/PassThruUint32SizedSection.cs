@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-using schema.binary.attributes;
+﻿using schema.binary.attributes;
 
 namespace schema.binary.types.data {
   [BinarySchema]

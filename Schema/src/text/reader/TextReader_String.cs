@@ -2,22 +2,12 @@
 using System.Linq;
 using System.Text;
 
-using CommunityToolkit.HighPerformance;
-
 using schema.util;
-using schema.util.streams;
 
 namespace schema.text.reader {
   public sealed partial class TextReader {
     public void AssertChar(char expectedValue)
       => Asserts.Equal(expectedValue, this.ReadChar());
-
-    // TODO: Handle other encodings besides ASCII
-    public char ReadChar() {
-      var c = (char) this.baseStream_.ReadByte();
-      this.IncrementLineIndicesForChar_(c);
-      return c;
-    }
 
     public char[] ReadChars(long count) {
       var newArray = new char[count];
@@ -30,10 +20,8 @@ namespace schema.text.reader {
 
     // TODO: Handle other encodings besides ASCII
     public void ReadChars(Span<char> dst) {
-      this.baseStream_.Read(dst.AsBytes());
-
-      foreach (var c in dst) {
-        this.IncrementLineIndicesForChar_(c);
+      for (var i = 0; i < dst.Length; ++i) {
+        dst[i] = this.ReadChar();
       }
     }
 
@@ -49,8 +37,11 @@ namespace schema.text.reader {
       return sb.ToString();
     }
 
-    public string[] ReadStrings(string[] separators, string[] terminators)
-      => this.ReadSplitUpToAndPastTerminatorsIncludingEmpty_(separators, terminators)
+    public string[] ReadStrings(ReadOnlySpan<string> separators,
+                                ReadOnlySpan<string> terminators)
+      => this.ReadSplitUpToAndPastTerminatorsIncludingEmpty_(
+                 separators,
+                 terminators)
              .ToArray();
 
     public string ReadLine()

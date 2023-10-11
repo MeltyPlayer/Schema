@@ -72,18 +72,19 @@ namespace schema.text.reader {
 
     public double ReadDouble() => this.ConvertDouble_(this.ReadFloatChars_());
 
-    private static readonly string[] digitMatches_ = {
-        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
+    private static readonly char[] digitMatches_ = {
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
     };
 
-    private static readonly string[] positiveIntegerMatches_ = digitMatches_;
+    private static readonly char[] positiveIntegerMatches_ =
+        digitMatches_;
 
-    private static readonly string[] negativeIntegerMatches_ =
-        positiveIntegerMatches_.Concat(new[] { "-" }).ToArray();
+    private static readonly char[] negativeIntegerMatches_ =
+        positiveIntegerMatches_.Concat(new[] { '-' }).ToArray();
 
 
-    private static readonly string[] floatMatches_ =
-        negativeIntegerMatches_.Concat(new[] { "." }).ToArray();
+    private static readonly char[] floatMatches_ =
+        negativeIntegerMatches_.Concat(new[] { '.' }).ToArray();
 
     private string ReadPositiveIntegerChars_()
       => this.ReadMatchingNonWhitespaceChars_(
@@ -96,9 +97,9 @@ namespace schema.text.reader {
     private string ReadFloatChars_()
       => this.ReadMatchingNonWhitespaceChars_(TextReader.floatMatches_);
 
-    private string ReadMatchingNonWhitespaceChars_(string[] matches) {
+    private string ReadMatchingNonWhitespaceChars_(ReadOnlySpan<char> matches) {
       this.IgnoreManyIfPresent(TextReaderConstants.TERMINATORS);
-      var matching = this.ReadWhile(TextReader.floatMatches_);
+      var matching = this.ReadWhile(matches);
       this.IgnoreManyIfPresent(TextReaderConstants.TERMINATORS);
       return matching;
     }

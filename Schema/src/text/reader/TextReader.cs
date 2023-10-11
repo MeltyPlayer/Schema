@@ -32,20 +32,21 @@ namespace schema.text.reader {
 
     public bool TryReadNew<T>(out T? value)
         where T : ITextDeserializable, new() {
-      var originalLineNumber = this.LineNumber;
-      var originalIndexInLine = this.IndexInLine;
-      var originalPosition = this.Position;
+      T? valueInternal = default;
+      bool success = false;
 
-      try {
-        value = this.ReadNew<T>();
-        return true;
-      } catch {
-        this.LineNumber = originalLineNumber;
-        this.IndexInLine = originalIndexInLine;
-        this.Position = originalPosition;
-        value = default;
-        return false;
-      }
+      this.AdvanceIfTrue(tr => {
+        try {
+          valueInternal = tr.ReadNew<T>();
+          success = true;
+          return true;
+        } catch {
+          return false;
+        }
+      });
+
+      value = valueInternal;
+      return success;
     }
 
     public void ReadNewArray<T>(out T[] array, int length)

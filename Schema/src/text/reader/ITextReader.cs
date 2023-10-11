@@ -1,75 +1,156 @@
-﻿namespace schema.text.reader {
+﻿using System;
+
+namespace schema.text.reader {
   public interface ITextReader : ITextStream, IDataReader {
-    bool Matches(out string text, params string[] matches);
+    void AdvanceIfTrue(Func<ITextReader, bool> handler);
 
-    string ReadUpToStartOfTerminator(params string[] terminators);
-    string ReadUpToAndPastTerminator(params string[] terminators);
-    string ReadWhile(params string[] matches);
-    void IgnoreOnceIfPresent(params string[] matches);
-    void IgnoreManyIfPresent(params string[] matches);
+    bool Matches(out string text, ReadOnlySpan<string> matches);
+    bool Matches(out char match, ReadOnlySpan<char> matches);
 
-    byte[] ReadBytes(string[] separators, string[] terminators);
-    byte?[] ReadBytesIncludingEmpty(string[] separators, string[] terminators);
+    string ReadUpToStartOfTerminator(ReadOnlySpan<string> terminators);
+    string ReadUpToAndPastTerminator(ReadOnlySpan<string> terminators);
+
+    string ReadWhile(ReadOnlySpan<char> matches);
+    string ReadWhile(ReadOnlySpan<string> matches);
+
+    void IgnoreOnceIfPresent(ReadOnlySpan<string> matches);
+    void IgnoreManyIfPresent(ReadOnlySpan<string> matches);
+
+    byte[] ReadBytes(ReadOnlySpan<string> separators,
+                     ReadOnlySpan<string> terminators);
+
+    byte?[] ReadBytesIncludingEmpty(ReadOnlySpan<string> separators,
+                                    ReadOnlySpan<string> terminators);
+
     void AssertHexByte(byte expectedValue);
     byte ReadHexByte();
-    byte[] ReadHexBytes(string[] separators, string[] terminators);
-    byte?[] ReadHexBytesIncludingEmpty(string[] separators, string[] terminators);
 
-    sbyte[] ReadSBytes(string[] separators, string[] terminators);
-    sbyte?[] ReadSBytesIncludingEmpty(string[] separators, string[] terminators);
+    byte[] ReadHexBytes(ReadOnlySpan<string> separators,
+                        ReadOnlySpan<string> terminators);
+
+    byte?[] ReadHexBytesIncludingEmpty(ReadOnlySpan<string> separators,
+                                       ReadOnlySpan<string> terminators);
+
+    sbyte[] ReadSBytes(ReadOnlySpan<string> separators,
+                       ReadOnlySpan<string> terminators);
+
+    sbyte?[]
+        ReadSBytesIncludingEmpty(ReadOnlySpan<string> separators,
+                                 ReadOnlySpan<string> terminators);
+
     void AssertHexSByte(sbyte expectedValue);
     sbyte ReadHexSByte();
-    sbyte[] ReadHexSBytes(string[] separators, string[] terminators);
-    sbyte?[] ReadHexSBytesIncludingEmpty(string[] separators, string[] terminators);
 
-    short[] ReadInt16s(string[] separators, string[] terminators);
-    short?[] ReadInt16sIncludingEmpty(string[] separators, string[] terminators);
+    sbyte[] ReadHexSBytes(ReadOnlySpan<string> separators,
+                          ReadOnlySpan<string> terminators);
+
+    sbyte?[] ReadHexSBytesIncludingEmpty(ReadOnlySpan<string> separators,
+                                         ReadOnlySpan<string> terminators);
+
+    short[] ReadInt16s(ReadOnlySpan<string> separators,
+                       ReadOnlySpan<string> terminators);
+
+    short?[] ReadInt16sIncludingEmpty(ReadOnlySpan<string> separators,
+                                      ReadOnlySpan<string> terminators);
+
     void AssertHexInt16(short expectedValue);
     short ReadHexInt16();
-    short[] ReadHexInt16s(string[] separators, string[] terminators);
-    short?[] ReadHexInt16sIncludingEmpty(string[] separators, string[] terminators);
 
-    ushort[] ReadUInt16s(string[] separators, string[] terminators);
-    ushort?[] ReadUInt16sIncludingEmpty(string[] separators, string[] terminators);
+    short[] ReadHexInt16s(ReadOnlySpan<string> separators,
+                          ReadOnlySpan<string> terminators);
+
+    short?[] ReadHexInt16sIncludingEmpty(ReadOnlySpan<string> separators,
+                                         ReadOnlySpan<string> terminators);
+
+    ushort[] ReadUInt16s(ReadOnlySpan<string> separators,
+                         ReadOnlySpan<string> terminators);
+
+    ushort?[] ReadUInt16sIncludingEmpty(ReadOnlySpan<string> separators,
+                                        ReadOnlySpan<string> terminators);
+
     void AssertHexUInt16(ushort expectedValue);
     ushort ReadHexUInt16();
-    ushort[] ReadHexUInt16s(string[] separators, string[] terminators);
-    ushort?[] ReadHexUInt16sIncludingEmpty(string[] separators, string[] terminators);
 
-    int[] ReadInt32s(string[] separators, string[] terminators);
-    int?[] ReadInt32sIncludingEmpty(string[] separators, string[] terminators);
+    ushort[] ReadHexUInt16s(ReadOnlySpan<string> separators,
+                            ReadOnlySpan<string> terminators);
+
+    ushort?[] ReadHexUInt16sIncludingEmpty(ReadOnlySpan<string> separators,
+                                           ReadOnlySpan<string> terminators);
+
+    int[] ReadInt32s(ReadOnlySpan<string> separators,
+                     ReadOnlySpan<string> terminators);
+
+    int?[] ReadInt32sIncludingEmpty(ReadOnlySpan<string> separators,
+                                    ReadOnlySpan<string> terminators);
+
     void AssertHexInt32(int expectedValue);
     int ReadHexInt32();
-    int[] ReadHexInt32s(string[] separators, string[] terminators);
-    int?[] ReadHexInt32sIncludingEmpty(string[] separators, string[] terminators);
 
-    uint[] ReadUInt32s(string[] separators, string[] terminators);
-    uint?[] ReadUInt32sIncludingEmpty(string[] separators, string[] terminators);
+    int[] ReadHexInt32s(ReadOnlySpan<string> separators,
+                        ReadOnlySpan<string> terminators);
+
+    int?[] ReadHexInt32sIncludingEmpty(ReadOnlySpan<string> separators,
+                                       ReadOnlySpan<string> terminators);
+
+    uint[] ReadUInt32s(ReadOnlySpan<string> separators,
+                       ReadOnlySpan<string> terminators);
+
+    uint?[] ReadUInt32sIncludingEmpty(ReadOnlySpan<string> separators,
+                                      ReadOnlySpan<string> terminators);
+
     void AssertHexUInt32(uint expectedValue);
     uint ReadHexUInt32();
-    uint[] ReadHexUInt32s(string[] separators, string[] terminators);
-    uint?[] ReadHexUInt32sIncludingEmpty(string[] separators, string[] terminators);
 
-    long[] ReadInt64s(string[] separators, string[] terminators);
-    long?[] ReadInt64sIncludingEmpty(string[] separators, string[] terminators);
+    uint[] ReadHexUInt32s(ReadOnlySpan<string> separators,
+                          ReadOnlySpan<string> terminators);
+
+    uint?[] ReadHexUInt32sIncludingEmpty(ReadOnlySpan<string> separators,
+                                         ReadOnlySpan<string> terminators);
+
+    long[] ReadInt64s(ReadOnlySpan<string> separators,
+                      ReadOnlySpan<string> terminators);
+
+    long?[] ReadInt64sIncludingEmpty(ReadOnlySpan<string> separators,
+                                     ReadOnlySpan<string> terminators);
+
     void AssertHexInt64(long expectedValue);
     long ReadHexInt64();
-    long[] ReadHexInt64s(string[] separators, string[] terminators);
-    long?[] ReadHexInt64sIncludingEmpty(string[] separators, string[] terminators);
 
-    ulong[] ReadUInt64s(string[] separators, string[] terminators);
-    ulong?[] ReadUInt64sIncludingEmpty(string[] separators, string[] terminators);
+    long[] ReadHexInt64s(ReadOnlySpan<string> separators,
+                         ReadOnlySpan<string> terminators);
+
+    long?[] ReadHexInt64sIncludingEmpty(ReadOnlySpan<string> separators,
+                                        ReadOnlySpan<string> terminators);
+
+    ulong[] ReadUInt64s(ReadOnlySpan<string> separators,
+                        ReadOnlySpan<string> terminators);
+
+    ulong?[] ReadUInt64sIncludingEmpty(ReadOnlySpan<string> separators,
+                                       ReadOnlySpan<string> terminators);
+
     void AssertHexUInt64(ulong expectedValue);
     ulong ReadHexUInt64();
-    ulong[] ReadHexUInt64s(string[] separators, string[] terminators);
-    ulong?[] ReadHexUInt64sIncludingEmpty(string[] separators, string[] terminators);
 
-    float[] ReadSingles(string[] separators, string[] terminators);
-    float?[] ReadSinglesIncludingEmpty(string[] separators, string[] terminators);
-    double[] ReadDoubles(string[] separators, string[] terminators);
-    double?[] ReadDoublesIncludingEmpty(string[] separators, string[] terminators);
+    ulong[] ReadHexUInt64s(ReadOnlySpan<string> separators,
+                           ReadOnlySpan<string> terminators);
 
-    string[] ReadStrings(string[] separators, string[] terminators);
+    ulong?[] ReadHexUInt64sIncludingEmpty(ReadOnlySpan<string> separators,
+                                          ReadOnlySpan<string> terminators);
+
+    float[] ReadSingles(ReadOnlySpan<string> separators,
+                        ReadOnlySpan<string> terminators);
+
+    float?[] ReadSinglesIncludingEmpty(ReadOnlySpan<string> separators,
+                                       ReadOnlySpan<string> terminators);
+
+    double[] ReadDoubles(ReadOnlySpan<string> separators,
+                         ReadOnlySpan<string> terminators);
+
+    double?[] ReadDoublesIncludingEmpty(ReadOnlySpan<string> separators,
+                                        ReadOnlySpan<string> terminators);
+
+    string[] ReadStrings(ReadOnlySpan<string> separators,
+                         ReadOnlySpan<string> terminators);
 
     T ReadNew<T>() where T : ITextDeserializable, new();
 
@@ -77,6 +158,7 @@
 
     void ReadNewArray<T>(out T[] array, int length)
         where T : ITextDeserializable, new();
+
     T[] ReadNewArray<T>(int length) where T : ITextDeserializable, new();
   }
 }

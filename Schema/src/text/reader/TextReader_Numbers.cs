@@ -2,121 +2,140 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using schema.util.strings;
+
 namespace schema.text.reader {
   public sealed partial class TextReader {
-    public byte[] ReadBytes(string[] separators, string[] terminators)
+    public byte[] ReadBytes(ReadOnlySpan<string> separators,
+                            ReadOnlySpan<string> terminators)
       => this.ConvertSplitUpToAndPastTerminators_(separators,
                                                   terminators,
                                                   this.ConvertByte_);
 
-    public byte[] ReadHexBytes(string[] separators, string[] terminators)
+    public byte[] ReadHexBytes(ReadOnlySpan<string> separators,
+                               ReadOnlySpan<string> terminators)
       => this.ConvertSplitUpToAndPastHexTerminators_(separators,
         terminators,
         this.ConvertHexByte_);
 
 
-    public sbyte[] ReadSBytes(string[] separators, string[] terminators)
+    public sbyte[] ReadSBytes(ReadOnlySpan<string> separators,
+                              ReadOnlySpan<string> terminators)
       => this.ConvertSplitUpToAndPastTerminators_(separators,
                                                   terminators,
                                                   this.ConvertSByte_);
 
-    public sbyte[] ReadHexSBytes(string[] separators, string[] terminators)
+    public sbyte[] ReadHexSBytes(ReadOnlySpan<string> separators,
+                                 ReadOnlySpan<string> terminators)
       => this.ConvertSplitUpToAndPastHexTerminators_(separators,
         terminators,
         this.ConvertHexSByte_);
 
 
-    public short[] ReadInt16s(string[] separators, string[] terminators)
+    public short[] ReadInt16s(ReadOnlySpan<string> separators,
+                              ReadOnlySpan<string> terminators)
       => this.ConvertSplitUpToAndPastTerminators_(separators,
                                                   terminators,
                                                   this.ConvertInt16_);
 
-    public short[] ReadHexInt16s(string[] separators, string[] terminators)
+    public short[] ReadHexInt16s(ReadOnlySpan<string> separators,
+                                 ReadOnlySpan<string> terminators)
       => this.ConvertSplitUpToAndPastHexTerminators_(separators,
         terminators,
         this.ConvertHexInt16_);
 
 
-    public ushort[] ReadUInt16s(string[] separators, string[] terminators)
+    public ushort[] ReadUInt16s(ReadOnlySpan<string> separators,
+                                ReadOnlySpan<string> terminators)
       => this.ConvertSplitUpToAndPastTerminators_(separators,
                                                   terminators,
                                                   this.ConvertUInt16_);
 
-    public ushort[] ReadHexUInt16s(string[] separators, string[] terminators)
+    public ushort[] ReadHexUInt16s(ReadOnlySpan<string> separators,
+                                   ReadOnlySpan<string> terminators)
       => this.ConvertSplitUpToAndPastHexTerminators_(separators,
         terminators,
         this.ConvertHexUInt16_);
 
 
-    public int[] ReadInt32s(string[] separators, string[] terminators)
+    public int[] ReadInt32s(ReadOnlySpan<string> separators,
+                            ReadOnlySpan<string> terminators)
       => this.ConvertSplitUpToAndPastTerminators_(separators,
                                                   terminators,
                                                   this.ConvertInt32_);
 
 
-    public int[] ReadHexInt32s(string[] separators, string[] terminators)
+    public int[] ReadHexInt32s(ReadOnlySpan<string> separators,
+                               ReadOnlySpan<string> terminators)
       => this.ConvertSplitUpToAndPastHexTerminators_(separators,
         terminators,
         this.ConvertHexInt32_);
 
-    public uint[] ReadUInt32s(string[] separators, string[] terminators)
+    public uint[] ReadUInt32s(ReadOnlySpan<string> separators,
+                              ReadOnlySpan<string> terminators)
       => this.ConvertSplitUpToAndPastTerminators_(separators,
                                                   terminators,
                                                   this.ConvertUInt32_);
 
-    public uint[] ReadHexUInt32s(string[] separators, string[] terminators)
+    public uint[] ReadHexUInt32s(ReadOnlySpan<string> separators,
+                                 ReadOnlySpan<string> terminators)
       => this.ConvertSplitUpToAndPastHexTerminators_(separators,
         terminators,
         this.ConvertHexUInt32_);
 
-    public long[] ReadInt64s(string[] separators, string[] terminators)
+    public long[] ReadInt64s(ReadOnlySpan<string> separators,
+                             ReadOnlySpan<string> terminators)
       => this.ConvertSplitUpToAndPastTerminators_(separators,
                                                   terminators,
                                                   this.ConvertInt64_);
 
-    public long[] ReadHexInt64s(string[] separators, string[] terminators)
+    public long[] ReadHexInt64s(ReadOnlySpan<string> separators,
+                                ReadOnlySpan<string> terminators)
       => this.ConvertSplitUpToAndPastHexTerminators_(separators,
         terminators,
         this.ConvertHexInt64_);
 
 
-    public ulong[] ReadUInt64s(string[] separators, string[] terminators)
+    public ulong[] ReadUInt64s(ReadOnlySpan<string> separators,
+                               ReadOnlySpan<string> terminators)
       => this.ConvertSplitUpToAndPastTerminators_(separators,
                                                   terminators,
                                                   this.ConvertUInt64_);
 
 
-    public ulong[] ReadHexUInt64s(string[] separators, string[] terminators)
+    public ulong[] ReadHexUInt64s(ReadOnlySpan<string> separators,
+                                  ReadOnlySpan<string> terminators)
       => this.ConvertSplitUpToAndPastHexTerminators_(separators,
         terminators,
         this.ConvertHexUInt64_);
 
 
-    public float[] ReadSingles(string[] separators, string[] terminators)
+    public float[] ReadSingles(ReadOnlySpan<string> separators,
+                               ReadOnlySpan<string> terminators)
       => this.ConvertSplitUpToAndPastTerminators_(separators,
                                                   terminators,
                                                   this.ConvertSingle_);
 
-    public double[] ReadDoubles(string[] separators, string[] terminators)
+    public double[] ReadDoubles(ReadOnlySpan<string> separators,
+                                ReadOnlySpan<string> terminators)
       => this.ConvertSplitUpToAndPastTerminators_(separators,
                                                   terminators,
                                                   this.ConvertDouble_);
 
 
     private IEnumerable<string> ReadSplitUpToAndPastTerminators_(
-        string[] separators,
-        string[] terminators) {
+        ReadOnlySpan<string> separators,
+        ReadOnlySpan<string> terminators) {
       var match = this.ReadUpToAndPastTerminator(terminators);
       if (match.Length == 0) {
         return Enumerable.Empty<string>();
       }
-
-      return match.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+      return match.SplitViaSpans(separators, false);
     }
 
     private T[] ConvertSplitUpToAndPastTerminators_<T>(
-        string[] separators,
-        string[] terminators,
+        ReadOnlySpan<string> separators,
+        ReadOnlySpan<string> terminators,
         Func<string, T> converter)
       => this.ReadSplitUpToAndPastTerminators_(separators, terminators)
              .Select(t => {
@@ -129,6 +148,7 @@ namespace schema.text.reader {
                    start++;
                  }
                }
+
                if (t.Length - start == 0) {
                  return null;
                }
@@ -140,8 +160,8 @@ namespace schema.text.reader {
              .ToArray();
 
     private T[] ConvertSplitUpToAndPastHexTerminators_<T>(
-        string[] separators,
-        string[] terminators,
+        ReadOnlySpan<string> separators,
+        ReadOnlySpan<string> terminators,
         Func<string, T> converter)
       => this.ReadSplitUpToAndPastTerminators_(separators, terminators)
              .Select(t => {
@@ -156,6 +176,7 @@ namespace schema.text.reader {
                    break;
                  }
                }
+
                if (t.Length - start == 0) {
                  return null;
                }
