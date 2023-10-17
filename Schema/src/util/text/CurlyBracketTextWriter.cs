@@ -9,12 +9,24 @@ namespace schema.util.text {
     public ICurlyBracketTextWriter ExitBlock();
   }
 
-  public sealed class CurlyBracketTextWriter : ICurlyBracketTextWriter {
+  public sealed class CurlyBracketTextWriter : ICurlyBracketTextWriter,
+                                               IDisposable {
     private readonly TextWriter impl_;
     private int indentLevel_ = 0;
 
     public CurlyBracketTextWriter(TextWriter impl) {
       this.impl_ = impl;
+    }
+
+    ~CurlyBracketTextWriter() => this.ReleaseUnmanagedResources_();
+
+    public void Dispose() {
+      this.ReleaseUnmanagedResources_();
+      GC.SuppressFinalize(this);
+    }
+
+    private void ReleaseUnmanagedResources_() {
+      this.impl_.Dispose();
     }
 
     public ICurlyBracketTextWriter EnterBlock(string prefix = "") {

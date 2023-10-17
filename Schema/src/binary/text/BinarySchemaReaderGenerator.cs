@@ -22,7 +22,7 @@ namespace schema.binary.text {
           SymbolTypeUtil.GetDeclaringTypesDownward(typeSymbol);
 
       var sb = new StringBuilder();
-      var cbsb = new CurlyBracketTextWriter(new StringWriter(sb));
+      using var cbsb = new CurlyBracketTextWriter(new StringWriter(sb));
 
       {
         var dependencies = new List<string> { "System", "schema.binary" };
