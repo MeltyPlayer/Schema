@@ -40,11 +40,10 @@ namespace schema.util.streams {
       Asserts.True(startOffset >= this.offset_,
                    "Attempted to read before the start of the substream!");
 
-      return this.impl_.Read(
-          dst.Slice(0,
-                    Convert.ToInt32(Math.Min(dst.Length,
-                                             this.Position + this.length_ -
-                                             startOffset))));
+      var maxLength = Math.Min(dst.Length,
+                               this.offset_ + this.length_ - startOffset);
+
+      return this.impl_.Read(dst.Slice(0, Convert.ToInt32(maxLength)));
     }
 
     public long Position {
