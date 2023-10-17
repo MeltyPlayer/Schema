@@ -27,6 +27,7 @@ namespace schema.util.streams {
 
   public interface IWritableStream {
     void Write(ReadOnlySpan<byte> src);
+    void Write(IReadableStream readableStream);
   }
 
   public interface ISizedReadableStream : IReadableStream,

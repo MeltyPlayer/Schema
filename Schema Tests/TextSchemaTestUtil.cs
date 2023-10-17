@@ -1,7 +1,5 @@
 ﻿using System.IO;
 
-using schema.text.reader;
-
 using TextReader = schema.text.reader.TextReader;
 
 namespace schema.text {

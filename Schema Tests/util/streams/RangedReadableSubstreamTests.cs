@@ -1,9 +1,7 @@
 ﻿using NUnit.Framework;
 
-using schema.util.streams;
-
-namespace schema.lib.SubstreamSharp {
-  public class RangedSubstreamTests {
+namespace schema.util.streams {
+  public class RangedReadableSubstreamTests {
     [Test]
     public void TestFullSubstream() {
       var s = new ReadableStream(new byte[] { 1, 2, 3, 4, 5, 6, 7 });
