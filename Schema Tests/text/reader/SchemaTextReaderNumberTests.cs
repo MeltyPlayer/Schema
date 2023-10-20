@@ -2,12 +2,11 @@
 
 using NUnit.Framework;
 
-using schema.util;
 using schema.util.asserts;
 
 
 namespace schema.text.reader {
-  internal class TextReaderNumberTests {
+  internal class SchemaTextReaderNumberTests {
     private void ReadAndAssert_<T>(
         SchemaTextReader tr,
         T expectedValue,

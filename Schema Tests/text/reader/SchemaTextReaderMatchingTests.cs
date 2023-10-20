@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 
 namespace schema.text.reader {
-  internal class TextReaderMatchingTests {
+  internal class SchemaTextReaderMatchingTests {
     [Test]
     public void TestReadUpToStartOfTerminator() {
       using var tr = TextSchemaTestUtil.CreateTextReader("abc,,xyz, 123");

@@ -2,7 +2,7 @@
 
 
 namespace schema.text.reader {
-  internal class TextReaderPositionTests {
+  internal class SchemaTextReaderPositionTests {
     [Test]
     public void TestGetPositions() {
       using var tr = TextSchemaTestUtil.CreateTextReader("abc");

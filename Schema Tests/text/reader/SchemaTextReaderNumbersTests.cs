@@ -1,10 +1,9 @@
 ﻿using NUnit.Framework;
 
-using schema.util;
 using schema.util.asserts;
 
 namespace schema.text.reader {
-  internal class TextReaderNumbersTests {
+  internal class SchemaTextReaderNumbersTests {
     [Test]
     public void TestReadBytesNull() {
       using var tr = TextSchemaTestUtil.CreateTextReader("0,, ,255");

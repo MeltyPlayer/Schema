@@ -1,9 +1,7 @@
 ﻿using NUnit.Framework;
 
-using schema.util;
-
 namespace schema.text.reader {
-  internal class TextReaderMultilineTests {
+  internal class SchemaTextReaderMultilineTests {
     [Test]
     public void TestReadAcrossMultipleLinesSeparately() {
       var inputText = "1 2 3\n4, 5, 6\n7\n8\n9\nfoobar";
