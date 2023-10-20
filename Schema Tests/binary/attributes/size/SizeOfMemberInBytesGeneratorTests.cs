@@ -23,9 +23,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class SizeWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.FooSize = er.ReadUInt32();
-      this.Foo = er.ReadByte();
+    public void Read(IBinaryReader br) {
+      this.FooSize = br.ReadUInt32();
+      this.Foo = br.ReadByte();
     }
   }
 }
@@ -35,11 +35,11 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class SizeWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteUInt32Delayed(ew.GetSizeOfMemberRelativeToScope(""Foo"").ContinueWith(task => (uint) task.Result));
-      ew.MarkStartOfMember(""Foo"");
-      ew.WriteByte(this.Foo);
-      ew.MarkEndOfMember();
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteUInt32Delayed(bw.GetSizeOfMemberRelativeToScope(""Foo"").ContinueWith(task => (uint) task.Result));
+      bw.MarkStartOfMember(""Foo"");
+      bw.WriteByte(this.Foo);
+      bw.MarkEndOfMember();
     }
   }
 }
@@ -71,9 +71,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class SizeWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.FooBarSize = er.ReadUInt32();
-      this.Foo.Read(er);
+    public void Read(IBinaryReader br) {
+      this.FooBarSize = br.ReadUInt32();
+      this.Foo.Read(br);
     }
   }
 }
@@ -83,11 +83,11 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class SizeWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteUInt32Delayed(ew.GetSizeOfMemberRelativeToScope(""Foo.Bar"").ContinueWith(task => (uint) task.Result));
-      ew.MarkStartOfMember(""Foo"");
-      this.Foo.Write(ew);
-      ew.MarkEndOfMember();
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteUInt32Delayed(bw.GetSizeOfMemberRelativeToScope(""Foo.Bar"").ContinueWith(task => (uint) task.Result));
+      bw.MarkStartOfMember(""Foo"");
+      this.Foo.Write(bw);
+      bw.MarkEndOfMember();
     }
   }
 }
@@ -122,8 +122,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class SizeWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.FooSize = er.ReadUInt32();
+    public void Read(IBinaryReader br) {
+      this.FooSize = br.ReadUInt32();
     }
   }
 }
@@ -133,8 +133,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class SizeWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteUInt32Delayed(ew.GetSizeOfMemberRelativeToScope(""Foo"").ContinueWith(task => (uint) task.Result));
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteUInt32Delayed(bw.GetSizeOfMemberRelativeToScope(""Foo"").ContinueWith(task => (uint) task.Result));
     }
   }
 }
@@ -145,10 +145,10 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ParentImpl {
-    public void Read(IEndianBinaryReader er) {
+    public void Read(IBinaryReader br) {
       this.Child.Parent = this;
-      this.Child.Read(er);
-      this.Foo = er.ReadByte();
+      this.Child.Read(br);
+      this.Foo = br.ReadByte();
     }
   }
 }
@@ -158,11 +158,11 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ParentImpl {
-    public void Write(ISubEndianBinaryWriter ew) {
-      this.Child.Write(ew);
-      ew.MarkStartOfMember(""Foo"");
-      ew.WriteByte(this.Foo);
-      ew.MarkEndOfMember();
+    public void Write(ISubBinaryWriter bw) {
+      this.Child.Write(bw);
+      bw.MarkStartOfMember(""Foo"");
+      bw.WriteByte(this.Foo);
+      bw.MarkEndOfMember();
     }
   }
 }

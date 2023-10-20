@@ -21,10 +21,10 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ImmediateLengthWrapper {
-    public void Read(IEndianBinaryReader er) {
+    public void Read(IBinaryReader br) {
       {
-        var l = er.ReadUInt32();
-        this.Field = er.ReadString(l);
+        var l = br.ReadUInt32();
+        this.Field = br.ReadString(l);
       }
     }
   }
@@ -35,9 +35,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ImmediateLengthWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteUInt32((uint) this.Field.Length);
-      ew.WriteString(this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteUInt32((uint) this.Field.Length);
+      bw.WriteString(this.Field);
     }
   }
 }
@@ -62,10 +62,10 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ImmediateLengthWrapper {
-    public void Read(IEndianBinaryReader er) {
+    public void Read(IBinaryReader br) {
       {
-        var l = er.ReadByte();
-        this.Field = er.ReadString(l);
+        var l = br.ReadByte();
+        this.Field = br.ReadString(l);
       }
     }
   }
@@ -76,9 +76,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ImmediateLengthWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteByte((byte) this.Field.Length);
-      ew.WriteString(this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteByte((byte) this.Field.Length);
+      bw.WriteString(this.Field);
     }
   }
 }

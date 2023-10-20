@@ -26,8 +26,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ChildOfWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Field = er.ReadByte();
+    public void Read(IBinaryReader br) {
+      this.Field = br.ReadByte();
     }
   }
 }
@@ -37,8 +37,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ChildOfWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteByte(this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteByte(this.Field);
     }
   }
 }
@@ -68,9 +68,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class Parent {
-    public void Read(IEndianBinaryReader er) {
+    public void Read(IBinaryReader br) {
       this.Child.Parent = this;
-      this.Child.Read(er);
+      this.Child.Read(br);
     }
   }
 }
@@ -80,8 +80,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class Parent {
-    public void Write(ISubEndianBinaryWriter ew) {
-      this.Child.Write(ew);
+    public void Write(ISubBinaryWriter bw) {
+      this.Child.Write(bw);
     }
   }
 }
@@ -112,7 +112,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ChildOfWrapper {
-    public void Read(IEndianBinaryReader er) {
+    public void Read(IBinaryReader br) {
     }
   }
 }
@@ -122,7 +122,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ChildOfWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
+    public void Write(ISubBinaryWriter bw) {
     }
   }
 }
@@ -154,12 +154,12 @@ using schema.util.sequences;
 
 namespace foo.bar {
   public partial class Parent {
-    public void Read(IEndianBinaryReader er) {
-      this.Length = er.ReadUInt32();
+    public void Read(IBinaryReader br) {
+      this.Length = br.ReadUInt32();
       this.Child = SequencesUtil.CloneAndResizeSequence(this.Child, (int) this.Length);
       foreach (var e in this.Child) {
         e.Parent = this;
-        e.Read(er);
+        e.Read(br);
       }
     }
   }
@@ -170,10 +170,10 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class Parent {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteUInt32(this.Length);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteUInt32(this.Length);
       foreach (var e in this.Child) {
-        e.Write(ew);
+        e.Write(bw);
       }
     }
   }

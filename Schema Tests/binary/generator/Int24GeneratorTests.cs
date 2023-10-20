@@ -24,9 +24,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class Int24Wrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.field1 = er.ReadInt24();
-      er.AssertInt24(this.field2);
+    public void Read(IBinaryReader br) {
+      this.field1 = br.ReadInt24();
+      br.AssertInt24(this.field2);
     }
   }
 }
@@ -36,9 +36,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class Int24Wrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteInt24(this.field1);
-      ew.WriteInt24(this.field2);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteInt24(this.field1);
+      bw.WriteInt24(this.field2);
     }
   }
 }
@@ -66,9 +66,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class UInt24Wrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.field1 = er.ReadUInt24();
-      er.AssertUInt24(this.field2);
+    public void Read(IBinaryReader br) {
+      this.field1 = br.ReadUInt24();
+      br.AssertUInt24(this.field2);
     }
   }
 }
@@ -78,9 +78,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class UInt24Wrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteUInt24(this.field1);
-      ew.WriteUInt24(this.field2);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteUInt24(this.field1);
+      bw.WriteUInt24(this.field2);
     }
   }
 }

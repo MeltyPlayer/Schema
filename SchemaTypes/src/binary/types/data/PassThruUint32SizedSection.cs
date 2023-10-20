@@ -24,13 +24,13 @@ namespace schema.binary.types.data {
       this.tweakSize_ = tweakSize;
     }
 
-    public void Read(IEndianBinaryReader er) {
-      this.size_ = er.ReadUInt32();
+    public void Read(IBinaryReader br) {
+      this.size_ = br.ReadUInt32();
 
       var useSize = this.size_ + this.tweakSize_;
-      var basePosition = er.Position;
-      er.SubreadAt(er.Position, (int) useSize, this.Data.Read);
-      er.Position = basePosition + useSize;
+      var basePosition = br.Position;
+      br.SubreadAt(br.Position, (int) useSize, this.Data.Read);
+      br.Position = basePosition + useSize;
     }
   }
 }

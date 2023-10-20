@@ -22,8 +22,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Field = er.ReadBytes(er.Length - er.Position);
+    public void Read(IBinaryReader br) {
+      this.Field = br.ReadBytes(br.Length - br.Position);
     }
   }
 }
@@ -33,8 +33,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteBytes(this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteBytes(this.Field);
     }
   }
 }
@@ -62,11 +62,11 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
-    public void Read(IEndianBinaryReader er) {
+    public void Read(IBinaryReader br) {
       {
         this.Field.Clear();
-        while (!er.Eof) {
-          this.Field.Add(er.ReadByte());
+        while (!br.Eof) {
+          this.Field.Add(br.ReadByte());
         }
       }
     }
@@ -78,9 +78,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
+    public void Write(ISubBinaryWriter bw) {
       for (var i = 0; i < this.Field.Count; ++i) {
-        ew.WriteByte(this.Field[i]);
+        bw.WriteByte(this.Field[i]);
       }
     }
   }
@@ -107,8 +107,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Field = er.ReadInt32s((er.Length - er.Position) / 4);
+    public void Read(IBinaryReader br) {
+      this.Field = br.ReadInt32s((br.Length - br.Position) / 4);
     }
   }
 }
@@ -118,8 +118,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteInt32s(this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteInt32s(this.Field);
     }
   }
 }
@@ -147,11 +147,11 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
-    public void Read(IEndianBinaryReader er) {
+    public void Read(IBinaryReader br) {
       {
         this.Field.Clear();
-        while (!er.Eof) {
-          this.Field.Add(er.ReadInt32());
+        while (!br.Eof) {
+          this.Field.Add(br.ReadInt32());
         }
       }
     }
@@ -163,9 +163,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
+    public void Write(ISubBinaryWriter bw) {
       for (var i = 0; i < this.Field.Count; ++i) {
-        ew.WriteInt32(this.Field[i]);
+        bw.WriteInt32(this.Field[i]);
       }
     }
   }

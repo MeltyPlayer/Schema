@@ -19,8 +19,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class StringWrapper {
-    public void Read(IEndianBinaryReader er) {
-      er.AssertString(this.Field);
+    public void Read(IBinaryReader br) {
+      br.AssertString(this.Field);
     }
   }
 }
@@ -30,8 +30,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class StringWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteString(this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteString(this.Field);
     }
   }
 }
@@ -56,8 +56,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class StringWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Field = er.ReadString(3);
+    public void Read(IBinaryReader br) {
+      this.Field = br.ReadString(3);
     }
   }
 }
@@ -67,8 +67,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class StringWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteStringWithExactLength(this.Field, 3);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteStringWithExactLength(this.Field, 3);
     }
   }
 }

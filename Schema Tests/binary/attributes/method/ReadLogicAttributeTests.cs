@@ -15,7 +15,7 @@ namespace foo.bar {
     public byte Field1 { get; set; }
 
     [ReadLogic]
-    public void Method(IEndianBinaryReader er) {}
+    public void Method(IBinaryReader br) {}
 
     public byte Field2 { get; set; }
   }
@@ -25,10 +25,10 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Field1 = er.ReadByte();
-      this.Method(er);
-      this.Field2 = er.ReadByte();
+    public void Read(IBinaryReader br) {
+      this.Field1 = br.ReadByte();
+      this.Method(br);
+      this.Field2 = br.ReadByte();
     }
   }
 }
@@ -38,9 +38,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteByte(this.Field1);
-      ew.WriteByte(this.Field2);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteByte(this.Field1);
+      bw.WriteByte(this.Field2);
     }
   }
 }

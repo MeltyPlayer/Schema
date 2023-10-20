@@ -209,7 +209,7 @@ namespace schema.binary {
               if (methodSymbol.Parameters.Length == 1 && methodSymbol
                       .Parameters[0]
                       .Type
-                      .IsExactlyType(typeof(IEndianBinaryReader))) {
+                      .IsExactlyType(typeof(IBinaryReader))) {
                 members.Add(
                     new SchemaMethodMember { Name = methodSymbol.Name });
               } else {

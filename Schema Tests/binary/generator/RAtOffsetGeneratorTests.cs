@@ -22,13 +22,13 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class OffsetWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Offset = er.ReadUInt32();
+    public void Read(IBinaryReader br) {
+      this.Offset = br.ReadUInt32();
       {
-        var tempLocation = er.Position;
-        er.Position = this.Offset;
-        this.Field = er.ReadByte();
-        er.Position = tempLocation;
+        var tempLocation = br.Position;
+        br.Position = this.Offset;
+        this.Field = br.ReadByte();
+        br.Position = tempLocation;
       }
     }
   }
@@ -39,9 +39,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class OffsetWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteUInt32(this.Offset);
-      ew.WriteByte(this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteUInt32(this.Offset);
+      bw.WriteByte(this.Field);
     }
   }
 }
@@ -74,12 +74,12 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class OffsetWrapper {
-    public void Read(IEndianBinaryReader er) {
+    public void Read(IBinaryReader br) {
       {
-        var tempLocation = er.Position;
-        er.Position = this.Parent.Offset;
-        this.Field = er.ReadByte();
-        er.Position = tempLocation;
+        var tempLocation = br.Position;
+        br.Position = this.Parent.Offset;
+        this.Field = br.ReadByte();
+        br.Position = tempLocation;
       }
     }
   }
@@ -90,8 +90,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class OffsetWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteByte(this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteByte(this.Field);
     }
   }
 }

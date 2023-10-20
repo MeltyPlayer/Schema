@@ -1,10 +1,10 @@
 ﻿using System.IO;
 
-using TextReader = schema.text.reader.TextReader;
+using schema.text.reader;
 
 namespace schema.text {
   internal static class TextSchemaTestUtil {
-    public static TextReader CreateTextReader(string text) {
+    public static SchemaTextReader CreateTextReader(string text) {
       var ms = new MemoryStream();
 
       var sw = new StreamWriter(ms);
@@ -12,7 +12,7 @@ namespace schema.text {
       sw.Flush();
       ms.Position = 0;
 
-      return new TextReader(ms);
+      return new SchemaTextReader(ms);
     }
   }
 }

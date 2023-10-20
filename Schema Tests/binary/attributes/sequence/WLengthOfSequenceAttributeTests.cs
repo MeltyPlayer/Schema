@@ -25,10 +25,10 @@ using schema.util.sequences;
 
 namespace foo.bar {
   public partial class SequenceWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Length = er.ReadInt32();
+    public void Read(IBinaryReader br) {
+      this.Length = br.ReadInt32();
       this.Sequence = SequencesUtil.CloneAndResizeSequence(this.Sequence, this.Length);
-      er.ReadBytes(this.Sequence);
+      br.ReadBytes(this.Sequence);
     }
   }
 }
@@ -38,9 +38,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class SequenceWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteInt32(Sequence.Length);
-      ew.WriteBytes(this.Sequence);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteInt32(Sequence.Length);
+      bw.WriteBytes(this.Sequence);
     }
   }
 }
@@ -69,10 +69,10 @@ using schema.util.sequences;
 
 namespace foo.bar {
   public partial class SequenceWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Length = er.ReadUInt16();
+    public void Read(IBinaryReader br) {
+      this.Length = br.ReadUInt16();
       this.Sequence = SequencesUtil.CloneAndResizeSequence(this.Sequence, this.Length);
-      er.ReadBytes(this.Sequence);
+      br.ReadBytes(this.Sequence);
     }
   }
 }
@@ -82,9 +82,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class SequenceWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteUInt16((ushort) Sequence.Length);
-      ew.WriteBytes(this.Sequence);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteUInt16((ushort) Sequence.Length);
+      bw.WriteBytes(this.Sequence);
     }
   }
 }
@@ -118,13 +118,13 @@ using schema.util.sequences;
 
 namespace foo.bar {
   public partial class SequenceWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Length = er.ReadInt32();
+    public void Read(IBinaryReader br) {
+      this.Length = br.ReadInt32();
       this.Sequence1 = SequencesUtil.CloneAndResizeSequence(this.Sequence1, this.Length);
-      er.ReadBytes(this.Sequence1);
+      br.ReadBytes(this.Sequence1);
       SequencesUtil.ResizeSequenceInPlace(this.Sequence2, this.Length);
       for (var i = 0; i < this.Sequence2.Count; ++i) {
-        this.Sequence2[i] = er.ReadByte();
+        this.Sequence2[i] = br.ReadByte();
       }
     }
   }
@@ -132,16 +132,16 @@ namespace foo.bar {
 ",
                                            @"using System;
 using schema.binary;
-using schema.util;
+using schema.util.asserts;
 
 namespace foo.bar {
   public partial class SequenceWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
+    public void Write(ISubBinaryWriter bw) {
       Asserts.AllEqual(Sequence1.Length, Sequence2.Count);
-      ew.WriteInt32(Sequence1.Length);
-      ew.WriteBytes(this.Sequence1);
+      bw.WriteInt32(Sequence1.Length);
+      bw.WriteBytes(this.Sequence1);
       for (var i = 0; i < this.Sequence2.Count; ++i) {
-        ew.WriteByte(this.Sequence2[i]);
+        bw.WriteByte(this.Sequence2[i]);
       }
     }
   }

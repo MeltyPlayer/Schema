@@ -24,9 +24,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class NtsWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Length = er.ReadUInt32();
-      this.Text = er.ReadString(Length);
+    public void Read(IBinaryReader br) {
+      this.Length = br.ReadUInt32();
+      this.Text = br.ReadString(Length);
     }
   }
 }
@@ -36,9 +36,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class NtsWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteUInt32((uint) Text.Length);
-      ew.WriteString(this.Text);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteUInt32((uint) Text.Length);
+      bw.WriteString(this.Text);
     }
   }
 }
@@ -70,25 +70,25 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class NtsWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Length = er.ReadUInt32();
-      this.Text1 = er.ReadString(Length);
-      this.Text2 = er.ReadString(Length);
+    public void Read(IBinaryReader br) {
+      this.Length = br.ReadUInt32();
+      this.Text1 = br.ReadString(Length);
+      this.Text2 = br.ReadString(Length);
     }
   }
 }
 ",
                                            @"using System;
 using schema.binary;
-using schema.util;
+using schema.util.asserts;
 
 namespace foo.bar {
   public partial class NtsWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
+    public void Write(ISubBinaryWriter bw) {
       Asserts.AllEqual(Text1.Length, Text2.Length);
-      ew.WriteUInt32((uint) Text1.Length);
-      ew.WriteString(this.Text1);
-      ew.WriteString(this.Text2);
+      bw.WriteUInt32((uint) Text1.Length);
+      bw.WriteString(this.Text1);
+      bw.WriteString(this.Text2);
     }
   }
 }

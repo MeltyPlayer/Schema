@@ -26,11 +26,11 @@ using schema.util.sequences;
 
 namespace foo.bar {
   public partial class ReadonlyListClass {
-    public void Read(IEndianBinaryReader er) {
-      this.count_ = er.ReadUInt32();
+    public void Read(IBinaryReader br) {
+      this.count_ = br.ReadUInt32();
       SequencesUtil.ResizeSequenceInPlace(this.Values, (int) this.count_);
       for (var i = 0; i < this.Values.Count; ++i) {
-        this.Values[i] = er.ReadInt32();
+        this.Values[i] = br.ReadInt32();
       }
     }
   }
@@ -41,10 +41,10 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ReadonlyListClass {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteUInt32((uint) Values.Count);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteUInt32((uint) Values.Count);
       for (var i = 0; i < this.Values.Count; ++i) {
-        ew.WriteInt32(this.Values[i]);
+        bw.WriteInt32(this.Values[i]);
       }
     }
   }

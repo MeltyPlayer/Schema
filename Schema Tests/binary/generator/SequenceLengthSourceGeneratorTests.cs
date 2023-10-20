@@ -38,14 +38,14 @@ using schema.util.sequences;
 
 namespace foo.bar {
   public partial class ConstLengthWrapper {
-    public void Read(IEndianBinaryReader er) {
+    public void Read(IBinaryReader br) {
       this.Field = SequencesUtil.CloneAndResizeSequence(this.Field, 3);
-      er.ReadInt32s(this.Field);
+      br.ReadInt32s(this.Field);
       this.NullableField = SequencesUtil.CloneAndResizeSequence(this.NullableField, 3);
-      er.ReadInt32s(this.NullableField);
+      br.ReadInt32s(this.NullableField);
       if (this.Toggle) {
         this.IfBooleanArray = SequencesUtil.CloneAndResizeSequence(this.IfBooleanArray, 3);
-        er.ReadInt32s(this.IfBooleanArray);
+        br.ReadInt32s(this.IfBooleanArray);
       }
       else {
         this.IfBooleanArray = null;
@@ -54,7 +54,7 @@ namespace foo.bar {
         this.IfBooleanList = new System.Collections.Generic.List();
         SequencesUtil.ResizeSequenceInPlace(this.IfBooleanList, 3);
         for (var i = 0; i < this.IfBooleanList.Count; ++i) {
-          this.IfBooleanList[i] = er.ReadInt32();
+          this.IfBooleanList[i] = br.ReadInt32();
         }
       }
       else {
@@ -69,15 +69,15 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ConstLengthWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteInt32s(this.Field);
-      ew.WriteInt32s(this.NullableField);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteInt32s(this.Field);
+      bw.WriteInt32s(this.NullableField);
       if (this.Toggle) {
-        ew.WriteInt32s(this.IfBooleanArray);
+        bw.WriteInt32s(this.IfBooleanArray);
       }
       if (this.Toggle) {
         for (var i = 0; i < this.IfBooleanList.Count; ++i) {
-          ew.WriteInt32(this.IfBooleanList[i]);
+          bw.WriteInt32(this.IfBooleanList[i]);
         }
       }
     }
@@ -109,9 +109,9 @@ using schema.util.sequences;
 
 namespace foo.bar {
   public partial class ConstLengthWrapper {
-    public void Read(IEndianBinaryReader er) {
+    public void Read(IBinaryReader br) {
       SequencesUtil.ResizeSequenceInPlace(this.Field, 3);
-      this.Field.Read(er);
+      this.Field.Read(br);
     }
   }
 }
@@ -121,8 +121,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ConstLengthWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      this.Field.Write(ew);
+    public void Write(ISubBinaryWriter bw) {
+      this.Field.Write(bw);
     }
   }
 }

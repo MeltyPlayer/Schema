@@ -34,12 +34,12 @@ namespace build {
 
       var endianness = Endianness.BigEndian;
 
-      var ew = new EndianBinaryWriter(endianness);
+      var ew = new SchemaBinaryWriter(endianness);
       expectedSw.Write(ew);
       ew.CompleteAndCopyToDelayed(ms).Wait();
 
       ms.Position = 0;
-      var er = new EndianBinaryReader(ms, endianness);
+      var er = new SchemaBinaryReader(ms, endianness);
       var actualSw = er.ReadNew<ByteSequenceWrapper>();
       Assert.AreEqual(expectedSw, actualSw);
     }
@@ -52,7 +52,7 @@ namespace build {
       };
 
       var ms = new MemoryStream(bytes);
-      var er = new EndianBinaryReader(ms);
+      var er = new SchemaBinaryReader(ms);
 
       ByteSequenceWrapper actualSw = default;
       er.SubreadAt(3,
@@ -77,7 +77,7 @@ namespace build {
       };
 
       var ms = new MemoryStream(bytes);
-      var er = new EndianBinaryReader(ms);
+      var er = new SchemaBinaryReader(ms);
 
       er.Position = 1;
       er.PushLocalSpace();
@@ -124,12 +124,12 @@ namespace build {
 
       var endianness = Endianness.BigEndian;
 
-      var ew = new EndianBinaryWriter(endianness);
+      var ew = new SchemaBinaryWriter(endianness);
       expectedSw.Write(ew);
       ew.CompleteAndCopyToDelayed(ms).Wait();
 
       ms.Position = 0;
-      var er = new EndianBinaryReader(ms, endianness);
+      var er = new SchemaBinaryReader(ms, endianness);
       var actualSw = er.ReadNew<IntSequenceWrapper>();
       Assert.AreEqual(expectedSw, actualSw);
     }
@@ -185,12 +185,12 @@ namespace build {
 
       var endianness = Endianness.BigEndian;
 
-      var ew = new EndianBinaryWriter(endianness);
+      var ew = new SchemaBinaryWriter(endianness);
       expectedSw.Write(ew);
       ew.CompleteAndCopyToDelayed(ms).Wait();
 
       ms.Position = 0;
-      var er = new EndianBinaryReader(ms, endianness);
+      var er = new SchemaBinaryReader(ms, endianness);
       var actualSw = er.ReadNew<FloatClassSequenceWrapper>();
       Assert.AreEqual(expectedSw, actualSw);
     }
@@ -244,7 +244,7 @@ namespace build {
       };
 
       var ms = new MemoryStream(bytes);
-      var er = new EndianBinaryReader(ms);
+      var er = new SchemaBinaryReader(ms);
 
       er.Position = 1;
       er.PushLocalSpace();

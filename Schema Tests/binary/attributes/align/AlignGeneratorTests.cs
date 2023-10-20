@@ -21,9 +21,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class AlignWrapper {
-    public void Read(IEndianBinaryReader er) {
-      er.Align(2);
-      this.Field = er.ReadByte();
+    public void Read(IBinaryReader br) {
+      br.Align(2);
+      this.Field = br.ReadByte();
     }
   }
 }
@@ -33,9 +33,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class AlignWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.Align(2);
-      ew.WriteByte(this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.Align(2);
+      bw.WriteByte(this.Field);
     }
   }
 }
@@ -62,10 +62,10 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class AlignWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Value = er.ReadUInt32();
-      er.Align(Value);
-      this.Field = er.ReadByte();
+    public void Read(IBinaryReader br) {
+      this.Value = br.ReadUInt32();
+      br.Align(Value);
+      this.Field = br.ReadByte();
     }
   }
 }
@@ -75,10 +75,10 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class AlignWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteUInt32(this.Value);
-      ew.Align(Value);
-      ew.WriteByte(this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteUInt32(this.Value);
+      bw.Align(Value);
+      bw.WriteByte(this.Field);
     }
   }
 }
@@ -109,10 +109,10 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class AlignWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Wrapper.Read(er);
-      er.Align(Wrapper.Value);
-      this.Field = er.ReadByte();
+    public void Read(IBinaryReader br) {
+      this.Wrapper.Read(br);
+      br.Align(Wrapper.Value);
+      this.Field = br.ReadByte();
     }
   }
 }
@@ -122,10 +122,10 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class AlignWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      this.Wrapper.Write(ew);
-      ew.Align(Wrapper.Value);
-      ew.WriteByte(this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      this.Wrapper.Write(bw);
+      bw.Align(Wrapper.Value);
+      bw.WriteByte(this.Field);
     }
   }
 }
@@ -152,13 +152,13 @@ using schema.util.sequences;
 
 namespace foo.bar {
   public partial class AlignWrapper {
-    public void Read(IEndianBinaryReader er) {
+    public void Read(IBinaryReader br) {
       {
-        var c = er.ReadUInt32();
+        var c = br.ReadUInt32();
         this.Field = SequencesUtil.CloneAndResizeSequence(this.Field, (int) c);
       }
-      er.Align(2);
-      er.ReadInt32s(this.Field);
+      br.Align(2);
+      br.ReadInt32s(this.Field);
     }
   }
 }
@@ -168,10 +168,10 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class AlignWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteUInt32((uint) this.Field.Length);
-      ew.Align(2);
-      ew.WriteInt32s(this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteUInt32((uint) this.Field.Length);
+      bw.Align(2);
+      bw.WriteInt32s(this.Field);
     }
   }
 }

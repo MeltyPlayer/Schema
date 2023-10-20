@@ -22,8 +22,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Field = (A) er.ReadByte();
+    public void Read(IBinaryReader br) {
+      this.Field = (A) br.ReadByte();
     }
   }
 }
@@ -33,8 +33,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteByte((byte) this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteByte((byte) this.Field);
     }
   }
 }
@@ -62,8 +62,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Field = (A) er.ReadByte();
+    public void Read(IBinaryReader br) {
+      this.Field = (A) br.ReadByte();
     }
   }
 }
@@ -73,8 +73,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteByte((byte) this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteByte((byte) this.Field);
     }
   }
 }
@@ -102,8 +102,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Field = (goo.A) er.ReadByte();
+    public void Read(IBinaryReader br) {
+      this.Field = (goo.A) br.ReadByte();
     }
   }
 }
@@ -113,8 +113,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteByte((byte) this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteByte((byte) this.Field);
     }
   }
 }
@@ -144,8 +144,8 @@ using schema.binary;
 
 namespace foo.bar.gar {
   public partial class Wrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Field = (goo.A) er.ReadByte();
+    public void Read(IBinaryReader br) {
+      this.Field = (goo.A) br.ReadByte();
     }
   }
 }
@@ -155,8 +155,8 @@ using schema.binary;
 
 namespace foo.bar.gar {
   public partial class Wrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteByte((byte) this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteByte((byte) this.Field);
     }
   }
 }

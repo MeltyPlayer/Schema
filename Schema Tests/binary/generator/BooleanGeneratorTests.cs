@@ -24,9 +24,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Field = er.ReadByte() != 0;
-      er.AssertByte((byte) (this.ReadonlyField ? 1 : 0));
+    public void Read(IBinaryReader br) {
+      this.Field = br.ReadByte() != 0;
+      br.AssertByte((byte) (this.ReadonlyField ? 1 : 0));
     }
   }
 }
@@ -36,9 +36,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteByte((byte) (this.Field ? 1 : 0));
-      ew.WriteByte((byte) (this.ReadonlyField ? 1 : 0));
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteByte((byte) (this.Field ? 1 : 0));
+      bw.WriteByte((byte) (this.ReadonlyField ? 1 : 0));
     }
   }
 }
@@ -67,9 +67,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Field = er.ReadInt16() != 0;
-      er.AssertInt16((short) (this.ReadonlyField ? 1 : 0));
+    public void Read(IBinaryReader br) {
+      this.Field = br.ReadInt16() != 0;
+      br.AssertInt16((short) (this.ReadonlyField ? 1 : 0));
     }
   }
 }
@@ -79,9 +79,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteInt16((short) (this.Field ? 1 : 0));
-      ew.WriteInt16((short) (this.ReadonlyField ? 1 : 0));
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteInt16((short) (this.Field ? 1 : 0));
+      bw.WriteInt16((short) (this.ReadonlyField ? 1 : 0));
     }
   }
 }
@@ -110,9 +110,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Field = er.ReadInt32() != 0;
-      er.AssertInt32(this.ReadonlyField ? 1 : 0);
+    public void Read(IBinaryReader br) {
+      this.Field = br.ReadInt32() != 0;
+      br.AssertInt32(this.ReadonlyField ? 1 : 0);
     }
   }
 }
@@ -122,9 +122,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteInt32(this.Field ? 1 : 0);
-      ew.WriteInt32(this.ReadonlyField ? 1 : 0);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteInt32(this.Field ? 1 : 0);
+      bw.WriteInt32(this.ReadonlyField ? 1 : 0);
     }
   }
 }
@@ -152,10 +152,10 @@ using schema.util.sequences;
 
 namespace foo.bar {
   public partial class ByteWrapper {
-    public void Read(IEndianBinaryReader er) {
+    public void Read(IBinaryReader br) {
       this.Field = SequencesUtil.CloneAndResizeSequence(this.Field, 4);
       for (var i = 0; i < this.Field.Length; ++i) {
-        this.Field[i] = er.ReadByte() != 0;
+        this.Field[i] = br.ReadByte() != 0;
       }
     }
   }
@@ -166,9 +166,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
+    public void Write(ISubBinaryWriter bw) {
       for (var i = 0; i < this.Field.Length; ++i) {
-        ew.WriteByte((byte) (this.Field[i] ? 1 : 0));
+        bw.WriteByte((byte) (this.Field[i] ? 1 : 0));
       }
     }
   }

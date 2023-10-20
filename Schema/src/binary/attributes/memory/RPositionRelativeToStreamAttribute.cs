@@ -3,8 +3,8 @@
 
 namespace schema.binary.attributes {
   /// <summary>
-  ///   Schema attribute for getting/asserting the current position of an EndianBinaryReader.
-  ///   The type of a member with this attribute must be long, to correspond to the type of EndianBinaryReader.Position.
+  ///   Schema attribute for getting/asserting the current position of an SchemaBinaryReader.
+  ///   The type of a member with this attribute must be long, to correspond to the type of SchemaBinaryReader.Position.
   ///
   ///   <para>
   ///     If the value is mutable, then it will be used to store the current position.

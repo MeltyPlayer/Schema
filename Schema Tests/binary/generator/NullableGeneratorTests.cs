@@ -22,9 +22,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class NullableWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Field1 = er.ReadByte() != 0;
-      this.Field2 = er.ReadInt32();
+    public void Read(IBinaryReader br) {
+      this.Field1 = br.ReadByte() != 0;
+      this.Field2 = br.ReadInt32();
     }
   }
 }
@@ -34,9 +34,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class NullableWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteByte((byte) (this.Field1.Value ? 1 : 0));
-      ew.WriteInt32(this.Field2.Value);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteByte((byte) (this.Field1.Value ? 1 : 0));
+      bw.WriteInt32(this.Field2.Value);
     }
   }
 }

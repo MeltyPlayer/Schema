@@ -30,13 +30,11 @@ namespace build {
       var parent = new ParentImpl();
       parent.Field = 12;
 
-      var ew = new EndianBinaryWriter();
-      parent.Write(ew);
+      var bw = new SchemaBinaryWriter();
+      parent.Write(bw);
 
-      var bytes = await BinarySchemaAssert.GetEndianBinaryWriterBytes(ew);
-      BinarySchemaAssert.AssertSequence(
-          bytes,
-          new byte[] { 1, 12, 0, 0, 0 });
+      var bytes = await BinarySchemaAssert.GetEndianBinaryWriterBytes(bw);
+      CollectionAssert.AreEqual(new byte[] { 1, 12, 0, 0, 0 }, bytes);
     }
   }
 }

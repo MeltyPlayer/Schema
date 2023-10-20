@@ -25,19 +25,19 @@ namespace foo.bar {
 
 namespace foo.bar {
   public partial class BlockWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Size = er.ReadInt64();
+    public void Read(IBinaryReader br) {
+      this.Size = br.ReadInt64();
       this.Block = new MemoryBlock(MemoryBlockType.DATA, this.Size);
-      this.Offset = er.ReadInt64();
+      this.Offset = br.ReadInt64();
       this.Pointer = this.Block.ClaimPointerWithin(
         this.Offset,
-        er => {
-          this.Field = ew.ReadSingle();
+        br => {
+          this.Field = bw.ReadSingle();
         },
-        ew => {
-          ew.WriteSingle(this.Field);
+        bw => {
+          bw.WriteSingle(this.Field);
         });
-      this.Pointer.Read(er);
+      this.Pointer.Read(br);
     }
   }
 }
@@ -46,10 +46,10 @@ namespace foo.bar {
 
 namespace foo.bar {
   public partial class BlockWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteInt64(this.Size);
-      er.WriteInt64(this.Offset);
-      this.Pointer.Write(ew);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteInt64(this.Size);
+      br.WriteInt64(this.Offset);
+      this.Pointer.Write(bw);
     }
   }
 }

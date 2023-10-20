@@ -45,13 +45,13 @@ namespace build {
       var ms = new MemoryStream();
 
       var endianness = Endianness.BigEndian;
-      var ew = new EndianBinaryWriter(endianness);
+      var ew = new SchemaBinaryWriter(endianness);
 
       expectedSw.Write(ew);
       ew.CompleteAndCopyToDelayed(ms).Wait();
 
       ms.Position = 0;
-      var er = new EndianBinaryReader(ms, endianness);
+      var er = new SchemaBinaryReader(ms, endianness);
       var actualSw = er.ReadNew<StructWrapper>();
 
       Assert.AreEqual(expectedSw, actualSw);

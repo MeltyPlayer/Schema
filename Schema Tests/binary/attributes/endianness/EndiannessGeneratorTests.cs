@@ -19,8 +19,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class EndiannessWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Field = er.ReadUInt32();
+    public void Read(IBinaryReader br) {
+      this.Field = br.ReadUInt32();
     }
   }
 }
@@ -30,8 +30,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class EndiannessWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteUInt32(this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteUInt32(this.Field);
     }
   }
 }
@@ -60,12 +60,12 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class EndiannessWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Field1 = er.ReadUInt32();
-      er.PushMemberEndianness(Endianness.BigEndian);
-      this.Field2 = er.ReadUInt32();
-      er.PopEndianness();
-      this.Field3 = er.ReadUInt32();
+    public void Read(IBinaryReader br) {
+      this.Field1 = br.ReadUInt32();
+      br.PushMemberEndianness(Endianness.BigEndian);
+      this.Field2 = br.ReadUInt32();
+      br.PopEndianness();
+      this.Field3 = br.ReadUInt32();
     }
   }
 }
@@ -75,12 +75,12 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class EndiannessWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteUInt32(this.Field1);
-      ew.PushMemberEndianness(Endianness.BigEndian);
-      ew.WriteUInt32(this.Field2);
-      ew.PopEndianness();
-      ew.WriteUInt32(this.Field3);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteUInt32(this.Field1);
+      bw.PushMemberEndianness(Endianness.BigEndian);
+      bw.WriteUInt32(this.Field2);
+      bw.PopEndianness();
+      bw.WriteUInt32(this.Field3);
     }
   }
 }
@@ -106,12 +106,12 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class EndiannessWrapper {
-    public void Read(IEndianBinaryReader er) {
-      er.PushContainerEndianness(Endianness.BigEndian);
-      this.Field1 = er.ReadUInt32();
-      this.Field2 = er.ReadUInt32();
-      this.Field3 = er.ReadUInt32();
-      er.PopEndianness();
+    public void Read(IBinaryReader br) {
+      br.PushContainerEndianness(Endianness.BigEndian);
+      this.Field1 = br.ReadUInt32();
+      this.Field2 = br.ReadUInt32();
+      this.Field3 = br.ReadUInt32();
+      br.PopEndianness();
     }
   }
 }
@@ -121,12 +121,12 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class EndiannessWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.PushContainerEndianness(Endianness.BigEndian);
-      ew.WriteUInt32(this.Field1);
-      ew.WriteUInt32(this.Field2);
-      ew.WriteUInt32(this.Field3);
-      ew.PopEndianness();
+    public void Write(ISubBinaryWriter bw) {
+      bw.PushContainerEndianness(Endianness.BigEndian);
+      bw.WriteUInt32(this.Field1);
+      bw.WriteUInt32(this.Field2);
+      bw.WriteUInt32(this.Field3);
+      bw.PopEndianness();
     }
   }
 }

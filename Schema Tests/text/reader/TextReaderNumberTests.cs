@@ -9,7 +9,7 @@ using schema.util.asserts;
 namespace schema.text.reader {
   internal class TextReaderNumberTests {
     private void ReadAndAssert_<T>(
-        TextReader tr,
+        SchemaTextReader tr,
         T expectedValue,
         Func<T> readHandler,
         Action<T> assertValue) {

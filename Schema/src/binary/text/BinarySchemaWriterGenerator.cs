@@ -9,13 +9,14 @@ using Microsoft.CodeAnalysis;
 using schema.binary.attributes;
 using schema.binary.dependencies;
 using schema.binary.parser;
-using schema.util;
 using schema.util.asserts;
 using schema.util.symbols;
 using schema.util.text;
 
 namespace schema.binary.text {
   public class BinarySchemaWriterGenerator {
+    public const string WRITER = "bw";
+
     public string Generate(IBinarySchemaContainer container) {
       var typeSymbol = container.TypeSymbol;
 
@@ -34,8 +35,8 @@ namespace schema.binary.text {
           dependencies.Add("schema.binary.attributes");
         }
 
-        if (container.DependsOnSchemaUtil()) {
-          dependencies.Add("schema.util");
+        if (container.DependsOnSchemaUtilAsserts()) {
+          dependencies.Add("schema.util.asserts");
         }
 
         dependencies.Sort(StringComparer.Ordinal);
@@ -57,17 +58,17 @@ namespace schema.binary.text {
 
       cbsb.EnterBlock(SymbolTypeUtil.GetQualifiersAndNameFor(typeSymbol));
 
-      cbsb.EnterBlock("public void Write(ISubEndianBinaryWriter ew)");
+      cbsb.EnterBlock($"public void Write(ISubBinaryWriter {WRITER})");
       {
         var hasLocalPositions = container.LocalPositions;
         if (hasLocalPositions) {
-          cbsb.WriteLine("ew.PushLocalSpace();");
+          cbsb.WriteLine($"{WRITER}.PushLocalSpace();");
         }
 
         var hasEndianness = container.Endianness != null;
         if (hasEndianness) {
           cbsb.WriteLine(
-              $"ew.PushContainerEndianness({SchemaGeneratorUtil.GetEndiannessName(container.Endianness.Value)});");
+              $"{WRITER}.PushContainerEndianness({SchemaGeneratorUtil.GetEndiannessName(container.Endianness.Value)});");
         }
 
         foreach (var member in container.Members.OfType<ISchemaValueMember>()) {
@@ -78,11 +79,11 @@ namespace schema.binary.text {
         }
 
         if (hasEndianness) {
-          cbsb.WriteLine("ew.PopEndianness();");
+          cbsb.WriteLine($"{WRITER}.PopEndianness();");
         }
 
         if (hasLocalPositions) {
-          cbsb.WriteLine("ew.PopLocalSpace();");
+          cbsb.WriteLine($"{WRITER}.PopLocalSpace();");
         }
       }
       cbsb.ExitBlock();
@@ -173,7 +174,7 @@ namespace schema.binary.text {
           AlignSourceType.CONST        => $"{align.ConstAlign}",
           AlignSourceType.OTHER_MEMBER => $"{align.OtherMember.Name}"
       };
-      cbsb.WriteLine($"ew.Align({valueName});");
+      cbsb.WriteLine($"{WRITER}.Align({valueName});");
     }
 
     private static void HandleMemberEndiannessAndTracking_(
@@ -185,22 +186,22 @@ namespace schema.binary.text {
       var hasEndianness = member.Endianness != null;
       if (hasEndianness) {
         cbsb.WriteLine(
-            $"ew.PushMemberEndianness({SchemaGeneratorUtil.GetEndiannessName(member.Endianness.Value)});");
+            $"{WRITER}.PushMemberEndianness({SchemaGeneratorUtil.GetEndiannessName(member.Endianness.Value)});");
       }
 
       var shouldTrackStartAndEnd = member.TrackStartAndEnd;
       if (shouldTrackStartAndEnd) {
-        cbsb.WriteLine($"ew.MarkStartOfMember(\"{member.Name}\");");
+        cbsb.WriteLine($"{WRITER}.MarkStartOfMember(\"{member.Name}\");");
       }
 
       handler();
 
       if (shouldTrackStartAndEnd) {
-        cbsb.WriteLine("ew.MarkEndOfMember();");
+        cbsb.WriteLine($"{WRITER}.MarkEndOfMember();");
       }
 
       if (hasEndianness) {
-        cbsb.WriteLine("ew.PopEndianness();");
+        cbsb.WriteLine($"{WRITER}.PopEndianness();");
       }
     }
 
@@ -296,15 +297,15 @@ namespace schema.binary.text {
                               primitiveMemberType.AccessChainToPointer;
               if (typeChain != null) {
                 accessText = primitiveMemberType.AccessChainToSizeOf != null
-                    ? $"ew.GetSizeOfMemberRelativeToScope(\"{typeChain.Path}\")"
-                    : $"ew.GetPointerToMemberRelativeToScope(\"{typeChain.Path}\")";
+                    ? $"{WRITER}.GetSizeOfMemberRelativeToScope(\"{typeChain.Path}\")"
+                    : $"{WRITER}.GetPointerToMemberRelativeToScope(\"{typeChain.Path}\")";
               } else {
                 accessText =
-                    "ew.GetAbsoluteLength()";
+                    $"{WRITER}.GetAbsoluteLength()";
               }
 
               cbsb.WriteLine(
-                  $"ew.Write{writeTypeLabel}Delayed({accessText}{castText});");
+                  $"{WRITER}.Write{writeTypeLabel}Delayed({accessText}{castText});");
             }
           });
     }
@@ -335,11 +336,11 @@ namespace schema.binary.text {
             if (stringType.LengthSourceType ==
                 StringLengthSourceType.NULL_TERMINATED) {
               cbsb.WriteLine(
-                  $"ew.WriteStringNT({encodingTypeWithComma}this.{member.Name});");
+                  $"{WRITER}.WriteStringNT({encodingTypeWithComma}this.{member.Name});");
             } else if (stringType.LengthSourceType ==
                        StringLengthSourceType.CONST) {
               cbsb.WriteLine(
-                  $"ew.WriteStringWithExactLength({encodingTypeWithComma}this.{member.Name}, {stringType.ConstLength});");
+                  $"{WRITER}.WriteStringWithExactLength({encodingTypeWithComma}this.{member.Name}, {stringType.ConstLength});");
             } else if (stringType.LengthSourceType ==
                        StringLengthSourceType.IMMEDIATE_VALUE) {
               var immediateLengthType = stringType.ImmediateLengthType;
@@ -355,12 +356,13 @@ namespace schema.binary.text {
               var accessText = $"this.{member.Name}.Length";
 
               var writeType = stringType.ImmediateLengthType.GetIntLabel();
-              cbsb.WriteLine($"ew.Write{writeType}({castText}{accessText});")
+              cbsb.WriteLine(
+                      $"{WRITER}.Write{writeType}({castText}{accessText});")
                   .WriteLine(
-                      $"ew.WriteString({encodingTypeWithComma}this.{member.Name});");
+                      $"{WRITER}.WriteString({encodingTypeWithComma}this.{member.Name});");
             } else {
               cbsb.WriteLine(
-                  $"ew.WriteString({encodingTypeWithComma}this.{member.Name});");
+                  $"{WRITER}.WriteString({encodingTypeWithComma}this.{member.Name});");
             }
           });
     }
@@ -373,7 +375,7 @@ namespace schema.binary.text {
           member,
           () => {
             // TODO: Do value types need to be handled differently?
-            cbsb.WriteLine($"this.{member.Name}.Write(ew);");
+            cbsb.WriteLine($"this.{member.Name}.Write({WRITER});");
           });
     }
 
@@ -412,7 +414,7 @@ namespace schema.binary.text {
             var sequenceType = sequenceTypeInfo.SequenceType;
 
             if (sequenceType.IsISequence()) {
-              cbsb.WriteLine($"this.{member.Name}.Write(ew);");
+              cbsb.WriteLine($"this.{member.Name}.Write({WRITER});");
               return;
             }
 
@@ -432,7 +434,7 @@ namespace schema.binary.text {
                     SchemaGeneratorUtil.GetPrimitiveLabel(
                         primitiveElementType.PrimitiveType);
                 cbsb.WriteLine(
-                    $"ew.Write{label}s(this.{member.Name});");
+                    $"{WRITER}.Write{label}s(this.{member.Name});");
                 return;
               }
 
@@ -449,7 +451,7 @@ namespace schema.binary.text {
             if (elementType is IContainerMemberType) {
               cbsb.EnterBlock(
                       $"foreach (var e in this.{member.Name})")
-                  .WriteLine("e.Write(ew);")
+                  .WriteLine($"e.Write({WRITER});")
                   .ExitBlock();
               return;
             }
@@ -475,7 +477,7 @@ namespace schema.binary.text {
         string accessText) {
       var writeType = useAltFormat ? altFormat : primitiveType;
       var writeMethod =
-          $"ew.Write{SchemaGeneratorUtil.GetPrimitiveLabel(writeType)}";
+          $"{WRITER}.Write{SchemaGeneratorUtil.GetPrimitiveLabel(writeType)}";
 
       bool needToCast = false;
       if (primitiveType == SchemaPrimitiveType.BOOLEAN) {
@@ -506,7 +508,7 @@ namespace schema.binary.text {
         string accessText) {
       var dstPrimitiveType = dstType.AsPrimitiveType();
       var writeType = SchemaGeneratorUtil.GetPrimitiveLabel(dstPrimitiveType);
-      var writeMethod = $"ew.Write{writeType}";
+      var writeMethod = $"{WRITER}.Write{writeType}";
 
       bool needToCast;
       if (srcType == SchemaPrimitiveType.BOOLEAN) {

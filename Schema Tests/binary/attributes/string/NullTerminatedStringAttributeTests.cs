@@ -21,8 +21,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class NtsWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Field = er.ReadStringNT();
+    public void Read(IBinaryReader br) {
+      this.Field = br.ReadStringNT();
     }
   }
 }
@@ -32,8 +32,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class NtsWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteStringNT(this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteStringNT(this.Field);
     }
   }
 }
@@ -59,8 +59,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class NtsWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Field = er.ReadStringNT(16);
+    public void Read(IBinaryReader br) {
+      this.Field = br.ReadStringNT(16);
     }
   }
 }
@@ -70,8 +70,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class NtsWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteStringWithExactLength(this.Field, 16);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteStringWithExactLength(this.Field, 16);
     }
   }
 }
@@ -99,9 +99,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class NtsWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Length = er.ReadUInt32();
-      this.Field = er.ReadStringNT(Length);
+    public void Read(IBinaryReader br) {
+      this.Length = br.ReadUInt32();
+      this.Field = br.ReadStringNT(Length);
     }
   }
 }
@@ -111,9 +111,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class NtsWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteUInt32(this.Length);
-      ew.WriteString(this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteUInt32(this.Length);
+      bw.WriteString(this.Field);
     }
   }
 }

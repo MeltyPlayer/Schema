@@ -52,11 +52,11 @@ namespace build {
 
       var endianness = Endianness.BigEndian;
 
-      var ew = new EndianBinaryWriter(endianness);
+      var ew = new SchemaBinaryWriter(endianness);
       expectedSw.Write(ew);
       ew.CompleteAndCopyToDelayed(ms).Wait();
 
-      var er = new EndianBinaryReader(ms, endianness);
+      var er = new SchemaBinaryReader(ms, endianness);
       er.Position = 0;
       var actualSws = er.ReadNew<StructArraySequenceWrapper>();
       Assert.AreEqual(expectedSw, actualSws);
@@ -77,11 +77,11 @@ namespace build {
 
       var endianness = Endianness.BigEndian;
       
-      var ew = new EndianBinaryWriter(endianness);
+      var ew = new SchemaBinaryWriter(endianness);
       expectedSw.Write(ew);
       ew.CompleteAndCopyToDelayed(ms).Wait();
 
-      var er = new EndianBinaryReader(ms, endianness);
+      var er = new SchemaBinaryReader(ms, endianness);
       er.Position = 1;
       var actualSws = er.ReadNewArray<SchemaClass>(expectedSw.Values.Length);
       Assert.True(expectedSw.Values.SequenceEqual(actualSws));
@@ -118,12 +118,12 @@ namespace build {
 
       var endianness = Endianness.BigEndian;
 
-      var ew = new EndianBinaryWriter(endianness);
+      var ew = new SchemaBinaryWriter(endianness);
       expectedSw.Write(ew);
       ew.CompleteAndCopyToDelayed(ms).Wait();
 
       ms.Position = 0;
-      var er = new EndianBinaryReader(ms, endianness);
+      var er = new SchemaBinaryReader(ms, endianness);
       var actualSw = er.ReadNew<StructListSequenceWrapper>();
       Assert.AreEqual(expectedSw, actualSw);
     }

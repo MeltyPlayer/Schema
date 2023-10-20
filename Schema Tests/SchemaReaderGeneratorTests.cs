@@ -21,8 +21,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
-    public void Read(IEndianBinaryReader er) {
-      er.AssertByte(this.Field);
+    public void Read(IBinaryReader br) {
+      br.AssertByte(this.Field);
     }
   }
 }
@@ -45,8 +45,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class SByteWrapper {
-    public void Read(IEndianBinaryReader er) {
-      er.AssertSByte(this.Field);
+    public void Read(IBinaryReader br) {
+      br.AssertSByte(this.Field);
     }
   }
 }
@@ -69,8 +69,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ShortWrapper {
-    public void Read(IEndianBinaryReader er) {
-      er.AssertInt16(this.Field);
+    public void Read(IBinaryReader br) {
+      br.AssertInt16(this.Field);
     }
   }
 }
@@ -93,8 +93,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ArrayWrapper {
-    public void Read(IEndianBinaryReader er) {
-      er.ReadInt32s(this.field);
+    public void Read(IBinaryReader br) {
+      br.ReadInt32s(this.field);
     }
   }
 }
@@ -122,10 +122,10 @@ using schema.util.sequences;
 
 namespace foo.bar {
   public partial class ArrayWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.length = er.ReadInt32();
+    public void Read(IBinaryReader br) {
+      this.length = br.ReadInt32();
       this.field = SequencesUtil.CloneAndResizeSequence(this.field, this.length);
-      er.ReadInt32s(this.field);
+      br.ReadInt32s(this.field);
     }
   }
 }
@@ -160,9 +160,9 @@ namespace foo.bar {
   static internal partial class Parent {
     protected partial class Middle {
       private partial class Wrapper {
-        public void Read(IEndianBinaryReader er) {
-          this.length = er.ReadInt32();
-          this.value = (Parent.Middle.ValueEnum) er.ReadInt32();
+        public void Read(IBinaryReader br) {
+          this.length = br.ReadInt32();
+          this.value = (Parent.Middle.ValueEnum) br.ReadInt32();
         }
       }
     }
@@ -187,8 +187,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class CharWrapper {
-    public void Read(IEndianBinaryReader er) {
-      er.ReadChars(this.Array);
+    public void Read(IBinaryReader br) {
+      br.ReadChars(this.Array);
     }
   }
 }
@@ -211,8 +211,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ShortWrapper {
-    public void Read(IEndianBinaryReader er) {
-      er.AssertInt16(this.Field);
+    public void Read(IBinaryReader br) {
+      br.AssertInt16(this.Field);
     }
   }
 }
@@ -235,8 +235,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.field = er.ReadByte();
+    public void Read(IBinaryReader br) {
+      this.field = br.ReadByte();
     }
   }
 }
@@ -259,8 +259,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
-    public void Read(IEndianBinaryReader er) {
-      er.AssertByte(this.field);
+    public void Read(IBinaryReader br) {
+      br.AssertByte(this.field);
     }
   }
 }
@@ -283,8 +283,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
-    public void Read(IEndianBinaryReader er) {
-      er.AssertByte(this.Field);
+    public void Read(IBinaryReader br) {
+      br.AssertByte(this.Field);
     }
   }
 }
@@ -344,37 +344,37 @@ using schema.util.sequences;
 
 namespace foo.bar {
   public partial class EverythingWrapper {
-    public void Read(IEndianBinaryReader er) {" +
+    public void Read(IBinaryReader br) {" +
                             @"
-      er.AssertString(this.magicText);" +
+      br.AssertString(this.magicText);" +
                             @"
-      this.byteField = er.ReadByte();
-      this.sbyteProperty = er.ReadSByte();
-      er.AssertInt16(this.constShortField);
-      er.AssertUInt16(this.constUshortProperty);" +
+      this.byteField = br.ReadByte();
+      this.sbyteProperty = br.ReadSByte();
+      br.AssertInt16(this.constShortField);
+      br.AssertUInt16(this.constUshortProperty);" +
                             @"
-      this.nakedShortField = (ShortEnum) er.ReadInt16();
-      er.AssertInt16((short) this.constNakedShortField);
-      this.intField = (ShortEnum) er.ReadInt32();
-      er.AssertInt32((int) this.constIntField);" +
+      this.nakedShortField = (ShortEnum) br.ReadInt16();
+      br.AssertInt16((short) this.constNakedShortField);
+      this.intField = (ShortEnum) br.ReadInt32();
+      br.AssertInt32((int) this.constIntField);" +
                             @"
-      er.ReadInt32s(this.constLengthIntValues);
+      br.ReadInt32s(this.constLengthIntValues);
       {
-        var c = er.ReadUInt32();
+        var c = br.ReadUInt32();
         this.intValues = SequencesUtil.CloneAndResizeSequence(this.intValues, (int) c);
       }
-      er.ReadInt32s(this.intValues);" +
+      br.ReadInt32s(this.intValues);" +
                             @"
-      this.other.Read(er);
+      this.other.Read(br);
       {
-        var c = er.ReadInt32();
+        var c = br.ReadInt32();
         this.others = SequencesUtil.CloneAndResizeSequence(this.others, c);
       }
       foreach (var e in this.others) {
-        e.Read(er);
+        e.Read(br);
       }
-      this.normalized = er.ReadUn16();
-      er.AssertUn16(this.constNormalized);
+      this.normalized = br.ReadUn16();
+      br.AssertUn16(this.constNormalized);
     }
   }
 }

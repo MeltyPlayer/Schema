@@ -23,8 +23,8 @@ using schema.binary.attributes;
 
 namespace foo.bar {
   public partial class NtsWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Field = er.ReadStringNT(StringEncodingType.UTF8);
+    public void Read(IBinaryReader br) {
+      this.Field = br.ReadStringNT(StringEncodingType.UTF8);
     }
   }
 }
@@ -35,8 +35,8 @@ using schema.binary.attributes;
 
 namespace foo.bar {
   public partial class NtsWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteStringNT(StringEncodingType.UTF8, this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteStringNT(StringEncodingType.UTF8, this.Field);
     }
   }
 }
@@ -64,8 +64,8 @@ using schema.binary.attributes;
 
 namespace foo.bar {
   public partial class NtsWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Field = er.ReadStringNT(StringEncodingType.UTF8, 16);
+    public void Read(IBinaryReader br) {
+      this.Field = br.ReadStringNT(StringEncodingType.UTF8, 16);
     }
   }
 }
@@ -76,8 +76,8 @@ using schema.binary.attributes;
 
 namespace foo.bar {
   public partial class NtsWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteStringWithExactLength(StringEncodingType.UTF8, this.Field, 16);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteStringWithExactLength(StringEncodingType.UTF8, this.Field, 16);
     }
   }
 }
@@ -107,9 +107,9 @@ using schema.binary.attributes;
 
 namespace foo.bar {
   public partial class NtsWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Length = er.ReadUInt32();
-      this.Field = er.ReadStringNT(StringEncodingType.UTF8, Length);
+    public void Read(IBinaryReader br) {
+      this.Length = br.ReadUInt32();
+      this.Field = br.ReadStringNT(StringEncodingType.UTF8, Length);
     }
   }
 }
@@ -120,9 +120,9 @@ using schema.binary.attributes;
 
 namespace foo.bar {
   public partial class NtsWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteUInt32(this.Length);
-      ew.WriteString(StringEncodingType.UTF8, this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteUInt32(this.Length);
+      bw.WriteString(StringEncodingType.UTF8, this.Field);
     }
   }
 }

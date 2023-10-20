@@ -21,7 +21,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class IgnoreWrapper {
-    public void Read(IEndianBinaryReader er) {
+    public void Read(IBinaryReader br) {
     }
   }
 }
@@ -31,7 +31,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class IgnoreWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
+    public void Write(ISubBinaryWriter bw) {
     }
   }
 }

@@ -1,18 +1,14 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using System.Threading.Tasks;
-using System.Collections;
 
-using schema.util;
 using schema.util.asserts;
 
 namespace schema.binary.testing {
   public static class BinarySchemaAssert {
     public static async Task<byte[]> GetEndianBinaryWriterBytes(
-        EndianBinaryWriter ew) {
+        SchemaBinaryWriter bw) {
       var outputStream = new MemoryStream();
-      await ew.CompleteAndCopyToDelayed(outputStream);
+      await bw.CompleteAndCopyToDelayed(outputStream);
       return outputStream.ToArray();
     }
 
@@ -21,81 +17,37 @@ namespace schema.binary.testing {
         Endianness endianess = Endianness.LittleEndian,
         bool assertExactLength = true)
         where T : IBinaryConvertible, new() {
-      var ew = new EndianBinaryWriter(endianess);
-      value.Write(ew);
+      var bw = new SchemaBinaryWriter(endianess);
+      value.Write(bw);
 
-      var actualBytes = await GetEndianBinaryWriterBytes(ew);
+      var actualBytes = await GetEndianBinaryWriterBytes(bw);
 
-      var er = new EndianBinaryReader(actualBytes, endianess);
-      await ReadsAndWritesIdentically<T>(er, assertExactLength);
+      var br = new SchemaBinaryReader(actualBytes, endianess);
+      await ReadsAndWritesIdentically<T>(br, assertExactLength);
     }
 
     public static async Task ReadsAndWritesIdentically<T>(
-        IEndianBinaryReader er,
+        IBinaryReader br,
         bool assertExactLength = true)
         where T : IBinaryConvertible, new() {
-      var readerStartPos = er.Position;
-      var instance = er.ReadNew<T>();
+      var readerStartPos = br.Position;
+      var instance = br.ReadNew<T>();
 
-      var expectedReadLength = er.Position - readerStartPos;
+      var expectedReadLength = br.Position - readerStartPos;
 
-      er.Position = readerStartPos;
-      var expectedBytes = er.ReadBytes(expectedReadLength);
+      br.Position = readerStartPos;
+      var expectedBytes = br.ReadBytes(expectedReadLength);
 
-      var ew = new EndianBinaryWriter(er.Endianness);
-      instance.Write(ew);
+      var bw = new SchemaBinaryWriter(br.Endianness);
+      instance.Write(bw);
 
-      var actualBytes = await GetEndianBinaryWriterBytes(ew);
+      var actualBytes = await GetEndianBinaryWriterBytes(bw);
 
       if (assertExactLength) {
         Asserts.Equal(expectedReadLength, actualBytes.Length);
       }
 
       Asserts.Equal(expectedBytes, actualBytes);
-    }
-
-    public static void AssertSequence<T>(
-        IEnumerable<T> enumerableA,
-        IEnumerable<T> enumerableB) {
-      var enumeratorA = enumerableA.GetEnumerator();
-      var enumeratorB = enumerableB.GetEnumerator();
-
-      var hasA = enumeratorA.MoveNext();
-      var hasB = enumeratorB.MoveNext();
-
-      var index = 0;
-      while (hasA && hasB) {
-        var currentA = enumeratorA.Current;
-        var currentB = enumeratorB.Current;
-
-        if (!object.Equals(currentA, currentB)) {
-          Asserts.Fail(
-              $"Expected {currentA} to equal {currentB} at index ${index}.");
-        }
-
-        index++;
-
-        hasA = enumeratorA.MoveNext();
-        hasB = enumeratorB.MoveNext();
-      }
-
-      Asserts.True(!hasA && !hasB,
-                   "Expected enumerables to be equal:\n" +
-                   $"  A: {ConvertSequenceToString_(enumerableA)}\n" +
-                   $"  B: {ConvertSequenceToString_(enumerableB)}");
-    }
-
-    private static string ConvertSequenceToString_(IEnumerable enumerable) {
-      var str = new StringBuilder();
-      foreach (var value in enumerable) {
-        if (str.Length > 0) {
-          str.Append(", ");
-        }
-
-        str.Append(value);
-      }
-
-      return str.ToString();
     }
   }
 }

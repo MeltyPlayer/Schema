@@ -27,7 +27,7 @@ namespace schema.binary.dependencies {
              });
 
 
-    public static bool DependsOnSchemaUtil(
+    public static bool DependsOnSchemaUtilAsserts(
         this IBinarySchemaContainer container)
       => container
          .Members

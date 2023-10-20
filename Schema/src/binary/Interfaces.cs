@@ -4,11 +4,11 @@ namespace schema.binary {
   public interface IBinary { }
 
   public interface IBinarySerializable : IBinary {
-    void Write(ISubEndianBinaryWriter ew);
+    void Write(ISubBinaryWriter ew);
   }
 
   public interface IBinaryDeserializable : IBinary {
-    void Read(IEndianBinaryReader er);
+    void Read(IBinaryReader br);
   }
 
   public interface IBinaryConvertible : IBinarySerializable,

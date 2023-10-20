@@ -27,11 +27,11 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class HalfWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.field1 = (float) er.ReadHalf();
-      er.AssertHalf((float) this.field2);
+    public void Read(IBinaryReader br) {
+      this.field1 = (float) br.ReadHalf();
+      br.AssertHalf((float) this.field2);
       for (var i = 0; i < this.field3.Length; ++i) {
-        this.field3[i] = (float) er.ReadHalf();
+        this.field3[i] = (float) br.ReadHalf();
       }
     }
   }
@@ -42,11 +42,11 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class HalfWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteHalf((float) this.field1);
-      ew.WriteHalf((float) this.field2);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteHalf((float) this.field1);
+      bw.WriteHalf((float) this.field2);
       for (var i = 0; i < this.field3.Length; ++i) {
-        ew.WriteHalf((float) this.field3[i]);
+        bw.WriteHalf((float) this.field3[i]);
       }
     }
   }

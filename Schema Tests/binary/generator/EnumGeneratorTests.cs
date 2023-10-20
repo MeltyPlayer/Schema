@@ -28,9 +28,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class EnumWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.fieldA = (A) er.ReadByte();
-      this.fieldB = (B) er.ReadInt32();
+    public void Read(IBinaryReader br) {
+      this.fieldA = (A) br.ReadByte();
+      this.fieldB = (B) br.ReadInt32();
     }
   }
 }
@@ -40,9 +40,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class EnumWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteByte((byte) this.fieldA);
-      ew.WriteInt32((int) this.fieldB);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteByte((byte) this.fieldA);
+      bw.WriteInt32((int) this.fieldB);
     }
   }
 }
@@ -74,12 +74,12 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class EnumWrapper {
-    public void Read(IEndianBinaryReader er) {
+    public void Read(IBinaryReader br) {
       for (var i = 0; i < this.fieldA.Length; ++i) {
-        this.fieldA[i] = (A) er.ReadByte();
+        this.fieldA[i] = (A) br.ReadByte();
       }
       for (var i = 0; i < this.fieldB.Length; ++i) {
-        this.fieldB[i] = (B) er.ReadInt32();
+        this.fieldB[i] = (B) br.ReadInt32();
       }
     }
   }
@@ -90,12 +90,12 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class EnumWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
+    public void Write(ISubBinaryWriter bw) {
       for (var i = 0; i < this.fieldA.Length; ++i) {
-        ew.WriteByte((byte) this.fieldA[i]);
+        bw.WriteByte((byte) this.fieldA[i]);
       }
       for (var i = 0; i < this.fieldB.Length; ++i) {
-        ew.WriteInt32((int) this.fieldB[i]);
+        bw.WriteInt32((int) this.fieldB[i]);
       }
     }
   }

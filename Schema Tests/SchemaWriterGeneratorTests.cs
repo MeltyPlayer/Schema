@@ -22,8 +22,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteByte(this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteByte(this.Field);
     }
   }
 }
@@ -46,8 +46,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class SByteWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteSByte(this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteSByte(this.Field);
     }
   }
 }
@@ -70,8 +70,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ShortWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteInt16(this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteInt16(this.Field);
     }
   }
 }
@@ -94,8 +94,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ArrayWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteInt32s(this.field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteInt32s(this.field);
     }
   }
 }
@@ -121,9 +121,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ArrayWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteInt32(this.length);
-      ew.WriteInt32s(this.field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteInt32(this.length);
+      bw.WriteInt32s(this.field);
     }
   }
 }
@@ -158,9 +158,9 @@ namespace foo.bar {
   static internal partial class Parent {
     protected partial class Middle {
       private partial class Wrapper {
-        public void Write(ISubEndianBinaryWriter ew) {
-          ew.WriteInt32(this.length);
-          ew.WriteInt32((int) this.value);
+        public void Write(ISubBinaryWriter bw) {
+          bw.WriteInt32(this.length);
+          bw.WriteInt32((int) this.value);
         }
       }
     }
@@ -185,8 +185,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class CharWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteChars(this.Array);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteChars(this.Array);
     }
   }
 }
@@ -209,8 +209,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ShortWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteInt16(this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteInt16(this.Field);
     }
   }
 }
@@ -233,8 +233,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteByte(this.field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteByte(this.field);
     }
   }
 }
@@ -257,8 +257,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteByte(this.field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteByte(this.field);
     }
   }
 }
@@ -281,8 +281,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteByte(this.Field);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteByte(this.Field);
     }
   }
 }
@@ -341,31 +341,31 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class EverythingWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {" +
+    public void Write(ISubBinaryWriter bw) {" +
                             @"
-      ew.WriteString(this.magicText);" +
+      bw.WriteString(this.magicText);" +
                             @"
-      ew.WriteByte(this.byteField);
-      ew.WriteSByte(this.sbyteProperty);
-      ew.WriteInt16(this.constShortField);
-      ew.WriteUInt16(this.constUshortProperty);" +
+      bw.WriteByte(this.byteField);
+      bw.WriteSByte(this.sbyteProperty);
+      bw.WriteInt16(this.constShortField);
+      bw.WriteUInt16(this.constUshortProperty);" +
                             @"
-      ew.WriteInt16((short) this.nakedShortField);
-      ew.WriteInt16((short) this.constNakedShortField);
-      ew.WriteInt32((int) this.intField);
-      ew.WriteInt32((int) this.constIntField);" +
+      bw.WriteInt16((short) this.nakedShortField);
+      bw.WriteInt16((short) this.constNakedShortField);
+      bw.WriteInt32((int) this.intField);
+      bw.WriteInt32((int) this.constIntField);" +
                             @"
-      ew.WriteInt32s(this.constLengthIntValues);
-      ew.WriteUInt32((uint) this.intValues.Length);
-      ew.WriteInt32s(this.intValues);" +
+      bw.WriteInt32s(this.constLengthIntValues);
+      bw.WriteUInt32((uint) this.intValues.Length);
+      bw.WriteInt32s(this.intValues);" +
                             @"
-      this.other.Write(ew);
-      ew.WriteInt32(this.others.Length);
+      this.other.Write(bw);
+      bw.WriteInt32(this.others.Length);
       foreach (var e in this.others) {
-        e.Write(ew);
+        e.Write(bw);
       }
-      ew.WriteUn16(this.normalized);
-      ew.WriteUn16(this.constNormalized);
+      bw.WriteUn16(this.normalized);
+      bw.WriteUn16(this.constNormalized);
     }
   }
 }

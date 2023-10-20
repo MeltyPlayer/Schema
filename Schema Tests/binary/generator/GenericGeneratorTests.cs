@@ -19,8 +19,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class GenericWrapper<T> {
-    public void Read(IEndianBinaryReader er) {
-      this.Data.Read(er);
+    public void Read(IBinaryReader br) {
+      this.Data.Read(br);
     }
   }
 }
@@ -30,8 +30,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class GenericWrapper<T> {
-    public void Write(ISubEndianBinaryWriter ew) {
-      this.Data.Write(ew);
+    public void Write(ISubBinaryWriter bw) {
+      this.Data.Write(bw);
     }
   }
 }
@@ -57,9 +57,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class GenericWrapper<T1, T2> {
-    public void Read(IEndianBinaryReader er) {
-      this.Data1.Read(er);
-      this.Data2.Read(er);
+    public void Read(IBinaryReader br) {
+      this.Data1.Read(br);
+      this.Data2.Read(br);
     }
   }
 }
@@ -69,9 +69,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class GenericWrapper<T1, T2> {
-    public void Write(ISubEndianBinaryWriter ew) {
-      this.Data1.Write(ew);
-      this.Data2.Write(ew);
+    public void Write(ISubBinaryWriter bw) {
+      this.Data1.Write(bw);
+      this.Data2.Write(bw);
     }
   }
 }
@@ -94,9 +94,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class GenericWrapper<T> {
-    public void Read(IEndianBinaryReader er) {
+    public void Read(IBinaryReader br) {
       foreach (var e in this.Data) {
-        e.Read(er);
+        e.Read(br);
       }
     }
   }
@@ -107,9 +107,9 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class GenericWrapper<T> {
-    public void Write(ISubEndianBinaryWriter ew) {
+    public void Write(ISubBinaryWriter bw) {
       foreach (var e in this.Data) {
-        e.Write(ew);
+        e.Write(bw);
       }
     }
   }
@@ -135,7 +135,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class GenericWrapper<T> {
-    public void Read(IEndianBinaryReader er) {
+    public void Read(IBinaryReader br) {
     }
   }
 }
@@ -145,7 +145,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class GenericWrapper<T> {
-    public void Write(ISubEndianBinaryWriter ew) {
+    public void Write(ISubBinaryWriter bw) {
     }
   }
 }
@@ -164,8 +164,8 @@ public interface IMagicSection<T> {
 
 public class MagicSectionStub<T> : IMagicSection<T>, IBinaryConvertible {
   public T Data { get; set; }
-  public void Write(ISubEndianBinaryWriter ew) { }
-  public void Read(IEndianBinaryReader er) { }
+  public void Write(ISubBinaryWriter bw) { }
+  public void Read(IBinaryReader br) { }
 }
 
 [BinarySchema]
@@ -186,8 +186,8 @@ public partial class SwitchMagicStringUInt32SizedSection<T> : IMagicSection<T>
 using schema.binary;
 
 public partial class SwitchMagicStringUInt32SizedSection<T> {
-  public void Read(IEndianBinaryReader er) {
-    this.impl_.Read(er);
+  public void Read(IBinaryReader br) {
+    this.impl_.Read(br);
   }
 }
 ",
@@ -195,8 +195,8 @@ public partial class SwitchMagicStringUInt32SizedSection<T> {
 using schema.binary;
 
 public partial class SwitchMagicStringUInt32SizedSection<T> {
-  public void Write(ISubEndianBinaryWriter ew) {
-    this.impl_.Write(ew);
+  public void Write(ISubBinaryWriter bw) {
+    this.impl_.Write(bw);
   }
 }
 ");

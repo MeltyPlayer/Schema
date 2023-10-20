@@ -47,16 +47,15 @@ Any readonly primitives will treated as assertions, which is useful for validati
 
 For complicated schema classes, such as ones that use decompression logic or pointers, you'll need to implement the read/write logic manually.
 
-Specifically, you'll need to implement both a `Read(IEndianBinaryReader er)` and `Write(ISubEndianBinaryWriter ew)` method.
-The `EndianBinaryReader` and `EndianBinaryWriter` classes provide many helpful methods for reading/writing a number of different primitive formats, including basic ones such as `byte`/`int`/`float`, but also more complex/unique ones such as `Half` (two-byte float) and `un16` (unsigned normalized 16-bit float).
+Specifically, you'll need to implement both a `Read(IBinaryReader br)` and `Write(ISubBinaryWriter bw)` method.
+The `SchemaBinaryReader` and `SchemaBinaryWriter` classes provide many helpful methods for reading/writing a number of different primitive formats, including basic ones such as `byte`/`int`/`float`, but also more complex/unique ones such as `Half` (two-byte float) and `un16` (unsigned normalized 16-bit float).
 
 Similar to the automatic process, you can nest schema classes and manually read/write them by calling their `Read()`/`Write()` methods. 
 This can allow you to automatically generate subsections, so only the most complex logic needs to be manually written.
 
 ### How to use a binary schema class
 
-To convert a given schema class to or from binary, simply instantiate an `EndianBinaryReader` or `EndianBinaryWriter` and pass it into the corresponding `Read()` or `Write()` methods in the schema class. 
-You must use the `EndianBinaryReader`/`EndianBinaryWriter` defined within this project, as this adds more functionality.
+To convert a given schema class to or from binary, simply instantiate an `SchemaBinaryReader` or `SchemaBinaryWriter` and pass it into the corresponding `Read()` or `Write()` methods in the schema class.
 
 ### Supported Attributes
 
@@ -66,7 +65,7 @@ The following attributes are currently supported in this library **when automati
 
 #### Align
 
-Specifies how a field or property's offset (relative to the start of the stream) should be aligned when reading/writing. If misaligned, the `EndianBinaryReader`/`EndianBinaryWriter` will automatically insert the remaining bytes of padding. For example, `[Align(4)]` would force a field/property's starting offset to be a multiple of 4 (0, 4, 8, 12, 16, etc.).
+Specifies how a field or property's offset (relative to the start of the stream) should be aligned when reading/writing. If misaligned, the `SchemaBinaryReader`/`SchemaBinaryWriter` will automatically insert the remaining bytes of padding. For example, `[Align(4)]` would force a field/property's starting offset to be a multiple of 4 (0, 4, 8, 12, 16, etc.).
 ```cs
 [Align(4)]
 public int alignedField;
@@ -77,7 +76,7 @@ public int AlignedProperty { get; set; }
 
 #### Endianness
 
-Forces a type, field, or property to be read/written with a given [endianness](https://en.wikipedia.org/wiki/Endianness) (big-endian or little-endian). Tracked via a stack within the `EndianBinaryReader`/`EndianBinaryWriter`. If unspecified, will use whatever endianness was last specified in the stack (or the system endianness by default).
+Forces a type, field, or property to be read/written with a given [endianness](https://en.wikipedia.org/wiki/Endianness) (big-endian or little-endian). Tracked via a stack within the `SchemaBinaryReader`/`SchemaBinaryWriter`. If unspecified, will use whatever endianness was last specified in the stack (or the system endianness by default).
 ```cs
 [BinarySchema]
 [Endianness(Endianness.BigEndian)]

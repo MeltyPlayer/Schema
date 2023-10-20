@@ -26,10 +26,10 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class PositionWrapper {
-    public void Read(IEndianBinaryReader er) {
-      this.Position = er.Position;
-      this.Value = er.ReadByte();
-      er.AssertPosition(this.ExpectedPosition);
+    public void Read(IBinaryReader br) {
+      this.Position = br.Position;
+      this.Value = br.ReadByte();
+      br.AssertPosition(this.ExpectedPosition);
     }
   }
 }
@@ -39,8 +39,8 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class PositionWrapper {
-    public void Write(ISubEndianBinaryWriter ew) {
-      ew.WriteByte(this.Value);
+    public void Write(ISubBinaryWriter bw) {
+      bw.WriteByte(this.Value);
     }
   }
 }

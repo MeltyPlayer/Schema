@@ -39,14 +39,14 @@ namespace build {
       var ms = new MemoryStream();
 
       var endianness = Endianness.BigEndian;
-      var ew = new EndianBinaryWriter(endianness);
+      var ew = new SchemaBinaryWriter(endianness);
 
       expectedSw.Write(ew);
       ew.CompleteAndCopyToDelayed(ms).Wait();
       Assert.AreEqual(4 + 9 * 4, ms.Position);
 
       ms.Position = 0;
-      var er = new EndianBinaryReader(ms, endianness);
+      var er = new SchemaBinaryReader(ms, endianness);
       var actualSw = er.ReadNew<MutableSequenceWrapper1>();
 
       Assert.AreEqual(expectedSw, actualSw);
@@ -82,14 +82,14 @@ namespace build {
       var ms = new MemoryStream();
 
       var endianness = Endianness.BigEndian;
-      var ew = new EndianBinaryWriter(endianness);
+      var ew = new SchemaBinaryWriter(endianness);
 
       expectedSw.Write(ew);
       ew.CompleteAndCopyToDelayed(ms).Wait();
       Assert.AreEqual(4 + 9 * 4, ms.Position);
 
       ms.Position = 0;
-      var er = new EndianBinaryReader(ms, endianness);
+      var er = new SchemaBinaryReader(ms, endianness);
       var actualSw = er.ReadNew<MutableSequenceWrapper2>();
 
       Assert.AreEqual(expectedSw, actualSw);
