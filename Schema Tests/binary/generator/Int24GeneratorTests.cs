@@ -36,7 +36,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class Int24Wrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteInt24(this.field1);
       bw.WriteInt24(this.field2);
     }
@@ -78,7 +78,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class UInt24Wrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteUInt24(this.field1);
       bw.WriteUInt24(this.field2);
     }

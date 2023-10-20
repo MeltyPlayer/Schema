@@ -76,7 +76,7 @@ namespace build {
 
   public class MagicSectionStub<T> : IMagicSection<T>, IBinaryConvertible {
     public T Data { get; set; }
-    public void Write(ISubBinaryWriter ew) { }
+    public void Write(IBinaryWriter ew) { }
     public void Read(IBinaryReader br) { }
   }
 

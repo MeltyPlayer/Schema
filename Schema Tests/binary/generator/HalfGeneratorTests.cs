@@ -42,7 +42,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class HalfWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteHalf((float) this.field1);
       bw.WriteHalf((float) this.field2);
       for (var i = 0; i < this.field3.Length; ++i) {

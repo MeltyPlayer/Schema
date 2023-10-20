@@ -6,12 +6,12 @@ using schema.binary.attributes;
 using schema.util.streams;
 
 namespace schema.binary {
-  public interface IBinaryWriter : ISubBinaryWriter, IDisposable {
+  public interface ITopLevelBinaryWriter : IBinaryWriter, IDisposable {
     Task CompleteAndCopyToDelayed(Stream stream);
     Task CompleteAndCopyToDelayed(ISizedWritableStream stream);
   }
 
-  public interface ISubBinaryWriter
+  public interface IBinaryWriter
       : IDataWriter, IEndiannessStack, ILocalSpaceStack {
     void Align(uint amt);
 
@@ -99,7 +99,7 @@ namespace schema.binary {
 
     // Delayed
 
-    ISubBinaryWriter EnterBlock(out Task<long> delayedLength);
+    IBinaryWriter EnterBlock(out Task<long> delayedLength);
 
     Task<long> GetAbsolutePosition();
     Task<long> GetAbsoluteLength();

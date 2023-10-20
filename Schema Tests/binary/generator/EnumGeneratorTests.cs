@@ -40,7 +40,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class EnumWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteByte((byte) this.fieldA);
       bw.WriteInt32((int) this.fieldB);
     }
@@ -90,7 +90,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class EnumWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       for (var i = 0; i < this.fieldA.Length; ++i) {
         bw.WriteByte((byte) this.fieldA[i]);
       }

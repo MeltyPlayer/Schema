@@ -30,7 +30,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class GenericWrapper<T> {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       this.Data.Write(bw);
     }
   }
@@ -69,7 +69,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class GenericWrapper<T1, T2> {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       this.Data1.Write(bw);
       this.Data2.Write(bw);
     }
@@ -107,7 +107,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class GenericWrapper<T> {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       foreach (var e in this.Data) {
         e.Write(bw);
       }
@@ -145,7 +145,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class GenericWrapper<T> {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
     }
   }
 }
@@ -164,7 +164,7 @@ public interface IMagicSection<T> {
 
 public class MagicSectionStub<T> : IMagicSection<T>, IBinaryConvertible {
   public T Data { get; set; }
-  public void Write(ISubBinaryWriter bw) { }
+  public void Write(IBinaryWriter bw) { }
   public void Read(IBinaryReader br) { }
 }
 
@@ -195,7 +195,7 @@ public partial class SwitchMagicStringUInt32SizedSection<T> {
 using schema.binary;
 
 public partial class SwitchMagicStringUInt32SizedSection<T> {
-  public void Write(ISubBinaryWriter bw) {
+  public void Write(IBinaryWriter bw) {
     this.impl_.Write(bw);
   }
 }

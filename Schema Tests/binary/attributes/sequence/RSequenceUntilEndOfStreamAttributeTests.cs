@@ -41,7 +41,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ReadonlyListClass {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteUInt32((uint) Values.Count);
       for (var i = 0; i < this.Values.Count; ++i) {
         bw.WriteInt32(this.Values[i]);

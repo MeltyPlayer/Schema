@@ -22,7 +22,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteByte(this.Field);
     }
   }
@@ -46,7 +46,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class SByteWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteSByte(this.Field);
     }
   }
@@ -70,7 +70,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ShortWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteInt16(this.Field);
     }
   }
@@ -94,7 +94,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ArrayWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteInt32s(this.field);
     }
   }
@@ -121,7 +121,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ArrayWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteInt32(this.length);
       bw.WriteInt32s(this.field);
     }
@@ -158,7 +158,7 @@ namespace foo.bar {
   static internal partial class Parent {
     protected partial class Middle {
       private partial class Wrapper {
-        public void Write(ISubBinaryWriter bw) {
+        public void Write(IBinaryWriter bw) {
           bw.WriteInt32(this.length);
           bw.WriteInt32((int) this.value);
         }
@@ -185,7 +185,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class CharWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteChars(this.Array);
     }
   }
@@ -209,7 +209,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ShortWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteInt16(this.Field);
     }
   }
@@ -233,7 +233,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteByte(this.field);
     }
   }
@@ -257,7 +257,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteByte(this.field);
     }
   }
@@ -281,7 +281,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteByte(this.Field);
     }
   }
@@ -341,7 +341,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class EverythingWrapper {
-    public void Write(ISubBinaryWriter bw) {" +
+    public void Write(IBinaryWriter bw) {" +
                             @"
       bw.WriteString(this.magicText);" +
                             @"

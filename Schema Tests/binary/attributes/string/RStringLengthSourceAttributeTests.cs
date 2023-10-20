@@ -36,7 +36,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ImmediateLengthWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteInt32(Field.Length);
       bw.WriteString(this.Field);
     }
@@ -78,7 +78,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ImmediateLengthWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteInt32(Field.Length);
       bw.WriteString(this.Field);
     }
@@ -120,7 +120,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ImmediateLengthWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteInt32(Field.Length);
       bw.WriteString(this.Field);
     }
@@ -162,7 +162,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ImmediateLengthWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteInt32(Field.Length);
       bw.WriteString(this.Field);
     }
@@ -204,7 +204,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ImmediateLengthWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteInt32(Field.Length);
       bw.WriteString(this.Field);
     }

@@ -39,7 +39,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class OffsetWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteUInt32(this.Offset);
       bw.WriteByte(this.Field);
     }
@@ -90,7 +90,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class OffsetWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteByte(this.Field);
     }
   }

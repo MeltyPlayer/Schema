@@ -8,7 +8,7 @@ using schema.util.streams;
 
 namespace schema.binary {
   public sealed partial class SchemaBinaryWriter {
-    public ISubBinaryWriter EnterBlock(out Task<long> delayedLength)
+    public IBinaryWriter EnterBlock(out Task<long> delayedLength)
       => new SchemaBinaryWriter(this.Endianness,
                                 this.impl_.EnterBlock(out delayedLength));
 

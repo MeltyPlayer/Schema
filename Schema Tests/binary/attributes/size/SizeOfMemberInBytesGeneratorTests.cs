@@ -35,7 +35,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class SizeWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteUInt32Delayed(bw.GetSizeOfMemberRelativeToScope(""Foo"").ContinueWith(task => (uint) task.Result));
       bw.MarkStartOfMember(""Foo"");
       bw.WriteByte(this.Foo);
@@ -83,7 +83,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class SizeWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteUInt32Delayed(bw.GetSizeOfMemberRelativeToScope(""Foo.Bar"").ContinueWith(task => (uint) task.Result));
       bw.MarkStartOfMember(""Foo"");
       this.Foo.Write(bw);
@@ -133,7 +133,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class SizeWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteUInt32Delayed(bw.GetSizeOfMemberRelativeToScope(""Foo"").ContinueWith(task => (uint) task.Result));
     }
   }
@@ -158,7 +158,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ParentImpl {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       this.Child.Write(bw);
       bw.MarkStartOfMember(""Foo"");
       bw.WriteByte(this.Foo);

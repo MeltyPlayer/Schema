@@ -38,7 +38,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class SequenceWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteInt32(Sequence.Length);
       bw.WriteBytes(this.Sequence);
     }
@@ -82,7 +82,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class SequenceWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteUInt16((ushort) Sequence.Length);
       bw.WriteBytes(this.Sequence);
     }
@@ -136,7 +136,7 @@ using schema.util.asserts;
 
 namespace foo.bar {
   public partial class SequenceWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       Asserts.AllEqual(Sequence1.Length, Sequence2.Count);
       bw.WriteInt32(Sequence1.Length);
       bw.WriteBytes(this.Sequence1);

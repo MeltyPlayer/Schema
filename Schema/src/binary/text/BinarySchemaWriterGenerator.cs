@@ -58,7 +58,7 @@ namespace schema.binary.text {
 
       cbsb.EnterBlock(SymbolTypeUtil.GetQualifiersAndNameFor(typeSymbol));
 
-      cbsb.EnterBlock($"public void Write(ISubBinaryWriter {WRITER})");
+      cbsb.EnterBlock($"public void Write(IBinaryWriter {WRITER})");
       {
         var hasLocalPositions = container.LocalPositions;
         if (hasLocalPositions) {

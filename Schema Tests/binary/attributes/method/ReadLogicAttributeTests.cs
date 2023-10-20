@@ -38,7 +38,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class Wrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteByte(this.Field1);
       bw.WriteByte(this.Field2);
     }

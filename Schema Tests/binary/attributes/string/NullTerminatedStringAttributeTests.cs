@@ -32,7 +32,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class NtsWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteStringNT(this.Field);
     }
   }
@@ -70,7 +70,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class NtsWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteStringWithExactLength(this.Field, 16);
     }
   }
@@ -111,7 +111,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class NtsWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteUInt32(this.Length);
       bw.WriteString(this.Field);
     }

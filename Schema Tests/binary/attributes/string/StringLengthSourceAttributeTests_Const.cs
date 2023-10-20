@@ -30,7 +30,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class StringWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteString(this.Field);
     }
   }
@@ -67,7 +67,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class StringWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteStringWithExactLength(this.Field, 3);
     }
   }

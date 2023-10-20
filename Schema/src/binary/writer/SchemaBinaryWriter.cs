@@ -12,7 +12,7 @@ using schema.binary.io;
 
 
 namespace schema.binary {
-  public sealed partial class SchemaBinaryWriter : IBinaryWriter {
+  public sealed partial class SchemaBinaryWriter : ITopLevelBinaryWriter {
     private readonly IDelayedContentOutputStream impl_;
 
     private bool disposed_;

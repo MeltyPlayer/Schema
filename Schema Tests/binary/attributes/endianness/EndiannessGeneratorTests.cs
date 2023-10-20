@@ -30,7 +30,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class EndiannessWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteUInt32(this.Field);
     }
   }
@@ -75,7 +75,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class EndiannessWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteUInt32(this.Field1);
       bw.PushMemberEndianness(Endianness.BigEndian);
       bw.WriteUInt32(this.Field2);
@@ -121,7 +121,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class EndiannessWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.PushContainerEndianness(Endianness.BigEndian);
       bw.WriteUInt32(this.Field1);
       bw.WriteUInt32(this.Field2);

@@ -33,7 +33,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class AlignWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.Align(2);
       bw.WriteByte(this.Field);
     }
@@ -75,7 +75,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class AlignWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteUInt32(this.Value);
       bw.Align(Value);
       bw.WriteByte(this.Field);
@@ -122,7 +122,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class AlignWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       this.Wrapper.Write(bw);
       bw.Align(Wrapper.Value);
       bw.WriteByte(this.Field);
@@ -168,7 +168,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class AlignWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteUInt32((uint) this.Field.Length);
       bw.Align(2);
       bw.WriteInt32s(this.Field);

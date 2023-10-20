@@ -56,7 +56,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteByte((byte) (this.ImmediateValue != null ? 1 : 0));
       if (this.ImmediateValue != null) {
         this.ImmediateValue.Write(bw);
@@ -111,7 +111,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteByte((byte) (this.Field ? 1 : 0));
       if (this.Field) {
         bw.WriteInt32(this.OtherValue.Value);
@@ -163,7 +163,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ByteWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       this.Field.Write(bw);
       if (this.Field.Bool) {
         bw.WriteInt32(this.OtherValue.Value);

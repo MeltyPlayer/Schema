@@ -34,7 +34,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class NullableWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteByte((byte) (this.Field1.Value ? 1 : 0));
       bw.WriteInt32(this.Field2.Value);
     }

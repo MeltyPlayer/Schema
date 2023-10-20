@@ -69,7 +69,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ConstLengthWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteInt32s(this.Field);
       bw.WriteInt32s(this.NullableField);
       if (this.Toggle) {
@@ -121,7 +121,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class ConstLengthWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       this.Field.Write(bw);
     }
   }

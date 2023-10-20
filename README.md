@@ -47,7 +47,7 @@ Any readonly primitives will treated as assertions, which is useful for validati
 
 For complicated schema classes, such as ones that use decompression logic or pointers, you'll need to implement the read/write logic manually.
 
-Specifically, you'll need to implement both a `Read(IBinaryReader br)` and `Write(ISubBinaryWriter bw)` method.
+Specifically, you'll need to implement both a `Read(IBinaryReader br)` and `Write(IBinaryWriter bw)` method.
 The `SchemaBinaryReader` and `SchemaBinaryWriter` classes provide many helpful methods for reading/writing a number of different primitive formats, including basic ones such as `byte`/`int`/`float`, but also more complex/unique ones such as `Half` (two-byte float) and `un16` (unsigned normalized 16-bit float).
 
 Similar to the automatic process, you can nest schema classes and manually read/write them by calling their `Read()`/`Write()` methods. 

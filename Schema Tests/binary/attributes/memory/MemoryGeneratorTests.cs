@@ -46,7 +46,7 @@ namespace foo.bar {
 
 namespace foo.bar {
   public partial class BlockWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteInt64(this.Size);
       br.WriteInt64(this.Offset);
       this.Pointer.Write(bw);

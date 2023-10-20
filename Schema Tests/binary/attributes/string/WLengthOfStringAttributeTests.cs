@@ -36,7 +36,7 @@ using schema.binary;
 
 namespace foo.bar {
   public partial class NtsWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       bw.WriteUInt32((uint) Text.Length);
       bw.WriteString(this.Text);
     }
@@ -84,7 +84,7 @@ using schema.util.asserts;
 
 namespace foo.bar {
   public partial class NtsWrapper {
-    public void Write(ISubBinaryWriter bw) {
+    public void Write(IBinaryWriter bw) {
       Asserts.AllEqual(Text1.Length, Text2.Length);
       bw.WriteUInt32((uint) Text1.Length);
       bw.WriteString(this.Text1);

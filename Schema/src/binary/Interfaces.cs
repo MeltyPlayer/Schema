@@ -4,7 +4,7 @@ namespace schema.binary {
   public interface IBinary { }
 
   public interface IBinarySerializable : IBinary {
-    void Write(ISubBinaryWriter ew);
+    void Write(IBinaryWriter ew);
   }
 
   public interface IBinaryDeserializable : IBinary {
