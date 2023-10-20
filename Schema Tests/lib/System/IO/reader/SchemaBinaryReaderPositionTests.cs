@@ -49,22 +49,33 @@ namespace schema.binary {
       var ms = new MemoryStream(data);
       var br = new SchemaBinaryReader(ms);
       Assert.AreEqual(0, br.Position);
+      Assert.AreEqual(100, br.Length);
 
       br.Position = 5;
       Assert.AreEqual(5, br.Position);
+      Assert.AreEqual(100, br.Length);
 
       br.PushLocalSpace();
       {
         Assert.AreEqual(0, br.Position);
+        Assert.AreEqual(95, br.Length);
 
         br.Position = 3;
         Assert.AreEqual(3, br.Position);
+        Assert.AreEqual(95, br.Length);
 
         br.SubreadAt(
             3,
             50,
-            ser => { Assert.AreEqual(3, ser.Position); });
+            sbr => {
+              Assert.AreEqual(3, sbr.Position);
+              Assert.AreEqual(53, sbr.Length);
+            });
       }
+      br.PopLocalSpace();
+
+      Assert.AreEqual(8, br.Position);
+      Assert.AreEqual(100, br.Length);
     }
   }
 }
