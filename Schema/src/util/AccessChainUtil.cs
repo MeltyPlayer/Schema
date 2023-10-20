@@ -9,7 +9,7 @@ using System.Text;
 using schema.binary.attributes;
 using schema.binary.io;
 using schema.binary.parser;
-using schema.util;
+using schema.util.asserts;
 using schema.util.diagnostics;
 using schema.util.symbols;
 using schema.util.types;

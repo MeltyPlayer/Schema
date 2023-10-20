@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 
 using schema.util;
+using schema.util.asserts;
 
 namespace schema.binary.io {
   public interface IOutOfOrderDictionary<in TKey, TValue>

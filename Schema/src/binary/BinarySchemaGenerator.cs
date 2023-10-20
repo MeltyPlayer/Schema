@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using schema.binary.attributes;
 using schema.binary.text;
 using schema.util;
+using schema.util.asserts;
 using schema.util.syntax;
 using schema.util.types;
 

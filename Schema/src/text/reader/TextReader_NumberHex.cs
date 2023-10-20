@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 
 using schema.util;
+using schema.util.asserts;
 
 namespace schema.text.reader {
   public sealed partial class TextReader {

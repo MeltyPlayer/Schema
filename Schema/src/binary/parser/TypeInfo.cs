@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 
 using schema.util;
+using schema.util.asserts;
 using schema.util.symbols;
 using schema.util.types;
 

@@ -3,6 +3,7 @@
 using NUnit.Framework;
 
 using schema.util;
+using schema.util.asserts;
 
 
 namespace schema.text.reader {

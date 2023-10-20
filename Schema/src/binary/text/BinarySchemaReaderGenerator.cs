@@ -6,6 +6,7 @@ using System.Text;
 using schema.binary.attributes;
 using schema.binary.dependencies;
 using schema.util;
+using schema.util.asserts;
 using schema.util.symbols;
 using schema.util.text;
 using schema.util.types;

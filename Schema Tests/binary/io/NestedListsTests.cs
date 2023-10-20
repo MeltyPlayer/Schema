@@ -5,6 +5,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Text;
 using schema.util;
+using schema.util.asserts;
 
 namespace schema.binary.io {
   public class NestedListsTests {

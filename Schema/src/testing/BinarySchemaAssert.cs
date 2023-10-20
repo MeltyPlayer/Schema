@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Collections;
 
 using schema.util;
+using schema.util.asserts;
 
 namespace schema.binary.testing {
   public static class BinarySchemaAssert {

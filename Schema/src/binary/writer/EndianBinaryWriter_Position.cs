@@ -7,6 +7,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
+using schema.util.asserts;
+
 
 namespace schema.binary {
   public sealed partial class EndianBinaryWriter {

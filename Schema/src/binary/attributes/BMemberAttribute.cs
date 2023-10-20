@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 
 using schema.binary.parser;
 using schema.util;
+using schema.util.asserts;
 using schema.util.diagnostics;
 using schema.util.symbols;
 using schema.util.types;

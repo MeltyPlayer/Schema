@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 
+using schema.util.asserts;
+
 namespace schema.util.streams {
   /// <summary>
   /// Represents a substream of an underlying <see cref="Stream" />.

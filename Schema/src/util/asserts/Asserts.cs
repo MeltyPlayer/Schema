@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace schema.util {
+namespace schema.util.asserts {
   public sealed class Asserts {
     /**
      * NOTE: Using $"" to define messages allocates strings, and can be expensive!

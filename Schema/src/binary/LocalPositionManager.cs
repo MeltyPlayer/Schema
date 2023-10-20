@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 
 using schema.util;
+using schema.util.asserts;
 using schema.util.streams;
 
 namespace schema.binary {
