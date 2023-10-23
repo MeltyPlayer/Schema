@@ -28,8 +28,12 @@ namespace schema.binary {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadChars(Span<char> dst) {
+      // Reading a byte span and then copying them individually was found to be faster in benchmarking.
+      Span<byte> bytes = stackalloc byte[dst.Length];
+      this.ReadBytes(bytes);
+
       for (var i = 0; i < dst.Length; ++i) {
-        dst[i] = this.ReadChar();
+        dst[i] = (char) bytes[i];
       }
     }
 

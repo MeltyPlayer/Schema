@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 using CommunityToolkit.HighPerformance;
 
@@ -22,13 +23,21 @@ namespace schema.util.streams {
     public void Dispose() => this.Impl.Dispose();
 
     public long Position {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => this.Impl.Position;
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       set => this.Impl.Position = value;
     }
 
-    public long Length => this.Impl.Length;
+    public long Length {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => this.Impl.Length;
+    }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte ReadByte() => (byte) this.Impl.ReadByte();
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int Read(Span<byte> dst) => this.Impl.Read(dst);
   }
 }

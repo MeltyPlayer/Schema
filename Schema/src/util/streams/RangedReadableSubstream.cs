@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 using schema.util.asserts;
 
@@ -37,6 +38,7 @@ namespace schema.util.streams {
       // afterwards.
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte ReadByte() {
       var startOffset = this.Position;
       if (startOffset >= this.offset_ + this.length_) {
@@ -48,6 +50,7 @@ namespace schema.util.streams {
       return this.impl_.ReadByte();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int Read(Span<byte> dst) {
       var startOffset = this.Position;
       Asserts.True(this.offset_ <= startOffset,
@@ -60,7 +63,9 @@ namespace schema.util.streams {
     }
 
     public long Position {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => this.impl_.Position;
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       set {
         Asserts.True(this.offset_ <= value,
                      "Attempted to seek before the start of the substream!");
@@ -70,6 +75,9 @@ namespace schema.util.streams {
       }
     }
 
-    public long Length => this.offset_ + this.length_;
+    public long Length {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => this.offset_ + this.length_;
+    }
   }
 }
