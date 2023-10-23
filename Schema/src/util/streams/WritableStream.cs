@@ -24,6 +24,7 @@ namespace schema.util.streams {
 
     public long Length => impl.Length;
 
+    public void WriteByte(byte b) => impl.WriteByte(b);
     public void Write(ReadOnlySpan<byte> src) => impl.Write(src);
 
     public void Write(IReadableStream readableStream) {

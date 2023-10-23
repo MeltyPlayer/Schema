@@ -125,8 +125,8 @@ namespace schema.binary {
     string ReadUpTo(char endToken);
     string ReadUpTo(StringEncodingType encodingType, char endToken);
 
-    string ReadUpTo(params string[] endTokens);
-    string ReadUpTo(StringEncodingType encodingType, params string[] endTokens);
+    string ReadUpTo(ReadOnlySpan<string> endTokens);
+    string ReadUpTo(StringEncodingType encodingType, ReadOnlySpan<string> endTokens);
 
     string ReadLine();
     string ReadLine(StringEncodingType encodingType);

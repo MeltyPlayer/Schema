@@ -4,7 +4,36 @@ using NUnit.Framework;
 
 
 namespace schema.binary {
-  public class SchemaBinaryReaderStringTests {
+  public class SchemaBinaryReaderStringAsciiTests {
+    [Test]
+    [TestCase("foobar")]
+    public void TestReadChars(string str) {
+      using var ms = new MemoryStream();
+      using var sw = new StreamWriter(ms);
+      sw.Write(str);
+      sw.Flush();
+      ms.Position = 0;
+
+
+      using var br = new SchemaBinaryReader(ms);
+      CollectionAssert.AreEqual(str, br.ReadChars(str.Length));
+      Assert.AreEqual(str.Length, ms.Position);
+    }
+
+    [Test]
+    [TestCase("foobar")]
+    public void TestString(string str) {
+      using var ms = new MemoryStream();
+      using var sw = new StreamWriter(ms);
+      sw.Write(str);
+      sw.Flush();
+      ms.Position = 0;
+
+      using var br = new SchemaBinaryReader(ms);
+      Assert.AreEqual(str, br.ReadString(str.Length));
+      Assert.AreEqual(str.Length, ms.Position);
+    }
+
     [Test]
     public void TestReadNT() {
       var str = "string 1\0string 2\0string 3";

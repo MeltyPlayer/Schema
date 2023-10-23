@@ -22,10 +22,12 @@ namespace schema.util.streams {
   }
 
   public interface IReadableStream {
+    byte ReadByte();
     int Read(Span<byte> dst);
   }
 
   public interface IWritableStream {
+    void WriteByte(byte b);
     void Write(ReadOnlySpan<byte> src);
     void Write(IReadableStream readableStream);
   }

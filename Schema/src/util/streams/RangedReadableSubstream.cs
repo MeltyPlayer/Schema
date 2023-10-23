@@ -37,9 +37,20 @@ namespace schema.util.streams {
       // afterwards.
     }
 
+    public byte ReadByte() {
+      var startOffset = this.Position;
+      if (startOffset >= this.offset_ + this.length_) {
+        return unchecked((byte) -1);
+      }
+
+      Asserts.True(this.offset_ <= startOffset,
+                   "Attempted to read before the start of the substream!");
+      return this.impl_.ReadByte();
+    }
+
     public int Read(Span<byte> dst) {
       var startOffset = this.Position;
-      Asserts.True(startOffset >= this.offset_,
+      Asserts.True(this.offset_ <= startOffset,
                    "Attempted to read before the start of the substream!");
 
       var maxLength = Math.Min(dst.Length,

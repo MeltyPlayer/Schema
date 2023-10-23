@@ -28,6 +28,7 @@ namespace schema.util.streams {
 
     public long Length => this.Impl.Length;
 
+    public byte ReadByte() => (byte) this.Impl.ReadByte();
     public int Read(Span<byte> dst) => this.Impl.Read(dst);
   }
 }

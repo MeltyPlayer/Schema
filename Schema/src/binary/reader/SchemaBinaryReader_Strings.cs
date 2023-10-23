@@ -3,9 +3,11 @@ using System.Runtime.CompilerServices;
 using System.Text;
 
 using schema.binary.attributes;
+using schema.text.reader;
 
 namespace schema.binary {
   public sealed partial class SchemaBinaryReader {
+    // ASCII Chars
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AssertChar(char expectedValue)
       => SchemaBinaryReader.Assert_(expectedValue, this.ReadChar());
@@ -14,18 +16,25 @@ namespace schema.binary {
     public char ReadChar() => (char) this.ReadByte();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public char[] ReadChars(long count)
-      => this.ReadChars(StringEncodingType.ASCII, count);
+    public char[] ReadChars(long count) {
+      var newArray = new char[count];
+      this.ReadChars(newArray);
+      return newArray;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadChars(char[] dst, int start, int length)
       => this.ReadChars(dst.AsSpan(start, length));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadChars(Span<char> dst)
-      => this.ReadChars(StringEncodingType.ASCII, dst);
+    public void ReadChars(Span<char> dst) {
+      for (var i = 0; i < dst.Length; ++i) {
+        dst[i] = this.ReadChar();
+      }
+    }
 
 
+    // Encoded Chars
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AssertChar(StringEncodingType encodingType, char expectedValue)
       => SchemaBinaryReader.Assert_(expectedValue, this.ReadChar(encodingType));
@@ -95,6 +104,7 @@ namespace schema.binary {
     }
 
 
+    // Read Up To
     public string ReadUpTo(char endToken) {
       var remainingCharacters = this.Length - this.Position;
 
@@ -109,7 +119,7 @@ namespace schema.binary {
 
     public string ReadUpTo(StringEncodingType encodingType, char endToken) {
       var strBuilder = new StringBuilder();
-      while (!Eof) {
+      while (!this.Eof) {
         var c = this.ReadChar(encodingType);
         if (c == endToken) {
           break;
@@ -122,11 +132,35 @@ namespace schema.binary {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public string ReadUpTo(params string[] endTokens)
-      => ReadUpTo(StringEncodingType.ASCII, endTokens);
+    public string ReadUpTo(ReadOnlySpan<string> endTokens) {
+      var strBuilder = new StringBuilder();
+      while (!Eof) {
+        var firstC = this.ReadChar();
+        var originalOffset = Position;
+
+        foreach (var endToken in endTokens) {
+          if (firstC == endToken[0]) {
+            for (var i = 1; i < endToken.Length; ++i) {
+              var c = this.ReadChar();
+              if (c != endToken[1]) {
+                Position = originalOffset;
+                break;
+              }
+            }
+
+            goto Done;
+          }
+        }
+
+        strBuilder.Append(firstC);
+      }
+
+      Done:
+      return strBuilder.ToString();
+    }
 
     public string ReadUpTo(StringEncodingType encodingType,
-                           params string[] endTokens) {
+                           ReadOnlySpan<string> endTokens) {
       var strBuilder = new StringBuilder();
       while (!Eof) {
         var firstC = this.ReadChar(encodingType);
@@ -154,52 +188,67 @@ namespace schema.binary {
     }
 
 
+    // Read Line
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public string ReadLine() => ReadLine(StringEncodingType.ASCII);
+    public string ReadLine()
+      => this.ReadUpTo(TextReaderConstants.NEWLINE_STRINGS);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string ReadLine(StringEncodingType encodingType)
-      => ReadUpTo(encodingType, "\n", "\r\n");
+      => this.ReadUpTo(encodingType, TextReaderConstants.NEWLINE_STRINGS);
 
 
+    // String
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AssertString(string expectedValue)
-      => this.AssertString(StringEncodingType.ASCII, expectedValue);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public string ReadString(long count)
-      => this.ReadString(StringEncodingType.ASCII, count);
-
+      => SchemaBinaryReader.AssertStrings_(
+          expectedValue.AsSpan().TrimEnd('\0'),
+          this.ReadString(expectedValue.Length).AsSpan());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AssertString(StringEncodingType encodingType,
                              string expectedValue)
-      => SchemaBinaryReader.Assert_(
-          expectedValue.TrimEnd('\0'),
-          this.ReadString(encodingType, expectedValue.Length));
+      => SchemaBinaryReader.AssertStrings_(
+          expectedValue.AsSpan().TrimEnd('\0'),
+          this.ReadString(encodingType, expectedValue.Length).AsSpan());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public string ReadString(StringEncodingType encodingType, long count)
-      => new string(this.ReadChars(encodingType, count)).TrimEnd('\0');
+    public string ReadString(long count) {
+      Span<char> buffer = stackalloc char[(int) count];
+      this.ReadChars(buffer);
+      return ((ReadOnlySpan<char>) buffer).TrimEnd('\0').ToString();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public string ReadString(StringEncodingType encodingType, long count) {
+      Span<char> buffer = stackalloc char[(int) count];
+      this.ReadChars(encodingType, buffer);
+      return ((ReadOnlySpan<char>) buffer).TrimEnd('\0').ToString();
+    }
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AssertStringNT(string expectedValue)
-      => SchemaBinaryReader.Assert_(expectedValue, this.ReadStringNT());
+      => SchemaBinaryReader.AssertStrings_(
+          expectedValue.AsSpan(),
+          // TODO: Consider removing an allocation here
+          this.ReadStringNT().AsSpan());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public string ReadStringNT() => ReadUpTo('\0');
+    public string ReadStringNT() => this.ReadUpTo('\0');
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AssertStringNT(StringEncodingType encodingType,
                                string expectedValue)
-      => SchemaBinaryReader.Assert_(
-          expectedValue,
-          this.ReadStringNT(encodingType));
+      => SchemaBinaryReader.AssertStrings_(
+          expectedValue.AsSpan(),
+          // TODO: Consider removing an allocation here
+          this.ReadStringNT(encodingType).AsSpan());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string ReadStringNT(StringEncodingType encodingType)
-      => ReadUpTo(encodingType, '\0');
+      => this.ReadUpTo(encodingType, '\0');
   }
 }

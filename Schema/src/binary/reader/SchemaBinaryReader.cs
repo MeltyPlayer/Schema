@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 using schema.util.streams;
 
@@ -74,10 +75,20 @@ namespace schema.binary {
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void AssertStrings_(ReadOnlySpan<char> expectedValue,
+                                       ReadOnlySpan<char> actualValue) {
+      if (!expectedValue.SequenceEqual(actualValue)) {
+        var sb = new StringBuilder();
+        throw new Exception(
+            $"Expected {actualValue.ToString()} to be {expectedValue.ToString()}");
+      }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void Assert_<T>(T expectedValue, T actualValue) {
       if (!expectedValue.Equals(actualValue)) {
         throw new Exception(
-            "Expected " + actualValue + " to be " + expectedValue);
+            $"Expected {actualValue} to be {expectedValue}");
       }
     }
 
@@ -86,7 +97,7 @@ namespace schema.binary {
                                       double delta = .01) {
       if (Math.Abs(expectedValue - actualValue) > delta) {
         throw new Exception(
-            "Expected " + actualValue + " to be " + expectedValue);
+            $"Expected {actualValue} to be {expectedValue}");
       }
     }
 
