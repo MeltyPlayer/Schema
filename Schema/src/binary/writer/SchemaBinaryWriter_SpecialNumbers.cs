@@ -12,10 +12,6 @@ namespace schema.binary {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void WriteInt24s(int[] values, int offset, int count)
-      => this.WriteInt24s(values.AsSpan(offset, count));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public unsafe void WriteInt24s(ReadOnlySpan<int> values) {
       foreach (var value in values) {
         var ptr = &value;
@@ -30,10 +26,6 @@ namespace schema.binary {
       var ptr = &value;
       this.WriteUInt24s(new Span<uint>(ptr, 1));
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void WriteUInt24s(uint[] values, int offset, int count)
-      => this.WriteUInt24s(values.AsSpan(offset, count));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public unsafe void WriteUInt24s(ReadOnlySpan<uint> values) {
@@ -52,10 +44,6 @@ namespace schema.binary {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void WriteHalfs(float[] values, int offset, int count)
-      => this.WriteHalfs(values.AsSpan(offset, count));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WriteHalfs(ReadOnlySpan<float> values) {
       foreach (var value in values) {
         var half = new Half(value);
@@ -69,10 +57,6 @@ namespace schema.binary {
       var un8 = (byte) (value * 255f);
       this.WriteByte(un8);
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void WriteUn8s(float[] values, int offset, int count)
-      => this.WriteUn8s(values.AsSpan());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WriteUn8s(ReadOnlySpan<float> values) {
@@ -89,10 +73,6 @@ namespace schema.binary {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void WriteSn8s(float[] values, int offset, int count)
-      => this.WriteSn8s(values.AsSpan());
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WriteSn8s(ReadOnlySpan<float> values) {
       foreach (var value in values) {
         this.WriteSn8(value);
@@ -107,10 +87,6 @@ namespace schema.binary {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void WriteUn16s(float[] values, int offset, int count)
-      => this.WriteUn16s(values.AsSpan());
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WriteUn16s(ReadOnlySpan<float> values) {
       foreach (var value in values) {
         this.WriteUn16(value);
@@ -123,10 +99,6 @@ namespace schema.binary {
       var sn16 = (short) (value * (65535f / 2));
       this.WriteInt16(sn16);
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void WriteSn16s(float[] values, int offset, int count)
-      => this.WriteSn16s(values.AsSpan());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WriteSn16s(ReadOnlySpan<float> values) {

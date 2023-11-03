@@ -23,10 +23,6 @@ namespace schema.binary {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadChars(char[] dst, int start, int length)
-      => this.ReadChars(dst.AsSpan(start, length));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadChars(Span<char> dst) {
       // Reading a byte span and then copying them individually was found to be faster in benchmarking.
       Span<byte> bytes = stackalloc byte[dst.Length];
@@ -52,16 +48,6 @@ namespace schema.binary {
       => this.ReadChars(encodingType.GetEncoding(this.Endianness), count);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadChars(StringEncodingType encodingType,
-                          char[] dst,
-                          int start,
-                          int length)
-      => this.ReadChars(encodingType.GetEncoding(this.Endianness),
-                        dst,
-                        start,
-                        length);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadChars(StringEncodingType encodingType, Span<char> dst)
       => this.ReadChars(encodingType.GetEncoding(this.Endianness), dst);
 
@@ -84,13 +70,6 @@ namespace schema.binary {
       this.ReadChars(encoding, newArray);
       return newArray;
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadChars(Encoding encoding,
-                          char[] dst,
-                          int start,
-                          int length)
-      => this.ReadChars(encoding, dst.AsSpan(start, length));
 
     public unsafe void ReadChars(Encoding encoding, Span<char> dst) {
       if (dst.Length == 0) {

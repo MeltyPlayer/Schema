@@ -31,15 +31,9 @@ namespace schema.binary {
         IBinaryReader br,
         T[] expectedValues,
         Func<long, T[]> readHandler,
-        Action<T[], int, int> readIntoHandler,
         ReadSpan<T> readSpanHandler) where T : unmanaged, INumber<T> {
       var readValues = readHandler(expectedValues.Length);
       this.AssertEquals_<T>(expectedValues, readValues);
-
-      br.Position = 0;
-      var readIntoValues = new T[expectedValues.Length];
-      readIntoHandler(readIntoValues, 0, readIntoValues.Length);
-      this.AssertEquals_<T>(expectedValues, readIntoValues);
 
       br.Position = 0;
       Span<T> readIntoSpan = stackalloc T[expectedValues.Length];
@@ -61,7 +55,6 @@ namespace schema.binary {
       this.ReadAndAssert_(br,
                           expectedValues,
                           br.ReadBytes,
-                          br.ReadBytes,
                           br.ReadBytes);
     }
 
@@ -78,7 +71,6 @@ namespace schema.binary {
       using var br = new SchemaBinaryReader(bytes, endianness);
       this.ReadAndAssert_(br,
                           expectedValues,
-                          br.ReadSBytes,
                           br.ReadSBytes,
                           br.ReadSBytes);
     }
@@ -98,7 +90,6 @@ namespace schema.binary {
       this.ReadAndAssert_(br,
                           expectedValues,
                           br.ReadInt16s,
-                          br.ReadInt16s,
                           br.ReadInt16s);
     }
 
@@ -115,7 +106,6 @@ namespace schema.binary {
       using var br = new SchemaBinaryReader(bytes, endianness);
       this.ReadAndAssert_(br,
                           expectedValues,
-                          br.ReadUInt16s,
                           br.ReadUInt16s,
                           br.ReadUInt16s);
     }
@@ -140,7 +130,6 @@ namespace schema.binary {
       using var br = new SchemaBinaryReader(bytes, endianness);
       this.ReadAndAssert_(br,
                           expectedValues,
-                          br.ReadInt24s,
                           br.ReadInt24s,
                           br.ReadInt24s);
     }
@@ -169,7 +158,6 @@ namespace schema.binary {
       this.ReadAndAssert_(br,
                           expectedValues,
                           br.ReadUInt24s,
-                          br.ReadUInt24s,
                           br.ReadUInt24s);
     }
 
@@ -197,7 +185,6 @@ namespace schema.binary {
       using var br = new SchemaBinaryReader(bytes, endianness);
       this.ReadAndAssert_(br,
                           expectedValues,
-                          br.ReadInt32s,
                           br.ReadInt32s,
                           br.ReadInt32s);
     }
@@ -230,7 +217,6 @@ namespace schema.binary {
       this.ReadAndAssert_(br,
                           expectedValues,
                           br.ReadUInt32s,
-                          br.ReadUInt32s,
                           br.ReadUInt32s);
     }
 
@@ -258,7 +244,6 @@ namespace schema.binary {
       using var br = new SchemaBinaryReader(bytes, endianness);
       this.ReadAndAssert_(br,
                           expectedValues,
-                          br.ReadInt64s,
                           br.ReadInt64s,
                           br.ReadInt64s);
     }
@@ -297,7 +282,6 @@ namespace schema.binary {
       this.ReadAndAssert_(br,
                           expectedValues,
                           br.ReadUInt64s,
-                          br.ReadUInt64s,
                           br.ReadUInt64s);
     }
 
@@ -315,7 +299,6 @@ namespace schema.binary {
       using var br = new SchemaBinaryReader(bytes, endianness);
       this.ReadAndAssert_(br,
                           expectedValues,
-                          br.ReadHalfs,
                           br.ReadHalfs,
                           br.ReadHalfs);
     }
@@ -340,7 +323,6 @@ namespace schema.binary {
       this.ReadAndAssert_(br,
                           expectedValues,
                           br.ReadSingles,
-                          br.ReadSingles,
                           br.ReadSingles);
     }
 
@@ -363,7 +345,6 @@ namespace schema.binary {
       using var br = new SchemaBinaryReader(bytes, endianness);
       this.ReadAndAssert_(br,
                           expectedValues,
-                          br.ReadDoubles,
                           br.ReadDoubles,
                           br.ReadDoubles);
     }
@@ -393,7 +374,6 @@ namespace schema.binary {
       this.ReadAndAssert_(br,
                           expectedValues,
                           br.ReadSn8s,
-                          br.ReadSn8s,
                           br.ReadSn8s);
     }
 
@@ -410,7 +390,6 @@ namespace schema.binary {
       using var br = new SchemaBinaryReader(bytes, endianness);
       this.ReadAndAssert_(br,
                           expectedValues,
-                          br.ReadUn8s,
                           br.ReadUn8s,
                           br.ReadUn8s);
     }
@@ -438,7 +417,6 @@ namespace schema.binary {
       this.ReadAndAssert_(br,
                           expectedValues,
                           br.ReadSn16s,
-                          br.ReadSn16s,
                           br.ReadSn16s);
     }
 
@@ -463,7 +441,6 @@ namespace schema.binary {
       using var br = new SchemaBinaryReader(bytes, endianness);
       this.ReadAndAssert_(br,
                           expectedValues,
-                          br.ReadUn16s,
                           br.ReadUn16s,
                           br.ReadUn16s);
     }

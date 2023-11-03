@@ -23,10 +23,6 @@ namespace schema.binary {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadInt24s(int[] dst, int start, int length)
-      => this.ReadInt24s(dst.AsSpan(start, length));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadInt24s(Span<int> dst) {
       const int size = 3;
       this.FillBuffer_(size * dst.Length, size);
@@ -56,10 +52,6 @@ namespace schema.binary {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadUInt24s(uint[] dst, int start, int length)
-      => this.ReadUInt24s(dst.AsSpan(start, length));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadUInt24s(Span<uint> dst) {
       const int size = 3;
       this.FillBuffer_(size * dst.Length, size);
@@ -84,10 +76,6 @@ namespace schema.binary {
       this.ReadHalfs(newArray);
       return newArray;
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadHalfs(float[] dst, int start, int length)
-      => this.ReadHalfs(dst.AsSpan(start, length));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadHalfs(Span<float> dst) {
@@ -118,10 +106,6 @@ namespace schema.binary {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadSn8s(float[] dst, int start, int length)
-      => this.ReadSn8s(dst.AsSpan(start, length));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadSn8s(Span<float> dst) {
       const int size = sizeof(byte);
       this.FillBuffer_(size * dst.Length, size);
@@ -150,10 +134,6 @@ namespace schema.binary {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadUn8s(float[] dst, int start, int length)
-      => this.ReadUn8s(dst.AsSpan(start, length));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadUn8s(Span<float> dst) {
       const int size = sizeof(byte);
       this.FillBuffer_(size * dst.Length, size);
@@ -180,10 +160,6 @@ namespace schema.binary {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadSn16s(float[] dst, int start, int length)
-      => this.ReadSn16s(dst.AsSpan(start, length));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadSn16s(Span<float> dst) {
       Span<short> values = stackalloc short[dst.Length];
       this.ReadInt16s(values);
@@ -208,10 +184,6 @@ namespace schema.binary {
       this.ReadUn16s(newArray);
       return newArray;
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadUn16s(float[] dst, int start, int length)
-      => this.ReadUn16s(dst.AsSpan(start, length));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadUn16s(Span<float> dst) {

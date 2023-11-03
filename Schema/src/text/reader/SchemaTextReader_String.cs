@@ -16,9 +16,6 @@ namespace schema.text.reader {
       return newArray;
     }
 
-    public void ReadChars(char[] dst, int start, int length)
-      => this.ReadChars(dst.AsSpan(start, length));
-
     // TODO: Handle other encodings besides ASCII
     public void ReadChars(Span<char> dst) {
       for (var i = 0; i < dst.Length; ++i) {

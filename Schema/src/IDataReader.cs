@@ -39,7 +39,6 @@ namespace schema {
     void AssertChar(char expectedValue);
     char ReadChar();
     char[] ReadChars(long count);
-    void ReadChars(char[] dst, int start, int length);
     void ReadChars(Span<char> dst);
 
     void AssertString(string expectedValue);
@@ -59,7 +58,6 @@ namespace schema {
 
     void WriteChar(char value);
     void WriteChars(ReadOnlySpan<char> values);
-    void WriteChars(char[] values, int offset, int count);
 
     void WriteString(string value);
   }

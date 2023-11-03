@@ -21,10 +21,6 @@ namespace schema.binary {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadBytes(byte[] dst, int start, int length)
-      => this.ReadBytes(dst.AsSpan(start, length));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadBytes(Span<byte> dst)
       => this.bufferedStream_.BaseStream.Read(dst);
 
@@ -42,10 +38,6 @@ namespace schema.binary {
       this.ReadSBytes(newArray);
       return newArray;
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadSBytes(sbyte[] dst, int start, int length)
-      => this.ReadSBytes(dst.AsSpan(start, length));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadSBytes(Span<sbyte> dst)
@@ -67,10 +59,6 @@ namespace schema.binary {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadInt16s(short[] dst, int start, int length)
-      => this.ReadInt16s(dst.AsSpan(start, length));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadInt16s(Span<short> dst)
       => this.bufferedStream_.FillBufferAndReverse(dst);
 
@@ -88,10 +76,6 @@ namespace schema.binary {
       this.ReadUInt16s(newArray);
       return newArray;
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadUInt16s(ushort[] dst, int start, int length)
-      => this.ReadUInt16s(dst.AsSpan(start, length));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadUInt16s(Span<ushort> dst)
@@ -113,10 +97,6 @@ namespace schema.binary {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadInt32s(int[] dst, int start, int length)
-      => this.ReadInt32s(dst.AsSpan(start, length));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadInt32s(Span<int> dst)
       => this.bufferedStream_.FillBufferAndReverse(dst);
 
@@ -134,10 +114,6 @@ namespace schema.binary {
       this.ReadUInt32s(newArray);
       return newArray;
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadUInt32s(uint[] dst, int start, int length)
-      => this.ReadUInt32s(dst.AsSpan(start, length));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadUInt32s(Span<uint> dst)
@@ -159,10 +135,6 @@ namespace schema.binary {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadInt64s(long[] dst, int start, int length)
-      => this.ReadInt64s(dst.AsSpan(start, length));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadInt64s(Span<long> dst)
       => this.bufferedStream_.FillBufferAndReverse(dst);
 
@@ -180,10 +152,6 @@ namespace schema.binary {
       this.ReadUInt64s(newArray);
       return newArray;
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadUInt64s(ulong[] dst, int start, int length)
-      => this.ReadUInt64s(dst.AsSpan(start, length));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadUInt64s(Span<ulong> dst)
@@ -205,10 +173,6 @@ namespace schema.binary {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadSingles(float[] dst, int start, int length)
-      => this.ReadSingles(dst.AsSpan(start, length));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadSingles(Span<float> dst)
       => this.bufferedStream_.FillBufferAndReverse(dst);
 
@@ -226,10 +190,6 @@ namespace schema.binary {
       this.ReadDoubles(newArray);
       return newArray;
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadDoubles(double[] dst, int start, int length)
-      => this.ReadDoubles(dst.AsSpan(start, length));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadDoubles(Span<double> dst)

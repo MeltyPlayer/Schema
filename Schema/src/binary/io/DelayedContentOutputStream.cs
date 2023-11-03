@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 using CommunityToolkit.HighPerformance;
 
-using schema.util;
 using schema.util.asserts;
 using schema.util.streams;
 
@@ -30,14 +29,11 @@ namespace schema.binary.io {
 
     void WriteByte(byte value);
     void WriteBytes(ReadOnlySpan<byte> bytes);
-    void WriteBytes(byte[] bytes, int offset, int count);
 
     void WriteBytesAndFlip(ReadOnlySpan<byte> bytes, int size);
-    void WriteBytesAndFlip(byte[] bytes, int offset, int count, int size);
 
     void WriteAndFlip<T>(T value) where T : unmanaged;
     void WriteAndFlip<T>(ReadOnlySpan<T> values) where T : unmanaged;
-    void WriteAndFlip<T>(T[] values, int offset, int count) where T : unmanaged;
 
 
     void WriteDelayed(Task<byte[]> delayedBytes, Task<long> delayedBytesLength);
@@ -164,9 +160,6 @@ namespace schema.binary.io {
       this.currentBytes_!.AddLast(value);
     }
 
-    public void WriteBytes(byte[] bytes, int offset, int count)
-      => this.WriteBytes(bytes.AsSpan(offset, count));
-
     public void WriteBytes(ReadOnlySpan<byte> bytes) {
       this.AssertNotCompleted_();
 
@@ -175,13 +168,6 @@ namespace schema.binary.io {
         this.currentBytes_!.AddLast(b);
       }
     }
-
-
-    public void WriteBytesAndFlip(byte[] values,
-                                  int offset,
-                                  int count,
-                                  int size)
-      => this.WriteBytesAndFlip(values.AsSpan(offset, count), size);
 
     public void WriteBytesAndFlip(ReadOnlySpan<byte> values, int size) {
       if (size == 1 || !this.IsOppositeEndiannessOfSystem) {
@@ -203,10 +189,6 @@ namespace schema.binary.io {
       var span = new Span<T>(ptr, 1);
       this.WriteAndFlip<T>(span);
     }
-
-    public void WriteAndFlip<T>(T[] values, int offset, int count)
-        where T : unmanaged
-      => this.WriteAndFlip<T>(values.AsSpan(offset, count));
 
     public unsafe void WriteAndFlip<T>(ReadOnlySpan<T> values)
         where T : unmanaged
