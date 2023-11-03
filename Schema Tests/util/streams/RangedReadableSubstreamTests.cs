@@ -2,12 +2,30 @@
 
 using NUnit.Framework;
 
-using schema.util.asserts;
-
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
 namespace schema.util.streams {
   public class RangedReadableSubstreamTests {
+    [Test]
+    public void TestThrowsErrorIfInputStreamIsNull() {
+      Assert.That(() => new RangedReadableSubstream(null, 0, 0),
+                  Throws.Exception);
+    }
+
+    [Test]
+    public void TestThrowsErrorIfOffsetIsNegative() {
+      var data = new byte[] { 1, 2, 3, 4, 5, 6, 7 };
+      var rs = new ReadableStream(data);
+      Assert.That(() => new RangedReadableSubstream(rs, -1, 0),
+                  Throws.Exception);
+    }
+
+    [Test]
+    public void TestThrowsErrorIfLengthIsNegative() {
+      var data = new byte[] { 1, 2, 3, 4, 5, 6, 7 };
+      var rs = new ReadableStream(data);
+      Assert.That(() => new RangedReadableSubstream(rs, 0, -1),
+                  Throws.Exception);
+    }
+
     [Test]
     public void TestFullSubstream() {
       var data = new byte[] { 1, 2, 3, 4, 5, 6, 7 };
@@ -41,6 +59,15 @@ namespace schema.util.streams {
                                 rrs.ReadAllBytes());
       Assert.AreEqual(6, rs.Position);
       Assert.AreEqual(6, rrs.Position);
+    }
+
+    [Test]
+    public void TestReadBytePastEnd() {
+      var data = new byte[] { };
+      var rs = new ReadableStream(data);
+      var rrs = new RangedReadableSubstream(rs, 0, rs.Length);
+
+      Assert.AreEqual(byte.MaxValue, rrs.ReadByte());
     }
   }
 }

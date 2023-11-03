@@ -8,7 +8,7 @@ namespace schema.binary {
     public void TestNestedSpaces() {
       var data = new byte[100];
       var ms = new MemoryStream(data);
-      var br = new SchemaBinaryReader(ms);
+      using var br = new SchemaBinaryReader(ms);
       Assert.AreEqual(0, br.Position);
       Assert.AreEqual(100, br.Length);
 
@@ -47,7 +47,7 @@ namespace schema.binary {
     public void TestNestedPointer() {
       var data = new byte[100];
       var ms = new MemoryStream(data);
-      var br = new SchemaBinaryReader(ms);
+      using var br = new SchemaBinaryReader(ms);
       Assert.AreEqual(0, br.Position);
       Assert.AreEqual(100, br.Length);
 
@@ -76,6 +76,36 @@ namespace schema.binary {
 
       Assert.AreEqual(8, br.Position);
       Assert.AreEqual(100, br.Length);
+    }
+
+    [Test]
+    public void TestAlign() {
+      using var br = new SchemaBinaryReader(new MemoryStream(100));
+      Assert.AreEqual(0, br.Position);
+
+      br.Align(4);
+      Assert.AreEqual(0, br.Position);
+
+      br.Position = 1;
+      br.Align(4);
+      Assert.AreEqual(4, br.Position);
+    }
+
+    [Test]
+    public void TestAssertPosition() {
+      using var br = new SchemaBinaryReader(new MemoryStream(5));
+
+      br.Position = 0;
+      Assert.That(() => br.AssertPosition(5), Throws.Exception);
+
+      br.Position = 5;
+      Assert.That(() => br.AssertPosition(5), Throws.Nothing);
+    }
+
+    [Test]
+    public void TestAssertEofThrowsPastEnd() {
+      using var br = new SchemaBinaryReader(new MemoryStream());
+      Assert.That(br.AssertNotEof, Throws.Exception);
     }
   }
 }
