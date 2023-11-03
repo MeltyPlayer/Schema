@@ -1,7 +1,14 @@
 ﻿using NUnit.Framework;
 
 namespace schema.util.sequences {
-  public class SequencesUtilTests {
+  public class SequencesUtilArrayTests {
+    [Test]
+    public void TestResizeArrayNegativeThrowsError() {
+      Assert.That(
+          () => SequencesUtil.CloneAndResizeSequence((int[]?) null, -1),
+          Throws.Exception);
+    }
+
     [Test]
     public void TestResizeArrayOriginallyNull() {
       CollectionAssert.AreEqual(

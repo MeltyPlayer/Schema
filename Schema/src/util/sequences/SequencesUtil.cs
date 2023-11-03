@@ -69,8 +69,7 @@ namespace schema.util.sequences {
         return list;
       }
 
-      return (list?.Resized(length) ?? Enumerable.Repeat(new T(), length))
-          .ToImmutableList();
+      return list.Resized(length).ToList();
     }
 
 
