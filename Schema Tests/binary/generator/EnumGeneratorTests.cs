@@ -4,7 +4,7 @@
 namespace schema.binary.text {
   internal class EnumGeneratorTests {
     [Test]
-    public void TestEnum() {
+    public void TestReadEnum() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -50,7 +50,53 @@ namespace foo.bar {
     }
 
     [Test]
-    public void TestEnumArray() {
+    public void TestAssertEnum() {
+      BinarySchemaTestUtil.AssertGenerated(@"
+using schema.binary;
+using schema.binary.attributes;
+
+namespace foo.bar {
+  enum A {}
+
+  enum B : int {
+  }
+ 
+  [BinarySchema]
+  public partial class EnumWrapper {
+    [IntegerFormat(SchemaIntegerType.BYTE)]
+    public readonly A fieldA;
+
+    public readonly B fieldB;
+  }
+}",
+                                           @"using System;
+using schema.binary;
+
+namespace foo.bar {
+  public partial class EnumWrapper {
+    public void Read(IBinaryReader br) {
+      br.AssertByte((byte) this.fieldA);
+      br.AssertInt32((int) this.fieldB);
+    }
+  }
+}
+",
+                                           @"using System;
+using schema.binary;
+
+namespace foo.bar {
+  public partial class EnumWrapper {
+    public void Write(IBinaryWriter bw) {
+      bw.WriteByte((byte) this.fieldA);
+      bw.WriteInt32((int) this.fieldB);
+    }
+  }
+}
+");
+    }
+
+    [Test]
+    public void TestReadEnumArray() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
