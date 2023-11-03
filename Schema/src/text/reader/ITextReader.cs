@@ -156,9 +156,9 @@ namespace schema.text.reader {
 
     bool TryReadNew<T>(out T? value) where T : ITextDeserializable, new();
 
-    void ReadNewArray<T>(out T[] array, int length)
+    void ReadNews<T>(out T[] array, int length)
         where T : ITextDeserializable, new();
 
-    T[] ReadNewArray<T>(int length) where T : ITextDeserializable, new();
+    T[] ReadNews<T>(int length) where T : ITextDeserializable, new();
   }
 }

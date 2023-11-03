@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 
 namespace schema.binary {
@@ -25,19 +26,20 @@ namespace schema.binary {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadNewArray<T>(out T[] array, int length)
-        where T : IBinaryDeserializable, new() {
-      array = ReadNewArray<T>(length);
-    }
-
-    public T[] ReadNewArray<T>(int length)
+    public T[] ReadNews<T>(int length)
         where T : IBinaryDeserializable, new() {
       var array = new T[length];
-      for (var i = 0; i < length; ++i) {
-        this.AssertNotEof();
-        array[i] = this.ReadNew<T>();
-      }
+      this.ReadNews<T>(array);
       return array;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ReadNews<T>(Span<T> dst)
+        where T : IBinaryDeserializable, new() {
+      for (var i = 0; i < dst.Length; ++i) {
+        this.AssertNotEof();
+        dst[i] = this.ReadNew<T>();
+      }
     }
   }
 }

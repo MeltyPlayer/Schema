@@ -81,7 +81,7 @@ namespace build {
 
       var er = new SchemaBinaryReader(ms, endianness);
       er.Position = 1;
-      var actualSws = er.ReadNewArray<SchemaStruct>(expectedSw.Values.Length);
+      var actualSws = er.ReadNews<SchemaStruct>(expectedSw.Values.Length);
       Assert.True(expectedSw.Values.SequenceEqual(actualSws));
     }
 

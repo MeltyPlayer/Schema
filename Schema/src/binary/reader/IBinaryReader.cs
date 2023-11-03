@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 using schema.binary.attributes;
 
@@ -122,17 +123,37 @@ namespace schema.binary {
 
     void ReadChars(StringEncodingType encodingType, Span<char> dst);
 
+    void AssertChar(Encoding encoding, char expectedValue);
+    char ReadChar(Encoding encoding);
+    char[] ReadChars(Encoding encoding, long count);
+
+    void ReadChars(Encoding encoding,
+                   char[] dst,
+                   int start,
+                   int length);
+
+    void ReadChars(Encoding encoding, Span<char> dst);
+
     string ReadUpTo(char endToken);
     string ReadUpTo(StringEncodingType encodingType, char endToken);
+    string ReadUpTo(Encoding encoding, char endToken);
 
     string ReadUpTo(ReadOnlySpan<string> endTokens);
-    string ReadUpTo(StringEncodingType encodingType, ReadOnlySpan<string> endTokens);
+
+    string ReadUpTo(StringEncodingType encodingType,
+                    ReadOnlySpan<string> endTokens);
+
+    string ReadUpTo(Encoding encoding, ReadOnlySpan<string> endTokens);
 
     string ReadLine();
     string ReadLine(StringEncodingType encodingType);
+    string ReadLine(Encoding encoding);
 
     void AssertString(StringEncodingType encodingType, string expectedValue);
     string ReadString(StringEncodingType encodingType, long count);
+
+    void AssertString(Encoding encoding, string expectedValue);
+    string ReadString(Encoding encoding, long count);
 
     void AssertStringNT(string expectedValue);
     string ReadStringNT();
@@ -140,13 +161,12 @@ namespace schema.binary {
     void AssertStringNT(StringEncodingType encodingType, string expectedValue);
     string ReadStringNT(StringEncodingType encodingType);
 
+    void AssertStringNT(Encoding encoding, string expectedValue);
+    string ReadStringNT(Encoding encoding);
+
     T ReadNew<T>() where T : IBinaryDeserializable, new();
-
     bool TryReadNew<T>(out T? value) where T : IBinaryDeserializable, new();
-
-    void ReadNewArray<T>(out T[] array, int length)
-        where T : IBinaryDeserializable, new();
-
-    T[] ReadNewArray<T>(int length) where T : IBinaryDeserializable, new();
+    T[] ReadNews<T>(int length) where T : IBinaryDeserializable, new();
+    void ReadNews<T>(Span<T> dst) where T : IBinaryDeserializable, new();
   }
 }

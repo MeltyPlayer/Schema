@@ -49,11 +49,11 @@ namespace schema.text.reader {
       return success;
     }
 
-    public void ReadNewArray<T>(out T[] array, int length)
+    public void ReadNews<T>(out T[] array, int length)
         where T : ITextDeserializable, new()
-      => array = this.ReadNewArray<T>(length);
+      => array = this.ReadNews<T>(length);
 
-    public T[] ReadNewArray<T>(int length)
+    public T[] ReadNews<T>(int length)
         where T : ITextDeserializable, new() {
       var array = new T[length];
       for (var i = 0; i < length; ++i) {
