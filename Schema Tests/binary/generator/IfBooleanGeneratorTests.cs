@@ -62,7 +62,7 @@ namespace foo.bar {
         this.ImmediateValue.Write(bw);
       }
       bw.WriteByte((byte) (this.Field ? 1 : 0));
-      if (this.Field) {
+      if (this.OtherValue != null) {
         bw.WriteInt32(this.OtherValue.Value);
       }
     }
@@ -113,7 +113,7 @@ namespace foo.bar {
   public partial class ByteWrapper {
     public void Write(IBinaryWriter bw) {
       bw.WriteByte((byte) (this.Field ? 1 : 0));
-      if (this.Field) {
+      if (this.OtherValue != null) {
         bw.WriteInt32(this.OtherValue.Value);
       }
     }
@@ -165,7 +165,7 @@ namespace foo.bar {
   public partial class ByteWrapper {
     public void Write(IBinaryWriter bw) {
       this.Field.Write(bw);
-      if (this.Field.Bool) {
+      if (this.OtherValue != null) {
         bw.WriteInt32(this.OtherValue.Value);
       }
     }

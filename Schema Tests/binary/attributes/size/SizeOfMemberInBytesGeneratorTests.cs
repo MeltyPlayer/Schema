@@ -159,6 +159,7 @@ using schema.binary;
 namespace foo.bar {
   public partial class ParentImpl {
     public void Write(IBinaryWriter bw) {
+      this.Child.Parent = this;
       this.Child.Write(bw);
       bw.MarkStartOfMember(""Foo"");
       bw.WriteByte(this.Foo);

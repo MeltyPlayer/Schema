@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 
 namespace schema.binary.attributes {
@@ -12,7 +13,7 @@ namespace schema.binary.attributes {
     private readonly string otherMemberName_;
 
     public WPointerToOrNullAttribute(string otherMemberName,
-                                     int nullValue = 0) {
+                                     long nullValue = 0) {
       this.otherMemberName_ = otherMemberName;
       this.NullValue = nullValue;
     }
@@ -29,6 +30,6 @@ namespace schema.binary.attributes {
       private set;
     }
 
-    public int? NullValue { get; }
+    public long? NullValue { get; }
   }
 }

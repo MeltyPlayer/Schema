@@ -26,6 +26,6 @@ namespace schema.binary.attributes {
       private set;
     }
 
-    public int? NullValue => null;
+    public long? NullValue => null;
   }
 }

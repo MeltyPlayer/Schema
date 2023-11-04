@@ -71,11 +71,13 @@ namespace foo.bar {
   public partial class ConstLengthWrapper {
     public void Write(IBinaryWriter bw) {
       bw.WriteInt32s(this.Field);
-      bw.WriteInt32s(this.NullableField);
-      if (this.Toggle) {
+      if (this.NullableField != null) {
+        bw.WriteInt32s(this.NullableField);
+      }
+      if (this.IfBooleanArray != null) {
         bw.WriteInt32s(this.IfBooleanArray);
       }
-      if (this.Toggle) {
+      if (this.IfBooleanList != null) {
         for (var i = 0; i < this.IfBooleanList.Count; ++i) {
           bw.WriteInt32(this.IfBooleanList[i]);
         }

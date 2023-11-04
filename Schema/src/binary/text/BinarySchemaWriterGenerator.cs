@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,8 @@ using schema.binary.parser;
 using schema.util.asserts;
 using schema.util.symbols;
 using schema.util.text;
+
+using static schema.binary.BinarySchemaContainerParser;
 
 namespace schema.binary.text {
   public class BinarySchemaWriterGenerator {
@@ -37,6 +40,10 @@ namespace schema.binary.text {
 
         if (container.DependsOnSchemaUtilAsserts()) {
           dependencies.Add("schema.util.asserts");
+        }
+
+        if (container.DependsOnSystemThreadingTasks()) {
+          dependencies.Add("System.Threading.Tasks");
         }
 
         dependencies.Sort(StringComparer.Ordinal);
@@ -119,15 +126,15 @@ namespace schema.binary.text {
         return;
       }
 
+      var nullable = member.MemberType.TypeInfo.IsNullable;
       var ifBoolean = member.IfBoolean;
-      if (ifBoolean != null) {
-        if (ifBoolean.SourceType == IfBooleanSourceType.IMMEDIATE_VALUE) {
-          cbsb.WriteLine(
-                  $"{GetWritePrimitiveText_(SchemaPrimitiveType.BOOLEAN, ifBoolean.ImmediateBooleanType.AsNumberType(), $"this.{member.Name} != null")};")
-              .EnterBlock($"if (this.{member.Name} != null)");
-        } else {
-          cbsb.EnterBlock($"if (this.{ifBoolean.OtherMember.Name})");
-        }
+      if (ifBoolean?.SourceType == IfBooleanSourceType.IMMEDIATE_VALUE) {
+        cbsb.WriteLine(
+            $"{GetWritePrimitiveText_(SchemaPrimitiveType.BOOLEAN, ifBoolean.ImmediateBooleanType.AsNumberType(), $"this.{member.Name} != null")};");
+      }
+
+      if (nullable) {
+        cbsb.EnterBlock($"if (this.{member.Name} != null)");
       }
 
       var memberType = member.MemberType;
@@ -144,8 +151,11 @@ namespace schema.binary.text {
           BinarySchemaWriterGenerator.WriteString_(cbsb, member);
           break;
         }
-        case IContainerMemberType: {
-          BinarySchemaWriterGenerator.WriteContainer_(cbsb, member);
+        case IContainerMemberType containerMemberType: {
+          BinarySchemaWriterGenerator.WriteContainer_(
+              cbsb,
+              containerMemberType,
+              member);
           break;
         }
         case ISequenceMemberType: {
@@ -157,7 +167,7 @@ namespace schema.binary.text {
           throw new NotImplementedException();
       }
 
-      if (ifBoolean != null) {
+      if (nullable) {
         cbsb.ExitBlock();
       }
     }
@@ -306,7 +316,7 @@ namespace schema.binary.text {
                 var nullValue = pointerToAttribute.NullValue;
                 if (nullValue != null) {
                   accessText =
-                      $"(this.{accessChain.RawPath} == null ? Task.FromResult({nullValue.Value}) : {accessText})";
+                      $"(this.{accessChain.RawPath} == null ? Task.FromResult({nullValue.Value}L) : {accessText})";
                 }
               } else {
                 accessText = $"{WRITER}.GetAbsoluteLength()";
@@ -377,13 +387,19 @@ namespace schema.binary.text {
 
     private static void WriteContainer_(
         ICurlyBracketTextWriter cbsb,
+        IContainerMemberType containerMemberType,
         ISchemaValueMember member) {
+      var memberName = member.Name;
+      if (containerMemberType.IsChild) {
+        cbsb.WriteLine($"this.{memberName}.Parent = this;");
+      }
+
       HandleMemberEndiannessAndTracking_(
           cbsb,
           member,
           () => {
             // TODO: Do value types need to be handled differently?
-            cbsb.WriteLine($"this.{member.Name}.Write({WRITER});");
+            cbsb.WriteLine($"this.{memberName}.Write({WRITER});");
           });
     }
 
@@ -456,10 +472,14 @@ namespace schema.binary.text {
               return;
             }
 
-            if (elementType is IContainerMemberType) {
-              cbsb.EnterBlock(
-                      $"foreach (var e in this.{member.Name})")
-                  .WriteLine($"e.Write({WRITER});")
+            if (elementType is IContainerMemberType containerElementType) {
+              cbsb.EnterBlock($"foreach (var e in this.{member.Name})");
+
+              if (containerElementType.IsChild) {
+                cbsb.WriteLine("e.Parent = this;");
+              }
+
+              cbsb.WriteLine($"e.Write({WRITER});")
                   .ExitBlock();
               return;
             }

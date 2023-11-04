@@ -81,6 +81,7 @@ using schema.binary;
 namespace foo.bar {
   public partial class Parent {
     public void Write(IBinaryWriter bw) {
+      this.Child.Parent = this;
       this.Child.Write(bw);
     }
   }
@@ -173,6 +174,7 @@ namespace foo.bar {
     public void Write(IBinaryWriter bw) {
       bw.WriteUInt32(this.Length);
       foreach (var e in this.Child) {
+        e.Parent = this;
         e.Write(bw);
       }
     }

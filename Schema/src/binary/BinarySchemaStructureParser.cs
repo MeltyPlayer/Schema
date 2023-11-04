@@ -71,7 +71,7 @@ namespace schema.binary {
 
   public interface IOffset {
     ISchemaValueMember OffsetName { get; }
-    int? NullValue { get; }
+    long? NullValue { get; }
   }
 
   public interface IStringType : IMemberType {
@@ -639,7 +639,7 @@ namespace schema.binary {
 
     public class Offset : IOffset {
       public ISchemaValueMember OffsetName { get; set; }
-      public int? NullValue { get; set; }
+      public long? NullValue { get; set; }
     }
 
     public class StringType : IStringType {

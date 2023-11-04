@@ -13,9 +13,9 @@ namespace foo.bar {
   [BinarySchema]
   public partial class SizeWrapper : IBinaryConvertible {
     [WPointerToOrNull(nameof(Foo), 123)]
-    public uint? FooOffset { get; set; }
+    public uint FooOffset { get; set; }
 
-    public byte Foo;
+    public byte? Foo;
   }
 }",
                                      @"using System;
@@ -31,15 +31,18 @@ namespace foo.bar {
 }
 ",
                                      @"using System;
+using System.Threading.Tasks;
 using schema.binary;
 
 namespace foo.bar {
   public partial class SizeWrapper {
     public void Write(IBinaryWriter bw) {
-      bw.WriteUInt32Delayed((this.Foo == null ? Task.FromResult(123) : bw.GetPointerToMemberRelativeToScope(""Foo"")).ContinueWith(task => (uint) task.Result));
-      bw.MarkStartOfMember(""Foo"");
-      bw.WriteByte(this.Foo);
-      bw.MarkEndOfMember();
+      bw.WriteUInt32Delayed((this.Foo == null ? Task.FromResult(123L) : bw.GetPointerToMemberRelativeToScope(""Foo"")).ContinueWith(task => (uint) task.Result));
+      if (this.Foo != null) {
+        bw.MarkStartOfMember(""Foo"");
+        bw.WriteByte(this.Foo.Value);
+        bw.MarkEndOfMember();
+      }
     }
   }
 }
@@ -79,12 +82,13 @@ namespace foo.bar {
 }
 ",
                                      @"using System;
+using System.Threading.Tasks;
 using schema.binary;
 
 namespace foo.bar {
   public partial class SizeWrapper {
     public void Write(IBinaryWriter bw) {
-      bw.WriteUInt32Delayed((this.Foo.Bar == null ? Task.FromResult(0) : bw.GetPointerToMemberRelativeToScope(""Foo.Bar"")).ContinueWith(task => (uint) task.Result));
+      bw.WriteUInt32Delayed((this.Foo.Bar == null ? Task.FromResult(0L) : bw.GetPointerToMemberRelativeToScope(""Foo.Bar"")).ContinueWith(task => (uint) task.Result));
       bw.MarkStartOfMember(""Foo"");
       this.Foo.Write(bw);
       bw.MarkEndOfMember();
@@ -129,12 +133,13 @@ namespace foo.bar {
 }
 ",
                                             @"using System;
+using System.Threading.Tasks;
 using schema.binary;
 
 namespace foo.bar {
   public partial class SizeWrapper {
     public void Write(IBinaryWriter bw) {
-      bw.WriteUInt32Delayed((this.Parent.Foo == null ? Task.FromResult(0) : bw.GetPointerToMemberRelativeToScope(""Foo"")).ContinueWith(task => (uint) task.Result));
+      bw.WriteUInt32Delayed((this.Parent.Foo == null ? Task.FromResult(0L) : bw.GetPointerToMemberRelativeToScope(""Foo"")).ContinueWith(task => (uint) task.Result));
     }
   }
 }
@@ -159,10 +164,13 @@ using schema.binary;
 namespace foo.bar {
   public partial class ParentImpl {
     public void Write(IBinaryWriter bw) {
+      this.Child.Parent = this;
       this.Child.Write(bw);
-      bw.MarkStartOfMember(""Foo"");
-      bw.WriteByte(this.Foo.Value);
-      bw.MarkEndOfMember();
+      if (this.Foo != null) {
+        bw.MarkStartOfMember(""Foo"");
+        bw.WriteByte(this.Foo.Value);
+        bw.MarkEndOfMember();
+      }
     }
   }
 }

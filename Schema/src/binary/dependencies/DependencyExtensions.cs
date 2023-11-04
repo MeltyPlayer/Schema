@@ -42,6 +42,16 @@ namespace schema.binary.dependencies {
                          LengthOfSequenceMembers.Length: > 1
                      });
 
+
+    public static bool DependsOnSystemThreadingTasks(
+        this IBinarySchemaContainer container)
+      => container
+         .Members
+         .OfType<ISchemaValueMember>()
+         .Any(member => member.MemberType is IPrimitiveMemberType {
+             PointerToAttribute: { NullValue: { } }
+         });
+
     public static bool DependsOnCollectionsImports(
         this IBinarySchemaContainer container)
       => container

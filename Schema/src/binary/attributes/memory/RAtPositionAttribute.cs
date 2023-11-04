@@ -9,6 +9,6 @@ namespace schema.binary.attributes {
     }
 
     public string OffsetName { get; }
-    public int? NullValue => null;
+    public long? NullValue => null;
   }
 }
