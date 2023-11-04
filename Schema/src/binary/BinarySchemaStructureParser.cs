@@ -2,7 +2,6 @@
 using System.Linq;
 
 using Microsoft.CodeAnalysis;
-
 using Microsoft.CodeAnalysis.Diagnostics;
 
 using schema.binary.attributes;
@@ -59,7 +58,7 @@ namespace schema.binary {
     IMemberReference<string>[]? LengthOfStringMembers { get; }
     IMemberReference[]? LengthOfSequenceMembers { get; }
     IChain<IAccessChainNode>? AccessChainToSizeOf { get; }
-    IChain<IAccessChainNode>? AccessChainToPointer { get; }
+    IPointerToAttribute? PointerToAttribute { get; }
   }
 
   public interface IContainerMemberType : IMemberType {
@@ -72,6 +71,7 @@ namespace schema.binary {
 
   public interface IOffset {
     ISchemaValueMember OffsetName { get; }
+    int? NullValue { get; }
   }
 
   public interface IStringType : IMemberType {
@@ -270,10 +270,11 @@ namespace schema.binary {
                   primitiveMemberType.AccessChainToSizeOf);
             }
 
-            if (primitiveMemberType.AccessChainToPointer != null) {
+            var pointerToAttribute = primitiveMemberType.PointerToAttribute;
+            if (pointerToAttribute != null) {
               sizeOfMemberInBytesDependencyFixer.AddDependenciesForContainer(
                   containerByNamedTypeSymbol,
-                  primitiveMemberType.AccessChainToPointer);
+                  pointerToAttribute.AccessChainToOtherMember);
             }
           }
         }
@@ -369,11 +370,13 @@ namespace schema.binary {
 
       IOffset? offset = null;
       {
-        var offsetAttribute =
-            memberBetterSymbol.GetAttribute<RAtPositionAttribute>();
+        var atPositionAttribute =
+            (IAtPositionAttribute?) memberBetterSymbol
+                .GetAttribute<RAtPositionAttribute>() ??
+            memberBetterSymbol.GetAttribute<RAtPositionOrNullAttribute>();
 
-        if (offsetAttribute != null) {
-          var offsetName = offsetAttribute.OffsetName;
+        if (atPositionAttribute != null) {
+          var offsetName = atPositionAttribute.OffsetName;
           SymbolTypeUtil.GetMemberRelativeToAnother(
               memberBetterSymbol,
               containerTypeSymbol,
@@ -390,7 +393,8 @@ namespace schema.binary {
                   MemberType =
                       MemberReferenceUtil.WrapTypeInfoWithMemberType(
                           offsetTypeInfo),
-              }
+              },
+              NullValue = atPositionAttribute.NullValue,
           };
         }
       }
@@ -613,7 +617,7 @@ namespace schema.binary {
       public IMemberReference<string>[]? LengthOfStringMembers { get; set; }
       public IMemberReference[]? LengthOfSequenceMembers { get; set; }
       public IChain<IAccessChainNode>? AccessChainToSizeOf { get; set; }
-      public IChain<IAccessChainNode>? AccessChainToPointer { get; set; }
+      public IPointerToAttribute? PointerToAttribute { get; set; }
     }
 
     public class ContainerMemberType : IContainerMemberType {
@@ -635,6 +639,7 @@ namespace schema.binary {
 
     public class Offset : IOffset {
       public ISchemaValueMember OffsetName { get; set; }
+      public int? NullValue { get; set; }
     }
 
     public class StringType : IStringType {

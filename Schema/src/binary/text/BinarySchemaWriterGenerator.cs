@@ -231,7 +231,7 @@ namespace schema.binary.text {
             var isNotDelayed =
                 !primitiveMemberType.SizeOfStream
                 && primitiveMemberType.AccessChainToSizeOf == null
-                && primitiveMemberType.AccessChainToPointer == null;
+                && primitiveMemberType.PointerToAttribute == null;
             if (isNotDelayed) {
               var accessText = $"this.{member.Name}";
               if (member.MemberType.TypeInfo.IsNullable) {
@@ -261,11 +261,11 @@ namespace schema.binary.text {
                 if (lengthOfSequenceMembers.Length > 1) {
                   cbsb.WriteLine(
                       $"Asserts.AllEqual({string.Join(", ", lengthOfSequenceMembers.Select(
-                          member => {
-                            var lengthName =
-                                (member.MemberTypeInfo as ISequenceTypeInfo).LengthName;
-                            return $"{member.Name}.{lengthName}";
-                          }))});");
+                            member => {
+                              var lengthName =
+                                  (member.MemberTypeInfo as ISequenceTypeInfo).LengthName;
+                              return $"{member.Name}.{lengthName}";
+                            }))});");
                 }
               }
 
@@ -292,16 +292,24 @@ namespace schema.binary.text {
                     $".ContinueWith(task => ({castType}) task.Result)";
               }
 
+              var accessChainToSizeOf = primitiveMemberType.AccessChainToSizeOf;
+              var pointerToAttribute = primitiveMemberType.PointerToAttribute;
               string accessText;
-              var typeChain = primitiveMemberType.AccessChainToSizeOf ??
-                              primitiveMemberType.AccessChainToPointer;
-              if (typeChain != null) {
-                accessText = primitiveMemberType.AccessChainToSizeOf != null
-                    ? $"{WRITER}.GetSizeOfMemberRelativeToScope(\"{typeChain.Path}\")"
-                    : $"{WRITER}.GetPointerToMemberRelativeToScope(\"{typeChain.Path}\")";
-              } else {
+              if (accessChainToSizeOf != null) {
                 accessText =
-                    $"{WRITER}.GetAbsoluteLength()";
+                    $"{WRITER}.GetSizeOfMemberRelativeToScope(\"{accessChainToSizeOf.Path}\")";
+              } else if (pointerToAttribute != null) {
+                var accessChain = pointerToAttribute.AccessChainToOtherMember;
+                accessText =
+                    $"{WRITER}.GetPointerToMemberRelativeToScope(\"{accessChain.Path}\")";
+
+                var nullValue = pointerToAttribute.NullValue;
+                if (nullValue != null) {
+                  accessText =
+                      $"(this.{accessChain.RawPath} == null ? Task.FromResult({nullValue.Value}) : {accessText})";
+                }
+              } else {
+                accessText = $"{WRITER}.GetAbsoluteLength()";
               }
 
               cbsb.WriteLine(

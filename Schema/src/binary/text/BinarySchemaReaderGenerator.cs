@@ -134,7 +134,17 @@ namespace schema.binary.text {
 
       var offset = member.Offset;
       if (offset != null) {
-        cbsb.EnterBlock()
+        var nullValue = offset.NullValue;
+        var readBlockPrefix = "";
+        if (nullValue != null) {
+          cbsb.EnterBlock($"if (this.{offset.OffsetName.Name} == {nullValue})")
+              .WriteLine($"this.{member.Name} = null;")
+              .ExitBlock();
+
+          readBlockPrefix = "else";
+        }
+
+        cbsb.EnterBlock(readBlockPrefix)
             .WriteLine($"var tempLocation = {READER}.Position;")
             .WriteLine(
                 $"{READER}.Position = this.{offset.OffsetName.Name};");
@@ -153,7 +163,8 @@ namespace schema.binary.text {
           var booleanPrimitiveType = booleanNumberType.AsPrimitiveType();
           var booleanPrimitiveLabel =
               SchemaGeneratorUtil.GetPrimitiveLabel(booleanPrimitiveType);
-          cbsb.WriteLine($"var b = {READER}.Read{booleanPrimitiveLabel}() != 0;")
+          cbsb.WriteLine(
+                  $"var b = {READER}.Read{booleanPrimitiveLabel}() != 0;")
               .EnterBlock("if (b)");
         } else {
           cbsb.EnterBlock($"if (this.{ifBoolean.OtherMember.Name})");
@@ -402,7 +413,8 @@ namespace schema.binary.text {
               arrayType.ElementType is IPrimitiveMemberType
                   primitiveElementType &&
               SizeUtil.TryGetSizeOfType(arrayType.ElementType, out var size)) {
-            var remainingLengthAccessor = $"{READER}.Length - {READER}.Position";
+            var remainingLengthAccessor =
+                $"{READER}.Length - {READER}.Position";
             var readCountAccessor = size == 1
                 ? remainingLengthAccessor
                 : $"({remainingLengthAccessor}) / {size}";

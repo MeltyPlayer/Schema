@@ -136,10 +136,11 @@ namespace schema.binary {
                     primitiveMemberType.AccessChainToSizeOf);
               }
 
-              if (primitiveMemberType.AccessChainToPointer != null) {
+              var pointerToAttribute = primitiveMemberType.PointerToAttribute;
+              if (pointerToAttribute != null) {
                 sizeOfMemberInBytesDependencyFixer.AddDependenciesForContainer(
                     containerByNamedTypeSymbol,
-                    primitiveMemberType.AccessChainToPointer);
+                    pointerToAttribute.AccessChainToOtherMember);
               }
             }
           }

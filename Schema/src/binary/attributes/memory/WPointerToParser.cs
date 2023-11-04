@@ -7,7 +7,10 @@ namespace schema.binary.attributes {
     public void ParseIntoMemberType(IBetterSymbol memberBetterSymbol,
                                     ITypeInfo memberTypeInfo,
                                     IMemberType memberType) {
-      var pointerToAttribute = memberBetterSymbol.GetAttribute<WPointerToAttribute>();
+      var pointerToAttribute =
+          (IPointerToAttribute?) memberBetterSymbol
+              .GetAttribute<WPointerToAttribute>() ??
+          memberBetterSymbol.GetAttribute<WPointerToOrNullAttribute>();
       if (pointerToAttribute == null) {
         return;
       }
@@ -19,8 +22,7 @@ namespace schema.binary.attributes {
       if (memberTypeInfo is IIntegerTypeInfo &&
           memberType is BinarySchemaContainerParser.PrimitiveMemberType
               primitiveMemberType) {
-        primitiveMemberType.AccessChainToPointer =
-            pointerToAttribute.AccessChainToOtherMember;
+        primitiveMemberType.PointerToAttribute = pointerToAttribute;
       } else {
         memberBetterSymbol.ReportDiagnostic(Rules.NotSupported);
       }

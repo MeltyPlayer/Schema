@@ -21,6 +21,7 @@ namespace schema.binary {
 
     IReadOnlyList<T> RootToTarget { get; }
     string Path { get; }
+    string RawPath { get; }
   }
 
   public interface IAccessChainNode {
@@ -121,13 +122,15 @@ namespace schema.binary {
             out var rootTypeSymbol,
             out var rootTypeInfo);
 
-        accessChain = new AccessChain(new AccessChainNode {
-            ContainerSymbol = (containerSymbol as INamedTypeSymbol)!,
-            MemberSymbol = rootSymbol,
-            MemberTypeSymbol = rootTypeSymbol,
-            MemberTypeInfo = rootTypeInfo,
-            IsOrderValid = true,
-        });
+        accessChain = new AccessChain(
+            new AccessChainNode {
+                ContainerSymbol = (containerSymbol as INamedTypeSymbol)!,
+                MemberSymbol = rootSymbol,
+                MemberTypeSymbol = rootTypeSymbol,
+                MemberTypeInfo = rootTypeInfo,
+                IsOrderValid = true,
+            },
+            otherMemberPath);
 
         prevMemberName = thisMemberName;
       }
@@ -226,7 +229,10 @@ namespace schema.binary {
     private class AccessChain : IChain<IAccessChainNode> {
       private readonly List<IAccessChainNode> rootToTarget_ = new();
 
-      public AccessChain(IAccessChainNode root) => this.AddLinkInChain(root);
+      public AccessChain(IAccessChainNode root, string rawPath) {
+        this.AddLinkInChain(root);
+        this.RawPath = rawPath;
+      }
 
       public IAccessChainNode Root => this.RootToTarget.First();
       public IAccessChainNode Target => this.RootToTarget.Last();
@@ -236,6 +242,7 @@ namespace schema.binary {
         => this.rootToTarget_.Add(node);
 
       public string Path { get; set; }
+      public string RawPath { get; }
     }
 
     private class AccessChainNode : IAccessChainNode {

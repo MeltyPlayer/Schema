@@ -2,7 +2,7 @@
 
 
 namespace schema.binary.attributes {
-  internal class PointerToGeneratorTests {
+  internal class WPointerToGeneratorOrNullTests {
     [Test]
     public void TestPointerToInStructure() {
       BinarySchemaTestUtil.AssertGenerated(@"
@@ -12,8 +12,8 @@ using schema.binary.attributes;
 namespace foo.bar {
   [BinarySchema]
   public partial class SizeWrapper : IBinaryConvertible {
-    [WPointerTo(nameof(Foo)]
-    public uint FooSize { get; set; }
+    [WPointerToOrNull(nameof(Foo), 123)]
+    public uint? FooOffset { get; set; }
 
     public byte Foo;
   }
@@ -24,7 +24,7 @@ using schema.binary;
 namespace foo.bar {
   public partial class SizeWrapper {
     public void Read(IBinaryReader br) {
-      this.FooSize = br.ReadUInt32();
+      this.FooOffset = br.ReadUInt32();
       this.Foo = br.ReadByte();
     }
   }
@@ -36,7 +36,7 @@ using schema.binary;
 namespace foo.bar {
   public partial class SizeWrapper {
     public void Write(IBinaryWriter bw) {
-      bw.WriteUInt32Delayed(bw.GetPointerToMemberRelativeToScope(""Foo"").ContinueWith(task => (uint) task.Result));
+      bw.WriteUInt32Delayed((this.Foo == null ? Task.FromResult(123) : bw.GetPointerToMemberRelativeToScope(""Foo"")).ContinueWith(task => (uint) task.Result));
       bw.MarkStartOfMember(""Foo"");
       bw.WriteByte(this.Foo);
       bw.MarkEndOfMember();
@@ -55,15 +55,15 @@ using schema.binary.attributes;
 namespace foo.bar {
   [BinarySchema]
   public partial class SizeWrapper : IBinaryConvertible {
-    [WPointerTo(nameof(Foo.Bar)]
-    public uint FooBarSize { get; set; }
+    [WPointerToOrNull(nameof(Foo.Bar))]
+    public uint FooBarOffset { get; set; }
 
     public Child Foo;
   }
 
   [BinarySchema]
   public partial class Child : IBinaryConvertible {
-    public byte Bar;
+    public byte? Bar;
   }
 }",
                                      @"using System;
@@ -72,7 +72,7 @@ using schema.binary;
 namespace foo.bar {
   public partial class SizeWrapper {
     public void Read(IBinaryReader br) {
-      this.FooBarSize = br.ReadUInt32();
+      this.FooBarOffset = br.ReadUInt32();
       this.Foo.Read(br);
     }
   }
@@ -84,7 +84,7 @@ using schema.binary;
 namespace foo.bar {
   public partial class SizeWrapper {
     public void Write(IBinaryWriter bw) {
-      bw.WriteUInt32Delayed(bw.GetPointerToMemberRelativeToScope(""Foo.Bar"").ContinueWith(task => (uint) task.Result));
+      bw.WriteUInt32Delayed((this.Foo.Bar == null ? Task.FromResult(0) : bw.GetPointerToMemberRelativeToScope(""Foo.Bar"")).ContinueWith(task => (uint) task.Result));
       bw.MarkStartOfMember(""Foo"");
       this.Foo.Write(bw);
       bw.MarkEndOfMember();
@@ -105,15 +105,15 @@ namespace foo.bar {
   public partial class SizeWrapper : IChildOf<ParentImpl>, IBinaryConvertible {
     public ParentImpl Parent;
 
-    [WPointerTo(nameof(Parent.Foo)]
-    public uint FooSize { get; set; }
+    [WPointerToOrNull(nameof(Parent.Foo))]
+    public uint FooOffset { get; set; }
   }
 
   [BinarySchema]
   public partial class ParentImpl : IBinaryConvertible {
     public SizeWrapper Child;
 
-    public byte Foo;
+    public byte? Foo;
   }
 }",
 // Size Wrapper                                           
@@ -123,7 +123,7 @@ using schema.binary;
 namespace foo.bar {
   public partial class SizeWrapper {
     public void Read(IBinaryReader br) {
-      this.FooSize = br.ReadUInt32();
+      this.FooOffset = br.ReadUInt32();
     }
   }
 }
@@ -134,7 +134,7 @@ using schema.binary;
 namespace foo.bar {
   public partial class SizeWrapper {
     public void Write(IBinaryWriter bw) {
-      bw.WriteUInt32Delayed(bw.GetPointerToMemberRelativeToScope(""Foo"").ContinueWith(task => (uint) task.Result));
+      bw.WriteUInt32Delayed((this.Parent.Foo == null ? Task.FromResult(0) : bw.GetPointerToMemberRelativeToScope(""Foo"")).ContinueWith(task => (uint) task.Result));
     }
   }
 }
@@ -161,7 +161,7 @@ namespace foo.bar {
     public void Write(IBinaryWriter bw) {
       this.Child.Write(bw);
       bw.MarkStartOfMember(""Foo"");
-      bw.WriteByte(this.Foo);
+      bw.WriteByte(this.Foo.Value);
       bw.MarkEndOfMember();
     }
   }
