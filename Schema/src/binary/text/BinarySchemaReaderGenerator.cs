@@ -171,6 +171,7 @@ namespace schema.binary.text {
         }
 
         if (member.MemberType is not IPrimitiveMemberType &&
+            member.MemberType is not IContainerMemberType && 
             member.MemberType is not ISequenceMemberType {
                 SequenceTypeInfo.SequenceType: SequenceType
                     .MUTABLE_ARRAY
@@ -199,6 +200,7 @@ namespace schema.binary.text {
         }
         case IContainerMemberType containerMemberType: {
           BinarySchemaReaderGenerator.ReadContainer_(cbsb,
+            sourceSymbol,
             containerMemberType,
             member);
           break;
@@ -366,6 +368,7 @@ namespace schema.binary.text {
 
     private static void ReadContainer_(
         ICurlyBracketTextWriter cbsb,
+        ITypeV2 sourceSymbol,
         IContainerMemberType containerMemberType,
         ISchemaValueMember member) {
       // TODO: Do value types need to be handled differently?
@@ -378,14 +381,27 @@ namespace schema.binary.text {
           cbsb,
           member,
           () => {
-            if (!containerMemberType.TypeV2.IsStruct) {
-              cbsb.WriteLine($"this.{memberName}.Read({READER});");
+            var isNullable = containerMemberType.TypeInfo.IsNullable;
+            var isStruct = containerMemberType.TypeV2.IsStruct;
+
+            var qualifiedTypeName =
+                SymbolTypeUtil.GetQualifiedNameFromCurrentSymbol(
+                    sourceSymbol,
+                    containerMemberType.TypeV2);
+
+            if (isNullable) {
+              cbsb.WriteLine(
+                  $"this.{memberName} = {READER}.ReadNew<{qualifiedTypeName}>();");
             } else {
-              cbsb.EnterBlock()
-                  .WriteLine($"var value = this.{memberName};")
-                  .WriteLine($"value.Read({READER});")
-                  .WriteLine($"this.{memberName} = value;")
-                  .ExitBlock();
+              if (!isStruct) {
+                cbsb.WriteLine($"this.{memberName}.Read({READER});");
+              } else {
+                cbsb.EnterBlock()
+                    .WriteLine($"var value = this.{memberName};")
+                    .WriteLine($"value.Read({READER});")
+                    .WriteLine($"this.{memberName} = value;")
+                    .ExitBlock();
+              }
             }
           });
     }
@@ -412,7 +428,8 @@ namespace schema.binary.text {
           if (isArray &&
               arrayType.ElementType is IPrimitiveMemberType
                   primitiveElementType &&
-              SizeUtil.TryGetSizeOfType(arrayType.ElementType, out var size)) {
+              SizeUtil.TryGetSizeOfType(arrayType.ElementType,
+                                        out var size)) {
             var remainingLengthAccessor =
                 $"{READER}.Length - {READER}.Position";
             var readCountAccessor = size == 1
@@ -448,7 +465,8 @@ namespace schema.binary.text {
         var target = isArray ? "temp" : $"this.{member.Name}";
 
         if (isArray) {
-          cbsb.WriteLine($"var {target} = new List<{qualifiedElementName}>();");
+          cbsb.WriteLine(
+              $"var {target} = new List<{qualifiedElementName}>();");
         }
 
         {
@@ -494,7 +512,8 @@ namespace schema.binary.text {
             SequenceLengthSourceType.IMMEDIATE_VALUE => "c",
             SequenceLengthSourceType.OTHER_MEMBER =>
                 $"this.{arrayType.LengthMember!.Name}",
-            SequenceLengthSourceType.CONST_LENGTH => $"{arrayType.ConstLength}",
+            SequenceLengthSourceType.CONST_LENGTH =>
+                $"{arrayType.ConstLength}",
         };
 
         var castText = "";
@@ -516,7 +535,8 @@ namespace schema.binary.text {
         }
 
         var inPlace =
-            arrayType.SequenceTypeInfo.SequenceType == SequenceType.MUTABLE_LIST
+            arrayType.SequenceTypeInfo.SequenceType ==
+            SequenceType.MUTABLE_LIST
             || arrayType.SequenceTypeInfo is {
                 SequenceType: SequenceType.MUTABLE_SEQUENCE,
                 IsLengthConst: false

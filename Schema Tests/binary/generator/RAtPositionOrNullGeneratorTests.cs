@@ -4,7 +4,7 @@
 namespace schema.binary.text {
   internal class RAtPositionOrNullGeneratorTests {
     [Test]
-    public void TestOffset() {
+    public void TestOffsetOfPrimitive() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -48,6 +48,108 @@ namespace foo.bar {
       if (this.Field != null) {
         bw.WriteByte(this.Field.Value);
       }
+    }
+  }
+}
+");
+    }
+
+    [Test]
+    public void TestOffsetOfClass() {
+      BinarySchemaTestUtil.AssertGenerated(@"
+using schema.binary;
+using schema.binary.attributes;
+
+namespace foo.bar {
+  public class A : IBinaryConvertible { }
+
+  [BinarySchema]
+  public partial class OffsetWrapper : IBinaryConvertible {
+    public uint Offset { get; set; }
+
+    [RAtPositionOrNull(nameof(Offset), 123)]
+    public A? Field { get; set; }
+  }
+}",
+                                           @"using System;
+using schema.binary;
+
+namespace foo.bar {
+  public partial class OffsetWrapper {
+    public void Read(IBinaryReader br) {
+      this.Offset = br.ReadUInt32();
+      if (this.Offset == 123) {
+        this.Field = null;
+      }
+      else {
+        var tempLocation = br.Position;
+        br.Position = this.Offset;
+        this.Field = br.ReadNew<A>();
+        br.Position = tempLocation;
+      }
+    }
+  }
+}
+",
+                                           @"using System;
+using schema.binary;
+
+namespace foo.bar {
+  public partial class OffsetWrapper {
+    public void Write(IBinaryWriter bw) {
+      bw.WriteUInt32(this.Offset);
+      this.Field?.Write(bw);
+    }
+  }
+}
+");
+    }
+
+    [Test]
+    public void TestOffsetOfStruct() {
+      BinarySchemaTestUtil.AssertGenerated(@"
+using schema.binary;
+using schema.binary.attributes;
+
+namespace foo.bar {
+  public struct A : IBinaryConvertible { }
+
+  [BinarySchema]
+  public partial class OffsetWrapper : IBinaryConvertible {
+    public uint Offset { get; set; }
+
+    [RAtPositionOrNull(nameof(Offset), 123)]
+    public A? Field { get; set; }
+  }
+}",
+                                           @"using System;
+using schema.binary;
+
+namespace foo.bar {
+  public partial class OffsetWrapper {
+    public void Read(IBinaryReader br) {
+      this.Offset = br.ReadUInt32();
+      if (this.Offset == 123) {
+        this.Field = null;
+      }
+      else {
+        var tempLocation = br.Position;
+        br.Position = this.Offset;
+        this.Field = br.ReadNew<A>();
+        br.Position = tempLocation;
+      }
+    }
+  }
+}
+",
+                                           @"using System;
+using schema.binary;
+
+namespace foo.bar {
+  public partial class OffsetWrapper {
+    public void Write(IBinaryWriter bw) {
+      bw.WriteUInt32(this.Offset);
+      this.Field?.Write(bw);
     }
   }
 }

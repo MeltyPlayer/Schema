@@ -33,8 +33,7 @@ namespace foo.bar {
       {
         var b = br.ReadByte() != 0;
         if (b) {
-          this.ImmediateValue = new A();
-          this.ImmediateValue.Read(br);
+          this.ImmediateValue = br.ReadNew<A>();
         }
         else {
           this.ImmediateValue = null;
@@ -58,9 +57,7 @@ namespace foo.bar {
   public partial class ByteWrapper {
     public void Write(IBinaryWriter bw) {
       bw.WriteByte((byte) (this.ImmediateValue != null ? 1 : 0));
-      if (this.ImmediateValue != null) {
-        this.ImmediateValue.Write(bw);
-      }
+      this.ImmediateValue?.Write(bw);
       bw.WriteByte((byte) (this.Field ? 1 : 0));
       if (this.OtherValue != null) {
         bw.WriteInt32(this.OtherValue.Value);

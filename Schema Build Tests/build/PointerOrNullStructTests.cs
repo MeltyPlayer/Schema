@@ -9,13 +9,18 @@ using schema.binary.testing;
 
 
 namespace build {
-  internal partial class PointerToOrNullTests {
+  internal partial class PointerOrNullStructTests {
+    [BinarySchema]
+    public partial struct A : IBinaryConvertible {
+      public int Value { get; set; }
+    }
+
     [BinarySchema]
     public partial class ParentImpl : IBinaryConvertible {
       public Child Child { get; } = new();
 
       [RAtPositionOrNull(nameof(Child.FieldPointer), 123)]
-      public int? Field { get; set; }
+      public A? Field { get; set; }
     }
 
     [BinarySchema]
@@ -34,7 +39,7 @@ namespace build {
 
       var parent = br.ReadNew<ParentImpl>();
 
-      Assert.AreEqual(12, parent.Field.Value);
+      Assert.AreEqual(12, parent.Field.Value.Value);
     }
 
     [Test]
@@ -51,7 +56,7 @@ namespace build {
     [Test]
     public async Task TestWriteNonnull() {
       var parent = new ParentImpl();
-      parent.Field = 12;
+      parent.Field = new A { Value = 12 };
 
       var bw = new SchemaBinaryWriter();
       parent.Write(bw);

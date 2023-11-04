@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,8 +12,6 @@ using schema.binary.parser;
 using schema.util.asserts;
 using schema.util.symbols;
 using schema.util.text;
-
-using static schema.binary.BinarySchemaContainerParser;
 
 namespace schema.binary.text {
   public class BinarySchemaWriterGenerator {
@@ -126,14 +123,15 @@ namespace schema.binary.text {
         return;
       }
 
-      var nullable = member.MemberType.TypeInfo.IsNullable;
+      var shouldSkipWhenNull = member.MemberType.TypeInfo.IsNullable &&
+                               member.MemberType is not IContainerMemberType;
       var ifBoolean = member.IfBoolean;
       if (ifBoolean?.SourceType == IfBooleanSourceType.IMMEDIATE_VALUE) {
         cbsb.WriteLine(
             $"{GetWritePrimitiveText_(SchemaPrimitiveType.BOOLEAN, ifBoolean.ImmediateBooleanType.AsNumberType(), $"this.{member.Name} != null")};");
       }
 
-      if (nullable) {
+      if (shouldSkipWhenNull) {
         cbsb.EnterBlock($"if (this.{member.Name} != null)");
       }
 
@@ -167,7 +165,7 @@ namespace schema.binary.text {
           throw new NotImplementedException();
       }
 
-      if (nullable) {
+      if (shouldSkipWhenNull) {
         cbsb.ExitBlock();
       }
     }
@@ -398,8 +396,11 @@ namespace schema.binary.text {
           cbsb,
           member,
           () => {
-            // TODO: Do value types need to be handled differently?
-            cbsb.WriteLine($"this.{memberName}.Write({WRITER});");
+            if (containerMemberType.TypeInfo.IsNullable) {
+              cbsb.WriteLine($"this.{memberName}?.Write({WRITER});");
+            } else {
+              cbsb.WriteLine($"this.{memberName}.Write({WRITER});");
+            }
           });
     }
 
