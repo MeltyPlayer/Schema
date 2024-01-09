@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.io {
+namespace schema.util.data {
   public class UpDownStackTests {
     [Test]
     public void TestEmptyStack() {

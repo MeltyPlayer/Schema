@@ -226,7 +226,7 @@ namespace schema.binary {
         }
 
         bool isIgnored =
-            memberBetterSymbol.HasAttribute<IgnoreAttribute>() ||
+            memberBetterSymbol.HasAttribute<SkipAttribute>() ||
             (memberSymbol.Name == nameof(IChildOf<IBinaryConvertible>.Parent)
              && parentTypeV2 != null);
 

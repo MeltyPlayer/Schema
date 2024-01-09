@@ -8,7 +8,7 @@
   ///   </para>
   ///
   ///   <para>
-  ///     This can be used alongside [Ignore] to easily reference values from the parent class:
+  ///     This can be used alongside [Skip] to easily reference values from the parent class:
   ///   </para>
   ///   <code>
   ///     [BinarySchema]
@@ -27,7 +27,7 @@
   ///     public partial class ChildType : IBinaryConvertible, IChildOf&lt;ParentType&gt; {
   ///       public ParentType Parent { get; set; }
   ///
-  ///       [Ignore]
+  ///       [Skip]
   ///       private bool HasSomeField => Parent.ChildHasSomeField;
   /// 
   ///       [IfBoolean(nameof(HasSomeField))]

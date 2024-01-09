@@ -195,7 +195,7 @@ namespace schema.binary.attributes {
                   Accessibility.Private) == Accessibility.Private,
           IFieldSymbol fieldSymbol
               => fieldSymbol.DeclaredAccessibility == Accessibility.Private,
-      } || symbol.HasAttribute<IgnoreAttribute>();
+      } || symbol.HasAttribute<SkipAttribute>();
   }
 
 

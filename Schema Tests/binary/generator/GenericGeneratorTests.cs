@@ -126,7 +126,7 @@ using schema.binary.attributes;
 namespace foo.bar {
   [BinarySchema]
   public partial class GenericWrapper<T> : IBinaryConvertible {
-    [Ignore]
+    [Skip]
     public T[] Data { get; } = {};
   }
 }",
@@ -171,15 +171,15 @@ public class MagicSectionStub<T> : IMagicSection<T>, IBinaryConvertible {
 [BinarySchema]
 public partial class SwitchMagicStringUInt32SizedSection<T> : IMagicSection<T>
     where T : IBinaryConvertible {
-  [Ignore]
+  [Skip]
   private readonly int magicLength_;
 
-  [Ignore]
+  [Skip]
   private readonly Func<string, T> createTypeHandler_;
 
   private readonly MagicSectionStub<T> impl_ = new();
 
-  [Ignore]
+  [Skip]
   public T Data => this.impl_.Data;
 }",
                                            @"using System;

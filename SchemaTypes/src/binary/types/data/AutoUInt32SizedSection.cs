@@ -12,7 +12,7 @@ namespace schema.binary.types.data {
       where T : IBinaryConvertible, new() {
     private readonly PassThruUInt32SizedSection<T> impl_;
 
-    [Ignore]
+    [Skip]
     public T Data => this.impl_.Data;
 
     public AutoUInt32SizedSection() {

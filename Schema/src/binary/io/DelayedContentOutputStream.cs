@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using CommunityToolkit.HighPerformance;
 
 using schema.util.asserts;
+using schema.util.data;
 using schema.util.streams;
+
 
 namespace schema.binary.io {
   public interface IDelayedContentOutputStream :

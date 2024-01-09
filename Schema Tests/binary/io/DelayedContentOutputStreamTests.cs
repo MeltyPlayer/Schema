@@ -8,11 +8,11 @@ using NUnit.Framework;
 using System.Linq;
 using System.Text;
 
-using schema.util;
+using schema.binary.io;
 using schema.util.asserts;
 using schema.util.streams;
 
-namespace schema.binary.io {
+namespace schema.util.data {
   public class DelayedContentOutputStreamTests {
     [Test]
     public async Task TestEmptyStream() {

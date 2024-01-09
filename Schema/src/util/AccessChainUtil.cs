@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 
 using schema.binary.attributes;
-using schema.binary.io;
+using schema.util.data;
 using schema.binary.parser;
 using schema.util.asserts;
 using schema.util.diagnostics;
@@ -54,7 +54,7 @@ namespace schema.binary {
       if (assertOrder) {
         foreach (var node in typeChain.RootToTarget) {
           if (!node.IsOrderValid &&
-              SymbolTypeUtil.GetAttribute<IgnoreAttribute>(
+              SymbolTypeUtil.GetAttribute<SkipAttribute>(
                   diagnosticReporter,
                   node.MemberSymbol) == null) {
             diagnosticReporter.ReportDiagnostic(

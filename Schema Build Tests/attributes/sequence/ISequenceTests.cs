@@ -11,7 +11,6 @@ using schema.binary.attributes;
 using schema.util.enumerables;
 using schema.util.sequences;
 
-using IgnoreAttribute = schema.binary.attributes.IgnoreAttribute;
 
 namespace build {
   public partial class ISequenceTests {
@@ -105,16 +104,16 @@ namespace build {
 
       public T GetDefault() => new();
 
-      [Ignore]
+      [Skip]
       public int Count {
         get => this.impl_.Count;
         set => SequencesUtil.ResizeSequenceInPlace(this.impl_, value);
       }
 
-      [Ignore]
+      [Skip]
       public IReadOnlyList<T> Values => this.impl_;
 
-      [Ignore]
+      [Skip]
       public T this[int index] {
         get => this.impl_[index];
         set => this.impl_[index] = value;

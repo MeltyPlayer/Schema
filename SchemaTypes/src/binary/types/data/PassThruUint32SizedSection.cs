@@ -4,13 +4,13 @@ namespace schema.binary.types.data {
   [BinarySchema]
   public partial class PassThruUInt32SizedSection<T> : ISizedSection<T>
       where T : IBinaryConvertible {
-    [Ignore]
+    [Skip]
     private readonly int tweakSize_;
 
     [WSizeOfMemberInBytes(nameof(Data))]
     private uint size_;
 
-    [Ignore]
+    [Skip]
     public uint Size => this.size_;
 
     public T Data { get; }

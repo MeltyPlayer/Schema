@@ -12,7 +12,7 @@ using schema.binary.attributes;
 namespace foo.bar {
   [BinarySchema]
   public partial class IgnoreWrapper : IBinaryConvertible {
-    [Ignore]
+    [Skip]
     public byte Field { get; set; }
   }
 }",

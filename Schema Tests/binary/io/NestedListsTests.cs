@@ -7,7 +7,7 @@ using System.Text;
 using schema.util;
 using schema.util.asserts;
 
-namespace schema.binary.io {
+namespace schema.util.data {
   public class NestedListsTests {
     [Test]
     public void TestEmptyList() {

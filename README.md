@@ -127,10 +127,10 @@ public partial class ParentType : IBinaryConvertible {
 
 [BinarySchema]
 public partial class ChildType : IBinaryConvertible, IChildOf<ParentType> {
-  // This is automatically ignored while reading/writing.
+  // This is automatically skipped while reading/writing.
   public ParentType Parent { get; set; }
 
-  [Ignore]
+  [Skip]
   private bool HasSomeField => Parent.ChildHasSomeField;
 
   [IfBoolean(nameof(HasSomeField))]
@@ -138,16 +138,16 @@ public partial class ChildType : IBinaryConvertible, IChildOf<ParentType> {
 }
 ```
 
-#### Ignore
+#### Skip
 
-Designates that a field or property should be ignored while reading/writing.
+Designates that a field or property should be skipped while reading/writing.
 
-*Note: `IChildOf<TParent>.Parent` is automatically ignored.*
+*Note: `IChildOf<TParent>.Parent` is automatically skipped.*
 ```cs
-[Ignore]
+[Skip]
 public int ignoredField;
 
-[Ignore]
+[Skip]
 public int IgnoredProperty { get; set; }
 ```
 
@@ -158,7 +158,7 @@ This can be used to encapsulate logic within properties, such as in the followin
 [StringLengthSource(4)]
 public string Magic { get; set; }
 
-[Ignore]
+[Skip]
 public MagicType Type => this.Magic switch {
   "IMGE" => MagicType.IMAGE,
   "SOND" => MagicType.SOUND,
@@ -171,14 +171,14 @@ public MagicType Type => this.Magic switch {
 [NullTerminatedString]
 public string Magic { get; set; }
 
-[Ignore]
+[Skip]
 public ISection? Section => this.imageSection_ ?? this.soundSection_ ?? this.textSection_;
 
-[Ignore]
+[Skip]
 private bool IsImage_ => this.Magic == "IMAGE";
-[Ignore]
+[Skip]
 private bool IsSound_ => this.Magic == "SOUND";
-[Ignore]
+[Skip]
 private bool IsText_ => this.Magic == "TEXT";
 
 [IfBoolean(nameof(this.IsImage))]

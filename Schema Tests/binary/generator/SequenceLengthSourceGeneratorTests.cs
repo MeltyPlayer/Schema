@@ -19,7 +19,7 @@ namespace foo.bar {
     [SequenceLengthSource(3)]
     public int[]? NullableField { get; set; }
 
-    [Ignore]
+    [Skip]
     private bool Toggle { get; set; }
 
     [RIfBoolean(nameof(Toggle))]

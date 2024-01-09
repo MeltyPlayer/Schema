@@ -36,7 +36,7 @@ namespace foo.bar {
     [RSequenceLengthSource(""Count"")]
     public int[] Field { get; set; }
 
-    [Ignore]
+    [Skip]
     public int Count { get; set; }
   }
 }");
@@ -60,7 +60,7 @@ namespace foo.bar {
     [RSequenceLengthSource(""Count"")]
     public SequenceImpl<int> Field2 { get; set; }
 
-    [Ignore]
+    [Skip]
     public int Count { get; set; }
   }
 
@@ -87,7 +87,7 @@ namespace foo.bar {
     [RSequenceLengthSource(""Count"")]
     public SequenceImpl<int, int> Field2 { get; set; }
 
-    [Ignore]
+    [Skip]
     public int Count { get; set; }
   }
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 
-namespace schema.binary.io {
+namespace schema.util.data {
   public interface INestedList<T> : IEnumerable<T> {
     void Add(T value);
     INestedList<T> Enter();

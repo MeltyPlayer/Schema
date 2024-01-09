@@ -83,15 +83,15 @@ namespace build {
   [BinarySchema]
   public partial class SwitchMagicStringUInt32SizedSection<T> : IMagicSection<T>
       where T : IBinaryConvertible {
-    [Ignore]
+    [Skip]
     private readonly int magicLength_;
 
-    [Ignore]
+    [Skip]
     private readonly Func<string, T> createTypeHandler_;
 
     private readonly MagicSectionStub<T> impl_ = new();
 
-    [Ignore]
+    [Skip]
     public T Data => this.impl_.Data;
 
     public void Read(IBinaryReader br) { }

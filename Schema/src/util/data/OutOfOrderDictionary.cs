@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace schema.binary.io {
+namespace schema.util.data {
   public interface IOutOfOrderDictionary<in TKey, TValue>
       where TKey : notnull {
     Task<TValue> Get(TKey key);
