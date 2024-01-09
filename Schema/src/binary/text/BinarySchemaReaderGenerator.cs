@@ -126,7 +126,7 @@ namespace schema.binary.text {
         return;
       }
 
-      if (member.IsIgnored) {
+      if (member.IsSkipped) {
         return;
       }
 

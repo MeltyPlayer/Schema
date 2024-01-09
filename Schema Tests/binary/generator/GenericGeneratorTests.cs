@@ -118,7 +118,7 @@ namespace foo.bar {
     }
 
     [Test]
-    public void TestCanIgnoreInvalidGenerics() {
+    public void TestCanSkipInvalidGenerics() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -153,7 +153,7 @@ namespace foo.bar {
     }
 
     [Test]
-    public void TestIgnoresIgnoredFieldsThatFailedToParse() {
+    public void TestSkipsSkippedFieldsThatFailedToParse() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;

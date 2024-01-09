@@ -96,11 +96,11 @@ namespace schema.text.reader {
       return sb.ToString();
     }
 
-    public void IgnoreManyIfPresent(ReadOnlySpan<string> matches) {
+    public void SkipManyIfPresent(ReadOnlySpan<string> matches) {
       while (!this.Eof && this.Matches(out _, matches)) { }
     }
 
-    public void IgnoreOnceIfPresent(ReadOnlySpan<string> matches)
+    public void SkipOnceIfPresent(ReadOnlySpan<string> matches)
       => this.Matches(out _, matches);
   }
 }

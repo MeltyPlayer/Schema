@@ -165,7 +165,7 @@ namespace schema.binary.attributes {
         string otherMemberName) {
       var source = this.GetOtherMemberRelativeToContainer(otherMemberName);
 
-      if (!IsMemberWritePrivateOrIgnored_(source.MemberSymbol)) {
+      if (!this.IsMemberWritePrivateOrSkipped_(source.MemberSymbol)) {
         this.diagnosticReporter_.ReportDiagnostic(
             source.MemberSymbol,
             Rules.SourceMustBePrivate);
@@ -178,7 +178,7 @@ namespace schema.binary.attributes {
         string otherMemberName) {
       var source = this.GetOtherMemberRelativeToContainer<T>(otherMemberName);
 
-      if (!IsMemberWritePrivateOrIgnored_(source.MemberSymbol)) {
+      if (!this.IsMemberWritePrivateOrSkipped_(source.MemberSymbol)) {
         this.diagnosticReporter_.ReportDiagnostic(
             source.MemberSymbol,
             Rules.SourceMustBePrivate);
@@ -187,7 +187,7 @@ namespace schema.binary.attributes {
       return source;
     }
 
-    private bool IsMemberWritePrivateOrIgnored_(ISymbol symbol)
+    private bool IsMemberWritePrivateOrSkipped_(ISymbol symbol)
       => symbol switch {
           IPropertySymbol propertySymbol
               => (propertySymbol.SetMethod

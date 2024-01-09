@@ -13,8 +13,8 @@ namespace schema.text.reader {
     string ReadWhile(ReadOnlySpan<char> matches);
     string ReadWhile(ReadOnlySpan<string> matches);
 
-    void IgnoreOnceIfPresent(ReadOnlySpan<string> matches);
-    void IgnoreManyIfPresent(ReadOnlySpan<string> matches);
+    void SkipOnceIfPresent(ReadOnlySpan<string> matches);
+    void SkipManyIfPresent(ReadOnlySpan<string> matches);
 
     byte[] ReadBytes(ReadOnlySpan<string> separators,
                      ReadOnlySpan<string> terminators);

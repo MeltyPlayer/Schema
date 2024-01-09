@@ -25,7 +25,7 @@ namespace foo.bar {
     }
 
     [Test]
-    public void TestAllowsIgnoredOutOfOrder() {
+    public void TestAllowsSkippedOutOfOrder() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
 using schema.binary.attributes;

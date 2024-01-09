@@ -2,7 +2,6 @@
 using System.Linq;
 
 using schema.binary.attributes;
-using schema.util;
 using schema.util.asserts;
 using schema.util.types;
 

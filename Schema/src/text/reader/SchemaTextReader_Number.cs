@@ -98,9 +98,9 @@ namespace schema.text.reader {
       => this.ReadMatchingNonWhitespaceChars_(SchemaTextReader.floatMatches_);
 
     private string ReadMatchingNonWhitespaceChars_(ReadOnlySpan<char> matches) {
-      this.IgnoreManyIfPresent(TextReaderConstants.TERMINATORS);
+      this.SkipManyIfPresent(TextReaderConstants.TERMINATORS);
       var matching = this.ReadWhile(matches);
-      this.IgnoreManyIfPresent(TextReaderConstants.TERMINATORS);
+      this.SkipManyIfPresent(TextReaderConstants.TERMINATORS);
       return matching;
     }
   }

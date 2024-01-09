@@ -2,16 +2,16 @@
 
 
 namespace schema.binary.attributes {
-  internal class IgnoreGeneratorTests {
+  internal class SkipGeneratorTests {
     [Test]
-    public void TestIgnore() {
+    public void TestSkip() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
 namespace foo.bar {
   [BinarySchema]
-  public partial class IgnoreWrapper : IBinaryConvertible {
+  public partial class SkipWrapper : IBinaryConvertible {
     [Skip]
     public byte Field { get; set; }
   }
@@ -20,7 +20,7 @@ namespace foo.bar {
 using schema.binary;
 
 namespace foo.bar {
-  public partial class IgnoreWrapper {
+  public partial class SkipWrapper {
     public void Read(IBinaryReader br) {
     }
   }
@@ -30,7 +30,7 @@ namespace foo.bar {
 using schema.binary;
 
 namespace foo.bar {
-  public partial class IgnoreWrapper {
+  public partial class SkipWrapper {
     public void Write(IBinaryWriter bw) {
     }
   }

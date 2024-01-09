@@ -115,7 +115,7 @@ namespace schema.binary.text {
         ICurlyBracketTextWriter cbsb,
         ITypeSymbol sourceSymbol,
         ISchemaValueMember member) {
-      if (member.IsIgnored) {
+      if (member.IsSkipped) {
         return;
       }
 

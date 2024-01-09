@@ -145,10 +145,10 @@ Designates that a field or property should be skipped while reading/writing.
 *Note: `IChildOf<TParent>.Parent` is automatically skipped.*
 ```cs
 [Skip]
-public int ignoredField;
+public int skippedField;
 
 [Skip]
-public int IgnoredProperty { get; set; }
+public int SkippedProperty { get; set; }
 ```
 
 This can be used to encapsulate logic within properties, such as in the following examples:

@@ -64,8 +64,8 @@ namespace schema.text.reader {
             .ToArray();
 
     private string ReadHexChars_() {
-      this.IgnoreManyIfPresent(TextReaderConstants.WHITESPACE_STRINGS);
-      this.IgnoreOnceIfPresent(hexSpecifierMatches_);
+      this.SkipManyIfPresent(TextReaderConstants.WHITESPACE_STRINGS);
+      this.SkipOnceIfPresent(hexSpecifierMatches_);
       return this.ReadWhile(SchemaTextReader.hexMatches);
     }
   }

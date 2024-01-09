@@ -34,7 +34,7 @@ namespace schema.binary {
 
   public interface ISchemaValueMember : ISchemaMember {
     IMemberType MemberType { get; }
-    bool IsIgnored { get; }
+    bool IsSkipped { get; }
     AlignAttribute? Align { get; }
     IIfBooleanAttribute? IfBoolean { get; }
     IOffset? Offset { get; }
@@ -225,7 +225,7 @@ namespace schema.binary {
           }
         }
 
-        bool isIgnored =
+        bool isSkipped =
             memberBetterSymbol.HasAttribute<SkipAttribute>() ||
             (memberSymbol.Name == nameof(IChildOf<IBinaryConvertible>.Parent)
              && parentTypeV2 != null);
@@ -233,13 +233,13 @@ namespace schema.binary {
         // Skips parent field for child types
 
         var field =
-            !isIgnored
-                ? this.ParseNonIgnoredField_(
+            !isSkipped
+                ? this.ParseNonSkippedField_(
                     containerSymbol,
                     containerTypeV2,
                     memberBetterSymbol,
                     parsedMember)
-                : this.ParseIgnoredField_(parsedMember);
+                : this.ParseSkippedField_(parsedMember);
 
         if (field != null) {
           members.Add(field);
@@ -283,7 +283,7 @@ namespace schema.binary {
       return schemaContainer;
     }
 
-    private ISchemaValueMember? ParseNonIgnoredField_(
+    private ISchemaValueMember? ParseNonSkippedField_(
         INamedTypeSymbol containerTypeSymbol,
         ITypeV2 containerTypeV2,
         IBetterSymbol memberBetterSymbol,
@@ -549,7 +549,7 @@ namespace schema.binary {
       return new SchemaValueMember {
           Name = memberSymbol.Name,
           MemberType = memberType,
-          IsIgnored = false,
+          IsSkipped = false,
           Align = align,
           IfBoolean = ifBooleanAttribute,
           Offset = offset,
@@ -558,7 +558,7 @@ namespace schema.binary {
       };
     }
 
-    private ISchemaValueMember? ParseIgnoredField_(
+    private ISchemaValueMember? ParseSkippedField_(
         (TypeInfoParser.ParseStatus, ISymbol, ITypeSymbol, ITypeInfo)
             parsedMember
     ) {
@@ -572,7 +572,7 @@ namespace schema.binary {
           MemberReferenceUtil.WrapTypeInfoWithMemberType(memberTypeInfo);
 
       return new SchemaValueMember {
-          Name = memberSymbol.Name, MemberType = memberType, IsIgnored = true,
+          Name = memberSymbol.Name, MemberType = memberType, IsSkipped = true,
       };
     }
 
@@ -592,7 +592,7 @@ namespace schema.binary {
     public class SchemaValueMember : ISchemaValueMember {
       public string Name { get; set; }
       public IMemberType MemberType { get; set; }
-      public bool IsIgnored { get; set; }
+      public bool IsSkipped { get; set; }
       public AlignAttribute? Align { get; set; }
       public IIfBooleanAttribute? IfBoolean { get; set; }
       public IOffset Offset { get; set; }
