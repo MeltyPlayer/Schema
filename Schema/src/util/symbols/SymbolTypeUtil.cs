@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -16,7 +14,7 @@ using schema.util.types;
 
 
 namespace schema.util.symbols {
-  internal static class SymbolTypeUtil {
+  public static class SymbolTypeUtil {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsInSameNamespaceAs(this ISymbol symbol, Type other)
       => symbol.IsInNamespace(other.Namespace);
@@ -331,7 +329,7 @@ namespace schema.util.symbols {
                                        out memberTypeInfo);
     }
 
-    public static void GetMemberRelativeToAnother(
+    internal static void GetMemberRelativeToAnother(
         IDiagnosticReporter? diagnosticReporter,
         INamedTypeSymbol containerTypeSymbol,
         string otherMemberName,

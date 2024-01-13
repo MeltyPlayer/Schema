@@ -20,8 +20,7 @@ namespace schema.binary.text {
 
       var typeNamespace = typeSymbol.GetFullyQualifiedNamespace();
 
-      var declaringTypes =
-          SymbolTypeUtil.GetDeclaringTypesDownward(typeSymbol);
+      var declaringTypes = typeSymbol.GetDeclaringTypesDownward();
 
       var sb = new StringBuilder();
       using var cbsb = new CurlyBracketTextWriter(new StringWriter(sb));
@@ -54,10 +53,10 @@ namespace schema.binary.text {
       }
 
       foreach (var declaringType in declaringTypes) {
-        cbsb.EnterBlock(SymbolTypeUtil.GetQualifiersAndNameFor(declaringType));
+        cbsb.EnterBlock(declaringType.GetQualifiersAndNameFor());
       }
 
-      cbsb.EnterBlock(SymbolTypeUtil.GetQualifiersAndNameFor(typeSymbol));
+      cbsb.EnterBlock(typeSymbol.GetQualifiersAndNameFor());
 
       cbsb.EnterBlock($"public void Read(IBinaryReader {READER})");
       {
@@ -171,9 +170,9 @@ namespace schema.binary.text {
         }
 
         if (member.MemberType is not IPrimitiveMemberType &&
-            member.MemberType is not IContainerMemberType && 
+            member.MemberType is not IContainerMemberType &&
             member.MemberType is not ISequenceMemberType {
-                SequenceTypeInfo.SequenceType: SequenceType
+              SequenceTypeInfo.SequenceType: SequenceType
                     .MUTABLE_ARRAY
             }) {
           cbsb.WriteLine(
@@ -188,31 +187,31 @@ namespace schema.binary.text {
 
       switch (memberType) {
         case IPrimitiveMemberType: {
-          BinarySchemaReaderGenerator.ReadPrimitive_(
-              cbsb,
-              sourceSymbol,
-              member);
-          break;
-        }
+            BinarySchemaReaderGenerator.ReadPrimitive_(
+                cbsb,
+                sourceSymbol,
+                member);
+            break;
+          }
         case IStringType: {
-          BinarySchemaReaderGenerator.ReadString_(cbsb, member);
-          break;
-        }
+            BinarySchemaReaderGenerator.ReadString_(cbsb, member);
+            break;
+          }
         case IContainerMemberType containerMemberType: {
-          BinarySchemaReaderGenerator.ReadContainer_(cbsb,
-            sourceSymbol,
-            containerMemberType,
-            member);
-          break;
-        }
+            BinarySchemaReaderGenerator.ReadContainer_(cbsb,
+              sourceSymbol,
+              containerMemberType,
+              member);
+            break;
+          }
         case ISequenceMemberType: {
-          BinarySchemaReaderGenerator.ReadArray_(cbsb, sourceSymbol, member);
-          break;
-        }
+            BinarySchemaReaderGenerator.ReadArray_(cbsb, sourceSymbol, member);
+            break;
+          }
         default: {
-          // Anything that makes it down here probably isn't meant to be read.
-          throw new NotImplementedException();
-        }
+            // Anything that makes it down here probably isn't meant to be read.
+            throw new NotImplementedException();
+          }
       }
 
       if (ifBoolean != null) {
@@ -240,8 +239,8 @@ namespace schema.binary.text {
       }
 
       var valueName = align.Method switch {
-          AlignSourceType.CONST        => $"{align.ConstAlign}",
-          AlignSourceType.OTHER_MEMBER => $"{align.OtherMember.Name}"
+        AlignSourceType.CONST => $"{align.ConstAlign}",
+        AlignSourceType.OTHER_MEMBER => $"{align.OtherMember.Name}"
       };
       cbsb.WriteLine($"{READER}.Align({valueName});");
     }
@@ -301,10 +300,10 @@ namespace schema.binary.text {
             var encodingType = "";
             if (stringType.EncodingType != StringEncodingType.ASCII) {
               encodingType = stringType.EncodingType switch {
-                  StringEncodingType.UTF8 => "StringEncodingType.UTF8",
-                  StringEncodingType.UTF16 => "StringEncodingType.UTF16",
-                  StringEncodingType.UTF32 => "StringEncodingType.UTF32",
-                  _ => throw new ArgumentOutOfRangeException()
+                StringEncodingType.UTF8 => "StringEncodingType.UTF8",
+                StringEncodingType.UTF16 => "StringEncodingType.UTF16",
+                StringEncodingType.UTF32 => "StringEncodingType.UTF32",
+                _ => throw new ArgumentOutOfRangeException()
               };
             }
 
@@ -509,11 +508,11 @@ namespace schema.binary.text {
             SequenceLengthSourceType.IMMEDIATE_VALUE;
 
         var lengthName = arrayType.LengthSourceType switch {
-            SequenceLengthSourceType.IMMEDIATE_VALUE => "c",
-            SequenceLengthSourceType.OTHER_MEMBER =>
-                $"this.{arrayType.LengthMember!.Name}",
-            SequenceLengthSourceType.CONST_LENGTH =>
-                $"{arrayType.ConstLength}",
+          SequenceLengthSourceType.IMMEDIATE_VALUE => "c",
+          SequenceLengthSourceType.OTHER_MEMBER =>
+              $"this.{arrayType.LengthMember!.Name}",
+          SequenceLengthSourceType.CONST_LENGTH =>
+              $"{arrayType.ConstLength}",
         };
 
         var castText = "";
@@ -538,8 +537,8 @@ namespace schema.binary.text {
             arrayType.SequenceTypeInfo.SequenceType ==
             SequenceType.MUTABLE_LIST
             || arrayType.SequenceTypeInfo is {
-                SequenceType: SequenceType.MUTABLE_SEQUENCE,
-                IsLengthConst: false
+              SequenceType: SequenceType.MUTABLE_SEQUENCE,
+              IsLengthConst: false
             };
         if (inPlace) {
           cbsb.WriteLine(
