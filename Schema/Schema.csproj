@@ -14,7 +14,7 @@
     <Description>Library for converting classes to and from binary. Provides a C# Roslyn generator that automatically implements conversion logic for simple classes.</Description>
     <PackageId>schema</PackageId>
     <Title>schema</Title>
-    <Version>0.3.11</Version>
+    <Version>0.3.12</Version>
     <Authors>MeltyPlayer</Authors>
   </PropertyGroup>
 
