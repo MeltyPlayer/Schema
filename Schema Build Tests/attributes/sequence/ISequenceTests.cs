@@ -41,7 +41,7 @@ namespace build {
       var ew = new SchemaBinaryWriter(endianness);
 
       expectedSw.Write(ew);
-      ew.CompleteAndCopyToDelayed(ms).Wait();
+      ew.CompleteAndCopyTo(ms);
       Assert.AreEqual(4 + 9 * 4, ms.Position);
 
       ms.Position = 0;
@@ -84,7 +84,7 @@ namespace build {
       var ew = new SchemaBinaryWriter(endianness);
 
       expectedSw.Write(ew);
-      ew.CompleteAndCopyToDelayed(ms).Wait();
+      ew.CompleteAndCopyTo(ms);
       Assert.AreEqual(4 + 9 * 4, ms.Position);
 
       ms.Position = 0;

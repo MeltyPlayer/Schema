@@ -8,7 +8,7 @@ namespace schema.binary.testing {
     public static async Task<byte[]> GetEndianBinaryWriterBytes(
         SchemaBinaryWriter bw) {
       var outputStream = new MemoryStream();
-      await bw.CompleteAndCopyToDelayed(outputStream);
+      await bw.CompleteAndCopyToAsync(outputStream);
       return outputStream.ToArray();
     }
 

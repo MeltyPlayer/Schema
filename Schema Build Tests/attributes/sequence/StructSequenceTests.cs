@@ -53,7 +53,7 @@ namespace build {
 
       var ew = new SchemaBinaryWriter(endianness);
       expectedSw.Write(ew);
-      ew.CompleteAndCopyToDelayed(ms).Wait();
+      ew.CompleteAndCopyTo(ms);
 
       var er = new SchemaBinaryReader(ms, endianness);
       er.Position = 0;
@@ -77,7 +77,7 @@ namespace build {
 
       var ew = new SchemaBinaryWriter(endianness);
       expectedSw.Write(ew);
-      ew.CompleteAndCopyToDelayed(ms).Wait();
+      ew.CompleteAndCopyTo(ms);
 
       var er = new SchemaBinaryReader(ms, endianness);
       er.Position = 1;
@@ -114,7 +114,7 @@ namespace build {
 
       var ew = new SchemaBinaryWriter(endianness);
       expectedSw.Write(ew);
-      ew.CompleteAndCopyToDelayed(ms).Wait();
+      ew.CompleteAndCopyTo(ms);
 
       ms.Position = 0;
       var er = new SchemaBinaryReader(ms, endianness);

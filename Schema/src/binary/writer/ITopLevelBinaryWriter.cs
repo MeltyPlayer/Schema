@@ -7,8 +7,11 @@ using schema.util.streams;
 
 namespace schema.binary {
   public interface ITopLevelBinaryWriter : IBinaryWriter, IDisposable {
-    Task CompleteAndCopyToDelayed(Stream stream);
-    Task CompleteAndCopyToDelayed(ISizedWritableStream stream);
+    void CompleteAndCopyTo(Stream stream);
+    void CompleteAndCopyTo(ISizedWritableStream stream);
+
+    Task CompleteAndCopyToAsync(Stream stream);
+    Task CompleteAndCopyToAsync(ISizedWritableStream stream);
   }
 
   public interface IBinaryWriter

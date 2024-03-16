@@ -38,12 +38,21 @@ namespace schema.binary {
     public Task<long> GetLengthOfSubStream()
       => this.impl_.GetLengthOfSubStream();
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Task CompleteAndCopyToDelayed(Stream stream)
-      => this.CompleteAndCopyToDelayed(new WritableStream(stream));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Task CompleteAndCopyToDelayed(ISizedWritableStream stream)
+    public void CompleteAndCopyTo(Stream stream)
+      => this.CompleteAndCopyToAsync(stream).Wait();
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void CompleteAndCopyTo(ISizedWritableStream stream)
+      => this.CompleteAndCopyToAsync(stream).Wait();
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Task CompleteAndCopyToAsync(Stream stream)
+      => this.CompleteAndCopyToAsync(new WritableStream(stream));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Task CompleteAndCopyToAsync(ISizedWritableStream stream)
       => this.impl_.CompleteAndCopyToDelayed(stream);
 
     private void WriteBufferDelayed_(Task<byte[]> delayedBytes) {
