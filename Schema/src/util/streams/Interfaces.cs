@@ -12,7 +12,7 @@ namespace schema.util.streams {
   // The interfaces in this namespace are meant to narrow down to *just* the
   // expected functionality for a needed stream, and no more.
 
-  public interface ISizedStream {
+  public interface ISizedStream : IDisposable {
     long Position { get; }
     long Length { get; }
   }
@@ -21,28 +21,26 @@ namespace schema.util.streams {
     new long Position { get; set; }
   }
 
-  public interface IReadableStream {
+  public interface IReadableStream : IDisposable {
     byte ReadByte();
     int Read(Span<byte> dst);
   }
 
-  public interface IWritableStream {
+  public interface IWritableStream : IDisposable {
     void WriteByte(byte b);
     void Write(ReadOnlySpan<byte> src);
     void Write(IReadableStream readableStream);
   }
 
   public interface ISizedReadableStream : IReadableStream,
-                                          ISizedStream,
-                                          IDisposable { }
+                                          ISizedStream;
 
   public interface ISeekableReadableStream : ISizedReadableStream,
-                                             ISeekableStream { }
+                                             ISeekableStream;
 
   public interface ISizedWritableStream : IWritableStream,
-                                          ISizedStream,
-                                          IDisposable { }
+                                          ISizedStream;
 
   public interface ISeekableWritableStream : ISizedWritableStream,
-                                             ISeekableStream { }
+                                             ISeekableStream;
 }
