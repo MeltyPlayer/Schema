@@ -2,7 +2,6 @@
 using System.Linq;
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
 
 using schema.binary.attributes;
 using schema.binary.parser;
@@ -13,9 +12,7 @@ using schema.util.types;
 
 namespace schema.binary {
   public interface IBinarySchemaContainerParser {
-    IBinarySchemaContainer ParseContainer(
-        INamedTypeSymbol containerSymbol,
-        SyntaxNodeAnalysisContext? context = null);
+    IBinarySchemaContainer ParseContainer(INamedTypeSymbol containerSymbol);
   }
 
   public interface IBinarySchemaContainer {
@@ -157,8 +154,7 @@ namespace schema.binary {
 
   public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
     public IBinarySchemaContainer ParseContainer(
-        INamedTypeSymbol containerSymbol,
-        SyntaxNodeAnalysisContext? context = null) {
+        INamedTypeSymbol containerSymbol) {
       var containerBetterSymbol = BetterSymbol.FromType(containerSymbol);
       var containerTypeV2 =
           TypeV2.FromSymbol(containerBetterSymbol.TypedSymbol,
@@ -192,8 +188,9 @@ namespace schema.binary {
       var members = new List<ISchemaMember>();
       foreach (var parsedMember in parsedMembers) {
         var (parseStatus, memberSymbol, _, _) = parsedMember;
-        if (parseStatus == TypeInfoParser.ParseStatus
-                                         .NOT_A_FIELD_OR_PROPERTY_OR_METHOD) {
+        if (parseStatus ==
+            TypeInfoParser.ParseStatus
+                          .NOT_A_FIELD_OR_PROPERTY_OR_METHOD) {
           continue;
         }
 
@@ -206,7 +203,8 @@ namespace schema.binary {
               memberBetterSymbol.HasAttribute<ReadLogicAttribute>();
           if (hasRunAtReadTimeAttribute) {
             if (isMethod) {
-              if (methodSymbol.Parameters.Length == 1 && methodSymbol
+              if (methodSymbol.Parameters.Length == 1 &&
+                  methodSymbol
                       .Parameters[0]
                       .Type
                       .IsExactlyType(typeof(IBinaryReader))) {
@@ -227,8 +225,8 @@ namespace schema.binary {
 
         bool isSkipped =
             memberBetterSymbol.HasAttribute<SkipAttribute>() ||
-            (memberSymbol.Name == nameof(IChildOf<IBinaryConvertible>.Parent)
-             && parentTypeV2 != null);
+            (memberSymbol.Name == nameof(IChildOf<IBinaryConvertible>.Parent) &&
+             parentTypeV2 != null);
 
         // Skips parent field for child types
 
@@ -514,8 +512,8 @@ namespace schema.binary {
                                       StringEncodingType.ASCII;
             stringType.IsNullTerminated = isNullTerminatedString;
             stringType.LengthSourceType =
-                stringLengthSourceAttribute?.Method
-                ?? StringLengthSourceType.NULL_TERMINATED;
+                stringLengthSourceAttribute?.Method ??
+                StringLengthSourceType.NULL_TERMINATED;
             switch (stringType.LengthSourceType) {
               case StringLengthSourceType.CONST: {
                 stringType.ConstLength =

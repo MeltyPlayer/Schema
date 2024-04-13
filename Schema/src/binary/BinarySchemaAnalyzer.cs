@@ -98,7 +98,7 @@ namespace schema.binary {
           return;
         }
 
-        this.parser_.ParseContainer(symbol, context);
+        this.parser_.ParseContainer(symbol);
       } catch (Exception exception) {
         if (Debugger.IsAttached) {
           throw;

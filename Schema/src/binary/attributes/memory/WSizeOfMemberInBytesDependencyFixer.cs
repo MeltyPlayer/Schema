@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,17 +7,18 @@ using System.Linq;
 namespace schema.binary.attributes {
   public class WSizeOfMemberInBytesDependencyFixer {
     public void AddDependenciesForContainer(
-        IDictionary<INamedTypeSymbol, IBinarySchemaContainer>
+        IReadOnlyDictionary<INamedTypeSymbol, IBinarySchemaContainer>
             containerByNamedTypeSymbol,
         IChain<IAccessChainNode> accessChain) {
       foreach (var typeChainNode in accessChain.RootToTarget.Skip(1)) {
         if (containerByNamedTypeSymbol.TryGetValue(
-                typeChainNode.ContainerSymbol, out var container)) {
+                typeChainNode.ContainerSymbol,
+                out var container)) {
           var member = container.Members.Single(
-                               member =>
-                                   member.Name ==
-                                   typeChainNode.MemberSymbol.Name)
-                           as BinarySchemaContainerParser.SchemaValueMember;
+                  member =>
+                      member.Name ==
+                      typeChainNode.MemberSymbol.Name)
+              as BinarySchemaContainerParser.SchemaValueMember;
           member.TrackStartAndEnd = true;
         }
       }
