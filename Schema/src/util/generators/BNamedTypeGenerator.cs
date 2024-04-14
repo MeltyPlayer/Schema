@@ -4,10 +4,10 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 
 namespace schema.util.generators {
-  internal abstract class BNamedTypeGenerator : ISourceGenerator {
+  public abstract class BNamedTypeGenerator : ISourceGenerator {
     private readonly SourceFileDictionary sourceFileDictionary_ = new();
 
-    internal abstract bool Generate(
+    internal abstract void Generate(
         TypeDeclarationSyntax syntax,
         INamedTypeSymbol typeSymbol,
         ISourceFileDictionary sourceFileDictionary);

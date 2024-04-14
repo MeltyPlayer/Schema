@@ -59,7 +59,8 @@ namespace schema.util.symbols {
         }
       }
 
-      return fullNamespaceI == -1 && currentNamespaceI == -1 &&
+      return fullNamespaceI == -1 &&
+             currentNamespaceI == -1 &&
              currentNamespace.ContainingNamespace.Name.Length == 0;
     }
 
@@ -69,7 +70,7 @@ namespace schema.util.symbols {
       if (containingNamespaces.Length == 0) {
         return null;
       }
-      
+
       return string.Join(".", containingNamespaces);
     }
 
@@ -119,7 +120,8 @@ namespace schema.util.symbols {
              .GetAttributes()
              .Where(attributeData
                         => attributeData.AttributeClass?.IsExactlyType(
-                            attributeType) ?? false);
+                               attributeType) ??
+                           false);
     }
 
 
@@ -144,15 +146,16 @@ namespace schema.util.symbols {
         where TAttribute : Attribute
       => symbol.GetAttributeData<TAttribute>()
                .Select(attributeData => {
-                 var attribute = attributeData.Instantiate<TAttribute>(symbol);
-                 if (attribute is BMemberAttribute memberAttribute) {
-                   memberAttribute.Init(diagnosticReporter,
-                                        symbol.ContainingType,
-                                        symbol.Name);
-                 }
+                         var attribute
+                             = attributeData.Instantiate<TAttribute>(symbol);
+                         if (attribute is BMemberAttribute memberAttribute) {
+                           memberAttribute.Init(diagnosticReporter,
+                                                symbol.ContainingType,
+                                                symbol.Name);
+                         }
 
-                 return attribute;
-               });
+                         return attribute;
+                       });
 
     public static IEnumerable<ISymbol> GetInstanceMembers(
         this INamedTypeSymbol containerSymbol) {
@@ -202,17 +205,60 @@ namespace schema.util.symbols {
       return declaringTypes.ToArray();
     }
 
-    public static string GetQualifiersAndNameFor(
-        this INamedTypeSymbol namedTypeSymbol) {
-      var sb = new StringBuilder();
-      sb.Append(namedTypeSymbol.GetSymbolQualifiers());
-      sb.Append(" ");
-      sb.Append(namedTypeSymbol.Name);
+    public static string GetQualifiersAndNameAndGenericsFor(
+        this INamedTypeSymbol namedTypeSymbol,
+        string namePrefix = "")
+      => new StringBuilder()
+         .AppendQualifiersAndNameAndGenericsFor(namedTypeSymbol, namePrefix)
+         .ToString();
 
-      var typeParameters = namedTypeSymbol.TypeParameters;
-      if (typeParameters.Length > 0) {
+    public static StringBuilder AppendQualifiersAndNameAndGenericsFor(
+        this StringBuilder sb,
+        INamedTypeSymbol namedTypeSymbol,
+        string namePrefix = "")
+      => sb.AppendSymbolQualifiers(namedTypeSymbol)
+           .Append(" ")
+           .AppendNameAndGenericsFor(namedTypeSymbol, namePrefix);
+
+    public static string GetNameAndGenericsFor(
+        this INamedTypeSymbol namedTypeSymbol,
+        string namePrefix = "")
+      => new StringBuilder()
+         .AppendNameAndGenericsFor(namedTypeSymbol, namePrefix)
+         .ToString();
+
+    public static StringBuilder AppendNameAndGenericsFor(
+        this StringBuilder sb,
+        INamedTypeSymbol namedTypeSymbol,
+        string namePrefix = "") {
+      sb.Append(namePrefix);
+      sb.Append(namedTypeSymbol.Name);
+      sb.AppendGenericsFor(namedTypeSymbol);
+      return sb;
+    }
+
+    public static string GetGenerics(this INamedTypeSymbol namedTypeSymbol)
+      => new StringBuilder()
+         .AppendGenericsFor(namedTypeSymbol)
+         .ToString();
+
+    public static StringBuilder AppendGenericsFor(
+        this StringBuilder sb,
+        INamedTypeSymbol namedTypeSymbol)
+      => sb.AppendGenerics(namedTypeSymbol.TypeParameters);
+
+    public static string GetGenerics(
+        this IReadOnlyList<ITypeParameterSymbol> typeParameters)
+      => new StringBuilder()
+         .AppendGenerics(typeParameters)
+         .ToString();
+
+    public static StringBuilder AppendGenerics(
+        this StringBuilder sb,
+        IReadOnlyList<ITypeParameterSymbol> typeParameters) {
+      if (typeParameters.Count > 0) {
         sb.Append("<");
-        for (var i = 0; i < typeParameters.Length; ++i) {
+        for (var i = 0; i < typeParameters.Count; ++i) {
           if (i > 0) {
             sb.Append(", ");
           }
@@ -224,22 +270,23 @@ namespace schema.util.symbols {
         sb.Append(">");
       }
 
-      return sb.ToString();
+      return sb;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string GetSymbolQualifiers(this INamedTypeSymbol typeSymbol)
-      => (typeSymbol.IsStatic ? "static " : "") +
-         SymbolTypeUtil.AccessibilityToModifier(
-             typeSymbol.DeclaredAccessibility) +
-         " " +
-         (typeSymbol.IsAbstract ? "abstract " : "") +
-         "partial " +
-         (typeSymbol.TypeKind == TypeKind.Class ? "class" : "struct");
+    public static StringBuilder AppendSymbolQualifiers(
+        this StringBuilder sb,
+        INamedTypeSymbol typeSymbol)
+      => sb.Append(typeSymbol.IsStatic ? "static " : "")
+           .Append(SymbolTypeUtil.AccessibilityToModifier(
+                       typeSymbol.DeclaredAccessibility))
+           .Append(" ")
+           .Append(typeSymbol.IsAbstract ? "abstract " : "")
+           .Append("partial ")
+           .Append(typeSymbol.TypeKind == TypeKind.Class ? "class" : "struct");
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string AccessibilityToModifier(
-        Accessibility accessibility)
+    public static string AccessibilityToModifier(Accessibility accessibility)
       => accessibility switch {
           Accessibility.Private   => "private",
           Accessibility.Protected => "protected",

@@ -53,10 +53,10 @@ namespace schema.binary.text {
       }
 
       foreach (var declaringType in declaringTypes) {
-        cbsb.EnterBlock(declaringType.GetQualifiersAndNameFor());
+        cbsb.EnterBlock(declaringType.GetQualifiersAndNameAndGenericsFor());
       }
 
-      cbsb.EnterBlock(typeSymbol.GetQualifiersAndNameFor());
+      cbsb.EnterBlock(typeSymbol.GetQualifiersAndNameAndGenericsFor());
 
       cbsb.EnterBlock($"public void Read(IBinaryReader {READER})");
       {
