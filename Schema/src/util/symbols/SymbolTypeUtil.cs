@@ -324,6 +324,10 @@ namespace schema.util.symbols {
         return "string";
       }
 
+      if (referencedSymbol.IsGenericTypeParameter(out _)) {
+        return referencedSymbol.Name;
+      }
+
       var currentNamespace = sourceSymbol.NamespaceParts.ToArray();
       var referencedNamespace = referencedSymbol.NamespaceParts.ToArray();
 

@@ -9,10 +9,12 @@ namespace schema.util.text {
     public ICurlyBracketTextWriter ExitBlock();
   }
 
-  public sealed class CurlyBracketTextWriter : ICurlyBracketTextWriter,
-                                               IDisposable {
+  public sealed class CurlyBracketTextWriter
+      : ICurlyBracketTextWriter,
+        IDisposable {
     private readonly TextWriter impl_;
     private int indentLevel_ = 0;
+    private bool hasIndentedOnCurrentLine_ = false;
 
     public CurlyBracketTextWriter(TextWriter impl) {
       this.impl_ = impl;
@@ -34,9 +36,7 @@ namespace schema.util.text {
         prefix = $"{prefix} ";
       }
 
-      this.PrintIndent_();
-      this.impl_.WriteLine($"{prefix}{{");
-      ++this.indentLevel_;
+      this.WriteLine($"{prefix}{{");
       return this;
     }
 
@@ -44,15 +44,29 @@ namespace schema.util.text {
       var lines = text.Split('\n');
       for (var i = 0; i < lines.Length; ++i) {
         var line = lines[i];
+        var isLastLine = !(i < lines.Length - 1);
+
+        if (isLastLine && line.Length == 0) {
+          break;
+        }
+
         foreach (var c in line) {
           if (c == '}') {
             --this.indentLevel_;
+
+            if (this.indentLevel_ < 0) {
+              throw new Exception("Exited an extra block!");
+            }
           }
         }
 
-        if (i < lines.Length - 1) {
-          this.PrintIndent_();
+        if (!isLastLine) {
+          this.TryToPrintIndent_();
           this.impl_.WriteLine(line);
+          this.hasIndentedOnCurrentLine_ = false;
+        } else {
+          this.TryToPrintIndent_();
+          this.impl_.Write(line);
         }
 
         foreach (var c in line) {
@@ -66,20 +80,18 @@ namespace schema.util.text {
     }
 
     public ICurlyBracketTextWriter ExitBlock() {
-      --this.indentLevel_;
-      this.PrintIndent_();
-      this.impl_.WriteLine("}");
-
-      if (this.indentLevel_ < 0) {
-        throw new Exception("Exited an extra block!");
-      }
-
+      this.WriteLine("}");
       return this;
     }
 
     public ICurlyBracketTextWriter WriteLine(string text) => Write(text + '\n');
 
-    private void PrintIndent_() {
+    private void TryToPrintIndent_() {
+      if (this.hasIndentedOnCurrentLine_) {
+        return;
+      }
+
+      this.hasIndentedOnCurrentLine_ = true;
       for (var i = 0; i < this.indentLevel_; ++i) {
         this.impl_.Write("  ");
       }

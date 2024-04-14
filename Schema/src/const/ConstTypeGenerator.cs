@@ -12,19 +12,34 @@ using schema.util.text;
 using schema.util.types;
 
 namespace schema.@const {
+  [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property)]
   public class ConstAttribute : Attribute;
 
+  [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
   public class GenerateConstAttribute : Attribute;
 
   public class ConstTypeGenerator : BNamedTypeGenerator {
+    public const string PREFIX = "IConst";
+
     internal override void Generate(
         TypeDeclarationSyntax syntax,
         INamedTypeSymbol typeSymbol,
         ISourceFileDictionary sourceFileDictionary) {
       var typeV2 = TypeV2.FromSymbol(typeSymbol);
+      if (this.Generate(syntax, typeSymbol, out var source)) {
+        sourceFileDictionary.Add($"{typeV2.FullyQualifiedName}_const.g",
+                                 source);
+      }
+    }
+
+    public bool Generate(TypeDeclarationSyntax syntax,
+                           INamedTypeSymbol typeSymbol,
+                           out string source) {
+      var typeV2 = TypeV2.FromSymbol(typeSymbol);
 
       if (!typeV2.HasAttribute<GenerateConstAttribute>()) {
-        return;
+        source = default;
+        return false;
       }
 
       var typeNamespace = typeSymbol.GetFullyQualifiedNamespace();
@@ -45,13 +60,17 @@ namespace schema.@const {
 
       // Interface
       {
-        cbsb.EnterBlock(typeSymbol.GetQualifiersAndNameAndGenericsFor("I"));
+        cbsb.EnterBlock(typeSymbol.GetQualifiersAndNameAndGenericsFor(PREFIX));
 
         foreach (var parsedMember in new TypeInfoParser().ParseMembers(
                      typeSymbol)) {
-          var (parseStatus, memberSymbol, memberTypeSymbol, _) = parsedMember;
+          var (parseStatus, memberSymbol, memberTypeSymbol, memberTypeInfo) = parsedMember;
           if (parseStatus ==
               TypeInfoParser.ParseStatus.NOT_A_FIELD_OR_PROPERTY_OR_METHOD) {
+            continue;
+          }
+
+          if (memberSymbol.DeclaredAccessibility is not (Accessibility.Public or Accessibility.Internal)) {
             continue;
           }
 
@@ -65,6 +84,12 @@ namespace schema.@const {
 
           if (!memberSymbol.HasAttribute<ConstAttribute>()) {
             continue;
+          }
+
+          {
+            if (memberSymbol is IMethodSymbol methodSymbol) {
+              memberTypeSymbol = methodSymbol.ReturnType;
+            }
           }
 
           cbsb.Write(
@@ -96,7 +121,7 @@ namespace schema.@const {
                 cbsb.Write(parameterSymbol.Name);
               }
 
-              cbsb.WriteLine(")");
+              cbsb.WriteLine(");");
               break;
             }
             case IPropertySymbol: {
@@ -108,13 +133,14 @@ namespace schema.@const {
 
         cbsb.ExitBlock();
       }
+      cbsb.WriteLine("");
 
       // Class
       {
         cbsb.EnterBlock(
             typeSymbol.GetQualifiersAndNameAndGenericsFor() +
-            ": " +
-            typeSymbol.GetNameAndGenericsFor("I"));
+            " : " +
+            typeSymbol.GetNameAndGenericsFor(PREFIX));
 
         cbsb.ExitBlock();
       }
@@ -129,8 +155,8 @@ namespace schema.@const {
         cbsb.ExitBlock();
       }
 
-      sourceFileDictionary.Add($"{typeV2.FullyQualifiedName}_const.g",
-                               sb.ToString());
+      source = sb.ToString();
+      return true;
     }
   }
 }
