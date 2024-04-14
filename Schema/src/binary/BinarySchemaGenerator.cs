@@ -16,7 +16,7 @@ namespace schema.binary {
   [Generator(LanguageNames.CSharp)]
   [DiagnosticAnalyzer(LanguageNames.CSharp)]
   internal class BinarySchemaGenerator
-      : BStructureGenerator<IBinarySchemaContainer> {
+      : BNamedTypeSecondaryGenerator<IBinarySchemaContainer> {
     private readonly BinarySchemaContainerParser parser_ = new();
 
     private readonly BinarySchemaReaderGenerator readerImpl_ = new();

@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-using schema.binary;
 using schema.util.data;
-using schema.util.diagnostics;
 
 
 namespace schema.util.generators {
-  internal abstract class BStructureGenerator<TSecondary> : ISourceGenerator {
+  internal abstract class BNamedTypeSecondaryGenerator<TSecondary> : ISourceGenerator {
     private readonly Queue<(INamedTypeSymbol, TypeDeclarationSyntax)>
         symbolSyntaxQueue_ = new();
 
@@ -34,9 +31,9 @@ namespace schema.util.generators {
       => context.RegisterForSyntaxNotifications(() => new CustomReceiver(this));
 
     private class CustomReceiver : ISyntaxContextReceiver {
-      private readonly BStructureGenerator<TSecondary> g_;
+      private readonly BNamedTypeSecondaryGenerator<TSecondary> g_;
 
-      public CustomReceiver(BStructureGenerator<TSecondary> g) {
+      public CustomReceiver(BNamedTypeSecondaryGenerator<TSecondary> g) {
         this.g_ = g;
       }
 
@@ -77,7 +74,6 @@ namespace schema.util.generators {
       this.PreprocessSecondaries(secondaries);
 
       foreach (var kvp in secondaries) {
-        var namedTypeSymbol = kvp.Key;
         var secondary = kvp.Value;
         this.Generate(secondary, this.sourceFileDictionary_);
       }

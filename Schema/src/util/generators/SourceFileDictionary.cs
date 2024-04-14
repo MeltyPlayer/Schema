@@ -12,6 +12,7 @@ namespace schema.util.generators {
 
   public class SourceFileDictionary : ISourceFileDictionary {
     private readonly HashSet<string> fileNames_ = new();
+
     private readonly ConcurrentDictionary<string, string> sourceByFileName_
         = new();
 
