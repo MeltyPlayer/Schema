@@ -208,40 +208,34 @@ namespace schema.util.symbols {
 
     public static string GetQualifiersAndNameAndGenericsFor(
         this INamedTypeSymbol namedTypeSymbol,
-        string namePrefix = "")
+        string? replacementName = null)
       => new StringBuilder()
-         .AppendQualifiersAndNameAndGenericsFor(namedTypeSymbol, namePrefix)
+         .AppendQualifiersAndNameAndGenericsFor(
+             namedTypeSymbol,
+             replacementName)
          .ToString();
 
     public static StringBuilder AppendQualifiersAndNameAndGenericsFor(
         this StringBuilder sb,
         INamedTypeSymbol namedTypeSymbol,
-        string namePrefix = "")
+        string? replacementName = null)
       => sb.AppendSymbolQualifiers(namedTypeSymbol)
            .Append(" ")
-           .AppendNameAndGenericsFor(namedTypeSymbol, namePrefix);
+           .AppendNameAndGenericsFor(namedTypeSymbol, replacementName);
 
     public static string GetNameAndGenericsFor(
         this INamedTypeSymbol namedTypeSymbol,
-        string namePrefix = "")
+        string? replacementName = null)
       => new StringBuilder()
-         .AppendNameAndGenericsFor(namedTypeSymbol, namePrefix)
+         .AppendNameAndGenericsFor(namedTypeSymbol, replacementName)
          .ToString();
 
     public static StringBuilder AppendNameAndGenericsFor(
         this StringBuilder sb,
         INamedTypeSymbol namedTypeSymbol,
-        string namePrefix = "") {
-      if (namePrefix != "") {
-        sb.Append(namePrefix);
-        sb.Append(namedTypeSymbol.Name);
-      } else {
-        sb.Append(namedTypeSymbol.Name.EscapeKeyword());
-      }
-
-      sb.AppendGenericsFor(namedTypeSymbol);
-      return sb;
-    }
+        string? replacementName = null)
+      => sb.Append(replacementName ?? namedTypeSymbol.Name.EscapeKeyword())
+           .AppendGenericsFor(namedTypeSymbol);
 
     public static string GetGenerics(this INamedTypeSymbol namedTypeSymbol)
       => new StringBuilder()
@@ -292,8 +286,10 @@ namespace schema.util.symbols {
                        : "")
            .Append("partial ")
            .Append(typeSymbol.TypeKind switch {
-               TypeKind.Class     => "class",
-               TypeKind.Struct    => "struct",
+               TypeKind.Class => typeSymbol.IsRecord ? "record" : "class",
+               TypeKind.Struct => typeSymbol.IsRecord
+                   ? "record struct"
+                   : "struct",
                TypeKind.Interface => "interface"
            });
 

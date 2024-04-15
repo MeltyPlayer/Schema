@@ -58,11 +58,25 @@ namespace schema.@const {
         cbsb.EnterBlock(declaringType.GetQualifiersAndNameAndGenericsFor());
       }
 
+      var baseName = typeSymbol.Name;
+      if (baseName.Length >= 2) {
+        if (baseName[1] is < 'a' or > 'z') {
+          var firstChar = baseName[0];
+          if ((firstChar == 'I' && typeV2.IsInterface) ||
+              (firstChar == 'B' &&
+               typeSymbol is { IsAbstract: true, TypeKind: TypeKind.Class })) {
+            baseName = baseName.Substring(1);
+          }
+        }
+      }
+
+      var interfaceName = $"{PREFIX}{baseName}";
+
       // Class
       {
         cbsb.WriteLine(typeSymbol.GetQualifiersAndNameAndGenericsFor() +
                        " : " +
-                       typeSymbol.GetNameAndGenericsFor(PREFIX) +
+                       typeSymbol.GetNameAndGenericsFor(interfaceName) +
                        ";");
       }
       cbsb.WriteLine("");
@@ -74,7 +88,7 @@ namespace schema.@const {
                 typeSymbol.DeclaredAccessibility));
         cbsb.Write(" interface ");
         cbsb.EnterBlock(
-            typeSymbol.GetNameAndGenericsFor(PREFIX) +
+            typeSymbol.GetNameAndGenericsFor(interfaceName) +
             typeSymbol.TypeParameters.GetTypeConstraints(typeV2));
 
         foreach (var parsedMember in new TypeInfoParser().ParseMembers(

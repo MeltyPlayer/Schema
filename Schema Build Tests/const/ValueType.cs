@@ -8,7 +8,7 @@ namespace foo {
   }
 
   [GenerateConst]
-  public partial interface FooBar {
+  public partial interface IFooBar {
     public string Value { get; set; }
   }
 }

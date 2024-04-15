@@ -38,30 +38,34 @@ namespace schema.@const {
     }
 
     [Test]
-    // Unsupported
-    [TestCase("class")]
-    [TestCase("interface")]
-    [TestCase("struct")]
-    public void TestContainers(string containerType) {
+    [TestCase("abstract ", "class", "B")]
+    [TestCase("", "class")]
+    [TestCase("", "interface", "I")]
+    [TestCase("", "record")]
+    [TestCase("", "record struct")]
+    [TestCase("", "struct")]
+    public void TestContainers(string containerPrefix,
+                               string containerSuffix,
+                               string namePrefix = "") {
       ConstGeneratorTestUtil.AssertGenerated(
           $$"""
             using schema.@const;
 
             namespace foo.bar {
               [GenerateConst]
-              public partial {{containerType}} Container {
+              public {{containerPrefix}}partial {{containerSuffix}} {{namePrefix}}Container {
               }
             }
             """,
           $$"""
-          namespace foo.bar {
-            public partial {{containerType}} Container : IConstContainer;
-            
-            public interface IConstContainer {
+            namespace foo.bar {
+              public {{containerPrefix}}partial {{containerSuffix}} {{namePrefix}}Container : IConstContainer;
+              
+              public interface IConstContainer {
+              }
             }
-          }
 
-          """);
+            """);
     }
 
     [Test]
