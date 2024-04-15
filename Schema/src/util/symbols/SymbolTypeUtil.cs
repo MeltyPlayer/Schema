@@ -206,54 +206,55 @@ namespace schema.util.symbols {
       return declaringTypes.ToArray();
     }
 
-    public static string GetQualifiersAndNameAndGenericsFor(
+    public static string GetQualifiersAndNameAndGenericParametersFor(
         this INamedTypeSymbol namedTypeSymbol,
         string? replacementName = null)
       => new StringBuilder()
-         .AppendQualifiersAndNameAndGenericsFor(
+         .AppendQualifiersAndNameAndGenericParametersFor(
              namedTypeSymbol,
              replacementName)
          .ToString();
 
-    public static StringBuilder AppendQualifiersAndNameAndGenericsFor(
+    public static StringBuilder AppendQualifiersAndNameAndGenericParametersFor(
         this StringBuilder sb,
         INamedTypeSymbol namedTypeSymbol,
         string? replacementName = null)
       => sb.AppendSymbolQualifiers(namedTypeSymbol)
            .Append(" ")
-           .AppendNameAndGenericsFor(namedTypeSymbol, replacementName);
+           .AppendNameAndGenericParametersFor(namedTypeSymbol, replacementName);
 
-    public static string GetNameAndGenericsFor(
+    public static string GetNameAndGenericParametersFor(
         this INamedTypeSymbol namedTypeSymbol,
         string? replacementName = null)
       => new StringBuilder()
-         .AppendNameAndGenericsFor(namedTypeSymbol, replacementName)
+         .AppendNameAndGenericParametersFor(namedTypeSymbol, replacementName)
          .ToString();
 
-    public static StringBuilder AppendNameAndGenericsFor(
+    public static StringBuilder AppendNameAndGenericParametersFor(
         this StringBuilder sb,
         INamedTypeSymbol namedTypeSymbol,
         string? replacementName = null)
       => sb.Append(replacementName ?? namedTypeSymbol.Name.EscapeKeyword())
-           .AppendGenericsFor(namedTypeSymbol);
+           .AppendGenericParametersFor(namedTypeSymbol);
 
-    public static string GetGenerics(this INamedTypeSymbol namedTypeSymbol)
+    public static string GetGenericParameters(
+        this INamedTypeSymbol namedTypeSymbol)
       => new StringBuilder()
-         .AppendGenericsFor(namedTypeSymbol)
+         .AppendGenericParametersFor(namedTypeSymbol)
          .ToString();
 
-    public static StringBuilder AppendGenericsFor(
+    public static StringBuilder AppendGenericParametersFor(
         this StringBuilder sb,
         INamedTypeSymbol namedTypeSymbol)
-      => sb.AppendGenerics(namedTypeSymbol.TypeParameters);
+      => sb.AppendGenericParameters(namedTypeSymbol.TypeParameters);
 
-    public static string GetGenerics(
+    public static string GetGenericParameters(
         this IReadOnlyList<ITypeParameterSymbol> typeParameters)
       => new StringBuilder()
-         .AppendGenerics(typeParameters)
+         .AppendGenericParameters(typeParameters)
          .ToString();
 
-    public static StringBuilder AppendGenerics(
+    public static StringBuilder AppendGenericParameters(
         this StringBuilder sb,
         IReadOnlyList<ITypeParameterSymbol> typeParameters) {
       if (typeParameters.Count > 0) {
@@ -265,6 +266,36 @@ namespace schema.util.symbols {
 
           var typeParameter = typeParameters[i];
           sb.Append(typeParameter.Name.EscapeKeyword());
+        }
+
+        sb.Append(">");
+      }
+
+      return sb;
+    }
+
+    public static string GetGenericArguments(
+        this IReadOnlyList<ITypeSymbol> typeArguments,
+        ITypeV2 sourceSymbol)
+      => new StringBuilder()
+         .AppendGenericArguments(typeArguments, sourceSymbol)
+         .ToString();
+
+    public static StringBuilder AppendGenericArguments(
+        this StringBuilder sb,
+        IReadOnlyList<ITypeSymbol> typeArguments,
+        ITypeV2 sourceSymbol) {
+      if (typeArguments.Count > 0) {
+        sb.Append("<");
+        for (var i = 0; i < typeArguments.Count; ++i) {
+          if (i > 0) {
+            sb.Append(", ");
+          }
+
+          var typeArgument = typeArguments[i];
+          var typeV2 = TypeV2.FromSymbol(typeArgument);
+          sb.Append(sourceSymbol
+                        .GetQualifiedNameFromCurrentSymbol(typeV2));
         }
 
         sb.Append(">");

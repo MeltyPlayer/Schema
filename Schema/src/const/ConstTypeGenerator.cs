@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 using Microsoft.CodeAnalysis;
@@ -55,28 +57,16 @@ namespace schema.@const {
       }
 
       foreach (var declaringType in declaringTypes) {
-        cbsb.EnterBlock(declaringType.GetQualifiersAndNameAndGenericsFor());
+        cbsb.EnterBlock(declaringType.GetQualifiersAndNameAndGenericParametersFor());
       }
 
-      var baseName = typeSymbol.Name;
-      if (baseName.Length >= 2) {
-        if (baseName[1] is < 'a' or > 'z') {
-          var firstChar = baseName[0];
-          if ((firstChar == 'I' && typeV2.IsInterface) ||
-              (firstChar == 'B' &&
-               typeSymbol is { IsAbstract: true, TypeKind: TypeKind.Class })) {
-            baseName = baseName.Substring(1);
-          }
-        }
-      }
-
-      var interfaceName = $"{PREFIX}{baseName}";
+      var interfaceName = this.GetConstInterfaceNameFor_(typeSymbol);
 
       // Class
       {
-        cbsb.WriteLine(typeSymbol.GetQualifiersAndNameAndGenericsFor() +
+        cbsb.WriteLine(typeSymbol.GetQualifiersAndNameAndGenericParametersFor() +
                        " : " +
-                       typeSymbol.GetNameAndGenericsFor(interfaceName) +
+                       typeSymbol.GetNameAndGenericParametersFor(interfaceName) +
                        ";");
       }
       cbsb.WriteLine("");
@@ -87,9 +77,21 @@ namespace schema.@const {
             SymbolTypeUtil.AccessibilityToModifier(
                 typeSymbol.DeclaredAccessibility));
         cbsb.Write(" interface ");
-        cbsb.EnterBlock(
-            typeSymbol.GetNameAndGenericsFor(interfaceName) +
-            typeSymbol.TypeParameters.GetTypeConstraints(typeV2));
+
+        var blockPrefix = typeSymbol.GetNameAndGenericParametersFor(interfaceName) +
+                          typeSymbol.TypeParameters.GetTypeConstraints(typeV2);
+        var parentConstNames =
+            this
+                .GetDirectBaseTypeAndInterfaces_(typeSymbol)
+                .Where(i => i.HasAttribute<GenerateConstAttribute>())
+                .Select(i => this.GetConstInterfaceNameFor_(i) +
+                             i.TypeArguments.GetGenericArguments(typeV2))
+                .ToArray();
+        if (parentConstNames.Length > 0) {
+          blockPrefix += " : " + string.Join(", ", parentConstNames);
+        }
+
+        cbsb.EnterBlock(blockPrefix);
 
         foreach (var parsedMember in new TypeInfoParser().ParseMembers(
                      typeSymbol)) {
@@ -137,7 +139,7 @@ namespace schema.@const {
 
           switch (memberSymbol) {
             case IMethodSymbol methodSymbol: {
-              cbsb.Write(methodSymbol.TypeParameters.GetGenerics());
+              cbsb.Write(methodSymbol.TypeParameters.GetGenericParameters());
               cbsb.Write("(");
 
               for (var i = 0; i < methodSymbol.Parameters.Length; ++i) {
@@ -182,6 +184,34 @@ namespace schema.@const {
 
       source = sb.ToString();
       return true;
+    }
+
+    private string GetConstInterfaceNameFor_(INamedTypeSymbol typeSymbol) {
+      var typeV2 = TypeV2.FromSymbol(typeSymbol);
+      var baseName = typeSymbol.Name;
+      if (baseName.Length >= 2) {
+        if (baseName[1] is < 'a' or > 'z') {
+          var firstChar = baseName[0];
+          if ((firstChar == 'I' && typeV2.IsInterface) ||
+              (firstChar == 'B' &&
+               typeSymbol is { IsAbstract: true, TypeKind: TypeKind.Class })) {
+            baseName = baseName.Substring(1);
+          }
+        }
+      }
+
+      return $"{PREFIX}{baseName}";
+    }
+
+    private IEnumerable<INamedTypeSymbol> GetDirectBaseTypeAndInterfaces_(
+        INamedTypeSymbol symbol) {
+      if (symbol.BaseType != null) {
+        yield return symbol.BaseType;
+      }
+
+      foreach (var iface in symbol.Interfaces) {
+        yield return iface;
+      }
     }
   }
 }

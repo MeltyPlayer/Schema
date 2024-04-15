@@ -212,5 +212,85 @@ namespace schema.@const {
 
           """);
     }
+
+    [Test]
+    public void TestAutoInheritance() {
+      ConstGeneratorTestUtil.AssertGenerated(
+          """
+          using schema.@const;
+
+          namespace foo.bar {
+            [GenerateConst]
+            public partial interface IBase {}
+          
+            [GenerateConst]
+            public partial interface IChild : IBase {}
+          }
+          """,
+          """
+          namespace foo.bar {
+            public partial interface IBase : IConstBase;
+            
+            public interface IConstBase {
+            }
+          }
+
+          """,
+          """
+          namespace foo.bar {
+            public partial interface IChild : IConstChild;
+            
+            public interface IConstChild : IConstBase {
+            }
+          }
+
+          """);
+    }
+
+    [Test]
+    public void TestAutoGenericInheritance() {
+      ConstGeneratorTestUtil.AssertGenerated(
+          """
+          using schema.@const;
+
+          namespace foo.bar {
+            [GenerateConst]
+            public partial interface IBase1<T> {}
+          
+            [GenerateConst]
+            public partial interface IBase2<T> {}
+          
+            [GenerateConst]
+            public partial interface IChild<T1, T2> : IBase1<T1>, IBase2<T2> {}
+          }
+          """,
+          """
+          namespace foo.bar {
+            public partial interface IBase1<T> : IConstBase1<T>;
+            
+            public interface IConstBase1<T> {
+            }
+          }
+
+          """,
+          """
+          namespace foo.bar {
+            public partial interface IBase2<T> : IConstBase2<T>;
+            
+            public interface IConstBase2<T> {
+            }
+          }
+
+          """,
+          """
+          namespace foo.bar {
+            public partial interface IChild<T1, T2> : IConstChild<T1, T2>;
+            
+            public interface IConstChild<T1, T2> : IConstBase1<T1>, IConstBase2<T2> {
+            }
+          }
+
+          """);
+    }
   }
 }

@@ -57,10 +57,10 @@ namespace schema.binary.text {
       }
 
       foreach (var declaringType in declaringTypes) {
-        cbsb.EnterBlock(SymbolTypeUtil.GetQualifiersAndNameAndGenericsFor(declaringType));
+        cbsb.EnterBlock(SymbolTypeUtil.GetQualifiersAndNameAndGenericParametersFor(declaringType));
       }
 
-      cbsb.EnterBlock(SymbolTypeUtil.GetQualifiersAndNameAndGenericsFor(typeSymbol));
+      cbsb.EnterBlock(SymbolTypeUtil.GetQualifiersAndNameAndGenericParametersFor(typeSymbol));
 
       cbsb.EnterBlock($"public void Write(IBinaryWriter {WRITER})");
       {

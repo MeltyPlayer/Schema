@@ -24,44 +24,47 @@ namespace schema.binary {
                 .Split(Path.PathSeparator)
                 .Select(path => MetadataReference.CreateFromFile(path)));
 
-    public static void AssertGenerated(string src, string expected) {
+    public static void AssertGenerated(string src, params string[] expected) {
       var syntaxTree = CSharpSyntaxTree.ParseText(src);
       var compilation = BinarySchemaTestUtil.Compilation.Clone()
                                             .AddSyntaxTrees(syntaxTree);
 
       var semanticModel = compilation.GetSemanticModel(syntaxTree);
 
-      var structures = syntaxTree
-                       .GetRoot()
-                       .DescendantTokens()
-                       .Where(t => t is {
-                           Text: "GenerateConst",
-                           Parent.Parent: AttributeSyntax
-                       })
-                       .Select(t => t.Parent?.Parent as AttributeSyntax)
-                       .Select(attributeSyntax => {
-                                 var attributeListSyntax
-                                     = Asserts.AsA<AttributeListSyntax>(
-                                         attributeSyntax.Parent);
-                                 var declarationSyntax
-                                     = Asserts.AsA<TypeDeclarationSyntax>(
-                                         attributeListSyntax.Parent);
+      var actual = syntaxTree
+                   .GetRoot()
+                   .DescendantTokens()
+                   .Where(t => t is {
+                       Text: "GenerateConst",
+                       Parent.Parent: AttributeSyntax
+                   })
+                   .Select(t => t.Parent?.Parent as AttributeSyntax)
+                   .Select(attributeSyntax => {
+                             var attributeListSyntax
+                                 = Asserts.AsA<AttributeListSyntax>(
+                                     attributeSyntax.Parent);
+                             var declarationSyntax
+                                 = Asserts.AsA<TypeDeclarationSyntax>(
+                                     attributeListSyntax.Parent);
 
-                                 var symbol
-                                     = semanticModel
-                                         .GetDeclaredSymbol(declarationSyntax);
-                                 var namedTypeSymbol
-                                     = symbol as INamedTypeSymbol;
+                             var symbol
+                                 = semanticModel
+                                     .GetDeclaredSymbol(declarationSyntax);
+                             var namedTypeSymbol
+                                 = symbol as INamedTypeSymbol;
 
-                                 return namedTypeSymbol;
-                               })
-                       .ToArray();
+                             return namedTypeSymbol;
+                           })
+                   .Select(
+                       symbol => {
+                         Assert.True(
+                             new ConstTypeGenerator().Generate(
+                                 symbol,
+                                 out var actual));
+                         return actual.ReplaceLineEndings();
+                       });
 
-      var synbol = structures.First();
-
-      Assert.True(new ConstTypeGenerator().Generate(synbol, out var actual));
-
-      Assert.AreEqual(expected, actual.ReplaceLineEndings());
+      CollectionAssert.AreEqual(expected, actual);
     }
   }
 }
