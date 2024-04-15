@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using schema.binary.parser;
 using schema.util.generators;
@@ -16,7 +14,9 @@ namespace schema.@const {
   [AttributeUsage(AttributeTargets.Method)]
   public class ConstAttribute : Attribute;
 
-  [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
+  [AttributeUsage(AttributeTargets.Class |
+                  AttributeTargets.Interface |
+                  AttributeTargets.Struct)]
   public class GenerateConstAttribute : Attribute;
 
   [Generator(LanguageNames.CSharp)]

@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 
 using schema.@const;
+using schema.util.asserts;
 
 #pragma warning disable CS8604
 
@@ -39,44 +40,16 @@ namespace schema.binary {
                        })
                        .Select(t => t.Parent?.Parent as AttributeSyntax)
                        .Select(attributeSyntax => {
-                                 var attributeSpan = attributeSyntax!.FullSpan;
-
-                                 var classIndex =
-                                     src.IndexOf("class",
-                                                 attributeSpan.Start +
-                                                 attributeSpan.Length);
-                                 var classNameIndex
-                                     = src.IndexOf(' ', classIndex) + 1;
-                                 var classNameLength =
-                                     src.IndexOf(' ', classNameIndex) -
-                                     classNameIndex;
-
-                                 var typeName =
-                                     src.Substring(
-                                         classNameIndex,
-                                         classNameLength);
-                                 var angleBracketIndex = typeName.IndexOf('<');
-                                 if (angleBracketIndex > -1) {
-                                   typeName
-                                       = typeName.Substring(
-                                           0,
-                                           angleBracketIndex);
-                                 }
-
-                                 var typeNode = syntaxTree.GetRoot()
-                                     .DescendantTokens()
-                                     .Single(t =>
-                                                 t.Text ==
-                                                 typeName &&
-                                                 t.Parent is
-                                                     ClassDeclarationSyntax
-                                                     or StructDeclarationSyntax
-                                     )
-                                     .Parent as TypeDeclarationSyntax;
+                                 var attributeListSyntax
+                                     = Asserts.AsA<AttributeListSyntax>(
+                                         attributeSyntax.Parent);
+                                 var declarationSyntax
+                                     = Asserts.AsA<TypeDeclarationSyntax>(
+                                         attributeListSyntax.Parent);
 
                                  var symbol
                                      = semanticModel
-                                         .GetDeclaredSymbol(typeNode);
+                                         .GetDeclaredSymbol(declarationSyntax);
                                  var namedTypeSymbol
                                      = symbol as INamedTypeSymbol;
 

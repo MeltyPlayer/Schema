@@ -25,16 +25,12 @@ namespace schema.util.generators {
       public void OnVisitSyntaxNode(GeneratorSyntaxContext context) {
         TypeDeclarationSyntax syntax;
         ISymbol symbol;
-        if (context.Node is TypeDeclarationSyntax classDeclarationSyntax) {
-          syntax = classDeclarationSyntax;
-        } else if (context.Node is StructDeclarationSyntax
-                   structDeclarationSyntax) {
-          syntax = structDeclarationSyntax;
-        } else {
+        if (context.Node is not TypeDeclarationSyntax classDeclarationSyntax) {
           return;
         }
 
-        symbol = context.SemanticModel.GetDeclaredSymbol(syntax);
+        symbol = context.SemanticModel.GetDeclaredSymbol(
+            classDeclarationSyntax);
         if (symbol is not INamedTypeSymbol namedTypeSymbol) {
           return;
         }

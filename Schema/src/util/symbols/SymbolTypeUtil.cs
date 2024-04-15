@@ -287,7 +287,9 @@ namespace schema.util.symbols {
            .Append(SymbolTypeUtil.AccessibilityToModifier(
                        typeSymbol.DeclaredAccessibility))
            .Append(" ")
-           .Append(typeSymbol.IsAbstract ? "abstract " : "")
+           .Append(typeSymbol is { IsAbstract: true, TypeKind: TypeKind.Class }
+                       ? "abstract "
+                       : "")
            .Append("partial ")
            .Append(typeSymbol.TypeKind switch {
                TypeKind.Class     => "class",

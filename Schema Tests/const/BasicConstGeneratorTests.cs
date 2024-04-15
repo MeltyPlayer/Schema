@@ -38,6 +38,33 @@ namespace schema.@const {
     }
 
     [Test]
+    // Unsupported
+    [TestCase("class")]
+    [TestCase("interface")]
+    [TestCase("struct")]
+    public void TestContainers(string containerType) {
+      ConstGeneratorTestUtil.AssertGenerated(
+          $$"""
+            using schema.@const;
+
+            namespace foo.bar {
+              [GenerateConst]
+              public partial {{containerType}} Container {
+              }
+            }
+            """,
+          $$"""
+          namespace foo.bar {
+            public partial {{containerType}} Container : IConstContainer;
+            
+            public interface IConstContainer {
+            }
+          }
+
+          """);
+    }
+
+    [Test]
     public void TestSimpleGenerics() {
       ConstGeneratorTestUtil.AssertGenerated(
           """
