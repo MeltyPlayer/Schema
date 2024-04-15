@@ -10,10 +10,9 @@ namespace schema.@const {
     [TestCase("public bool field;")]
     [TestCase("public bool Field { set; }")]
     // Missing const attribute
-    [TestCase("public bool Field { get; set; }")]
     [TestCase("public bool Field();")]
     // Not accessible enough
-    [TestCase("[Const] private bool Field { get; set; }")]
+    [TestCase("private bool Field { get; set; }")]
     [TestCase("[Const] bool Field();")]
     public void TestEmpty(string emptySrc) {
       ConstGeneratorTestUtil.AssertGenerated(
@@ -31,7 +30,7 @@ namespace schema.@const {
           namespace foo.bar {
             public partial class Empty : IConstEmpty;
             
-            public partial class IConstEmpty {
+            public interface IConstEmpty {
             }
           }
 
@@ -56,7 +55,7 @@ namespace schema.@const {
           namespace foo.bar {
             public partial class SimpleGenerics<T1, T2> : IConstSimpleGenerics<T1, T2>;
             
-            public partial class IConstSimpleGenerics<T1, T2> {
+            public interface IConstSimpleGenerics<T1, T2> {
               public T1 Foo<T3, T4>(T1 t1, T2 t2, T3 t3, T4 t4);
             }
           }
@@ -88,7 +87,7 @@ namespace schema.@const {
             namespace foo.bar {
               public partial class EachConstraint<T> : IConstEachConstraint<T>;
               
-              public partial class IConstEachConstraint<T> where T : {{constraint}} {
+              public interface IConstEachConstraint<T> where T : {{constraint}} {
                 public T Foo<S>(T t, S s) where S : {{constraint}};
               }
             }
@@ -107,6 +106,8 @@ namespace schema.@const {
             public partial class SubConstraint<T1, T2> where T2 : T1 {
               [Const]
               public T1 Foo<S>(S s) where S : T1 { }
+          
+              public T2 Bar { get; set; }
             }
           }
           """,
@@ -114,8 +115,9 @@ namespace schema.@const {
           namespace foo.bar {
             public partial class SubConstraint<T1, T2> : IConstSubConstraint<T1, T2>;
             
-            public partial class IConstSubConstraint<T1, T2> where T2 : T1 {
+            public interface IConstSubConstraint<T1, T2> where T2 : T1 {
               public T1 Foo<S>(S s) where S : T1;
+              public T2 Bar { get; }
             }
           }
 
@@ -133,6 +135,8 @@ namespace schema.@const {
             public partial class SimpleAttributes<T1, T2> where T1 : notnull, struct where T2 : unmanaged {
               [Const]
               public T1 Foo<T3, T4>(T1 t1, T2 t2, T3 t3, T4 t4) where T3 : class where T4 : class? { }
+              
+              public T2 Bar { get; set; }
             }
           }
           """,
@@ -140,8 +144,38 @@ namespace schema.@const {
           namespace foo.bar {
             public partial class SimpleAttributes<T1, T2> : IConstSimpleAttributes<T1, T2>;
             
-            public partial class IConstSimpleAttributes<T1, T2> where T1 : notnull, struct where T2 : unmanaged {
+            public interface IConstSimpleAttributes<T1, T2> where T1 : notnull, struct where T2 : unmanaged {
               public T1 Foo<T3, T4>(T1 t1, T2 t2, T3 t3, T4 t4) where T3 : class where T4 : class?;
+              public T2 Bar { get; }
+            }
+          }
+
+          """);
+    }
+
+    [Test]
+    public void TestKeywords() {
+      ConstGeneratorTestUtil.AssertGenerated(
+          """
+          using schema.@const;
+
+          namespace @const {
+            [GenerateConst]
+            public partial class @void<@double> where @double : struct {
+              [Const]
+              public @void @int<@short>(@void @bool) where @short : @void { }
+              
+              public @void @float { get; }
+            }
+          }
+          """,
+          """
+          namespace @const {
+            public partial class @void<@double> : IConstvoid<@double>;
+            
+            public interface IConstvoid<@double> where @double : struct {
+              public @void @int<@short>(@void @bool) where @short : @void;
+              public @void @float { get; }
             }
           }
 

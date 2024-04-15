@@ -3,7 +3,6 @@ using System.Linq;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
 
 using schema.binary.attributes;
 using schema.binary.text;
@@ -14,7 +13,6 @@ using schema.util.types;
 
 namespace schema.binary {
   [Generator(LanguageNames.CSharp)]
-  [DiagnosticAnalyzer(LanguageNames.CSharp)]
   internal class BinarySchemaGenerator
       : BNamedTypeSecondaryGenerator<IBinarySchemaContainer> {
     private readonly BinarySchemaContainerParser parser_ = new();

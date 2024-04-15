@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -87,7 +88,7 @@ namespace schema.util.symbols {
 
       while (!namespaceSymbol?.IsGlobalNamespace ?? true) {
         if (namespaceSymbol.Name.Length > 0) {
-          yield return namespaceSymbol.Name;
+          yield return namespaceSymbol.Name.EscapeKeyword();
         }
 
         namespaceSymbol = namespaceSymbol.ContainingNamespace;
@@ -231,8 +232,13 @@ namespace schema.util.symbols {
         this StringBuilder sb,
         INamedTypeSymbol namedTypeSymbol,
         string namePrefix = "") {
-      sb.Append(namePrefix);
-      sb.Append(namedTypeSymbol.Name);
+      if (namePrefix != "") {
+        sb.Append(namePrefix);
+        sb.Append(namedTypeSymbol.Name);
+      } else {
+        sb.Append(namedTypeSymbol.Name.EscapeKeyword());
+      }
+
       sb.AppendGenericsFor(namedTypeSymbol);
       return sb;
     }
@@ -264,7 +270,7 @@ namespace schema.util.symbols {
           }
 
           var typeParameter = typeParameters[i];
-          sb.Append(typeParameter.Name);
+          sb.Append(typeParameter.Name.EscapeKeyword());
         }
 
         sb.Append(">");
@@ -283,7 +289,11 @@ namespace schema.util.symbols {
            .Append(" ")
            .Append(typeSymbol.IsAbstract ? "abstract " : "")
            .Append("partial ")
-           .Append(typeSymbol.TypeKind == TypeKind.Class ? "class" : "struct");
+           .Append(typeSymbol.TypeKind switch {
+               TypeKind.Class     => "class",
+               TypeKind.Struct    => "struct",
+               TypeKind.Interface => "interface"
+           });
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string AccessibilityToModifier(Accessibility accessibility)
@@ -325,11 +335,13 @@ namespace schema.util.symbols {
       }
 
       if (referencedSymbol.IsGenericTypeParameter(out _)) {
-        return referencedSymbol.Name;
+        return referencedSymbol.Name.EscapeKeyword();
       }
 
-      var currentNamespace = sourceSymbol.NamespaceParts.ToArray();
-      var referencedNamespace = referencedSymbol.NamespaceParts.ToArray();
+      var currentNamespace
+          = sourceSymbol.NamespaceParts.Select(EscapeKeyword).ToArray();
+      var referencedNamespace =
+          referencedSymbol.NamespaceParts.Select(EscapeKeyword).ToArray();
 
       string mergedNamespaceText;
       if (currentNamespace.Length == 0 && referencedNamespace.Length == 0) {
@@ -359,11 +371,11 @@ namespace schema.util.symbols {
 
       var mergedContainersText = "";
       foreach (var container in referencedSymbol.DeclaringTypeNamesDownward) {
-        mergedContainersText += $"{container}.";
+        mergedContainersText += $"{container.EscapeKeyword()}.";
       }
 
       return
-          $"{mergedNamespaceText}{mergedContainersText}{referencedSymbol.Name}";
+          $"{mergedNamespaceText}{mergedContainersText}{referencedSymbol.Name.EscapeKeyword()}";
     }
 
     public static string GetTypeConstraints(
@@ -379,7 +391,7 @@ namespace schema.util.symbols {
         }
 
         sb.Append(" where ");
-        sb.Append(typeParameter.Name);
+        sb.Append(typeParameter.Name.EscapeKeyword());
         sb.Append(" : ");
 
         for (var i = 0; i < typeConstraintNames.Length; ++i) {
@@ -416,8 +428,8 @@ namespace schema.util.symbols {
             : "class";
       }
 
-      if (typeParameter.HasValueTypeConstraint &&
-          !typeParameter.HasUnmanagedTypeConstraint) {
+      if (typeParameter is
+          { HasValueTypeConstraint: true, HasUnmanagedTypeConstraint: false }) {
         yield return "struct";
       }
 
@@ -469,5 +481,32 @@ namespace schema.util.symbols {
       memberTypeSymbol = target.MemberTypeSymbol;
       memberTypeInfo = target.MemberTypeInfo;
     }
+
+    public static string EscapeKeyword(this string text)
+      => !text.IsKeyword() ? text : $"@{text}";
+
+    public static bool IsKeyword(this string text)
+      => text is "as"
+                 or "bool"
+                 or "char"
+                 or "class"
+                 or "const"
+                 or "double"
+                 or "float"
+                 or "for"
+                 or "foreach"
+                 or "in"
+                 or "int"
+                 or "internal"
+                 or "public"
+                 or "private"
+                 or "protected"
+                 or "short"
+                 or "static"
+                 or "string"
+                 or "struct"
+                 or "this"
+                 or "unmanaged"
+                 or "void";
   }
 }

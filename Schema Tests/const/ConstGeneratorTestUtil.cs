@@ -26,7 +26,7 @@ namespace schema.binary {
     public static void AssertGenerated(string src, string expected) {
       var syntaxTree = CSharpSyntaxTree.ParseText(src);
       var compilation = BinarySchemaTestUtil.Compilation.Clone()
-          .AddSyntaxTrees(syntaxTree);
+                                            .AddSyntaxTrees(syntaxTree);
 
       var semanticModel = compilation.GetSemanticModel(syntaxTree);
 
@@ -80,14 +80,13 @@ namespace schema.binary {
                                  var namedTypeSymbol
                                      = symbol as INamedTypeSymbol;
 
-                                 return (typeNode, namedTypeSymbol);
+                                 return namedTypeSymbol;
                                })
                        .ToArray();
 
-      var (syntax, synbol) = structures.First();
+      var synbol = structures.First();
 
-      Assert.True(
-          new ConstTypeGenerator().Generate(syntax, synbol, out var actual));
+      Assert.True(new ConstTypeGenerator().Generate(synbol, out var actual));
 
       Assert.AreEqual(expected, actual.ReplaceLineEndings());
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -12,28 +13,27 @@ using schema.util.text;
 using schema.util.types;
 
 namespace schema.@const {
-  [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property)]
+  [AttributeUsage(AttributeTargets.Method)]
   public class ConstAttribute : Attribute;
 
   [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
   public class GenerateConstAttribute : Attribute;
 
+  [Generator(LanguageNames.CSharp)]
   public class ConstTypeGenerator : BNamedTypeGenerator {
     public const string PREFIX = "IConst";
 
     internal override void Generate(
-        TypeDeclarationSyntax syntax,
         INamedTypeSymbol typeSymbol,
         ISourceFileDictionary sourceFileDictionary) {
       var typeV2 = TypeV2.FromSymbol(typeSymbol);
-      if (this.Generate(syntax, typeSymbol, out var source)) {
+      if (this.Generate(typeSymbol, out var source)) {
         sourceFileDictionary.Add($"{typeV2.FullyQualifiedName}_const.g",
                                  source);
       }
     }
 
-    public bool Generate(TypeDeclarationSyntax syntax,
-                         INamedTypeSymbol typeSymbol,
+    public bool Generate(INamedTypeSymbol typeSymbol,
                          out string source) {
       var typeV2 = TypeV2.FromSymbol(typeSymbol);
 
@@ -69,8 +69,13 @@ namespace schema.@const {
 
       // Interface
       {
-        cbsb.EnterBlock(typeSymbol.GetQualifiersAndNameAndGenericsFor(PREFIX) +
-                        typeSymbol.TypeParameters.GetTypeConstraints(typeV2));
+        cbsb.Write(
+            SymbolTypeUtil.AccessibilityToModifier(
+                typeSymbol.DeclaredAccessibility));
+        cbsb.Write(" interface ");
+        cbsb.EnterBlock(
+            typeSymbol.GetNameAndGenericsFor(PREFIX) +
+            typeSymbol.TypeParameters.GetTypeConstraints(typeV2));
 
         foreach (var parsedMember in new TypeInfoParser().ParseMembers(
                      typeSymbol)) {
@@ -94,7 +99,8 @@ namespace schema.@const {
             continue;
           }
 
-          if (!memberSymbol.HasAttribute<ConstAttribute>()) {
+          if (memberSymbol is IMethodSymbol &&
+              !memberSymbol.HasAttribute<ConstAttribute>()) {
             continue;
           }
 
@@ -113,7 +119,7 @@ namespace schema.@const {
           cbsb.Write(typeV2.GetQualifiedNameFromCurrentSymbol(memberTypeV2));
           cbsb.Write(" ");
 
-          cbsb.Write(memberSymbol.Name);
+          cbsb.Write(memberSymbol.Name.EscapeKeyword());
 
           switch (memberSymbol) {
             case IMethodSymbol methodSymbol: {
@@ -130,7 +136,7 @@ namespace schema.@const {
                 cbsb.Write(
                     typeV2.GetQualifiedNameFromCurrentSymbol(parameterTypeV2));
                 cbsb.Write(" ");
-                cbsb.Write(parameterSymbol.Name);
+                cbsb.Write(parameterSymbol.Name.EscapeKeyword());
               }
 
               cbsb.Write(")");

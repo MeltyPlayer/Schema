@@ -9,7 +9,8 @@ using schema.util.data;
 
 
 namespace schema.util.generators {
-  internal abstract class BNamedTypeSecondaryGenerator<TSecondary> : ISourceGenerator {
+  internal abstract class BNamedTypeSecondaryGenerator<TSecondary>
+      : ISourceGenerator {
     private readonly Queue<(INamedTypeSymbol, TypeDeclarationSyntax)>
         symbolSyntaxQueue_ = new();
 
@@ -30,13 +31,8 @@ namespace schema.util.generators {
     public void Initialize(GeneratorInitializationContext context)
       => context.RegisterForSyntaxNotifications(() => new CustomReceiver(this));
 
-    private class CustomReceiver : ISyntaxContextReceiver {
-      private readonly BNamedTypeSecondaryGenerator<TSecondary> g_;
-
-      public CustomReceiver(BNamedTypeSecondaryGenerator<TSecondary> g) {
-        this.g_ = g;
-      }
-
+    private class CustomReceiver(BNamedTypeSecondaryGenerator<TSecondary> g)
+        : ISyntaxContextReceiver {
       public void OnVisitSyntaxNode(GeneratorSyntaxContext context) {
         TypeDeclarationSyntax syntax;
         ISymbol symbol;
@@ -54,7 +50,7 @@ namespace schema.util.generators {
           return;
         }
 
-        this.g_.symbolSyntaxQueue_.Enqueue((namedTypeSymbol, syntax));
+        g.symbolSyntaxQueue_.Enqueue((namedTypeSymbol, syntax));
       }
     }
 
