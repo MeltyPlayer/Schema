@@ -33,8 +33,8 @@ namespace schema.@const {
     }
 
     public bool Generate(TypeDeclarationSyntax syntax,
-                           INamedTypeSymbol typeSymbol,
-                           out string source) {
+                         INamedTypeSymbol typeSymbol,
+                         out string source) {
       var typeV2 = TypeV2.FromSymbol(typeSymbol);
 
       if (!typeV2.HasAttribute<GenerateConstAttribute>()) {
@@ -58,19 +58,31 @@ namespace schema.@const {
         cbsb.EnterBlock(declaringType.GetQualifiersAndNameAndGenericsFor());
       }
 
+      // Class
+      {
+        cbsb.WriteLine(typeSymbol.GetQualifiersAndNameAndGenericsFor() +
+                       " : " +
+                       typeSymbol.GetNameAndGenericsFor(PREFIX) +
+                       ";");
+      }
+      cbsb.WriteLine("");
+
       // Interface
       {
-        cbsb.EnterBlock(typeSymbol.GetQualifiersAndNameAndGenericsFor(PREFIX));
+        cbsb.EnterBlock(typeSymbol.GetQualifiersAndNameAndGenericsFor(PREFIX) +
+                        typeSymbol.TypeParameters.GetTypeConstraints(typeV2));
 
         foreach (var parsedMember in new TypeInfoParser().ParseMembers(
                      typeSymbol)) {
-          var (parseStatus, memberSymbol, memberTypeSymbol, memberTypeInfo) = parsedMember;
+          var (parseStatus, memberSymbol, memberTypeSymbol, memberTypeInfo)
+              = parsedMember;
           if (parseStatus ==
               TypeInfoParser.ParseStatus.NOT_A_FIELD_OR_PROPERTY_OR_METHOD) {
             continue;
           }
 
-          if (memberSymbol.DeclaredAccessibility is not (Accessibility.Public or Accessibility.Internal)) {
+          if (memberSymbol.DeclaredAccessibility is not (Accessibility.Public
+              or Accessibility.Internal)) {
             continue;
           }
 
@@ -121,7 +133,11 @@ namespace schema.@const {
                 cbsb.Write(parameterSymbol.Name);
               }
 
-              cbsb.WriteLine(");");
+              cbsb.Write(")");
+              cbsb.Write(
+                  methodSymbol.TypeParameters.GetTypeConstraints(typeV2));
+
+              cbsb.WriteLine(";");
               break;
             }
             case IPropertySymbol: {
@@ -130,17 +146,6 @@ namespace schema.@const {
             }
           }
         }
-
-        cbsb.ExitBlock();
-      }
-      cbsb.WriteLine("");
-
-      // Class
-      {
-        cbsb.EnterBlock(
-            typeSymbol.GetQualifiersAndNameAndGenericsFor() +
-            " : " +
-            typeSymbol.GetNameAndGenericsFor(PREFIX));
 
         cbsb.ExitBlock();
       }

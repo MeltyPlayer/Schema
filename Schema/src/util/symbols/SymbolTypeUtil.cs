@@ -337,7 +337,7 @@ namespace schema.util.symbols {
       } else if (currentNamespace.Length == 0) {
         mergedNamespaceText = $"{referencedNamespace!}.";
       } else if (referencedNamespace.Length == 0) {
-        mergedNamespaceText = $"{currentNamespace}.";
+        mergedNamespaceText = $"{string.Join(".", currentNamespace)}.";
       } else {
         var namespaces = new List<string>();
         var matching = true;
@@ -364,6 +364,74 @@ namespace schema.util.symbols {
 
       return
           $"{mergedNamespaceText}{mergedContainersText}{referencedSymbol.Name}";
+    }
+
+    public static string GetTypeConstraints(
+        this IReadOnlyList<ITypeParameterSymbol> typeParameters,
+        ITypeV2 sourceSymbol) {
+      var sb = new StringBuilder();
+
+      foreach (var typeParameter in typeParameters) {
+        var typeConstraintNames
+            = typeParameter.GetTypeConstraintNames(sourceSymbol).ToArray();
+        if (typeConstraintNames.Length == 0) {
+          continue;
+        }
+
+        sb.Append(" where ");
+        sb.Append(typeParameter.Name);
+        sb.Append(" : ");
+
+        for (var i = 0; i < typeConstraintNames.Length; ++i) {
+          if (i > 0) {
+            sb.Append(", ");
+          }
+
+          sb.Append(typeConstraintNames[i]);
+        }
+      }
+
+      return sb.ToString();
+    }
+
+    public static IEnumerable<string> GetTypeConstraintNames(
+        this ITypeParameterSymbol typeParameter,
+        ITypeV2 sourceSymbol) {
+      if (typeParameter.HasNotNullConstraint) {
+        yield return "notnull";
+      }
+
+      if (typeParameter.HasConstructorConstraint) {
+        yield return "new()";
+      }
+
+      if (typeParameter.HasUnmanagedTypeConstraint) {
+        yield return "unmanaged";
+      }
+
+      if (typeParameter.HasReferenceTypeConstraint) {
+        yield return typeParameter.ReferenceTypeConstraintNullableAnnotation ==
+                     NullableAnnotation.Annotated
+            ? "class?"
+            : "class";
+      }
+
+      if (typeParameter.HasValueTypeConstraint &&
+          !typeParameter.HasUnmanagedTypeConstraint) {
+        yield return "struct";
+      }
+
+      for (var i = 0; i < typeParameter.ConstraintTypes.Length; ++i) {
+        var constraintType = typeParameter.ConstraintTypes[i];
+        var constraintTypeV2 = TypeV2.FromSymbol(constraintType);
+        var qualifiedName = sourceSymbol.GetQualifiedNameFromCurrentSymbol(
+            constraintTypeV2);
+
+        yield return typeParameter.ConstraintNullableAnnotations[i] ==
+                     NullableAnnotation.Annotated
+            ? $"{qualifiedName}?"
+            : qualifiedName;
+      }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
