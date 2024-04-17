@@ -156,6 +156,129 @@ namespace schema.readOnly {
     }
 
     [Test]
+    [TestCase("ref")]
+    [TestCase("out")]
+    [TestCase("in")]
+    public void TestSpecialParameterTypes(string paramType) {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          $$"""
+          using schema.readOnly;
+          using System.Collections.Generic;
+
+          namespace foo.bar {
+            [GenerateReadOnly]
+            public partial interface IWrapper {
+              [Const]
+              public void Foo({{paramType}} int bar) {}
+            }
+          }
+          """,
+          $$"""
+            namespace foo.bar {
+              public partial interface IWrapper : IReadOnlyWrapper {
+                void IReadOnlyWrapper.Foo({{paramType}} int bar) => Foo({{paramType}} bar);
+              }
+              
+              public interface IReadOnlyWrapper {
+                public void Foo({{paramType}} int bar);
+              }
+            }
+
+            """);
+    }
+
+    [Test]
+    public void TestParams() {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          $$"""
+            using schema.readOnly;
+            using System.Collections.Generic;
+
+            namespace foo.bar {
+              [GenerateReadOnly]
+              public partial interface IWrapper {
+                [Const]
+                public void Foo(params int[] bar) {}
+              }
+            }
+            """,
+          """
+          namespace foo.bar {
+            public partial interface IWrapper : IReadOnlyWrapper {
+              void IReadOnlyWrapper.Foo(params int[] bar) => Foo(bar);
+            }
+            
+            public interface IReadOnlyWrapper {
+              public void Foo(params int[] bar);
+            }
+          }
+
+          """);
+    }
+
+    [Test]
+    public void TestNullableValues() {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          $$"""
+            using schema.readOnly;
+            using System.Collections.Generic;
+
+            namespace foo.bar {
+              [GenerateReadOnly]
+              public partial interface IWrapper {
+                [Const]
+                public int? Foo(int? bar) {}
+
+                public int? Bar { get; }
+              }
+            }
+            """,
+          """
+          namespace foo.bar {
+            public partial interface IWrapper : IReadOnlyWrapper {
+              int? IReadOnlyWrapper.Foo(int? bar) => Foo(bar);
+              int? IReadOnlyWrapper.Bar => Bar;
+            }
+            
+            public interface IReadOnlyWrapper {
+              public int? Foo(int? bar);
+              public int? Bar { get; }
+            }
+          }
+
+          """);
+    }
+
+    [Test]
+    public void TestOptionalValues() {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          $$"""
+            using schema.readOnly;
+            using System.Collections.Generic;
+
+            namespace foo.bar {
+              [GenerateReadOnly]
+              public partial interface IWrapper {
+                [Const]
+                public int Foo(int a = 123, char b = '0', string c = "hello", int? d = null) {}
+              }
+            }
+            """,
+          """
+          namespace foo.bar {
+            public partial interface IWrapper : IReadOnlyWrapper {
+              int IReadOnlyWrapper.Foo(int a, char b, string c, int? d) => Foo(a, b, c, d);
+            }
+            
+            public interface IReadOnlyWrapper {
+              public int Foo(int a = 123, char b = '0', string c = "hello", int? d = null);
+            }
+          }
+
+          """);
+    }
+
+    [Test]
     public void TestNamelessTuple() {
       ReadOnlyGeneratorTestUtil.AssertGenerated(
           """

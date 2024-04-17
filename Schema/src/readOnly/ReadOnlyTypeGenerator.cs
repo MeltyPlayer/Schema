@@ -304,10 +304,41 @@ namespace schema.readOnly {
             var parameterSymbol = methodSymbol.Parameters[i];
             var parameterTypeV2
                 = TypeV2.FromSymbol(parameterSymbol.Type);
+
+            if (parameterSymbol.IsParams) {
+              cbsb.Write("params ");
+            }
+
+            var refKindString = parameterSymbol.RefKind.GetRefKindString();
+            if (refKindString.Length > 0) {
+              cbsb.Write(refKindString).Write(" ");
+            }
+
             cbsb.Write(
                     typeV2.GetQualifiedNameFromCurrentSymbol(parameterTypeV2))
                 .Write(" ")
                 .Write(parameterSymbol.Name.EscapeKeyword());
+
+            if (interfaceName == null &&
+                parameterSymbol.HasExplicitDefaultValue) {
+              cbsb.Write(" = ");
+
+              var explicitDefaultValue = parameterSymbol.ExplicitDefaultValue;
+              switch (explicitDefaultValue) {
+                case null:
+                  cbsb.Write("null");
+                  break;
+                case char:
+                  cbsb.Write($"'{explicitDefaultValue}'");
+                  break;
+                case string:
+                  cbsb.Write($"\"{explicitDefaultValue}\"");
+                  break;
+                default:
+                  cbsb.Write(explicitDefaultValue.ToString());
+                  break;
+              }
+            }
           }
 
           cbsb.Write(")");
@@ -329,6 +360,12 @@ namespace schema.readOnly {
               }
 
               var parameterSymbol = methodSymbol.Parameters[i];
+
+              var refKindString = parameterSymbol.RefKind.GetRefKindString();
+              if (refKindString.Length > 0) {
+                cbsb.Write(refKindString).Write(" ");
+              }
+
               cbsb.Write(parameterSymbol.Name.EscapeKeyword());
             }
 
@@ -347,7 +384,8 @@ namespace schema.readOnly {
           var firstChar = baseName[0];
           if ((firstChar == 'I' && typeV2.IsInterface) ||
               (firstChar == 'B' &&
-               typeSymbol is { IsAbstract: true, TypeKind: TypeKind.Class })) {
+               typeSymbol is
+                   { IsAbstract: true, TypeKind: TypeKind.Class })) {
             baseName = baseName.Substring(1);
           }
         }

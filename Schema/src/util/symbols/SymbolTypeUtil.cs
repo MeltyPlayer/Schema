@@ -336,10 +336,31 @@ namespace schema.util.symbols {
               null)
       };
 
+    public static string GetRefKindString(this RefKind refKind)
+      => refKind switch {
+          RefKind.In  => "in",
+          RefKind.Out => "out",
+          RefKind.Ref => "ref",
+          _           => "",
+      };
+
     public static string GetQualifiedNameFromCurrentSymbol(
         this ITypeV2 sourceSymbol,
         ITypeV2 referencedSymbol,
         string? overrideName = null) {
+      if (referencedSymbol.IsArray(out var elementType)) {
+        return
+            $"{sourceSymbol.GetQualifiedNameFromCurrentSymbol(elementType)}[]";
+      }
+
+      if (referencedSymbol.HasNullableAnnotation) {
+        if (referencedSymbol is
+            { Name: "Nullable", FullyQualifiedNamespace: "System" }) {
+          return
+              $"{sourceSymbol.GetQualifiedNameFromCurrentSymbol(referencedSymbol.GenericArguments.Single())}?";
+        }
+      }
+
       if (referencedSymbol.IsPrimitive(out var primitiveType) &&
           !referencedSymbol.IsEnum(out _)) {
         // TODO: Is there a built-in for this?
@@ -367,6 +388,12 @@ namespace schema.util.symbols {
       if (referencedSymbol.IsGenericTypeParameter(out _)) {
         return overrideName ?? referencedSymbol.Name.EscapeKeyword();
       }
+
+      if (referencedSymbol is
+          { Name: "Void", FullyQualifiedNamespace: "System" }) {
+        return overrideName ?? "void";
+      }
+
 
       var sb = new StringBuilder();
 
