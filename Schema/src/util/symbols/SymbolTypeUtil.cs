@@ -355,7 +355,7 @@ namespace schema.util.symbols {
                    SchemaPrimitiveType.UINT32  => "uint",
                    SchemaPrimitiveType.INT64   => "long",
                    SchemaPrimitiveType.UINT64  => "ulong",
-                   SchemaPrimitiveType.SINGLE  => "single",
+                   SchemaPrimitiveType.SINGLE  => "float",
                    SchemaPrimitiveType.DOUBLE  => "double",
                    SchemaPrimitiveType.CHAR    => "char",
                };
