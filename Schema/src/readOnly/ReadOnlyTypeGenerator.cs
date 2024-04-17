@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 using Microsoft.CodeAnalysis;
@@ -88,8 +89,11 @@ namespace schema.readOnly {
                 .Where(i => i.HasAttribute<GenerateReadOnlyAttribute>() ||
                             IsTypeAlreadyConst_(i))
                 .Select(i => (i.HasAttribute<GenerateReadOnlyAttribute>()
-                                 ? GetConstInterfaceNameFor_(i)
-                                 : i.Name) +
+                                 ? typeV2.GetQualifiedNameFromCurrentSymbol(
+                                     TypeV2.FromSymbol(i),
+                                     GetConstInterfaceNameFor_(i))
+                                 : typeV2.GetQualifiedNameFromCurrentSymbol(
+                                     TypeV2.FromSymbol(i))) +
                              i.TypeArguments.GetGenericArguments(typeV2))
                 .ToArray();
         if (parentConstNames.Length > 0) {

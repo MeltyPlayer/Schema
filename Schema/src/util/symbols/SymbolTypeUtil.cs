@@ -339,32 +339,34 @@ namespace schema.util.symbols {
 
     public static string GetQualifiedNameFromCurrentSymbol(
         this ITypeV2 sourceSymbol,
-        ITypeV2 referencedSymbol) {
+        ITypeV2 referencedSymbol,
+        string? overrideName = null) {
       if (referencedSymbol.IsPrimitive(out var primitiveType) &&
           !referencedSymbol.IsEnum(out _)) {
         // TODO: Is there a built-in for this?
-        return primitiveType switch {
-            SchemaPrimitiveType.BOOLEAN => "boolean",
-            SchemaPrimitiveType.SBYTE   => "sbyte",
-            SchemaPrimitiveType.BYTE    => "byte",
-            SchemaPrimitiveType.INT16   => "short",
-            SchemaPrimitiveType.UINT16  => "ushort",
-            SchemaPrimitiveType.INT32   => "int",
-            SchemaPrimitiveType.UINT32  => "uint",
-            SchemaPrimitiveType.INT64   => "long",
-            SchemaPrimitiveType.UINT64  => "ulong",
-            SchemaPrimitiveType.SINGLE  => "single",
-            SchemaPrimitiveType.DOUBLE  => "double",
-            SchemaPrimitiveType.CHAR    => "char",
-        };
+        return overrideName ??
+               primitiveType switch {
+                   SchemaPrimitiveType.BOOLEAN => "boolean",
+                   SchemaPrimitiveType.SBYTE   => "sbyte",
+                   SchemaPrimitiveType.BYTE    => "byte",
+                   SchemaPrimitiveType.INT16   => "short",
+                   SchemaPrimitiveType.UINT16  => "ushort",
+                   SchemaPrimitiveType.INT32   => "int",
+                   SchemaPrimitiveType.UINT32  => "uint",
+                   SchemaPrimitiveType.INT64   => "long",
+                   SchemaPrimitiveType.UINT64  => "ulong",
+                   SchemaPrimitiveType.SINGLE  => "single",
+                   SchemaPrimitiveType.DOUBLE  => "double",
+                   SchemaPrimitiveType.CHAR    => "char",
+               };
       }
 
       if (referencedSymbol.IsString) {
-        return "string";
+        return overrideName ?? "string";
       }
 
       if (referencedSymbol.IsGenericTypeParameter(out _)) {
-        return referencedSymbol.Name.EscapeKeyword();
+        return overrideName ?? referencedSymbol.Name.EscapeKeyword();
       }
 
       var currentNamespace
@@ -404,7 +406,7 @@ namespace schema.util.symbols {
       }
 
       return
-          $"{mergedNamespaceText}{mergedContainersText}{referencedSymbol.Name.EscapeKeyword()}";
+          $"{mergedNamespaceText}{mergedContainersText}{overrideName ?? referencedSymbol.Name.EscapeKeyword()}";
     }
 
     public static string GetTypeConstraints(

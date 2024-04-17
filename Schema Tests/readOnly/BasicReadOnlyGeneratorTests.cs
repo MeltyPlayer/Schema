@@ -126,6 +126,39 @@ namespace schema.readOnly {
     }
 
     [Test]
+    public void TestAlreadyConstInterfaceParentFromAnotherNamespace() {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          """
+          using schema.readOnly;
+
+          namespace foo.bar.other {
+            public class OtherParent {
+              public interface IAlreadyConst {
+                public bool Property { get; }
+              }
+            }
+          }
+
+          namespace foo.bar {
+            public partial class Parent {
+              [GenerateReadOnly]
+              public partial class AlreadyConstWrapper : other.OtherParent.IAlreadyConst;
+            }
+          }
+          """,
+          """
+          namespace foo.bar {
+            public partial class Parent {
+              public partial class AlreadyConstWrapper : IReadOnlyAlreadyConstWrapper;
+              
+              public interface IReadOnlyAlreadyConstWrapper : other.OtherParent.IAlreadyConst;
+            }
+          }
+
+          """);
+    }
+
+    [Test]
     [TestCase("class")]
     [TestCase("class?")]
     [TestCase("notnull")]
@@ -271,6 +304,48 @@ namespace schema.readOnly {
             public partial interface IChild : IReadOnlyChild;
             
             public interface IReadOnlyChild : IReadOnlyBase;
+          }
+
+          """);
+    }
+
+    [Test]
+    public void TestAutoInheritanceFromAnotherNamespace() {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          """
+          using schema.readOnly;
+
+          namespace foo.bar.other {
+            public partial class OtherParent {
+              [GenerateReadOnly]
+              public partial interface IBase {}
+            }
+          }
+
+          namespace foo.bar {
+            public partial class Parent {
+              [GenerateReadOnly]
+              public partial interface IChild : other.OtherParent.IBase {}
+            }
+          }
+          """,
+          """
+          namespace foo.bar.other {
+            public partial class OtherParent {
+              public partial interface IBase : IReadOnlyBase;
+              
+              public interface IReadOnlyBase;
+            }
+          }
+
+          """,
+          """
+          namespace foo.bar {
+            public partial class Parent {
+              public partial interface IChild : IReadOnlyChild;
+              
+              public interface IReadOnlyChild : other.OtherParent.IReadOnlyBase;
+            }
           }
 
           """);
