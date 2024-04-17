@@ -10,5 +10,10 @@ namespace readOnly {
   [GenerateReadOnly]
   public partial interface IFooBar {
     public string Value { get; set; }
+
+    [Const]
+    public string Foo(int value) {
+      return "";
+    }
   }
 }

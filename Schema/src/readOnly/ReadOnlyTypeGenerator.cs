@@ -65,13 +65,55 @@ namespace schema.readOnly {
 
       var interfaceName = GetConstInterfaceNameFor_(typeSymbol);
 
+      var constMembers
+          = parser_
+            .ParseMembers(typeSymbol)
+            .Where(parsedMember => {
+                     var (parseStatus, memberSymbol, _, _) = parsedMember;
+                     if (parseStatus ==
+                         TypeInfoParser.ParseStatus
+                                       .NOT_A_FIELD_OR_PROPERTY_OR_METHOD) {
+                       return false;
+                     }
+
+                     if (memberSymbol.DeclaredAccessibility is not (
+                         Accessibility.Public or Accessibility.Internal)) {
+                       return false;
+                     }
+
+                     if (memberSymbol is IFieldSymbol) {
+                       return false;
+                     }
+
+                     if (memberSymbol is IPropertySymbol) {
+                       return false;
+                     }
+
+                     if (memberSymbol is IMethodSymbol &&
+                         !memberSymbol.Name.StartsWith("get_") &&
+                         !memberSymbol.HasAttribute<ConstAttribute>()) {
+                       return false;
+                     }
+
+                     return true;
+                   })
+            .Select(parsedMember => parsedMember.Item2)
+            .ToArray();
+
       // Class
       {
-        cbsb.WriteLine(
+        var blockPrefix =
             typeSymbol.GetQualifiersAndNameAndGenericParametersFor() +
             " : " +
-            typeSymbol.GetNameAndGenericParametersFor(interfaceName) +
-            ";");
+            typeSymbol.GetNameAndGenericParametersFor(interfaceName);
+
+        if (constMembers.Length == 0) {
+          cbsb.Write(blockPrefix).WriteLine(";");
+        } else {
+          cbsb.EnterBlock(blockPrefix);
+          WriteMembers_(cbsb, typeSymbol, constMembers, interfaceName);
+          cbsb.ExitBlock();
+        }
       }
       cbsb.WriteLine("");
 
@@ -100,133 +142,26 @@ namespace schema.readOnly {
           blockPrefix += " : " + string.Join(", ", parentConstNames);
         }
 
-        var constMembers
-            = parser_
-              .ParseMembers(typeSymbol)
-              .Where(parsedMember => {
-                       var (parseStatus, memberSymbol, _, _) = parsedMember;
-                       if (parseStatus ==
-                           TypeInfoParser.ParseStatus
-                                         .NOT_A_FIELD_OR_PROPERTY_OR_METHOD) {
-                         return false;
-                       }
-
-                       if (memberSymbol.DeclaredAccessibility is not (
-                           Accessibility.Public or Accessibility.Internal)) {
-                         return false;
-                       }
-
-                       if (memberSymbol is IFieldSymbol) {
-                         return false;
-                       }
-
-                       if (memberSymbol is IPropertySymbol) {
-                         return false;
-                       }
-
-                       if (memberSymbol is IMethodSymbol &&
-                           !memberSymbol.Name.StartsWith("get_") &&
-                           !memberSymbol.HasAttribute<ConstAttribute>()) {
-                         return false;
-                       }
-
-                       return true;
-                     })
-              .ToArray();
-
         if (constMembers.Length == 0) {
-          cbsb.Write(blockPrefix);
-          cbsb.WriteLine(";");
+          cbsb.Write(blockPrefix).WriteLine(";");
         } else {
           cbsb.EnterBlock(blockPrefix);
-
-          foreach (var parsedMember in constMembers) {
-            var (_, memberSymbol, _, _) = parsedMember;
-
-            var methodSymbol = Asserts.AsA<IMethodSymbol>(memberSymbol);
-            var memberTypeSymbol = methodSymbol.ReturnType;
-
-            cbsb.Write(
-                SymbolTypeUtil.AccessibilityToModifier(
-                    typeSymbol.DeclaredAccessibility));
-            cbsb.Write(" ");
-
-            var memberTypeV2 = TypeV2.FromSymbol(memberTypeSymbol);
-            cbsb.Write(typeV2.GetQualifiedNameFromCurrentSymbol(memberTypeV2));
-            cbsb.Write(" ");
-
-            var memberName = memberSymbol.Name;
-            // Property
-            if (memberName.StartsWith("get_")) {
-              if (methodSymbol.AssociatedSymbol?.Name != "this[]") {
-                cbsb.Write(memberSymbol.Name.Substring(4).EscapeKeyword());
-                cbsb.WriteLine(" { get; }");
-              } else {
-                for (var i = 0; i < methodSymbol.Parameters.Length; ++i) {
-                  cbsb.Write("this[");
-
-                  if (i > 0) {
-                    cbsb.Write(", ");
-                  }
-
-                  var parameterSymbol = methodSymbol.Parameters[i];
-                  var parameterTypeV2
-                      = TypeV2.FromSymbol(parameterSymbol.Type);
-                  cbsb.Write(
-                      typeV2.GetQualifiedNameFromCurrentSymbol(
-                          parameterTypeV2));
-                  cbsb.Write(" ");
-                  cbsb.Write(parameterSymbol.Name.EscapeKeyword());
-                }
-
-                cbsb.WriteLine("] { get; }");
-              }
-            }
-            // Method
-            else {
-              cbsb.Write(memberSymbol.Name.EscapeKeyword());
-              cbsb.Write(methodSymbol.TypeParameters
-                                     .GetGenericParameters());
-              cbsb.Write("(");
-
-              for (var i = 0; i < methodSymbol.Parameters.Length; ++i) {
-                if (i > 0) {
-                  cbsb.Write(", ");
-                }
-
-                var parameterSymbol = methodSymbol.Parameters[i];
-                var parameterTypeV2
-                    = TypeV2.FromSymbol(parameterSymbol.Type);
-                cbsb.Write(
-                    typeV2.GetQualifiedNameFromCurrentSymbol(
-                        parameterTypeV2));
-                cbsb.Write(" ");
-                cbsb.Write(parameterSymbol.Name.EscapeKeyword());
-              }
-
-              cbsb.Write(")");
-              cbsb.Write(
-                  methodSymbol.TypeParameters.GetTypeConstraints(typeV2));
-
-              cbsb.WriteLine(";");
-            }
-          }
-
+          WriteMembers_(cbsb, typeSymbol, constMembers);
           cbsb.ExitBlock();
         }
-      }
 
-      // parent types
-      foreach (var declaringType in declaringTypes) {
-        cbsb.ExitBlock();
-      }
+        // parent types
+        foreach (var declaringType in declaringTypes) {
+          cbsb.ExitBlock();
+        }
 
-      // namespace
-      if (typeNamespace != null) {
-        cbsb.ExitBlock();
-      }
+        // namespace
+        if (typeNamespace != null) {
+          cbsb.ExitBlock();
+        }
 
-      return sb.ToString();
+        return sb.ToString();
+      }
     }
 
     private static bool IsTypeAlreadyConst_(INamedTypeSymbol typeSymbol) {
@@ -267,6 +202,138 @@ namespace schema.readOnly {
 
       return GetDirectBaseTypeAndInterfaces_(typeSymbol)
           .All(IsTypeAlreadyConst_);
+    }
+
+    private static void WriteMembers_(
+        ICurlyBracketTextWriter cbsb,
+        INamedTypeSymbol typeSymbol,
+        IReadOnlyList<ISymbol> constMembers,
+        string? interfaceName = null) {
+      var typeV2 = TypeV2.FromSymbol(typeSymbol);
+
+      foreach (var memberSymbol in constMembers) {
+        var methodSymbol = Asserts.AsA<IMethodSymbol>(memberSymbol);
+        var memberTypeSymbol = methodSymbol.ReturnType;
+
+        if (interfaceName == null) {
+          cbsb.Write(
+              SymbolTypeUtil.AccessibilityToModifier(
+                  typeSymbol.DeclaredAccessibility));
+          cbsb.Write(" ");
+        }
+
+        var memberTypeV2 = TypeV2.FromSymbol(memberTypeSymbol);
+        cbsb.Write(typeV2.GetQualifiedNameFromCurrentSymbol(memberTypeV2));
+        cbsb.Write(" ");
+
+        var memberName = memberSymbol.Name;
+
+        if (interfaceName != null) {
+          cbsb.Write(interfaceName);
+          cbsb.Write(typeSymbol.GetGenericParameters());
+          cbsb.Write(".");
+        }
+
+        // Property
+        if (memberName.StartsWith("get_")) {
+          var isIndexer = methodSymbol.AssociatedSymbol?.Name == "this[]";
+
+          var accessName = isIndexer
+              ? "this"
+              : memberSymbol.Name.Substring(4).EscapeKeyword();
+
+          if (!isIndexer) {
+            cbsb.Write(memberSymbol.Name.Substring(4).EscapeKeyword());
+          } else {
+            for (var i = 0; i < methodSymbol.Parameters.Length; ++i) {
+              cbsb.Write("this[");
+
+              if (i > 0) {
+                cbsb.Write(", ");
+              }
+
+              var parameterSymbol = methodSymbol.Parameters[i];
+              var parameterTypeV2
+                  = TypeV2.FromSymbol(parameterSymbol.Type);
+              cbsb.Write(
+                  typeV2.GetQualifiedNameFromCurrentSymbol(
+                      parameterTypeV2));
+              cbsb.Write(" ");
+              cbsb.Write(parameterSymbol.Name.EscapeKeyword());
+            }
+
+            cbsb.Write("]");
+          }
+
+          if (interfaceName == null) {
+            cbsb.WriteLine(" { get; }");
+          } else {
+            cbsb.Write(" => ");
+            cbsb.Write(accessName);
+
+            if (isIndexer) {
+              cbsb.Write("[");
+              for (var i = 0; i < methodSymbol.Parameters.Length; ++i) {
+                if (i > 0) {
+                  cbsb.Write(", ");
+                }
+
+                var parameterSymbol = methodSymbol.Parameters[i];
+                cbsb.Write(parameterSymbol.Name.EscapeKeyword());
+              }
+
+              cbsb.Write("]");
+            }
+
+            cbsb.WriteLine(";");
+          }
+        }
+        // Method
+        else {
+          var accessName = memberSymbol.Name.EscapeKeyword();
+          cbsb.Write(accessName);
+          cbsb.Write(methodSymbol.TypeParameters
+                                 .GetGenericParameters());
+          cbsb.Write("(");
+
+          for (var i = 0; i < methodSymbol.Parameters.Length; ++i) {
+            if (i > 0) {
+              cbsb.Write(", ");
+            }
+
+            var parameterSymbol = methodSymbol.Parameters[i];
+            var parameterTypeV2
+                = TypeV2.FromSymbol(parameterSymbol.Type);
+            cbsb.Write(
+                    typeV2.GetQualifiedNameFromCurrentSymbol(parameterTypeV2))
+                .Write(" ")
+                .Write(parameterSymbol.Name.EscapeKeyword());
+          }
+
+          cbsb.Write(")")
+              .Write(
+                  methodSymbol.TypeParameters.GetTypeConstraints(typeV2));
+
+          if (interfaceName == null) {
+            cbsb.WriteLine(";");
+          } else {
+            cbsb.Write(" => ")
+                .Write(accessName)
+                .Write(methodSymbol.TypeParameters.GetGenericParameters())
+                .Write("(");
+            for (var i = 0; i < methodSymbol.Parameters.Length; ++i) {
+              if (i > 0) {
+                cbsb.Write(", ");
+              }
+
+              var parameterSymbol = methodSymbol.Parameters[i];
+              cbsb.Write(parameterSymbol.Name.EscapeKeyword());
+            }
+
+            cbsb.WriteLine(");");
+          }
+        }
+      }
     }
 
     private static string GetConstInterfaceNameFor_(

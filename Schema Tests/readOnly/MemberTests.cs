@@ -31,7 +31,9 @@ namespace schema.readOnly {
             """,
           $$"""
             namespace foo.bar {
-              public partial interface IWrapper : IReadOnlyWrapper;
+              public partial interface IWrapper : IReadOnlyWrapper {
+                {{primitiveType}} IReadOnlyWrapper.Value => Value;
+              }
               
               public interface IReadOnlyWrapper {
                 public {{primitiveType}} Value { get; }
@@ -57,7 +59,9 @@ namespace schema.readOnly {
           """,
           """
           namespace foo.bar {
-            public partial interface IWrapper : IReadOnlyWrapper;
+            public partial interface IWrapper : IReadOnlyWrapper {
+              System.Collections.Generic.IEnumerable<bool> IReadOnlyWrapper.Value => Value;
+            }
             
             public interface IReadOnlyWrapper {
               public System.Collections.Generic.IEnumerable<bool> Value { get; }
@@ -83,7 +87,9 @@ namespace schema.readOnly {
           """,
           """
           namespace foo.bar {
-            public partial interface IWrapper : IReadOnlyWrapper;
+            public partial interface IWrapper : IReadOnlyWrapper {
+              System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<bool>> IReadOnlyWrapper.Value => Value;
+            }
             
             public interface IReadOnlyWrapper {
               public System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<bool>> Value { get; }
@@ -109,7 +115,9 @@ namespace schema.readOnly {
           """,
           """
           namespace foo.bar {
-            public partial interface IWrapper : IReadOnlyWrapper;
+            public partial interface IWrapper : IReadOnlyWrapper {
+              bool IReadOnlyWrapper.this[int index] => this[index];
+            }
             
             public interface IReadOnlyWrapper {
               public bool this[int index] { get; }
@@ -135,7 +143,9 @@ namespace schema.readOnly {
           """,
           """
           namespace foo.bar {
-            public partial interface IWrapper : IReadOnlyWrapper;
+            public partial interface IWrapper : IReadOnlyWrapper {
+              (bool, int) IReadOnlyWrapper.Tuple => Tuple;
+            }
             
             public interface IReadOnlyWrapper {
               public (bool, int) Tuple { get; }
@@ -161,7 +171,9 @@ namespace schema.readOnly {
           """,
           """
           namespace foo.bar {
-            public partial interface IWrapper : IReadOnlyWrapper;
+            public partial interface IWrapper : IReadOnlyWrapper {
+              (bool a, int b) IReadOnlyWrapper.Tuple => Tuple;
+            }
             
             public interface IReadOnlyWrapper {
               public (bool a, int b) Tuple { get; }

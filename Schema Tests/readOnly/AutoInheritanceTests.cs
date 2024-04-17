@@ -143,7 +143,9 @@ namespace schema.readOnly {
           """
           namespace foo.bar.other {
             public partial class OtherParent {
-              public partial interface IBase : IReadOnlyBase;
+              public partial interface IBase : IReadOnlyBase {
+                bool IReadOnlyBase.Foo => Foo;
+              }
               
               public interface IReadOnlyBase {
                 public bool Foo { get; }
@@ -155,7 +157,9 @@ namespace schema.readOnly {
           """
           namespace foo.bar {
             public partial class Parent {
-              public partial interface IChild : IReadOnlyChild;
+              public partial interface IChild : IReadOnlyChild {
+                bool IReadOnlyChild.Value => Value;
+              }
               
               public interface IReadOnlyChild : other.OtherParent.IReadOnlyBase {
                 public bool Value { get; }
