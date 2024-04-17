@@ -25,6 +25,8 @@ namespace schema.readOnly {
   [Generator(LanguageNames.CSharp)]
   public class ReadOnlyTypeGenerator
       : BNamedTypesWithAttributeGenerator<GenerateReadOnlyAttribute> {
+    private static readonly TypeInfoParser parser_ = new();
+
     public const string PREFIX = "IReadOnly";
 
     internal override bool FilterNamedTypesBeforeGenerating(
@@ -59,7 +61,7 @@ namespace schema.readOnly {
                             .GetQualifiersAndNameAndGenericParametersFor());
       }
 
-      var interfaceName = this.GetConstInterfaceNameFor_(typeSymbol);
+      var interfaceName = GetConstInterfaceNameFor_(typeSymbol);
 
       // Class
       {
@@ -82,95 +84,114 @@ namespace schema.readOnly {
             = typeSymbol.GetNameAndGenericParametersFor(interfaceName) +
               typeSymbol.TypeParameters.GetTypeConstraints(typeV2);
         var parentConstNames =
-            this
-                .GetDirectBaseTypeAndInterfaces_(typeSymbol)
-                .Where(i => i.HasAttribute<GenerateReadOnlyAttribute>())
-                .Select(i => this.GetConstInterfaceNameFor_(i) +
+            GetDirectBaseTypeAndInterfaces_(typeSymbol)
+                .Where(i => i.HasAttribute<GenerateReadOnlyAttribute>() ||
+                            IsTypeAlreadyConst_(i))
+                .Select(i => (i.HasAttribute<GenerateReadOnlyAttribute>()
+                                 ? GetConstInterfaceNameFor_(i)
+                                 : i.Name) +
                              i.TypeArguments.GetGenericArguments(typeV2))
                 .ToArray();
         if (parentConstNames.Length > 0) {
           blockPrefix += " : " + string.Join(", ", parentConstNames);
         }
 
-        cbsb.EnterBlock(blockPrefix);
+        var constMembers
+            = parser_
+              .ParseMembers(typeSymbol)
+              .Where(parsedMember => {
+                       var (parseStatus, memberSymbol, _, _) = parsedMember;
+                       if (parseStatus ==
+                           TypeInfoParser.ParseStatus
+                                         .NOT_A_FIELD_OR_PROPERTY_OR_METHOD) {
+                         return false;
+                       }
 
-        foreach (var parsedMember in new TypeInfoParser().ParseMembers(
-                     typeSymbol)) {
-          var (parseStatus, memberSymbol, memberTypeSymbol, memberTypeInfo)
-              = parsedMember;
-          if (parseStatus ==
-              TypeInfoParser.ParseStatus.NOT_A_FIELD_OR_PROPERTY_OR_METHOD) {
-            continue;
-          }
+                       if (memberSymbol.DeclaredAccessibility is not (
+                           Accessibility.Public or Accessibility.Internal)) {
+                         return false;
+                       }
 
-          if (memberSymbol.DeclaredAccessibility is not (Accessibility.Public
-              or Accessibility.Internal)) {
-            continue;
-          }
+                       if (memberSymbol is IFieldSymbol) {
+                         return false;
+                       }
 
-          if (memberSymbol is IFieldSymbol) {
-            continue;
-          }
+                       if (memberSymbol is IPropertySymbol {
+                               IsWriteOnly: true
+                           }) {
+                         return false;
+                       }
 
-          if (memberSymbol is IPropertySymbol { IsWriteOnly: true }) {
-            continue;
-          }
+                       if (memberSymbol is IMethodSymbol &&
+                           !memberSymbol.HasAttribute<ConstAttribute>()) {
+                         return false;
+                       }
 
-          if (memberSymbol is IMethodSymbol &&
-              !memberSymbol.HasAttribute<ConstAttribute>()) {
-            continue;
-          }
+                       return true;
+                     })
+              .ToArray();
 
-          {
-            if (memberSymbol is IMethodSymbol methodSymbol) {
-              memberTypeSymbol = methodSymbol.ReturnType;
+        if (constMembers.Length == 0) {
+          cbsb.Write(blockPrefix);
+          cbsb.WriteLine(";");
+        } else {
+          cbsb.EnterBlock(blockPrefix);
+
+          foreach (var parsedMember in constMembers) {
+            var (_, memberSymbol, memberTypeSymbol, _) = parsedMember;
+
+            {
+              if (memberSymbol is IMethodSymbol methodSymbol) {
+                memberTypeSymbol = methodSymbol.ReturnType;
+              }
             }
-          }
 
-          cbsb.Write(
-              SymbolTypeUtil.AccessibilityToModifier(
-                  typeSymbol.DeclaredAccessibility));
-          cbsb.Write(" ");
+            cbsb.Write(
+                SymbolTypeUtil.AccessibilityToModifier(
+                    typeSymbol.DeclaredAccessibility));
+            cbsb.Write(" ");
 
-          var memberTypeV2 = TypeV2.FromSymbol(memberTypeSymbol);
-          cbsb.Write(typeV2.GetQualifiedNameFromCurrentSymbol(memberTypeV2));
-          cbsb.Write(" ");
+            var memberTypeV2 = TypeV2.FromSymbol(memberTypeSymbol);
+            cbsb.Write(typeV2.GetQualifiedNameFromCurrentSymbol(memberTypeV2));
+            cbsb.Write(" ");
 
-          cbsb.Write(memberSymbol.Name.EscapeKeyword());
+            cbsb.Write(memberSymbol.Name.EscapeKeyword());
 
-          switch (memberSymbol) {
-            case IMethodSymbol methodSymbol: {
-              cbsb.Write(methodSymbol.TypeParameters.GetGenericParameters());
-              cbsb.Write("(");
+            switch (memberSymbol) {
+              case IMethodSymbol methodSymbol: {
+                cbsb.Write(methodSymbol.TypeParameters.GetGenericParameters());
+                cbsb.Write("(");
 
-              for (var i = 0; i < methodSymbol.Parameters.Length; ++i) {
-                if (i > 0) {
-                  cbsb.Write(", ");
+                for (var i = 0; i < methodSymbol.Parameters.Length; ++i) {
+                  if (i > 0) {
+                    cbsb.Write(", ");
+                  }
+
+                  var parameterSymbol = methodSymbol.Parameters[i];
+                  var parameterTypeV2 = TypeV2.FromSymbol(parameterSymbol.Type);
+                  cbsb.Write(
+                      typeV2.GetQualifiedNameFromCurrentSymbol(
+                          parameterTypeV2));
+                  cbsb.Write(" ");
+                  cbsb.Write(parameterSymbol.Name.EscapeKeyword());
                 }
 
-                var parameterSymbol = methodSymbol.Parameters[i];
-                var parameterTypeV2 = TypeV2.FromSymbol(parameterSymbol.Type);
+                cbsb.Write(")");
                 cbsb.Write(
-                    typeV2.GetQualifiedNameFromCurrentSymbol(parameterTypeV2));
-                cbsb.Write(" ");
-                cbsb.Write(parameterSymbol.Name.EscapeKeyword());
+                    methodSymbol.TypeParameters.GetTypeConstraints(typeV2));
+
+                cbsb.WriteLine(";");
+                break;
               }
-
-              cbsb.Write(")");
-              cbsb.Write(
-                  methodSymbol.TypeParameters.GetTypeConstraints(typeV2));
-
-              cbsb.WriteLine(";");
-              break;
-            }
-            case IPropertySymbol: {
-              cbsb.WriteLine(" { get; }");
-              break;
+              case IPropertySymbol: {
+                cbsb.WriteLine(" { get; }");
+                break;
+              }
             }
           }
-        }
 
-        cbsb.ExitBlock();
+          cbsb.ExitBlock();
+        }
       }
 
       // parent types
@@ -186,7 +207,44 @@ namespace schema.readOnly {
       return sb.ToString();
     }
 
-    private string GetConstInterfaceNameFor_(INamedTypeSymbol typeSymbol) {
+    private static bool IsTypeAlreadyConst_(INamedTypeSymbol typeSymbol) {
+      foreach (var parsedMember in parser_.ParseMembers(
+                   typeSymbol)) {
+        var (parseStatus, memberSymbol, _, _)
+            = parsedMember;
+        if (parseStatus ==
+            TypeInfoParser.ParseStatus.NOT_A_FIELD_OR_PROPERTY_OR_METHOD) {
+          continue;
+        }
+
+        if (memberSymbol.DeclaredAccessibility is not (Accessibility.Public
+            or Accessibility.Internal)) {
+          continue;
+        }
+
+        if (memberSymbol is IFieldSymbol) {
+          continue;
+        }
+
+        if (memberSymbol is IPropertySymbol { IsReadOnly: true }) {
+          continue;
+        }
+
+        if (memberSymbol is IMethodSymbol &&
+            (memberSymbol.Name.EndsWith("_Property") ||
+             memberSymbol.HasAttribute<ConstAttribute>())) {
+          continue;
+        }
+
+        return false;
+      }
+
+      return GetDirectBaseTypeAndInterfaces_(typeSymbol)
+          .All(IsTypeAlreadyConst_);
+    }
+
+    private static string GetConstInterfaceNameFor_(
+        INamedTypeSymbol typeSymbol) {
       var typeV2 = TypeV2.FromSymbol(typeSymbol);
       var baseName = typeSymbol.Name;
       if (baseName.Length >= 2) {
@@ -203,13 +261,26 @@ namespace schema.readOnly {
       return $"{PREFIX}{baseName}";
     }
 
-    private IEnumerable<INamedTypeSymbol> GetDirectBaseTypeAndInterfaces_(
-        INamedTypeSymbol symbol) {
-      if (symbol.BaseType != null) {
-        yield return symbol.BaseType;
+    private static IEnumerable<INamedTypeSymbol>
+        GetDirectBaseTypeAndInterfaces_(
+            INamedTypeSymbol symbol) {
+      var baseType = symbol.BaseType;
+      if (baseType != null &&
+          !baseType.IsExactlyType(typeof(object)) &&
+          !baseType.IsExactlyType(typeof(ValueType))) {
+        yield return baseType;
       }
 
-      foreach (var iface in symbol.Interfaces) {
+      var parentInterfaces
+          = symbol.Interfaces
+                  .Where(i => !(i.GetFullyQualifiedNamespace() == "System" &&
+                                i.Name == "IEquatable" &&
+                                i.TypeArguments[0]
+                                 .GetFullyQualifiedNamespace() ==
+                                symbol.GetFullyQualifiedNamespace() &&
+                                i.TypeArguments[0].Name == symbol.Name));
+
+      foreach (var iface in parentInterfaces) {
         yield return iface;
       }
     }

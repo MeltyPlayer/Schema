@@ -30,8 +30,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial class Empty : IReadOnlyEmpty;
             
-            public interface IReadOnlyEmpty {
-            }
+            public interface IReadOnlyEmpty;
           }
 
           """);
@@ -69,8 +68,7 @@ namespace schema.readOnly {
             namespace foo.bar {
               public {{containerPrefix}}partial {{containerSuffix}} {{containerName}} : {{readOnlyName}};
               
-              public interface {{readOnlyName}} {
-              }
+              public interface {{readOnlyName}};
             }
 
             """);
@@ -97,6 +95,31 @@ namespace schema.readOnly {
             public interface IReadOnlySimpleGenerics<T1, T2> {
               public T1 Foo<T3, T4>(T1 t1, T2 t2, T3 t3, T4 t4);
             }
+          }
+
+          """);
+    }
+
+    [Test]
+    public void TestAlreadyConstInterfaceParent() {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          """
+          using schema.readOnly;
+
+          namespace foo.bar {
+            public interface IAlreadyConst {
+              public bool Property { get; }
+            }
+          
+            [GenerateReadOnly]
+            public partial class AlreadyConstWrapper : IAlreadyConst;
+          }
+          """,
+          """
+          namespace foo.bar {
+            public partial class AlreadyConstWrapper : IReadOnlyAlreadyConstWrapper;
+            
+            public interface IReadOnlyAlreadyConstWrapper : IAlreadyConst;
           }
 
           """);
@@ -239,8 +262,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial interface IBase : IReadOnlyBase;
             
-            public interface IReadOnlyBase {
-            }
+            public interface IReadOnlyBase;
           }
 
           """,
@@ -248,8 +270,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial interface IChild : IReadOnlyChild;
             
-            public interface IReadOnlyChild : IReadOnlyBase {
-            }
+            public interface IReadOnlyChild : IReadOnlyBase;
           }
 
           """);
@@ -276,8 +297,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial interface IBase1<T> : IReadOnlyBase1<T>;
             
-            public interface IReadOnlyBase1<T> {
-            }
+            public interface IReadOnlyBase1<T>;
           }
 
           """,
@@ -285,8 +305,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial interface IBase2<T> : IReadOnlyBase2<T>;
             
-            public interface IReadOnlyBase2<T> {
-            }
+            public interface IReadOnlyBase2<T>;
           }
 
           """,
@@ -294,8 +313,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial interface IChild<T1, T2> : IReadOnlyChild<T1, T2>;
             
-            public interface IReadOnlyChild<T1, T2> : IReadOnlyBase1<T1>, IReadOnlyBase2<T2> {
-            }
+            public interface IReadOnlyChild<T1, T2> : IReadOnlyBase1<T1>, IReadOnlyBase2<T2>;
           }
 
           """);
