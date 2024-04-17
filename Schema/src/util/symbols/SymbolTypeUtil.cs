@@ -346,7 +346,7 @@ namespace schema.util.symbols {
         // TODO: Is there a built-in for this?
         return overrideName ??
                primitiveType switch {
-                   SchemaPrimitiveType.BOOLEAN => "boolean",
+                   SchemaPrimitiveType.BOOLEAN => "bool",
                    SchemaPrimitiveType.SBYTE   => "sbyte",
                    SchemaPrimitiveType.BYTE    => "byte",
                    SchemaPrimitiveType.INT16   => "short",

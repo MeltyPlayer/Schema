@@ -235,7 +235,7 @@ namespace schema.readOnly {
         }
 
         if (memberSymbol is IMethodSymbol &&
-            (memberSymbol.Name.EndsWith("_Property") ||
+            (memberSymbol.Name.StartsWith("get_") ||
              memberSymbol.HasAttribute<ConstAttribute>())) {
           continue;
         }
