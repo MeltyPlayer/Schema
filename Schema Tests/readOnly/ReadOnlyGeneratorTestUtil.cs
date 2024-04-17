@@ -8,14 +8,14 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using NUnit.Framework;
 
-using schema.@const;
+using schema.readOnly;
 using schema.util.asserts;
 
 #pragma warning disable CS8604
 
 
 namespace schema.binary {
-  internal static class ConstGeneratorTestUtil {
+  internal static class ReadOnlyGeneratorTestUtil {
     public static CSharpCompilation Compilation =
         CSharpCompilation
             .Create("test")
@@ -35,7 +35,7 @@ namespace schema.binary {
                    .GetRoot()
                    .DescendantTokens()
                    .Where(t => t is {
-                       Text: "GenerateConst",
+                       Text: "GenerateReadOnly",
                        Parent.Parent: AttributeSyntax
                    })
                    .Select(t => t.Parent?.Parent as AttributeSyntax)
@@ -58,7 +58,7 @@ namespace schema.binary {
                    .Select(
                        symbol => {
                          Assert.True(
-                             new ConstTypeGenerator().Generate(
+                             new ReadOnlyTypeGenerator().Generate(
                                  symbol,
                                  out var actual));
                          return actual.ReplaceLineEndings();

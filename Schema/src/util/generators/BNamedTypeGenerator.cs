@@ -1,50 +1,61 @@
-﻿using System;
-using System.Collections.Generic;
-
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-using schema.util.data;
+using INamedTypeSymbol = Microsoft.CodeAnalysis.INamedTypeSymbol;
 
 
 namespace schema.util.generators {
-  public abstract class BNamedTypeGenerator : ISourceGenerator {
-    private readonly Queue<INamedTypeSymbol> symbolQueue_ = new();
+  public abstract class BNamedTypeGenerator<TAttribute>
+      : IIncrementalGenerator {
+    internal abstract bool Generate(
+        INamedTypeSymbol typeSymbol,
+        out string fileName,
+        out string source);
 
-    private readonly SourceFileDictionary sourceFileDictionary_ = new();
+    public void Initialize(IncrementalGeneratorInitializationContext context) {
+      var symbolProvider
+          = context.SyntaxProvider.CreateSyntaxProvider(
+              (syntaxNode, _) => {
+                if (!(syntaxNode is AttributeSyntax attributeSyntax &&
+                      IsCorrectAttributeSyntax_(attributeSyntax))) {
+                  return false;
+                }
 
-    internal abstract void Generate(INamedTypeSymbol typeSymbol,
-                                    ISourceFileDictionary sourceFileDictionary);
+                return attributeSyntax.Parent?.Parent is TypeDeclarationSyntax;
+              },
+              (context, _) => {
+                var typeDeclarationSyntax
+                    = ((context.Node as AttributeSyntax)?.Parent?.Parent as
+                        TypeDeclarationSyntax)!;
+                var symbol
+                    = (context.SemanticModel.GetDeclaredSymbol(
+                        typeDeclarationSyntax) as INamedTypeSymbol)!;
+                return symbol;
+              });
 
-    public void Initialize(GeneratorInitializationContext context)
-      => context.RegisterForSyntaxNotifications(() => new CustomReceiver(this));
-
-    private class CustomReceiver(BNamedTypeGenerator g)
-        : ISyntaxContextReceiver {
-      public void OnVisitSyntaxNode(GeneratorSyntaxContext context) {
-        TypeDeclarationSyntax syntax;
-        ISymbol symbol;
-        if (context.Node is not TypeDeclarationSyntax classDeclarationSyntax) {
-          return;
-        }
-
-        symbol = context.SemanticModel.GetDeclaredSymbol(
-            classDeclarationSyntax);
-        if (symbol is not INamedTypeSymbol namedTypeSymbol) {
-          return;
-        }
-
-        g.symbolQueue_.Enqueue(namedTypeSymbol);
-      }
+      context.RegisterSourceOutput(
+          symbolProvider,
+          (context, symbol) => {
+            if (this.Generate(symbol, out var fileName, out var source)) {
+              context.AddSource(fileName, source);
+            }
+          });
     }
 
-    public void Execute(GeneratorExecutionContext context) {
-      while (this.symbolQueue_.TryDequeue(out var symbol)) {
-        this.Generate(symbol, this.sourceFileDictionary_);
+    private const string ATTRIBUTE_SUFFIX = "Attribute";
+
+    private static bool IsCorrectAttributeSyntax_(
+        AttributeSyntax syntax) {
+      var syntaxName = syntax.Name.ToString();
+      var typeName = typeof(TAttribute).Name;
+
+      if (syntaxName == typeName) {
+        return true;
       }
 
-      this.sourceFileDictionary_.SetHandler(context.AddSource);
+      return typeName.Length == syntaxName.Length + ATTRIBUTE_SUFFIX.Length &&
+             typeName.StartsWith(syntaxName) &&
+             typeName.EndsWith(ATTRIBUTE_SUFFIX);
     }
   }
 }

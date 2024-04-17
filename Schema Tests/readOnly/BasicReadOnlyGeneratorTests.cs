@@ -3,8 +3,8 @@
 using schema.binary;
 
 
-namespace schema.@const {
-  internal class BasicConstGeneratorTests {
+namespace schema.readOnly {
+  internal class BasicReadOnlyGeneratorTests {
     [Test]
     // Unsupported
     [TestCase("public bool field;")]
@@ -15,12 +15,12 @@ namespace schema.@const {
     [TestCase("private bool Field { get; set; }")]
     [TestCase("[Const] bool Field();")]
     public void TestEmpty(string emptySrc) {
-      ConstGeneratorTestUtil.AssertGenerated(
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
           $$"""
-            using schema.@const;
+            using schema.readOnly;
 
             namespace foo.bar {
-              [GenerateConst]
+              [GenerateReadOnly]
               public partial class Empty {
                 {{emptySrc}}
               }
@@ -28,9 +28,9 @@ namespace schema.@const {
             """,
           """
           namespace foo.bar {
-            public partial class Empty : IConstEmpty;
+            public partial class Empty : IReadOnlyEmpty;
             
-            public interface IConstEmpty {
+            public interface IReadOnlyEmpty {
             }
           }
 
@@ -38,30 +38,38 @@ namespace schema.@const {
     }
 
     [Test]
-    [TestCase("abstract ", "class", "B")]
-    [TestCase("", "class")]
-    [TestCase("", "interface", "I")]
-    [TestCase("", "record")]
-    [TestCase("", "record struct")]
-    [TestCase("", "struct")]
+    // Special prefixes
+    [TestCase("abstract ", "class", "BContainer", "IReadOnlyContainer")]
+    [TestCase("", "interface", "IContainer", "IReadOnlyContainer")]
+    // Prefix cases missed
+    [TestCase("abstract ", "class", "Container", "IReadOnlyContainer")]
+    [TestCase("", "interface", "Container", "IReadOnlyContainer")]
+    [TestCase("", "class", "Bar", "IReadOnlyBar")]
+    [TestCase("", "class", "Int", "IReadOnlyInt")]
+    // Each other type
+    [TestCase("", "class", "Container", "IReadOnlyContainer")]
+    [TestCase("", "record", "Container", "IReadOnlyContainer")]
+    [TestCase("", "record struct", "Container", "IReadOnlyContainer")]
+    [TestCase("", "struct", "Container", "IReadOnlyContainer")]
     public void TestContainers(string containerPrefix,
                                string containerSuffix,
-                               string namePrefix = "") {
-      ConstGeneratorTestUtil.AssertGenerated(
+                               string containerName,
+                               string readOnlyName) {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
           $$"""
-            using schema.@const;
+            using schema.readOnly;
 
             namespace foo.bar {
-              [GenerateConst]
-              public {{containerPrefix}}partial {{containerSuffix}} {{namePrefix}}Container {
+              [GenerateReadOnly]
+              public {{containerPrefix}}partial {{containerSuffix}} {{containerName}} {
               }
             }
             """,
           $$"""
             namespace foo.bar {
-              public {{containerPrefix}}partial {{containerSuffix}} {{namePrefix}}Container : IConstContainer;
+              public {{containerPrefix}}partial {{containerSuffix}} {{containerName}} : {{readOnlyName}};
               
-              public interface IConstContainer {
+              public interface {{readOnlyName}} {
               }
             }
 
@@ -70,12 +78,12 @@ namespace schema.@const {
 
     [Test]
     public void TestSimpleGenerics() {
-      ConstGeneratorTestUtil.AssertGenerated(
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
           """
-          using schema.@const;
+          using schema.readOnly;
 
           namespace foo.bar {
-            [GenerateConst]
+            [GenerateReadOnly]
             public partial class SimpleGenerics<T1, T2> {
               [Const]
               public T1 Foo<T3, T4>(T1 t1, T2 t2, T3 t3, T4 t4) { }
@@ -84,9 +92,9 @@ namespace schema.@const {
           """,
           """
           namespace foo.bar {
-            public partial class SimpleGenerics<T1, T2> : IConstSimpleGenerics<T1, T2>;
+            public partial class SimpleGenerics<T1, T2> : IReadOnlySimpleGenerics<T1, T2>;
             
-            public interface IConstSimpleGenerics<T1, T2> {
+            public interface IReadOnlySimpleGenerics<T1, T2> {
               public T1 Foo<T3, T4>(T1 t1, T2 t2, T3 t3, T4 t4);
             }
           }
@@ -102,12 +110,12 @@ namespace schema.@const {
     [TestCase("unmanaged")]
     [TestCase("System.IO.Stream")]
     public void TestEachConstraintType(string constraint) {
-      ConstGeneratorTestUtil.AssertGenerated(
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
           $$"""
-            using schema.@const;
+            using schema.readOnly;
 
             namespace foo.bar {
-              [GenerateConst]
+              [GenerateReadOnly]
               public partial class EachConstraint<T> where T : {{constraint}} {
                 [Const]
                 public T Foo<S>(T t, S s) where S : {{constraint}} { }
@@ -116,9 +124,9 @@ namespace schema.@const {
             """,
           $$"""
             namespace foo.bar {
-              public partial class EachConstraint<T> : IConstEachConstraint<T>;
+              public partial class EachConstraint<T> : IReadOnlyEachConstraint<T>;
               
-              public interface IConstEachConstraint<T> where T : {{constraint}} {
+              public interface IReadOnlyEachConstraint<T> where T : {{constraint}} {
                 public T Foo<S>(T t, S s) where S : {{constraint}};
               }
             }
@@ -128,12 +136,12 @@ namespace schema.@const {
 
     [Test]
     public void TestGenericSubConstraint() {
-      ConstGeneratorTestUtil.AssertGenerated(
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
           """
-          using schema.@const;
+          using schema.readOnly;
 
           namespace foo.bar {
-            [GenerateConst]
+            [GenerateReadOnly]
             public partial class SubConstraint<T1, T2> where T2 : T1 {
               [Const]
               public T1 Foo<S>(S s) where S : T1 { }
@@ -144,9 +152,9 @@ namespace schema.@const {
           """,
           """
           namespace foo.bar {
-            public partial class SubConstraint<T1, T2> : IConstSubConstraint<T1, T2>;
+            public partial class SubConstraint<T1, T2> : IReadOnlySubConstraint<T1, T2>;
             
-            public interface IConstSubConstraint<T1, T2> where T2 : T1 {
+            public interface IReadOnlySubConstraint<T1, T2> where T2 : T1 {
               public T1 Foo<S>(S s) where S : T1;
               public T2 Bar { get; }
             }
@@ -157,12 +165,12 @@ namespace schema.@const {
 
     [Test]
     public void TestMultipleGenericConstraints() {
-      ConstGeneratorTestUtil.AssertGenerated(
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
           """
-          using schema.@const;
+          using schema.readOnly;
 
           namespace foo.bar {
-            [GenerateConst]
+            [GenerateReadOnly]
             public partial class SimpleAttributes<T1, T2> where T1 : notnull, struct where T2 : unmanaged {
               [Const]
               public T1 Foo<T3, T4>(T1 t1, T2 t2, T3 t3, T4 t4) where T3 : class where T4 : class? { }
@@ -173,9 +181,9 @@ namespace schema.@const {
           """,
           """
           namespace foo.bar {
-            public partial class SimpleAttributes<T1, T2> : IConstSimpleAttributes<T1, T2>;
+            public partial class SimpleAttributes<T1, T2> : IReadOnlySimpleAttributes<T1, T2>;
             
-            public interface IConstSimpleAttributes<T1, T2> where T1 : notnull, struct where T2 : unmanaged {
+            public interface IReadOnlySimpleAttributes<T1, T2> where T1 : notnull, struct where T2 : unmanaged {
               public T1 Foo<T3, T4>(T1 t1, T2 t2, T3 t3, T4 t4) where T3 : class where T4 : class?;
               public T2 Bar { get; }
             }
@@ -186,12 +194,12 @@ namespace schema.@const {
 
     [Test]
     public void TestKeywords() {
-      ConstGeneratorTestUtil.AssertGenerated(
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
           """
-          using schema.@const;
+          using schema.readOnly;
 
           namespace @const {
-            [GenerateConst]
+            [GenerateReadOnly]
             public partial class @void<@double> where @double : struct {
               [Const]
               public @void @int<@short>(@void @bool) where @short : @void { }
@@ -202,9 +210,9 @@ namespace schema.@const {
           """,
           """
           namespace @const {
-            public partial class @void<@double> : IConstvoid<@double>;
+            public partial class @void<@double> : IReadOnlyvoid<@double>;
             
-            public interface IConstvoid<@double> where @double : struct {
+            public interface IReadOnlyvoid<@double> where @double : struct {
               public @void @int<@short>(@void @bool) where @short : @void;
               public @void @float { get; }
             }
@@ -215,32 +223,32 @@ namespace schema.@const {
 
     [Test]
     public void TestAutoInheritance() {
-      ConstGeneratorTestUtil.AssertGenerated(
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
           """
-          using schema.@const;
+          using schema.readOnly;
 
           namespace foo.bar {
-            [GenerateConst]
+            [GenerateReadOnly]
             public partial interface IBase {}
           
-            [GenerateConst]
+            [GenerateReadOnly]
             public partial interface IChild : IBase {}
           }
           """,
           """
           namespace foo.bar {
-            public partial interface IBase : IConstBase;
+            public partial interface IBase : IReadOnlyBase;
             
-            public interface IConstBase {
+            public interface IReadOnlyBase {
             }
           }
 
           """,
           """
           namespace foo.bar {
-            public partial interface IChild : IConstChild;
+            public partial interface IChild : IReadOnlyChild;
             
-            public interface IConstChild : IConstBase {
+            public interface IReadOnlyChild : IReadOnlyBase {
             }
           }
 
@@ -249,44 +257,44 @@ namespace schema.@const {
 
     [Test]
     public void TestAutoGenericInheritance() {
-      ConstGeneratorTestUtil.AssertGenerated(
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
           """
-          using schema.@const;
+          using schema.readOnly;
 
           namespace foo.bar {
-            [GenerateConst]
+            [GenerateReadOnly]
             public partial interface IBase1<T> {}
           
-            [GenerateConst]
+            [GenerateReadOnly]
             public partial interface IBase2<T> {}
           
-            [GenerateConst]
+            [GenerateReadOnly]
             public partial interface IChild<T1, T2> : IBase1<T1>, IBase2<T2> {}
           }
           """,
           """
           namespace foo.bar {
-            public partial interface IBase1<T> : IConstBase1<T>;
+            public partial interface IBase1<T> : IReadOnlyBase1<T>;
             
-            public interface IConstBase1<T> {
+            public interface IReadOnlyBase1<T> {
             }
           }
 
           """,
           """
           namespace foo.bar {
-            public partial interface IBase2<T> : IConstBase2<T>;
+            public partial interface IBase2<T> : IReadOnlyBase2<T>;
             
-            public interface IConstBase2<T> {
+            public interface IReadOnlyBase2<T> {
             }
           }
 
           """,
           """
           namespace foo.bar {
-            public partial interface IChild<T1, T2> : IConstChild<T1, T2>;
+            public partial interface IChild<T1, T2> : IReadOnlyChild<T1, T2>;
             
-            public interface IConstChild<T1, T2> : IConstBase1<T1>, IConstBase2<T2> {
+            public interface IReadOnlyChild<T1, T2> : IReadOnlyBase1<T1>, IReadOnlyBase2<T2> {
             }
           }
 

@@ -1,13 +1,13 @@
-﻿using schema.@const;
+﻿using schema.readOnly;
 
 
-namespace foo {
-  [GenerateConst]
+namespace readOnly {
+  [GenerateReadOnly]
   public partial class ValueType {
     public string Value { get; set; }
   }
 
-  [GenerateConst]
+  [GenerateReadOnly]
   public partial interface IFooBar {
     public string Value { get; set; }
   }

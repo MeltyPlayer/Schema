@@ -12,37 +12,33 @@ using schema.util.symbols;
 using schema.util.text;
 using schema.util.types;
 
-namespace schema.@const {
+namespace schema.readOnly {
   [AttributeUsage(AttributeTargets.Method)]
   public class ConstAttribute : Attribute;
 
   [AttributeUsage(AttributeTargets.Class |
                   AttributeTargets.Interface |
                   AttributeTargets.Struct)]
-  public class GenerateConstAttribute : Attribute;
+  public class GenerateReadOnlyAttribute : Attribute;
 
   [Generator(LanguageNames.CSharp)]
-  public class ConstTypeGenerator : BNamedTypeGenerator {
-    public const string PREFIX = "IConst";
+  public class ReadOnlyTypeGenerator
+      : BNamedTypeGenerator<GenerateReadOnlyAttribute> {
+    public const string PREFIX = "IReadOnly";
 
-    internal override void Generate(
+    internal override bool Generate(
         INamedTypeSymbol typeSymbol,
-        ISourceFileDictionary sourceFileDictionary) {
+        out string fileName,
+        out string source) {
       var typeV2 = TypeV2.FromSymbol(typeSymbol);
-      if (this.Generate(typeSymbol, out var source)) {
-        sourceFileDictionary.Add($"{typeV2.FullyQualifiedName}_const.g",
-                                 source);
-      }
+      fileName = $"{typeV2.FullyQualifiedName}_readOnly.g";
+
+      return this.Generate(typeSymbol, out source);
     }
 
     public bool Generate(INamedTypeSymbol typeSymbol,
                          out string source) {
       var typeV2 = TypeV2.FromSymbol(typeSymbol);
-
-      if (!typeV2.HasAttribute<GenerateConstAttribute>()) {
-        source = default;
-        return false;
-      }
 
       var typeNamespace = typeSymbol.GetFullyQualifiedNamespace();
 
@@ -57,17 +53,19 @@ namespace schema.@const {
       }
 
       foreach (var declaringType in declaringTypes) {
-        cbsb.EnterBlock(declaringType.GetQualifiersAndNameAndGenericParametersFor());
+        cbsb.EnterBlock(declaringType
+                            .GetQualifiersAndNameAndGenericParametersFor());
       }
 
       var interfaceName = this.GetConstInterfaceNameFor_(typeSymbol);
 
       // Class
       {
-        cbsb.WriteLine(typeSymbol.GetQualifiersAndNameAndGenericParametersFor() +
-                       " : " +
-                       typeSymbol.GetNameAndGenericParametersFor(interfaceName) +
-                       ";");
+        cbsb.WriteLine(
+            typeSymbol.GetQualifiersAndNameAndGenericParametersFor() +
+            " : " +
+            typeSymbol.GetNameAndGenericParametersFor(interfaceName) +
+            ";");
       }
       cbsb.WriteLine("");
 
@@ -78,12 +76,13 @@ namespace schema.@const {
                 typeSymbol.DeclaredAccessibility));
         cbsb.Write(" interface ");
 
-        var blockPrefix = typeSymbol.GetNameAndGenericParametersFor(interfaceName) +
-                          typeSymbol.TypeParameters.GetTypeConstraints(typeV2);
+        var blockPrefix
+            = typeSymbol.GetNameAndGenericParametersFor(interfaceName) +
+              typeSymbol.TypeParameters.GetTypeConstraints(typeV2);
         var parentConstNames =
             this
                 .GetDirectBaseTypeAndInterfaces_(typeSymbol)
-                .Where(i => i.HasAttribute<GenerateConstAttribute>())
+                .Where(i => i.HasAttribute<GenerateReadOnlyAttribute>())
                 .Select(i => this.GetConstInterfaceNameFor_(i) +
                              i.TypeArguments.GetGenericArguments(typeV2))
                 .ToArray();
