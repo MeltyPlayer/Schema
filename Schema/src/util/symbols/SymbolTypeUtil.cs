@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -10,7 +9,6 @@ using Microsoft.CodeAnalysis;
 using schema.binary;
 using schema.binary.attributes;
 using schema.binary.parser;
-using schema.util.asserts;
 using schema.util.diagnostics;
 using schema.util.types;
 

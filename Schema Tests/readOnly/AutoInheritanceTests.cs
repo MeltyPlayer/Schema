@@ -2,35 +2,28 @@
 
 using schema.binary;
 
-namespace fin.data.indexable {
-  public interface IIndexable {
-    int Index { get; }
-  }
-}
-
-
 namespace schema.readOnly {
   internal class AutoInheritanceTests {
     [Test]
-    public void TestWeirdSituation() {
+    [TestCase("System.Collections.Generic.IEnumerable<T>")]
+    public void TestKnown(string knownBase) {
       ReadOnlyGeneratorTestUtil.AssertGenerated(
-          """
-          using schema.readOnly;
-          using fin.data.indexable;
-
-          namespace foo.bar {
-            [GenerateReadOnly]
-            public partial class AlreadyConstWrapper : IIndexable;
-          }
-          """,
-          """
-          namespace foo.bar {
-            public partial class AlreadyConstWrapper : IReadOnlyAlreadyConstWrapper;
+          $$"""
+            using schema.readOnly;
             
-            public interface IReadOnlyAlreadyConstWrapper : fin.data.indexable.IIndexable;
-          }
+            namespace foo.bar {
+              [GenerateReadOnly]
+              public partial interface IGenericWrapper<T> : {{knownBase}};
+            }
+            """,
+          $$"""
+            namespace foo.bar {
+              public partial interface IGenericWrapper<T> : IReadOnlyGenericWrapper<T>;
+              
+              public interface IReadOnlyGenericWrapper<T> : {{knownBase}};
+            }
 
-          """);
+            """);
     }
 
     [Test]

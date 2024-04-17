@@ -230,6 +230,10 @@ namespace schema.readOnly {
     }
 
     private static bool IsTypeAlreadyConst_(INamedTypeSymbol typeSymbol) {
+      if (typeSymbol.MatchesGeneric(typeof(IEnumerable<>))) {
+        return true;
+      }
+
       foreach (var parsedMember in parser_.ParseMembers(
                    typeSymbol)) {
         var (parseStatus, memberSymbol, _, _)
@@ -295,8 +299,7 @@ namespace schema.readOnly {
 
       var parentInterfaces
           = symbol.Interfaces
-                  .Where(i => !(i.GetFullyQualifiedNamespace() == "System" &&
-                                i.Name == "IEquatable" &&
+                  .Where(i => !(i.MatchesGeneric(typeof(IEquatable<>)) &&
                                 i.TypeArguments[0]
                                  .GetFullyQualifiedNamespace() ==
                                 symbol.GetFullyQualifiedNamespace() &&
