@@ -245,9 +245,8 @@ namespace schema.readOnly {
           if (!isIndexer) {
             cbsb.Write(memberSymbol.Name.Substring(4).EscapeKeyword());
           } else {
+            cbsb.Write("this[");
             for (var i = 0; i < methodSymbol.Parameters.Length; ++i) {
-              cbsb.Write("this[");
-
               if (i > 0) {
                 cbsb.Write(", ");
               }

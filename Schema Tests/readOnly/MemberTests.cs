@@ -128,6 +128,34 @@ namespace schema.readOnly {
     }
 
     [Test]
+    public void TestMultiIndexer() {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          """
+          using schema.readOnly;
+          using System.Collections.Generic;
+
+          namespace foo.bar {
+            [GenerateReadOnly]
+            public partial interface IWrapper {
+              public bool this[int x, int y] { get; set; }
+            }
+          }
+          """,
+          """
+          namespace foo.bar {
+            public partial interface IWrapper : IReadOnlyWrapper {
+              bool IReadOnlyWrapper.this[int x, int y] => this[x, y];
+            }
+            
+            public interface IReadOnlyWrapper {
+              public bool this[int x, int y] { get; }
+            }
+          }
+
+          """);
+    }
+
+    [Test]
     public void TestNamelessTuple() {
       ReadOnlyGeneratorTestUtil.AssertGenerated(
           """
