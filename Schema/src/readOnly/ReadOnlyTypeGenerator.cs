@@ -125,8 +125,7 @@ namespace schema.readOnly {
         cbsb.Write(" interface ");
 
         var blockPrefix
-            = typeSymbol.GetNameAndGenericParametersFor(interfaceName) +
-              typeSymbol.TypeParameters.GetTypeConstraints(typeV2);
+            = typeSymbol.GetNameAndGenericParametersFor(interfaceName);
         var parentConstNames =
             GetDirectBaseTypeAndInterfaces_(typeSymbol)
                 .Where(i => i.HasAttribute<GenerateReadOnlyAttribute>() ||
@@ -141,6 +140,8 @@ namespace schema.readOnly {
         if (parentConstNames.Length > 0) {
           blockPrefix += " : " + string.Join(", ", parentConstNames);
         }
+
+        blockPrefix += typeSymbol.TypeParameters.GetTypeConstraints(typeV2);
 
         if (constMembers.Length == 0) {
           cbsb.Write(blockPrefix).WriteLine(";");
@@ -309,9 +310,11 @@ namespace schema.readOnly {
                 .Write(parameterSymbol.Name.EscapeKeyword());
           }
 
-          cbsb.Write(")")
-              .Write(
-                  methodSymbol.TypeParameters.GetTypeConstraints(typeV2));
+          cbsb.Write(")");
+
+          if (interfaceName == null) {
+            cbsb.Write(methodSymbol.TypeParameters.GetTypeConstraints(typeV2));
+          }
 
           if (interfaceName == null) {
             cbsb.WriteLine(";");

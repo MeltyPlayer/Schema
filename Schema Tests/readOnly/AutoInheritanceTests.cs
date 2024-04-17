@@ -10,7 +10,7 @@ namespace schema.readOnly {
       ReadOnlyGeneratorTestUtil.AssertGenerated(
           $$"""
             using schema.readOnly;
-            
+
             namespace foo.bar {
               [GenerateReadOnly]
               public partial interface IGenericWrapper<T> : {{knownBase}};
@@ -24,6 +24,31 @@ namespace schema.readOnly {
             }
 
             """);
+    }
+
+    [Test]
+    public void TestAlreadyConstInterfaceWithConstraint() {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          """
+          using schema.readOnly;
+
+          namespace foo.bar {
+            public interface IAlreadyConst {
+              public bool Property { get; }
+            }
+          
+            [GenerateReadOnly]
+            public partial class AlreadyConstWrapper<T> : IAlreadyConst where T : notnull;
+          }
+          """,
+          """
+          namespace foo.bar {
+            public partial class AlreadyConstWrapper<T> : IReadOnlyAlreadyConstWrapper<T>;
+            
+            public interface IReadOnlyAlreadyConstWrapper<T> : IAlreadyConst where T : notnull;
+          }
+
+          """);
     }
 
     [Test]

@@ -125,7 +125,7 @@ namespace schema.readOnly {
           $$"""
             namespace foo.bar {
               public partial class EachConstraint<T> : IReadOnlyEachConstraint<T> {
-                T IReadOnlyEachConstraint<T>.Foo<S>(T t, S s) where S : {{constraint}} => Foo<S>(t, s);
+                T IReadOnlyEachConstraint<T>.Foo<S>(T t, S s) => Foo<S>(t, s);
               }
               
               public interface IReadOnlyEachConstraint<T> where T : {{constraint}} {
@@ -155,7 +155,7 @@ namespace schema.readOnly {
           """
           namespace foo.bar {
             public partial class SubConstraint<T1, T2> : IReadOnlySubConstraint<T1, T2> {
-              T1 IReadOnlySubConstraint<T1, T2>.Foo<S>(S s) where S : T1 => Foo<S>(s);
+              T1 IReadOnlySubConstraint<T1, T2>.Foo<S>(S s) => Foo<S>(s);
               T2 IReadOnlySubConstraint<T1, T2>.Bar => Bar;
             }
             
@@ -187,7 +187,7 @@ namespace schema.readOnly {
           """
           namespace foo.bar {
             public partial class SimpleAttributes<T1, T2> : IReadOnlySimpleAttributes<T1, T2> {
-              T1 IReadOnlySimpleAttributes<T1, T2>.Foo<T3, T4>(T1 t1, T2 t2, T3 t3, T4 t4) where T3 : class where T4 : class? => Foo<T3, T4>(t1, t2, t3, t4);
+              T1 IReadOnlySimpleAttributes<T1, T2>.Foo<T3, T4>(T1 t1, T2 t2, T3 t3, T4 t4) => Foo<T3, T4>(t1, t2, t3, t4);
               T2 IReadOnlySimpleAttributes<T1, T2>.Bar => Bar;
             }
             
@@ -219,7 +219,7 @@ namespace schema.readOnly {
           """
           namespace @const {
             public partial class @void<@double> : IReadOnlyvoid<@double> {
-              @void IReadOnlyvoid<@double>.@int<@short>(@void @bool) where @short : @void => @int<@short>(@bool);
+              @void IReadOnlyvoid<@double>.@int<@short>(@void @bool) => @int<@short>(@bool);
               @void IReadOnlyvoid<@double>.@float => @float;
             }
             
