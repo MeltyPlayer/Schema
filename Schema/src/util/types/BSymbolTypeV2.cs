@@ -38,6 +38,9 @@ namespace schema.util.types {
       public abstract bool IsGenericTypeParameter(
           out IEnumerable<ITypeV2> genericConstraints);
 
+      public abstract IEnumerable<(string, ITypeV2)> GetTupleElements();
+
+
       public abstract bool ContainsMemberWithType(ITypeV2 other);
 
       public abstract bool HasAttribute<TAttribute>()
@@ -69,6 +72,7 @@ namespace schema.util.types {
           return $"{namespacePortion}{declaringTypesPortion}{name}";
         }
       }
+
       private bool Matches_(string name,
                             string? fullyQualifiedNamespace,
                             int genericArgCount)

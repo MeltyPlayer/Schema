@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using schema.binary.parser;
+using schema.util.asserts;
 using schema.util.generators;
 using schema.util.symbols;
 using schema.util.text;
@@ -119,13 +120,12 @@ namespace schema.readOnly {
                          return false;
                        }
 
-                       if (memberSymbol is IPropertySymbol {
-                               IsWriteOnly: true
-                           }) {
+                       if (memberSymbol is IPropertySymbol) {
                          return false;
                        }
 
                        if (memberSymbol is IMethodSymbol &&
+                           !memberSymbol.Name.StartsWith("get_") &&
                            !memberSymbol.HasAttribute<ConstAttribute>()) {
                          return false;
                        }
@@ -141,13 +141,10 @@ namespace schema.readOnly {
           cbsb.EnterBlock(blockPrefix);
 
           foreach (var parsedMember in constMembers) {
-            var (_, memberSymbol, memberTypeSymbol, _) = parsedMember;
+            var (_, memberSymbol, _, _) = parsedMember;
 
-            {
-              if (memberSymbol is IMethodSymbol methodSymbol) {
-                memberTypeSymbol = methodSymbol.ReturnType;
-              }
-            }
+            var methodSymbol = Asserts.AsA<IMethodSymbol>(memberSymbol);
+            var memberTypeSymbol = methodSymbol.ReturnType;
 
             cbsb.Write(
                 SymbolTypeUtil.AccessibilityToModifier(
@@ -158,20 +155,23 @@ namespace schema.readOnly {
             cbsb.Write(typeV2.GetQualifiedNameFromCurrentSymbol(memberTypeV2));
             cbsb.Write(" ");
 
-            cbsb.Write(memberSymbol.Name.EscapeKeyword());
-
-            switch (memberSymbol) {
-              case IMethodSymbol methodSymbol: {
-                cbsb.Write(methodSymbol.TypeParameters.GetGenericParameters());
-                cbsb.Write("(");
-
+            var memberName = memberSymbol.Name;
+            // Property
+            if (memberName.StartsWith("get_")) {
+              if (methodSymbol.AssociatedSymbol?.Name != "this[]") {
+                cbsb.Write(memberSymbol.Name.Substring(4).EscapeKeyword());
+                cbsb.WriteLine(" { get; }");
+              } else {
                 for (var i = 0; i < methodSymbol.Parameters.Length; ++i) {
+                  cbsb.Write("this[");
+
                   if (i > 0) {
                     cbsb.Write(", ");
                   }
 
                   var parameterSymbol = methodSymbol.Parameters[i];
-                  var parameterTypeV2 = TypeV2.FromSymbol(parameterSymbol.Type);
+                  var parameterTypeV2
+                      = TypeV2.FromSymbol(parameterSymbol.Type);
                   cbsb.Write(
                       typeV2.GetQualifiedNameFromCurrentSymbol(
                           parameterTypeV2));
@@ -179,17 +179,36 @@ namespace schema.readOnly {
                   cbsb.Write(parameterSymbol.Name.EscapeKeyword());
                 }
 
-                cbsb.Write(")");
-                cbsb.Write(
-                    methodSymbol.TypeParameters.GetTypeConstraints(typeV2));
+                cbsb.WriteLine("] { get; }");
+              }
+            }
+            // Method
+            else {
+              cbsb.Write(memberSymbol.Name.EscapeKeyword());
+              cbsb.Write(methodSymbol.TypeParameters
+                                     .GetGenericParameters());
+              cbsb.Write("(");
 
-                cbsb.WriteLine(";");
-                break;
+              for (var i = 0; i < methodSymbol.Parameters.Length; ++i) {
+                if (i > 0) {
+                  cbsb.Write(", ");
+                }
+
+                var parameterSymbol = methodSymbol.Parameters[i];
+                var parameterTypeV2
+                    = TypeV2.FromSymbol(parameterSymbol.Type);
+                cbsb.Write(
+                    typeV2.GetQualifiedNameFromCurrentSymbol(
+                        parameterTypeV2));
+                cbsb.Write(" ");
+                cbsb.Write(parameterSymbol.Name.EscapeKeyword());
               }
-              case IPropertySymbol: {
-                cbsb.WriteLine(" { get; }");
-                break;
-              }
+
+              cbsb.Write(")");
+              cbsb.Write(
+                  methodSymbol.TypeParameters.GetTypeConstraints(typeV2));
+
+              cbsb.WriteLine(";");
             }
           }
 

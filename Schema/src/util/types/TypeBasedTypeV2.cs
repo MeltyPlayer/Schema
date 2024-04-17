@@ -160,6 +160,9 @@ namespace schema.util.types {
         return true;
       }
 
+      public override IEnumerable<(string, ITypeV2)> GetTupleElements()
+        => throw new NotImplementedException();
+
       private SchemaPrimitiveType GetPrimitiveType_(Type type) {
         if (type.IsEnum) {
           return SchemaPrimitiveType.ENUM;

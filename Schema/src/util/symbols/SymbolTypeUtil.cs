@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis;
 using schema.binary;
 using schema.binary.attributes;
 using schema.binary.parser;
+using schema.util.asserts;
 using schema.util.diagnostics;
 using schema.util.types;
 
@@ -369,12 +370,36 @@ namespace schema.util.symbols {
         return overrideName ?? referencedSymbol.Name.EscapeKeyword();
       }
 
+      var sb = new StringBuilder();
+
+      if (referencedSymbol is
+          { Name: "ValueTuple", FullyQualifiedNamespace: "System" }) {
+        sb.Append("(");
+
+        var genericArguments = referencedSymbol.GetTupleElements().ToArray();
+        for (var i = 0; i < genericArguments.Length; ++i) {
+          if (i > 0) {
+            sb.Append(", ");
+          }
+
+          var (tupleItemName, tupleItemType) = genericArguments[i];
+          sb.Append(sourceSymbol
+                        .GetQualifiedNameFromCurrentSymbol(tupleItemType));
+          if (tupleItemName.Length > 0 && tupleItemName != $"Item{1 + i}") {
+            sb.Append(" ");
+            sb.Append(tupleItemName);
+          }
+        }
+
+        sb.Append(")");
+
+        return sb.ToString();
+      }
+
       var currentNamespace
           = sourceSymbol.NamespaceParts.Select(EscapeKeyword).ToArray();
       var referencedNamespace =
           referencedSymbol.NamespaceParts.Select(EscapeKeyword).ToArray();
-
-      var sb = new StringBuilder();
 
       string mergedNamespaceText;
       if (currentNamespace.Length == 0 && referencedNamespace.Length == 0) {

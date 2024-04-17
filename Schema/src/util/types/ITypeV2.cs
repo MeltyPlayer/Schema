@@ -31,6 +31,7 @@ namespace schema.util.types {
     IEnumerable<ITypeV2> GenericArguments { get; }
     bool IsGenericTypeParameter(out IEnumerable<ITypeV2> genericConstraints);
     IEnumerable<ITypeV2> GenericConstraints { get; }
+    IEnumerable<(string, ITypeV2)> GetTupleElements();
 
     bool HasNullableAnnotation { get; }
     bool IsAtLeastAsBinaryConvertibleAs(ITypeV2 other);

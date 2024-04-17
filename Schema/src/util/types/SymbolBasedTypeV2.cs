@@ -153,11 +153,17 @@ namespace schema.util.types {
 
         genericConstraints =
             typeParameterSymbol
-            .ConstraintTypes
-            .Where(constraint => constraint is not IErrorTypeSymbol)
-            .Select(TypeV2.FromSymbol);
+                .ConstraintTypes
+                .Where(constraint => constraint is not IErrorTypeSymbol)
+                .Select(TypeV2.FromSymbol);
         return true;
       }
+
+      public override IEnumerable<(string, ITypeV2)> GetTupleElements()
+        => (this.symbol_ as INamedTypeSymbol)!.TupleElements.Select(
+            fieldSymbol => (fieldSymbol.Name,
+                            TypeV2.FromSymbol(fieldSymbol.Type)));
+
 
       public override bool HasNullableAnnotation
         => this.symbol_.NullableAnnotation == NullableAnnotation.Annotated;
@@ -172,16 +178,17 @@ namespace schema.util.types {
       public override IEnumerable<TAttribute> GetAttributes<TAttribute>()
         => this.symbol_.GetAttributeData<TAttribute>()
                .Select(attributeData => {
-                 var attribute =
-                     attributeData.Instantiate<TAttribute>(this.symbol_);
-                 if (attribute is BMemberAttribute memberAttribute) {
-                   memberAttribute.Init(this.diagnosticReporter_,
-                                        this.symbol_.ContainingType,
-                                        this.symbol_.Name);
-                 }
+                         var attribute =
+                             attributeData
+                                 .Instantiate<TAttribute>(this.symbol_);
+                         if (attribute is BMemberAttribute memberAttribute) {
+                           memberAttribute.Init(this.diagnosticReporter_,
+                                                this.symbol_.ContainingType,
+                                                this.symbol_.Name);
+                         }
 
-                 return attribute;
-               });
+                         return attribute;
+                       });
 
       private IEnumerable<AttributeData> GetAttributeData_<TAttribute>()
           where TAttribute : Attribute {
@@ -190,20 +197,22 @@ namespace schema.util.types {
                    .GetAttributes()
                    .Where(attributeData
                               => attributeData.AttributeClass?.IsExactlyType(
-                                  attributeType) ?? false);
+                                     attributeType) ??
+                                 false);
       }
 
       public override bool ContainsMemberWithType(ITypeV2 other)
         => this.symbol_
                .GetMembers()
                .Select(member => {
-                 switch (member) {
-                   case IFieldSymbol fieldSymbol: return fieldSymbol.Type;
-                   case IPropertySymbol propertySymbol:
-                     return propertySymbol.Type;
-                   default: return null;
-                 }
-               })
+                         switch (member) {
+                           case IFieldSymbol fieldSymbol:
+                             return fieldSymbol.Type;
+                           case IPropertySymbol propertySymbol:
+                             return propertySymbol.Type;
+                           default: return null;
+                         }
+                       })
                .Where(type => type != null)
                .Distinct()
                .Select(TypeV2.FromSymbol)

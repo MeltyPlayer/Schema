@@ -42,7 +42,7 @@ namespace schema.readOnly {
     }
 
     [Test]
-    public void TestIEnumerable() {
+    public void TestGeneric() {
       ReadOnlyGeneratorTestUtil.AssertGenerated(
           """
           using schema.readOnly;
@@ -61,6 +61,110 @@ namespace schema.readOnly {
             
             public interface IReadOnlyWrapper {
               public System.Collections.Generic.IEnumerable<bool> Value { get; }
+            }
+          }
+
+          """);
+    }
+
+    [Test]
+    public void TestNestedGeneric() {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          """
+          using schema.readOnly;
+          using System.Collections.Generic;
+
+          namespace foo.bar {
+            [GenerateReadOnly]
+            public partial interface IWrapper {
+              public IEnumerable<IEnumerable<bool>> Value { get; set; }
+            }
+          }
+          """,
+          """
+          namespace foo.bar {
+            public partial interface IWrapper : IReadOnlyWrapper;
+            
+            public interface IReadOnlyWrapper {
+              public System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<bool>> Value { get; }
+            }
+          }
+
+          """);
+    }
+
+    [Test]
+    public void TestIndexer() {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          """
+          using schema.readOnly;
+          using System.Collections.Generic;
+
+          namespace foo.bar {
+            [GenerateReadOnly]
+            public partial interface IWrapper {
+              public bool this[int index] { get; set; }
+            }
+          }
+          """,
+          """
+          namespace foo.bar {
+            public partial interface IWrapper : IReadOnlyWrapper;
+            
+            public interface IReadOnlyWrapper {
+              public bool this[int index] { get; }
+            }
+          }
+
+          """);
+    }
+
+    [Test]
+    public void TestNamelessTuple() {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          """
+          using schema.readOnly;
+          using System.Collections.Generic;
+
+          namespace foo.bar {
+            [GenerateReadOnly]
+            public partial interface IWrapper {
+              public (bool, int) Tuple { get; set; }
+            }
+          }
+          """,
+          """
+          namespace foo.bar {
+            public partial interface IWrapper : IReadOnlyWrapper;
+            
+            public interface IReadOnlyWrapper {
+              public (bool, int) Tuple { get; }
+            }
+          }
+
+          """);
+    }
+
+    [Test]
+    public void TestNamedTuple() {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          """
+          using schema.readOnly;
+          using System.Collections.Generic;
+
+          namespace foo.bar {
+            [GenerateReadOnly]
+            public partial interface IWrapper {
+              public (bool a, int b) Tuple { get; set; }
+            }
+          }
+          """,
+          """
+          namespace foo.bar {
+            public partial interface IWrapper : IReadOnlyWrapper;
+            
+            public interface IReadOnlyWrapper {
+              public (bool a, int b) Tuple { get; }
             }
           }
 
