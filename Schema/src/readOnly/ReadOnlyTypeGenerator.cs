@@ -88,13 +88,12 @@ namespace schema.readOnly {
             GetDirectBaseTypeAndInterfaces_(typeSymbol)
                 .Where(i => i.HasAttribute<GenerateReadOnlyAttribute>() ||
                             IsTypeAlreadyConst_(i))
-                .Select(i => (i.HasAttribute<GenerateReadOnlyAttribute>()
-                                 ? typeV2.GetQualifiedNameFromCurrentSymbol(
-                                     TypeV2.FromSymbol(i),
-                                     GetConstInterfaceNameFor_(i))
-                                 : typeV2.GetQualifiedNameFromCurrentSymbol(
-                                     TypeV2.FromSymbol(i))) +
-                             i.TypeArguments.GetGenericArguments(typeV2))
+                .Select(i => i.HasAttribute<GenerateReadOnlyAttribute>()
+                            ? typeV2.GetQualifiedNameFromCurrentSymbol(
+                                TypeV2.FromSymbol(i),
+                                GetConstInterfaceNameFor_(i))
+                            : typeV2.GetQualifiedNameFromCurrentSymbol(
+                                TypeV2.FromSymbol(i)))
                 .ToArray();
         if (parentConstNames.Length > 0) {
           blockPrefix += " : " + string.Join(", ", parentConstNames);

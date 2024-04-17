@@ -374,6 +374,8 @@ namespace schema.util.symbols {
       var referencedNamespace =
           referencedSymbol.NamespaceParts.Select(EscapeKeyword).ToArray();
 
+      var sb = new StringBuilder();
+
       string mergedNamespaceText;
       if (currentNamespace.Length == 0 && referencedNamespace.Length == 0) {
         mergedNamespaceText = "";
@@ -400,13 +402,32 @@ namespace schema.util.symbols {
             : "";
       }
 
-      var mergedContainersText = "";
+      sb.Append(mergedNamespaceText);
+
       foreach (var container in referencedSymbol.DeclaringTypeNamesDownward) {
-        mergedContainersText += $"{container.EscapeKeyword()}.";
+        sb.Append(container.EscapeKeyword());
+        sb.Append('.');
       }
 
-      return
-          $"{mergedNamespaceText}{mergedContainersText}{overrideName ?? referencedSymbol.Name.EscapeKeyword()}";
+      sb.Append(overrideName ?? referencedSymbol.Name.EscapeKeyword());
+
+      var typeArguments = referencedSymbol.GenericArguments.ToArray();
+      if (typeArguments.Length > 0) {
+        sb.Append("<");
+        for (var i = 0; i < typeArguments.Length; ++i) {
+          if (i > 0) {
+            sb.Append(", ");
+          }
+
+          var typeArgument = typeArguments[i];
+          sb.Append(sourceSymbol
+                        .GetQualifiedNameFromCurrentSymbol(typeArgument));
+        }
+
+        sb.Append(">");
+      }
+
+      return sb.ToString();
     }
 
     public static string GetTypeConstraints(

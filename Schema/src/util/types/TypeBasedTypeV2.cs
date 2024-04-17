@@ -62,7 +62,9 @@ namespace schema.util.types {
       }
 
       public override int Arity
-        => this.type_.GetGenericParameterConstraints().Length;
+        => this.type_.IsGenericParameter
+            ? this.type_.GetGenericParameterConstraints().Length
+            : 0;
 
       public override bool IsClass => this.type_.IsClass;
 

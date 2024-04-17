@@ -51,7 +51,7 @@ namespace foo.bar {
         this.IfBooleanArray = null;
       }
       if (this.Toggle) {
-        this.IfBooleanList = new System.Collections.Generic.List();
+        this.IfBooleanList = new System.Collections.Generic.List<int>();
         SequencesUtil.ResizeSequenceInPlace(this.IfBooleanList, 3);
         for (var i = 0; i < this.IfBooleanList.Count; ++i) {
           this.IfBooleanList[i] = br.ReadInt32();
