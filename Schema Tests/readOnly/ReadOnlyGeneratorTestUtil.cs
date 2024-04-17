@@ -55,14 +55,9 @@ namespace schema.binary {
 
                              return namedTypeSymbol;
                            })
-                   .Select(
-                       symbol => {
-                         Assert.True(
-                             new ReadOnlyTypeGenerator().Generate(
-                                 symbol,
-                                 out var actual));
-                         return actual.ReplaceLineEndings();
-                       });
+                   .Select(symbol => new ReadOnlyTypeGenerator()
+                                     .GenerateSourceForNamedType(symbol)
+                                     .ReplaceLineEndings());
 
       CollectionAssert.AreEqual(expected, actual);
     }

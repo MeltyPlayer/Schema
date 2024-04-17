@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using schema.binary.parser;
 using schema.util.generators;
@@ -23,21 +24,22 @@ namespace schema.readOnly {
 
   [Generator(LanguageNames.CSharp)]
   public class ReadOnlyTypeGenerator
-      : BNamedTypeGenerator<GenerateReadOnlyAttribute> {
+      : BNamedTypesWithAttributeGenerator<GenerateReadOnlyAttribute> {
     public const string PREFIX = "IReadOnly";
 
-    internal override bool Generate(
-        INamedTypeSymbol typeSymbol,
-        out string fileName,
-        out string source) {
-      var typeV2 = TypeV2.FromSymbol(typeSymbol);
-      fileName = $"{typeV2.FullyQualifiedName}_readOnly.g";
+    internal override bool FilterNamedTypesBeforeGenerating(
+        TypeDeclarationSyntax syntax,
+        INamedTypeSymbol symbol) => true;
 
-      return this.Generate(typeSymbol, out source);
+    internal override IEnumerable<(string fileName, string source)>
+        GenerateSourcesForNamedType(
+            INamedTypeSymbol symbol) {
+      var typeV2 = TypeV2.FromSymbol(symbol);
+      yield return ($"{typeV2.FullyQualifiedName}_readOnly.g",
+                    this.GenerateSourceForNamedType(symbol));
     }
 
-    public bool Generate(INamedTypeSymbol typeSymbol,
-                         out string source) {
+    public string GenerateSourceForNamedType(INamedTypeSymbol typeSymbol) {
       var typeV2 = TypeV2.FromSymbol(typeSymbol);
 
       var typeNamespace = typeSymbol.GetFullyQualifiedNamespace();
@@ -181,8 +183,7 @@ namespace schema.readOnly {
         cbsb.ExitBlock();
       }
 
-      source = sb.ToString();
-      return true;
+      return sb.ToString();
     }
 
     private string GetConstInterfaceNameFor_(INamedTypeSymbol typeSymbol) {

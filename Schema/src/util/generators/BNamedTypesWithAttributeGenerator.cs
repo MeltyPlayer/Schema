@@ -1,19 +1,24 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System;
+using System.Collections.Generic;
+
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using INamedTypeSymbol = Microsoft.CodeAnalysis.INamedTypeSymbol;
 
 
 namespace schema.util.generators {
-  public abstract class BNamedTypeGenerator<TAttribute>
-      : IIncrementalGenerator {
-    internal abstract bool Generate(
-        INamedTypeSymbol typeSymbol,
-        out string fileName,
-        out string source);
+  public abstract class BNamedTypesWithAttributeGenerator<TAttribute>
+      : IIncrementalGenerator where TAttribute : Attribute {
+    internal abstract bool FilterNamedTypesBeforeGenerating(
+        TypeDeclarationSyntax syntax,
+        INamedTypeSymbol symbol);
+
+    internal abstract IEnumerable<(string fileName, string source)>
+        GenerateSourcesForNamedType(INamedTypeSymbol symbol);
 
     public void Initialize(IncrementalGeneratorInitializationContext context) {
-      var symbolProvider
+      var syntaxAndSymbolProvider
           = context.SyntaxProvider.CreateSyntaxProvider(
               (syntaxNode, _) => {
                 if (!(syntaxNode is AttributeSyntax attributeSyntax &&
@@ -24,19 +29,25 @@ namespace schema.util.generators {
                 return attributeSyntax.Parent?.Parent is TypeDeclarationSyntax;
               },
               (context, _) => {
-                var typeDeclarationSyntax
+                var syntax
                     = ((context.Node as AttributeSyntax)?.Parent?.Parent as
                         TypeDeclarationSyntax)!;
                 var symbol
-                    = (context.SemanticModel.GetDeclaredSymbol(
-                        typeDeclarationSyntax) as INamedTypeSymbol)!;
-                return symbol;
+                    = (context.SemanticModel.GetDeclaredSymbol(syntax) as
+                        INamedTypeSymbol)!;
+                return (syntax, symbol);
               });
 
+      var filteredSyntaxAndSymbolProvider = syntaxAndSymbolProvider.Where(
+          syntaxAndSymbol
+              => this.FilterNamedTypesBeforeGenerating(syntaxAndSymbol.syntax,
+                syntaxAndSymbol.symbol));
+
       context.RegisterSourceOutput(
-          symbolProvider,
-          (context, symbol) => {
-            if (this.Generate(symbol, out var fileName, out var source)) {
+          filteredSyntaxAndSymbolProvider,
+          (context, syntaxAndSymbol) => {
+            foreach (var (fileName, source) in this.GenerateSourcesForNamedType(
+                         syntaxAndSymbol.symbol)) {
               context.AddSource(fileName, source);
             }
           });

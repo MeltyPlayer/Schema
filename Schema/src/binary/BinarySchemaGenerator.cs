@@ -7,37 +7,33 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using schema.binary.attributes;
 using schema.binary.text;
 using schema.util.generators;
-using schema.util.symbols;
 using schema.util.syntax;
 using schema.util.types;
 
 namespace schema.binary {
   [Generator(LanguageNames.CSharp)]
   internal class BinarySchemaGenerator
-      : BNamedTypeSecondaryGenerator<IBinarySchemaContainer> {
+      : BMappedNamedTypesWithAttributeGenerator<BinarySchemaAttribute,
+          IBinarySchemaContainer> {
     private readonly BinarySchemaContainerParser parser_ = new();
 
     private readonly BinarySchemaReaderGenerator readerImpl_ = new();
     private readonly BinarySchemaWriterGenerator writerImpl_ = new();
 
-    internal override bool TryToMapToSecondary(
+    internal override bool TryToMap(
         TypeDeclarationSyntax syntax,
         INamedTypeSymbol typeSymbol,
-        out IBinarySchemaContainer secondary) {
-      secondary = default;
-      if (!typeSymbol.HasAttribute<BinarySchemaAttribute>()) {
-        return false;
-      }
-
+        out IBinarySchemaContainer mapped) {
+      mapped = default;
       if (!syntax.IsPartial()) {
         return false;
       }
 
-      secondary = this.parser_.ParseContainer(typeSymbol);
+      mapped = this.parser_.ParseContainer(typeSymbol);
       return true;
     }
 
-    internal override void PreprocessSecondaries(
+    internal override void PreprocessAllMapped(
         IReadOnlyDictionary<INamedTypeSymbol, IBinarySchemaContainer>
             containerByNamedTypeSymbol) {
       // Hooks up size of dependencies.
@@ -67,25 +63,23 @@ namespace schema.binary {
       }
     }
 
-    internal override void Generate(
-        IBinarySchemaContainer container,
-        ISourceFileDictionary sourceFileDictionary) {
+
+    internal override IEnumerable<(string fileName, string source)>
+        GenerateSourcesForMappedNamedType(IBinarySchemaContainer container) {
       var containerTypeV2 = TypeV2.FromSymbol(container.TypeSymbol);
       if (containerTypeV2.Implements<IBinaryDeserializable>() &&
           container.TypeSymbol.MemberNames.All(member => member != "Read")) {
         var readerCode = this.readerImpl_.Generate(container);
-        sourceFileDictionary.Add(
-            $"{containerTypeV2.FullyQualifiedName}_reader.g",
-            readerCode);
+        yield return ($"{containerTypeV2.FullyQualifiedName}_reader.g",
+                      readerCode);
       }
 
       if (containerTypeV2.Implements<IBinarySerializable>() &&
           container.TypeSymbol.MemberNames.All(
               member => member != "Write")) {
         var writerCode = this.writerImpl_.Generate(container);
-        sourceFileDictionary.Add(
-            $"{containerTypeV2.FullyQualifiedName}_writer.g",
-            writerCode);
+        yield return ($"{containerTypeV2.FullyQualifiedName}_writer.g",
+                      writerCode);
       }
     }
   }
