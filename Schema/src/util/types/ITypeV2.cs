@@ -38,6 +38,7 @@ namespace schema.util.types {
     bool IsBinarySerializable { get; }
     bool IsBinaryDeserializable { get; }
     bool IsClass { get; }
+    bool IsAbstractClass { get; }
     bool IsInterface { get; }
     bool IsStruct { get; }
     bool IsString { get; }

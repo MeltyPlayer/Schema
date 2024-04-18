@@ -25,6 +25,7 @@ namespace schema.util.types {
 
       public virtual bool HasNullableAnnotation => false;
       public abstract bool IsClass { get; }
+      public abstract bool IsAbstractClass { get; }
       public abstract bool IsInterface { get; }
       public abstract bool IsStruct { get; }
       public abstract bool IsString { get; }

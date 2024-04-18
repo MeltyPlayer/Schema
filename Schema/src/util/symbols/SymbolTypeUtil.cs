@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis;
 using schema.binary;
 using schema.binary.attributes;
 using schema.binary.parser;
+using schema.readOnly;
 using schema.util.diagnostics;
 using schema.util.types;
 
@@ -347,51 +348,50 @@ namespace schema.util.symbols {
     public static string GetQualifiedNameFromCurrentSymbol(
         this ITypeV2 sourceSymbol,
         ITypeV2 referencedSymbol,
-        string? overrideName = null) {
+        Func<ITypeV2, string>? convertName = null) {
       if (referencedSymbol.IsArray(out var elementType)) {
         return
-            $"{sourceSymbol.GetQualifiedNameFromCurrentSymbol(elementType)}[]";
+            $"{sourceSymbol.GetQualifiedNameFromCurrentSymbol(elementType, convertName)}[]";
       }
 
       if (referencedSymbol.HasNullableAnnotation) {
         if (referencedSymbol is
             { Name: "Nullable", FullyQualifiedNamespace: "System" }) {
           return
-              $"{sourceSymbol.GetQualifiedNameFromCurrentSymbol(referencedSymbol.GenericArguments.Single())}?";
+              $"{sourceSymbol.GetQualifiedNameFromCurrentSymbol(referencedSymbol.GenericArguments.Single(), convertName)}?";
         }
       }
 
       if (referencedSymbol.IsPrimitive(out var primitiveType) &&
           !referencedSymbol.IsEnum(out _)) {
         // TODO: Is there a built-in for this?
-        return overrideName ??
-               primitiveType switch {
-                   SchemaPrimitiveType.BOOLEAN => "bool",
-                   SchemaPrimitiveType.SBYTE   => "sbyte",
-                   SchemaPrimitiveType.BYTE    => "byte",
-                   SchemaPrimitiveType.INT16   => "short",
-                   SchemaPrimitiveType.UINT16  => "ushort",
-                   SchemaPrimitiveType.INT32   => "int",
-                   SchemaPrimitiveType.UINT32  => "uint",
-                   SchemaPrimitiveType.INT64   => "long",
-                   SchemaPrimitiveType.UINT64  => "ulong",
-                   SchemaPrimitiveType.SINGLE  => "float",
-                   SchemaPrimitiveType.DOUBLE  => "double",
-                   SchemaPrimitiveType.CHAR    => "char",
-               };
+        return primitiveType switch {
+            SchemaPrimitiveType.BOOLEAN => "bool",
+            SchemaPrimitiveType.SBYTE   => "sbyte",
+            SchemaPrimitiveType.BYTE    => "byte",
+            SchemaPrimitiveType.INT16   => "short",
+            SchemaPrimitiveType.UINT16  => "ushort",
+            SchemaPrimitiveType.INT32   => "int",
+            SchemaPrimitiveType.UINT32  => "uint",
+            SchemaPrimitiveType.INT64   => "long",
+            SchemaPrimitiveType.UINT64  => "ulong",
+            SchemaPrimitiveType.SINGLE  => "float",
+            SchemaPrimitiveType.DOUBLE  => "double",
+            SchemaPrimitiveType.CHAR    => "char",
+        };
       }
 
       if (referencedSymbol.IsString) {
-        return overrideName ?? "string";
+        return "string";
       }
 
       if (referencedSymbol.IsGenericTypeParameter(out _)) {
-        return overrideName ?? referencedSymbol.Name.EscapeKeyword();
+        return referencedSymbol.Name.EscapeKeyword();
       }
 
       if (referencedSymbol is
           { Name: "Void", FullyQualifiedNamespace: "System" }) {
-        return overrideName ?? "void";
+        return "void";
       }
 
 
@@ -459,7 +459,9 @@ namespace schema.util.symbols {
         sb.Append('.');
       }
 
-      sb.Append(overrideName ?? referencedSymbol.Name.EscapeKeyword());
+      sb.Append(convertName != null
+                    ? convertName(referencedSymbol)
+                    : referencedSymbol.Name.EscapeKeyword());
 
       var typeArguments = referencedSymbol.GenericArguments.ToArray();
       if (typeArguments.Length > 0) {
@@ -470,8 +472,9 @@ namespace schema.util.symbols {
           }
 
           var typeArgument = typeArguments[i];
-          sb.Append(sourceSymbol
-                        .GetQualifiedNameFromCurrentSymbol(typeArgument));
+          sb.Append(sourceSymbol.GetQualifiedNameFromCurrentSymbol(
+                        typeArgument,
+                        convertName));
         }
 
         sb.Append(">");
@@ -480,73 +483,6 @@ namespace schema.util.symbols {
       return sb.ToString();
     }
 
-    public static string GetTypeConstraints(
-        this IReadOnlyList<ITypeParameterSymbol> typeParameters,
-        ITypeV2 sourceSymbol) {
-      var sb = new StringBuilder();
-
-      foreach (var typeParameter in typeParameters) {
-        var typeConstraintNames
-            = typeParameter.GetTypeConstraintNames(sourceSymbol).ToArray();
-        if (typeConstraintNames.Length == 0) {
-          continue;
-        }
-
-        sb.Append(" where ");
-        sb.Append(typeParameter.Name.EscapeKeyword());
-        sb.Append(" : ");
-
-        for (var i = 0; i < typeConstraintNames.Length; ++i) {
-          if (i > 0) {
-            sb.Append(", ");
-          }
-
-          sb.Append(typeConstraintNames[i]);
-        }
-      }
-
-      return sb.ToString();
-    }
-
-    public static IEnumerable<string> GetTypeConstraintNames(
-        this ITypeParameterSymbol typeParameter,
-        ITypeV2 sourceSymbol) {
-      if (typeParameter.HasNotNullConstraint) {
-        yield return "notnull";
-      }
-
-      if (typeParameter.HasConstructorConstraint) {
-        yield return "new()";
-      }
-
-      if (typeParameter.HasUnmanagedTypeConstraint) {
-        yield return "unmanaged";
-      }
-
-      if (typeParameter.HasReferenceTypeConstraint) {
-        yield return typeParameter.ReferenceTypeConstraintNullableAnnotation ==
-                     NullableAnnotation.Annotated
-            ? "class?"
-            : "class";
-      }
-
-      if (typeParameter is
-          { HasValueTypeConstraint: true, HasUnmanagedTypeConstraint: false }) {
-        yield return "struct";
-      }
-
-      for (var i = 0; i < typeParameter.ConstraintTypes.Length; ++i) {
-        var constraintType = typeParameter.ConstraintTypes[i];
-        var constraintTypeV2 = TypeV2.FromSymbol(constraintType);
-        var qualifiedName = sourceSymbol.GetQualifiedNameFromCurrentSymbol(
-            constraintTypeV2);
-
-        yield return typeParameter.ConstraintNullableAnnotations[i] ==
-                     NullableAnnotation.Annotated
-            ? $"{qualifiedName}?"
-            : qualifiedName;
-      }
-    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void GetMemberInContainer(

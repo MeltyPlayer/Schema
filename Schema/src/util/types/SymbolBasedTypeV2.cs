@@ -70,17 +70,21 @@ namespace schema.util.types {
         => (this.symbol_ as INamedTypeSymbol)?.TypeArguments.Length ?? 0;
 
       public override bool IsClass
-        => (this.symbol_ as INamedTypeSymbol)?.TypeKind == TypeKind.Class;
+        => this.symbol_ is INamedTypeSymbol { TypeKind: TypeKind.Class };
+
+      public override bool IsAbstractClass
+        => this.symbol_ is INamedTypeSymbol {
+            IsAbstract: true, TypeKind: TypeKind.Class
+        };
 
       public override bool IsInterface
-        => (this.symbol_ as INamedTypeSymbol)?.TypeKind == TypeKind.Interface;
+        => this.symbol_ is INamedTypeSymbol { TypeKind: TypeKind.Interface };
 
       public override bool IsStruct
-        => (this.symbol_ as INamedTypeSymbol)?.TypeKind == TypeKind.Struct;
+        => this.symbol_ is INamedTypeSymbol { TypeKind: TypeKind.Struct };
 
       public override bool IsString
-        => (this.symbol_ as ITypeSymbol)?.SpecialType ==
-           SpecialType.System_String;
+        => this.symbol_ is { SpecialType: SpecialType.System_String };
 
       public override bool IsArray(out ITypeV2 elementType) {
         var arrayTypeSymbol = this.symbol_ as IArrayTypeSymbol;

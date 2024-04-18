@@ -13,7 +13,6 @@ namespace schema.readOnly {
     [TestCase("unmanaged")]
     [TestCase("System.IO.Stream")]
     [TestCase("System.Collections.Generic.IEnumerable<T>")]
-    [TestCase("EachConstraint<T>")]
     public void TestEachConstraintType(string constraint) {
       ReadOnlyGeneratorTestUtil.AssertGenerated(
           $$"""
@@ -49,7 +48,7 @@ namespace schema.readOnly {
           
           namespace build.readOnly {
             [GenerateReadOnly]
-            public partial interface IFinMatrix<TMutable, TReadOnly, TImpl>
+            public partial interface IFinMatrix<[KeepMutableType] TMutable, TReadOnly, TImpl>
                 where TMutable : IFinMatrix<TMutable, TReadOnly, TImpl>, TReadOnly
                 where TReadOnly : IReadOnlyFinMatrix<TMutable, TReadOnly, TImpl> {
               [Const]

@@ -68,6 +68,9 @@ namespace schema.util.types {
 
       public override bool IsClass => this.type_.IsClass;
 
+      public override bool IsAbstractClass
+        => this.type_ is { IsClass: true, IsAbstract: true };
+
       public override bool IsInterface => this.type_.IsInterface;
 
       public override bool IsStruct => this.type_ is

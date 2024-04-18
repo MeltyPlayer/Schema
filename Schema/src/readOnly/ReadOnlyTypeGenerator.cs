@@ -16,20 +16,24 @@ using schema.util.text;
 using schema.util.types;
 
 namespace schema.readOnly {
-  [AttributeUsage(AttributeTargets.Method)]
-  public class ConstAttribute : Attribute;
-
   [AttributeUsage(AttributeTargets.Class |
                   AttributeTargets.Interface |
                   AttributeTargets.Struct)]
   public class GenerateReadOnlyAttribute : Attribute;
 
+  [AttributeUsage(AttributeTargets.Method)]
+  public class ConstAttribute : Attribute;
+
+  [AttributeUsage(AttributeTargets.GenericParameter |
+                  AttributeTargets.Parameter |
+                  AttributeTargets.Property |
+                  AttributeTargets.ReturnValue)]
+  public class KeepMutableTypeAttribute : Attribute;
+
   [Generator(LanguageNames.CSharp)]
   public class ReadOnlyTypeGenerator
       : BNamedTypesWithAttributeGenerator<GenerateReadOnlyAttribute> {
     private static readonly TypeInfoParser parser_ = new();
-
-    public const string PREFIX = "IReadOnly";
 
     internal override bool FilterNamedTypesBeforeGenerating(
         TypeDeclarationSyntax syntax,
@@ -63,7 +67,7 @@ namespace schema.readOnly {
                             .GetQualifiersAndNameAndGenericParametersFor());
       }
 
-      var interfaceName = GetConstInterfaceNameFor_(typeSymbol);
+      var interfaceName = typeSymbol.GetConstInterfaceName();
 
       var constMembers
           = parser_
@@ -130,18 +134,16 @@ namespace schema.readOnly {
             GetDirectBaseTypeAndInterfaces_(typeSymbol)
                 .Where(i => i.HasAttribute<GenerateReadOnlyAttribute>() ||
                             IsTypeAlreadyConst_(i))
-                .Select(i => i.HasAttribute<GenerateReadOnlyAttribute>()
-                            ? typeV2.GetQualifiedNameFromCurrentSymbol(
-                                TypeV2.FromSymbol(i),
-                                GetConstInterfaceNameFor_(i))
-                            : typeV2.GetQualifiedNameFromCurrentSymbol(
+                .Select(i => typeV2
+                            .GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
                                 TypeV2.FromSymbol(i)))
                 .ToArray();
         if (parentConstNames.Length > 0) {
           blockPrefix += " : " + string.Join(", ", parentConstNames);
         }
 
-        blockPrefix += typeSymbol.TypeParameters.GetTypeConstraints(typeV2);
+        blockPrefix
+            += typeSymbol.TypeParameters.GetTypeConstraintsOrReadonly(typeV2);
 
         if (constMembers.Length == 0) {
           cbsb.Write(blockPrefix).WriteLine(";");
@@ -152,7 +154,7 @@ namespace schema.readOnly {
         }
 
         // parent types
-        foreach (var declaringType in declaringTypes) {
+        foreach (var _ in declaringTypes) {
           cbsb.ExitBlock();
         }
 
@@ -223,8 +225,13 @@ namespace schema.readOnly {
           cbsb.Write(" ");
         }
 
+        IPropertySymbol? associatedPropertySymbol
+            = methodSymbol.AssociatedSymbol as IPropertySymbol;
+
         var memberTypeV2 = TypeV2.FromSymbol(memberTypeSymbol);
-        cbsb.Write(typeV2.GetQualifiedNameFromCurrentSymbol(memberTypeV2));
+        cbsb.Write(
+            typeV2.GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
+                memberTypeV2, associatedPropertySymbol));
         cbsb.Write(" ");
 
         var memberName = memberSymbol.Name;
@@ -256,8 +263,8 @@ namespace schema.readOnly {
               var parameterTypeV2
                   = TypeV2.FromSymbol(parameterSymbol.Type);
               cbsb.Write(
-                  typeV2.GetQualifiedNameFromCurrentSymbol(
-                      parameterTypeV2));
+                  typeV2.GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
+                      parameterTypeV2, parameterSymbol));
               cbsb.Write(" ");
               cbsb.Write(parameterSymbol.Name.EscapeKeyword());
             }
@@ -315,7 +322,9 @@ namespace schema.readOnly {
             }
 
             cbsb.Write(
-                    typeV2.GetQualifiedNameFromCurrentSymbol(parameterTypeV2))
+                    typeV2
+                        .GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
+                            parameterTypeV2, parameterSymbol))
                 .Write(" ")
                 .Write(parameterSymbol.Name.EscapeKeyword());
 
@@ -344,7 +353,9 @@ namespace schema.readOnly {
           cbsb.Write(")");
 
           if (interfaceName == null) {
-            cbsb.Write(methodSymbol.TypeParameters.GetTypeConstraints(typeV2));
+            cbsb.Write(
+                methodSymbol.TypeParameters
+                            .GetTypeConstraintsOrReadonly(typeV2));
           }
 
           if (interfaceName == null) {
@@ -375,25 +386,6 @@ namespace schema.readOnly {
       }
     }
 
-    private static string GetConstInterfaceNameFor_(
-        INamedTypeSymbol typeSymbol) {
-      var typeV2 = TypeV2.FromSymbol(typeSymbol);
-      var baseName = typeSymbol.Name;
-      if (baseName.Length >= 2) {
-        if (baseName[1] is < 'a' or > 'z') {
-          var firstChar = baseName[0];
-          if ((firstChar == 'I' && typeV2.IsInterface) ||
-              (firstChar == 'B' &&
-               typeSymbol is
-                   { IsAbstract: true, TypeKind: TypeKind.Class })) {
-            baseName = baseName.Substring(1);
-          }
-        }
-      }
-
-      return $"{PREFIX}{baseName}";
-    }
-
     private static IEnumerable<INamedTypeSymbol>
         GetDirectBaseTypeAndInterfaces_(
             INamedTypeSymbol symbol) {
@@ -415,6 +407,119 @@ namespace schema.readOnly {
       foreach (var iface in parentInterfaces) {
         yield return iface;
       }
+    }
+  }
+
+  internal static class ReadOnlyTypeGeneratorUtil {
+    public const string PREFIX = "IReadOnly";
+
+    public static string GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
+        this ITypeV2 sourceSymbol,
+        ITypeV2 referencedSymbol,
+        ISymbol? memberSymbol = null)
+      => sourceSymbol.GetQualifiedNameFromCurrentSymbol(
+          referencedSymbol,
+          memberSymbol == null
+              ? ConvertName_
+              : !memberSymbol.HasAttribute<KeepMutableTypeAttribute>()
+                  ? ConvertName_
+                  : null);
+
+    public static string GetTypeConstraintsOrReadonly(
+        this IReadOnlyList<ITypeParameterSymbol> typeParameters,
+        ITypeV2 sourceSymbol) {
+      var sb = new StringBuilder();
+
+      foreach (var typeParameter in typeParameters) {
+        var typeConstraintNames
+            = typeParameter.GetTypeConstraintNames_(sourceSymbol)
+                           .ToArray();
+        if (typeConstraintNames.Length == 0) {
+          continue;
+        }
+
+        sb.Append(" where ");
+        sb.Append(typeParameter.Name.EscapeKeyword());
+        sb.Append(" : ");
+
+        for (var i = 0; i < typeConstraintNames.Length; ++i) {
+          if (i > 0) {
+            sb.Append(", ");
+          }
+
+          sb.Append(typeConstraintNames[i]);
+        }
+      }
+
+      return sb.ToString();
+    }
+
+    private static IEnumerable<string> GetTypeConstraintNames_(
+        this ITypeParameterSymbol typeParameter,
+        ITypeV2 sourceSymbol) {
+      if (typeParameter.HasNotNullConstraint) {
+        yield return "notnull";
+      }
+
+      if (typeParameter.HasConstructorConstraint) {
+        yield return "new()";
+      }
+
+      if (typeParameter.HasUnmanagedTypeConstraint) {
+        yield return "unmanaged";
+      }
+
+      if (typeParameter.HasReferenceTypeConstraint) {
+        yield return typeParameter.ReferenceTypeConstraintNullableAnnotation ==
+                     NullableAnnotation.Annotated
+            ? "class?"
+            : "class";
+      }
+
+      if (typeParameter is
+          { HasValueTypeConstraint: true, HasUnmanagedTypeConstraint: false }) {
+        yield return "struct";
+      }
+
+      for (var i = 0; i < typeParameter.ConstraintTypes.Length; ++i) {
+        var constraintType = typeParameter.ConstraintTypes[i];
+        var constraintTypeV2 = TypeV2.FromSymbol(constraintType);
+        var qualifiedName = sourceSymbol.GetQualifiedNameFromCurrentSymbol(
+            constraintTypeV2,
+            !typeParameter.HasAttribute<KeepMutableTypeAttribute>()
+                ? ConvertName_
+                : null);
+
+        yield return typeParameter.ConstraintNullableAnnotations[i] ==
+                     NullableAnnotation.Annotated
+            ? $"{qualifiedName}?"
+            : qualifiedName;
+      }
+    }
+
+    private static string ConvertName_(ITypeV2 typeV2)
+      => typeV2.HasAttribute<GenerateReadOnlyAttribute>() &&
+         !typeV2.HasAttribute<KeepMutableTypeAttribute>()
+          ? typeV2.GetConstInterfaceName()
+          : typeV2.Name.EscapeKeyword();
+
+    public static string GetConstInterfaceName(
+        this INamedTypeSymbol typeSymbol)
+      => GetConstInterfaceName(TypeV2.FromSymbol(typeSymbol));
+
+    public static string GetConstInterfaceName(this ITypeV2 typeV2) {
+      var baseName = typeV2.Name;
+      if (baseName.Length >= 2) {
+        if (baseName[1] is < 'a' or > 'z') {
+          var firstChar = baseName[0];
+          if ((firstChar == 'I' && typeV2.IsInterface) ||
+              (firstChar == 'B' && typeV2.IsAbstractClass)) {
+            baseName = baseName.Substring(1);
+          }
+        }
+      }
+
+      return $"{PREFIX}{baseName}";
     }
   }
 }
