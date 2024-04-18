@@ -27,7 +27,7 @@ namespace schema.readOnly {
   [AttributeUsage(AttributeTargets.GenericParameter |
                   AttributeTargets.Parameter |
                   AttributeTargets.Property |
-                  AttributeTargets.ReturnValue)]
+                  AttributeTargets.Method)]
   public class KeepMutableTypeAttribute : Attribute;
 
   [Generator(LanguageNames.CSharp)]
@@ -231,7 +231,8 @@ namespace schema.readOnly {
         var memberTypeV2 = TypeV2.FromSymbol(memberTypeSymbol);
         cbsb.Write(
             typeV2.GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
-                memberTypeV2, associatedPropertySymbol));
+                memberTypeV2,
+                associatedPropertySymbol));
         cbsb.Write(" ");
 
         var memberName = memberSymbol.Name;
@@ -264,7 +265,8 @@ namespace schema.readOnly {
                   = TypeV2.FromSymbol(parameterSymbol.Type);
               cbsb.Write(
                   typeV2.GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
-                      parameterTypeV2, parameterSymbol));
+                      parameterTypeV2,
+                      parameterSymbol));
               cbsb.Write(" ");
               cbsb.Write(parameterSymbol.Name.EscapeKeyword());
             }
@@ -324,7 +326,8 @@ namespace schema.readOnly {
             cbsb.Write(
                     typeV2
                         .GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
-                            parameterTypeV2, parameterSymbol))
+                            parameterTypeV2,
+                            parameterSymbol))
                 .Write(" ")
                 .Write(parameterSymbol.Name.EscapeKeyword());
 

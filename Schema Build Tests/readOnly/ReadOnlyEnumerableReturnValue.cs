@@ -5,9 +5,8 @@ using schema.readOnly;
 
 namespace readOnly {
   [GenerateReadOnly]
-  public partial class MutableEnumerableReturnValue {
+  public partial class ReadOnlyEnumerableReturnValue {
     [Const]
-    [KeepMutableType]
     public IEnumerable<IFooBar> Foo(int bar) => default!;
   }
 }

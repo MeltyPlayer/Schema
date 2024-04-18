@@ -5,6 +5,6 @@ namespace readOnly {
   [GenerateReadOnly]
   public partial interface MutableMethodParameter {
     [Const]
-    public int Foo(IFooBar bar) => 0;
+    public int Foo([KeepMutableType] IFooBar bar) => 0;
   }
 }

@@ -3,9 +3,8 @@
 
 namespace readOnly {
   [GenerateReadOnly]
-  public partial class MutableReturnValue {
+  public partial class ReadOnlyReturnValue {
     [Const]
-    [KeepMutableType]
     public IFooBar Foo(int bar) => default!;
   }
 }
