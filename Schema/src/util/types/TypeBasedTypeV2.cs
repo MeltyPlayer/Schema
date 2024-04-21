@@ -21,6 +21,7 @@ namespace schema.util.types {
       }
 
       public override string Name => this.type_.Name;
+      public override bool Exists => true;
 
       public override string? FullyQualifiedNamespace => this.type_.Namespace;
 

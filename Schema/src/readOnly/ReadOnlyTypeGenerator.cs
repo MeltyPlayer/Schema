@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -40,14 +41,20 @@ namespace schema.readOnly {
         INamedTypeSymbol symbol) => true;
 
     internal override IEnumerable<(string fileName, string source)>
-        GenerateSourcesForNamedType(
-            INamedTypeSymbol symbol) {
+        GenerateSourcesForNamedType(INamedTypeSymbol symbol,
+                                    SemanticModel semanticModel,
+                                    TypeDeclarationSyntax syntax) {
       var typeV2 = TypeV2.FromSymbol(symbol);
       yield return ($"{typeV2.FullyQualifiedName}_readOnly.g",
-                    this.GenerateSourceForNamedType(symbol));
+                    this.GenerateSourceForNamedType(
+                        symbol,
+                        semanticModel,
+                        syntax));
     }
 
-    public string GenerateSourceForNamedType(INamedTypeSymbol typeSymbol) {
+    public string GenerateSourceForNamedType(INamedTypeSymbol typeSymbol,
+                                             SemanticModel semanticModel,
+                                             TypeDeclarationSyntax syntax) {
       var typeV2 = TypeV2.FromSymbol(typeSymbol);
 
       var typeNamespace = typeSymbol.GetFullyQualifiedNamespace();
@@ -115,7 +122,12 @@ namespace schema.readOnly {
           cbsb.Write(blockPrefix).WriteLine(";");
         } else {
           cbsb.EnterBlock(blockPrefix);
-          WriteMembers_(cbsb, typeSymbol, constMembers, interfaceName);
+          WriteMembers_(cbsb,
+                        typeSymbol,
+                        constMembers,
+                        semanticModel,
+                        syntax,
+                        interfaceName);
           cbsb.ExitBlock();
         }
       }
@@ -136,7 +148,9 @@ namespace schema.readOnly {
                             IsTypeAlreadyConst_(i))
                 .Select(i => typeV2
                             .GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
-                                TypeV2.FromSymbol(i)))
+                                TypeV2.FromSymbol(i),
+                                semanticModel,
+                                syntax))
                 .ToArray();
         if (parentConstNames.Length > 0) {
           blockPrefix += " : " + string.Join(", ", parentConstNames);
@@ -149,7 +163,7 @@ namespace schema.readOnly {
           cbsb.Write(blockPrefix).WriteLine(";");
         } else {
           cbsb.EnterBlock(blockPrefix);
-          WriteMembers_(cbsb, typeSymbol, constMembers);
+          WriteMembers_(cbsb, typeSymbol, constMembers, semanticModel, syntax);
           cbsb.ExitBlock();
         }
 
@@ -211,6 +225,8 @@ namespace schema.readOnly {
         ICurlyBracketTextWriter cbsb,
         INamedTypeSymbol typeSymbol,
         IReadOnlyList<ISymbol> constMembers,
+        SemanticModel semanticModel,
+        TypeDeclarationSyntax syntax,
         string? interfaceName = null) {
       var typeV2 = TypeV2.FromSymbol(typeSymbol);
 
@@ -232,6 +248,8 @@ namespace schema.readOnly {
         cbsb.Write(
             typeV2.GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
                 memberTypeV2,
+                semanticModel,
+                syntax,
                 associatedPropertySymbol));
         cbsb.Write(" ");
 
@@ -266,6 +284,8 @@ namespace schema.readOnly {
               cbsb.Write(
                   typeV2.GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
                       parameterTypeV2,
+                      semanticModel,
+                      syntax,
                       parameterSymbol));
               cbsb.Write(" ");
               cbsb.Write(parameterSymbol.Name.EscapeKeyword());
@@ -327,6 +347,8 @@ namespace schema.readOnly {
                     typeV2
                         .GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
                             parameterTypeV2,
+                            semanticModel,
+                            syntax,
                             parameterSymbol))
                 .Write(" ")
                 .Write(parameterSymbol.Name.EscapeKeyword());
@@ -419,6 +441,8 @@ namespace schema.readOnly {
     public static string GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
         this ITypeV2 sourceSymbol,
         ITypeV2 referencedSymbol,
+        SemanticModel semanticModel,
+        TypeDeclarationSyntax sourceDeclarationSyntax,
         ISymbol? memberSymbol = null)
       => sourceSymbol.GetQualifiedNameFromCurrentSymbol(
           referencedSymbol,
@@ -426,7 +450,8 @@ namespace schema.readOnly {
               ? ConvertName_
               : !memberSymbol.HasAttribute<KeepMutableTypeAttribute>()
                   ? ConvertName_
-                  : null);
+                  : null,
+          r => GetNamespaceOfType(r, semanticModel, sourceDeclarationSyntax));
 
     public static string GetTypeConstraintsOrReadonly(
         this IReadOnlyList<ITypeParameterSymbol> typeParameters,
@@ -523,6 +548,53 @@ namespace schema.readOnly {
       }
 
       return $"{PREFIX}{baseName}";
+    }
+
+    public static IEnumerable<INamedTypeSymbol> LookupTypesWithName(
+        SemanticModel semanticModel,
+        TypeDeclarationSyntax syntax,
+        string searchString)
+      => semanticModel
+         .LookupNamespacesAndTypes(syntax.SpanStart, null, searchString)
+         .Where(symbol => symbol is INamedTypeSymbol)
+         .Select(symbol => symbol as INamedTypeSymbol);
+
+    public static IEnumerable<string> GetNamespaceOfType(this ITypeV2 typeV2,
+      SemanticModel semanticModel,
+      TypeDeclarationSyntax syntax) {
+      if (!typeV2.Exists) {
+        var typeName = typeV2.Name;
+        if (typeName.StartsWith(
+                ReadOnlyTypeGeneratorUtil.PREFIX)) {
+          var nameWithoutPrefix
+              = typeName.Substring(
+                  ReadOnlyTypeGeneratorUtil.PREFIX.Length);
+
+          var typesWithName
+              = LookupTypesWithName(semanticModel, syntax, nameWithoutPrefix)
+                  .ToArray();
+          if (typesWithName.Length == 0) {
+            typesWithName = LookupTypesWithName(semanticModel,
+                                                syntax,
+                                                $"B{nameWithoutPrefix}")
+                .ToArray();
+          }
+
+          if (typesWithName.Length == 0) {
+            typesWithName = LookupTypesWithName(semanticModel,
+                                                syntax,
+                                                $"I{nameWithoutPrefix}")
+                .ToArray();
+          }
+
+          if (typesWithName.Length == 1) {
+            var typeWithName = typesWithName[0];
+            return typeWithName.GetContainingNamespaces();
+          }
+        }
+      }
+
+      return typeV2.NamespaceParts;
     }
   }
 }

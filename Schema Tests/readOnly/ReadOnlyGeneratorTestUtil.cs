@@ -53,11 +53,15 @@ namespace schema.binary {
                              var namedTypeSymbol
                                  = symbol as INamedTypeSymbol;
 
-                             return namedTypeSymbol;
+                             return (namedTypeSymbol, declarationSyntax);
                            })
-                   .Select(symbol => new ReadOnlyTypeGenerator()
-                                     .GenerateSourceForNamedType(symbol)
-                                     .ReplaceLineEndings());
+                   .Select(symbolAndSyntax
+                               => new ReadOnlyTypeGenerator()
+                                  .GenerateSourceForNamedType(
+                                      symbolAndSyntax.namedTypeSymbol,
+                                      semanticModel,
+                                      symbolAndSyntax.declarationSyntax)
+                                  .ReplaceLineEndings());
 
       CollectionAssert.AreEqual(expected, actual);
     }

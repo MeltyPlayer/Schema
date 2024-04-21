@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-using INamedTypeSymbol = Microsoft.CodeAnalysis.INamedTypeSymbol;
-
 
 namespace schema.util.generators {
   public abstract class BNamedTypesWithAttributeGenerator<TAttribute>
@@ -15,7 +13,10 @@ namespace schema.util.generators {
         INamedTypeSymbol symbol);
 
     internal abstract IEnumerable<(string fileName, string source)>
-        GenerateSourcesForNamedType(INamedTypeSymbol symbol);
+        GenerateSourcesForNamedType(
+            INamedTypeSymbol symbol,
+            SemanticModel semanticModel,
+            TypeDeclarationSyntax syntax);
 
     public void Initialize(IncrementalGeneratorInitializationContext context) {
       var syntaxAndSymbolProvider
@@ -44,10 +45,16 @@ namespace schema.util.generators {
                 syntaxAndSymbol.symbol));
 
       context.RegisterSourceOutput(
-          filteredSyntaxAndSymbolProvider,
-          (context, syntaxAndSymbol) => {
+          filteredSyntaxAndSymbolProvider.Combine(context.CompilationProvider),
+          (context, syntaxAndSymbolAndCompilation) => {
+            var (syntaxAndSymbol, compilation) = syntaxAndSymbolAndCompilation;
+            var (syntax, symbol) = syntaxAndSymbol;
+
+            var semanticModel = compilation.GetSemanticModel(syntax.SyntaxTree);
             foreach (var (fileName, source) in this.GenerateSourcesForNamedType(
-                         syntaxAndSymbol.symbol)) {
+                         symbol,
+                         semanticModel,
+                         syntax)) {
               context.AddSource(fileName, source);
             }
           });

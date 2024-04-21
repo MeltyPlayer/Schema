@@ -9,7 +9,6 @@ using Microsoft.CodeAnalysis;
 using schema.binary;
 using schema.binary.attributes;
 using schema.binary.parser;
-using schema.readOnly;
 using schema.util.diagnostics;
 using schema.util.types;
 
@@ -348,7 +347,8 @@ namespace schema.util.symbols {
     public static string GetQualifiedNameFromCurrentSymbol(
         this ITypeV2 sourceSymbol,
         ITypeV2 referencedSymbol,
-        Func<ITypeV2, string>? convertName = null) {
+        Func<ITypeV2, string>? convertName = null,
+        Func<ITypeV2, IEnumerable<string>>? getNamespaceParts = null) {
       if (referencedSymbol.IsArray(out var elementType)) {
         return
             $"{sourceSymbol.GetQualifiedNameFromCurrentSymbol(elementType, convertName)}[]";
@@ -424,7 +424,11 @@ namespace schema.util.symbols {
       var currentNamespace
           = sourceSymbol.NamespaceParts.Select(EscapeKeyword).ToArray();
       var referencedNamespace =
-          referencedSymbol.NamespaceParts.Select(EscapeKeyword).ToArray();
+          (getNamespaceParts != null
+              ? getNamespaceParts(referencedSymbol)
+              : referencedSymbol.NamespaceParts)
+          .Select(EscapeKeyword)
+          .ToArray();
 
       string mergedNamespaceText;
       if (currentNamespace.Length == 0 && referencedNamespace.Length == 0) {

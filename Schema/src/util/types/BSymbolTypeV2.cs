@@ -14,6 +14,7 @@ namespace schema.util.types {
   public static partial class TypeV2 {
     private abstract class BSymbolTypeV2 : ITypeV2 {
       public abstract string Name { get; }
+      public abstract bool Exists { get; }
 
       public abstract string? FullyQualifiedNamespace { get; }
       public abstract IEnumerable<string> NamespaceParts { get; }

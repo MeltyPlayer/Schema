@@ -32,6 +32,8 @@ namespace schema.util.types {
 
       public override string Name => this.symbol_.Name;
 
+      public override bool Exists => this.symbol_.Locations.Length > 1;
+
       public override string? FullyQualifiedNamespace
         => this.symbol_.GetFullyQualifiedNamespace();
 

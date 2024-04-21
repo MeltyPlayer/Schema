@@ -9,6 +9,7 @@ namespace schema.util.types {
   public interface ITypeV2 {
     string Name { get; }
     string FullyQualifiedName { get; }
+    bool Exists { get; }
 
     string? FullyQualifiedNamespace { get; }
     IEnumerable<string> NamespaceParts { get; }
