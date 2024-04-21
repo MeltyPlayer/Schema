@@ -51,7 +51,7 @@ namespace schema.util.types {
                     Enumerable.Empty<ITypeSymbol>())
                 .Concat(BaseTypes)
                 .SingleOrDefault(
-                    symbol => symbol.IsExactlyType(type));
+                    symbol => SymbolComparisonUtil.IsType((ISymbol) symbol, type));
         matchingType = matchingTypeImpl != null
             ? TypeV2.FromSymbol(matchingTypeImpl)
             : null;
@@ -202,7 +202,7 @@ namespace schema.util.types {
         return this.symbol_
                    .GetAttributes()
                    .Where(attributeData
-                              => attributeData.AttributeClass?.IsExactlyType(
+                              => attributeData.AttributeClass?.IsType(
                                      attributeType) ??
                                  false);
       }

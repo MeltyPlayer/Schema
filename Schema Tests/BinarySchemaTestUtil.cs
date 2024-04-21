@@ -33,6 +33,8 @@ namespace schema.binary {
       var compilation = BinarySchemaTestUtil.Compilation.Clone()
           .AddSyntaxTrees(syntaxTree);
 
+      new BinarySchemaGenerator().PreprocessCompilation(compilation);
+
       var semanticModel = compilation.GetSemanticModel(syntaxTree);
 
       var structures = syntaxTree

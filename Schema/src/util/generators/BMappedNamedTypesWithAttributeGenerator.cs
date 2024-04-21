@@ -6,22 +6,34 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+using schema.binary;
+using schema.binary.parser;
+
 
 namespace schema.util.generators {
-  internal abstract class BMappedNamedTypesWithAttributeGenerator<
+  public abstract class BMappedNamedTypesWithAttributeGenerator<
       TAttribute, TMapped>
       : IIncrementalGenerator where TAttribute : Attribute {
-    internal abstract bool TryToMap(TypeDeclarationSyntax syntax,
-                                    INamedTypeSymbol typeSymbol,
-                                    out TMapped mapped);
+    public abstract bool TryToMap(TypeDeclarationSyntax syntax,
+                                  INamedTypeSymbol typeSymbol,
+                                  out TMapped mapped);
 
-    internal abstract void PreprocessAllMapped(
+    public abstract void PreprocessAllMapped(
         IReadOnlyDictionary<INamedTypeSymbol, TMapped> secondaries);
 
-    internal abstract IEnumerable<(string fileName, string source)>
+    public abstract void PreprocessCompilation(
+        Compilation compilation);
+
+    public abstract IEnumerable<(string fileName, string source)>
         GenerateSourcesForMappedNamedType(TMapped mapped);
 
     public void Initialize(IncrementalGeneratorInitializationContext context) {
+      context.RegisterImplementationSourceOutput(
+          context.CompilationProvider,
+          (_, compilation) => {
+            PreprocessCompilation(compilation);
+          });
+
       var syntaxAndSymbolProvider
           = context.SyntaxProvider.CreateSyntaxProvider(
               (syntaxNode, _) => {
@@ -60,14 +72,18 @@ namespace schema.util.generators {
                 = allMapped.ToDictionary(pair => pair.symbol,
                                          pair => pair.mapped);
 
-            this.PreprocessAllMapped(mappedBySymbol);
+            try {
+              this.PreprocessAllMapped(mappedBySymbol);
 
-            foreach (var kvp in mappedBySymbol) {
-              var mapped = kvp.Value;
-              foreach (var (fileName, source) in this
-                           .GenerateSourcesForMappedNamedType(mapped)) {
-                context.AddSource(fileName, source);
+              foreach (var kvp in mappedBySymbol) {
+                var mapped = kvp.Value;
+                foreach (var (fileName, source) in this
+                             .GenerateSourcesForMappedNamedType(mapped)) {
+                  context.AddSource(fileName, source);
+                }
               }
+            } catch (Exception ex) {
+              context.ReportDiagnostic(Rules.CreateExceptionDiagnostic(mappedBySymbol.Keys.First(), ex));
             }
           });
     }

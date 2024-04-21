@@ -7,191 +7,16 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 
 using schema.binary;
-using schema.binary.attributes;
 using schema.binary.parser;
+using schema.util.asserts;
 using schema.util.diagnostics;
 using schema.util.types;
 
 
 namespace schema.util.symbols {
   public static class SymbolTypeUtil {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool IsInSameNamespaceAs(this ISymbol symbol, Type other)
-      => symbol.IsInNamespace(other.Namespace);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool IsInNamespace(
-        this ISymbol symbol,
-        string fullNamespacePath) {
-      var fullNamespacePathLength = fullNamespacePath.Length;
-
-      var currentNamespace = symbol.ContainingNamespace;
-      var currentNamespaceName = currentNamespace.Name;
-      var currentNamespaceNameLength = currentNamespaceName.Length;
-
-      if (fullNamespacePathLength == 0 && currentNamespaceNameLength == 0) {
-        return true;
-      }
-
-      var fullNamespaceI = fullNamespacePathLength - 1;
-      var currentNamespaceI = currentNamespaceNameLength - 1;
-
-      for (; fullNamespaceI >= 0; --fullNamespaceI, --currentNamespaceI) {
-        if (currentNamespaceI == -1) {
-          if (fullNamespacePath[fullNamespaceI] != '.') {
-            return false;
-          }
-
-          --fullNamespaceI;
-          currentNamespace = currentNamespace.ContainingNamespace;
-          currentNamespaceName = currentNamespace.Name;
-          currentNamespaceNameLength = currentNamespaceName.Length;
-          if (currentNamespaceNameLength == 0) {
-            return false;
-          }
-
-          currentNamespaceI = currentNamespaceNameLength - 1;
-        }
-
-        if (fullNamespacePath[fullNamespaceI] !=
-            currentNamespaceName[currentNamespaceI]) {
-          return false;
-        }
-      }
-
-      return fullNamespaceI == -1 &&
-             currentNamespaceI == -1 &&
-             currentNamespace.ContainingNamespace.Name.Length == 0;
-    }
-
-
-    public static string? GetFullyQualifiedNamespace(this ISymbol symbol) {
-      var containingNamespaces = symbol.GetContainingNamespaces().ToArray();
-      if (containingNamespaces.Length == 0) {
-        return null;
-      }
-
-      return string.Join(".", containingNamespaces);
-    }
-
-    public static IEnumerable<string> GetContainingNamespaces(
-        this ISymbol symbol)
-      => symbol.GetContainingNamespacesReversed_().Reverse();
-
-    private static IEnumerable<string> GetContainingNamespacesReversed_(
-        this ISymbol symbol) {
-      var namespaceSymbol = symbol.ContainingNamespace;
-      if (namespaceSymbol?.IsGlobalNamespace ?? true) {
-        yield break;
-      }
-
-      while (!namespaceSymbol?.IsGlobalNamespace ?? true) {
-        if (namespaceSymbol.Name.Length > 0) {
-          yield return namespaceSymbol.Name.EscapeKeyword();
-        }
-
-        namespaceSymbol = namespaceSymbol.ContainingNamespace;
-      }
-    }
-
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsExactlyType(this ISymbol symbol, Type expectedType) {
-      var expectedName = expectedType.Name;
-
-      int expectedArity = 0;
-      var indexOfBacktick = expectedName.IndexOf('`');
-      if (indexOfBacktick != -1) {
-        expectedArity = int.Parse(expectedName.Substring(indexOfBacktick + 1));
-        expectedName = expectedName.Substring(0, indexOfBacktick);
-      }
-
-      return symbol.Name == expectedName &&
-             symbol.IsInSameNamespaceAs(expectedType) &&
-             ((symbol as INamedTypeSymbol)?.Arity ?? 0) == expectedArity;
-    }
-
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static IEnumerable<AttributeData>
-        GetAttributeData<TAttribute>(this ISymbol symbol) {
-      var attributeType = typeof(TAttribute);
-      return symbol
-             .GetAttributes()
-             .Where(attributeData
-                        => attributeData.AttributeClass?.IsExactlyType(
-                               attributeType) ??
-                           false);
-    }
-
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool HasAttribute<TAttribute>(this ISymbol symbol)
-        where TAttribute : Attribute
-      => symbol.GetAttributeData<TAttribute>().Any();
-
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static TAttribute? GetAttribute<TAttribute>(
-        IDiagnosticReporter? diagnosticReporter,
-        ISymbol symbol)
-        where TAttribute : Attribute
-      => symbol.GetAttributes<TAttribute>(diagnosticReporter)
-               .SingleOrDefault();
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static IEnumerable<TAttribute> GetAttributes<TAttribute>(
-        this ISymbol symbol,
-        IDiagnosticReporter? diagnosticReporter = null)
-        where TAttribute : Attribute
-      => symbol.GetAttributeData<TAttribute>()
-               .Select(attributeData => {
-                         var attribute
-                             = attributeData.Instantiate<TAttribute>(symbol);
-                         if (attribute is BMemberAttribute memberAttribute) {
-                           memberAttribute.Init(diagnosticReporter,
-                                                symbol.ContainingType,
-                                                symbol.Name);
-                         }
-
-                         return attribute;
-                       });
-
-    public static IEnumerable<ISymbol> GetInstanceMembers(
-        this INamedTypeSymbol containerSymbol) {
-      var baseClassesAndSelf = new LinkedList<INamedTypeSymbol>();
-      {
-        var currentSymbol = containerSymbol;
-        while (currentSymbol != null) {
-          baseClassesAndSelf.AddFirst(currentSymbol);
-          currentSymbol = currentSymbol.BaseType;
-        }
-      }
-
-      foreach (var currentSymbol in baseClassesAndSelf) {
-        foreach (var memberSymbol in currentSymbol.GetMembers()) {
-          // Skips static/const fields
-          if (memberSymbol.IsStatic) {
-            continue;
-          }
-
-          // Skips backing field, these are used internally for properties
-          if (memberSymbol.Name.Contains("k__BackingField")) {
-            continue;
-          }
-
-          // Skips indexers.
-          if (memberSymbol is IPropertySymbol { IsIndexer: true }) {
-            continue;
-          }
-
-          yield return memberSymbol;
-        }
-      }
-    }
-
     public static INamedTypeSymbol[] GetDeclaringTypesDownward(
-        this ITypeSymbol type) {
+        this ISymbol type) {
       var declaringTypes = new List<INamedTypeSymbol>();
 
       var declaringType = type.ContainingType;
@@ -204,48 +29,6 @@ namespace schema.util.symbols {
 
       return declaringTypes.ToArray();
     }
-
-    public static string GetQualifiersAndNameAndGenericParametersFor(
-        this INamedTypeSymbol namedTypeSymbol,
-        string? replacementName = null)
-      => new StringBuilder()
-         .AppendQualifiersAndNameAndGenericParametersFor(
-             namedTypeSymbol,
-             replacementName)
-         .ToString();
-
-    public static StringBuilder AppendQualifiersAndNameAndGenericParametersFor(
-        this StringBuilder sb,
-        INamedTypeSymbol namedTypeSymbol,
-        string? replacementName = null)
-      => sb.AppendSymbolQualifiers(namedTypeSymbol)
-           .Append(" ")
-           .AppendNameAndGenericParametersFor(namedTypeSymbol, replacementName);
-
-    public static string GetNameAndGenericParametersFor(
-        this INamedTypeSymbol namedTypeSymbol,
-        string? replacementName = null)
-      => new StringBuilder()
-         .AppendNameAndGenericParametersFor(namedTypeSymbol, replacementName)
-         .ToString();
-
-    public static StringBuilder AppendNameAndGenericParametersFor(
-        this StringBuilder sb,
-        INamedTypeSymbol namedTypeSymbol,
-        string? replacementName = null)
-      => sb.Append(replacementName ?? namedTypeSymbol.Name.EscapeKeyword())
-           .AppendGenericParametersFor(namedTypeSymbol);
-
-    public static string GetGenericParameters(
-        this INamedTypeSymbol namedTypeSymbol)
-      => new StringBuilder()
-         .AppendGenericParametersFor(namedTypeSymbol)
-         .ToString();
-
-    public static StringBuilder AppendGenericParametersFor(
-        this StringBuilder sb,
-        INamedTypeSymbol namedTypeSymbol)
-      => sb.AppendGenericParameters(namedTypeSymbol.TypeParameters);
 
     public static string GetGenericParameters(
         this IReadOnlyList<ITypeParameterSymbol> typeParameters)
@@ -273,28 +56,26 @@ namespace schema.util.symbols {
       return sb;
     }
 
-    public static string GetGenericArguments(
-        this IReadOnlyList<ITypeSymbol> typeArguments,
-        ITypeV2 sourceSymbol)
-      => new StringBuilder()
-         .AppendGenericArguments(typeArguments, sourceSymbol)
-         .ToString();
-
-    public static StringBuilder AppendGenericArguments(
+    public static StringBuilder AppendGenericArgumentsFor(
         this StringBuilder sb,
-        IReadOnlyList<ITypeSymbol> typeArguments,
-        ITypeV2 sourceSymbol) {
-      if (typeArguments.Count > 0) {
+        ITypeSymbol sourceSymbol,
+        ITypeSymbol referencedSymbol,
+        Func<ITypeSymbol, ISymbol?, string>? convertName = null,
+        Func<ITypeSymbol, IEnumerable<string>>? getNamespaceParts = null) {
+      if (referencedSymbol.IsGeneric(out var typeParameters,
+                                     out var typeArguments)) {
         sb.Append("<");
-        for (var i = 0; i < typeArguments.Count; ++i) {
+        for (var i = 0; i < typeArguments.Length; ++i) {
           if (i > 0) {
             sb.Append(", ");
           }
 
           var typeArgument = typeArguments[i];
-          var typeV2 = TypeV2.FromSymbol(typeArgument);
-          sb.Append(sourceSymbol
-                        .GetQualifiedNameFromCurrentSymbol(typeV2));
+          sb.Append(sourceSymbol.GetQualifiedNameFromCurrentSymbol(
+                        typeArgument,
+                        typeParameters[i],
+                        convertName,
+                        getNamespaceParts));
         }
 
         sb.Append(">");
@@ -345,20 +126,30 @@ namespace schema.util.symbols {
       };
 
     public static string GetQualifiedNameFromCurrentSymbol(
-        this ITypeV2 sourceSymbol,
-        ITypeV2 referencedSymbol,
-        Func<ITypeV2, string>? convertName = null,
-        Func<ITypeV2, IEnumerable<string>>? getNamespaceParts = null) {
+        this ITypeSymbol sourceSymbol,
+        ITypeSymbol referencedSymbol)
+      => sourceSymbol.GetQualifiedNameFromCurrentSymbol(referencedSymbol, null);
+
+    public static string GetQualifiedNameFromCurrentSymbol(
+        this ITypeSymbol sourceSymbol,
+        ITypeSymbol referencedSymbol,
+        ISymbol? symbolForChecks,
+        Func<ITypeSymbol, ISymbol?, string>? convertName = null,
+        Func<ITypeSymbol, IEnumerable<string>>? getNamespaceParts = null) {
       if (referencedSymbol.IsArray(out var elementType)) {
         return
-            $"{sourceSymbol.GetQualifiedNameFromCurrentSymbol(elementType, convertName, getNamespaceParts)}[]";
+            $"{sourceSymbol.GetQualifiedNameFromCurrentSymbol(elementType, null, convertName, getNamespaceParts)}[]";
       }
 
-      if (referencedSymbol.HasNullableAnnotation) {
-        if (referencedSymbol is
-            { Name: "Nullable", FullyQualifiedNamespace: "System" }) {
+      if (referencedSymbol.IsNullable()) {
+        if (referencedSymbol.IsType(typeof(Nullable<>))) {
+          var referencedNamedTypeSymbol
+              = Asserts.AsA<INamedTypeSymbol>(referencedSymbol);
+          var typeArgument = referencedNamedTypeSymbol.TypeArguments.Single();
+          var typeParameter = referencedNamedTypeSymbol.TypeParameters.Single();
+
           return
-              $"{sourceSymbol.GetQualifiedNameFromCurrentSymbol(referencedSymbol.GenericArguments.Single(), convertName, getNamespaceParts)}?";
+              $"{sourceSymbol.GetQualifiedNameFromCurrentSymbol(typeArgument, typeParameter, convertName, getNamespaceParts)}?";
         }
       }
 
@@ -381,7 +172,7 @@ namespace schema.util.symbols {
         };
       }
 
-      if (referencedSymbol.IsString) {
+      if (referencedSymbol.IsString()) {
         return "string";
       }
 
@@ -389,28 +180,28 @@ namespace schema.util.symbols {
         return referencedSymbol.Name.EscapeKeyword();
       }
 
-      if (referencedSymbol is
-          { Name: "Void", FullyQualifiedNamespace: "System" }) {
+      if (referencedSymbol.IsType(typeof(void))) {
         return "void";
       }
 
-
       var sb = new StringBuilder();
 
-      if (referencedSymbol is
-          { Name: "ValueTuple", FullyQualifiedNamespace: "System" }) {
+      if (referencedSymbol.IsTuple(out var tupleElements)) {
         sb.Append("(");
 
-        var genericArguments = referencedSymbol.GetTupleElements().ToArray();
+        var genericArguments = tupleElements.ToArray();
         for (var i = 0; i < genericArguments.Length; ++i) {
           if (i > 0) {
             sb.Append(", ");
           }
 
-          var (tupleItemName, tupleItemType) = genericArguments[i];
+          var tupleElement = genericArguments[i];
+          var tupleItemName = tupleElement.Name;
+          var tupleItemType = tupleElement.Type;
           sb.Append(sourceSymbol
                         .GetQualifiedNameFromCurrentSymbol(
                             tupleItemType,
+                            null,
                             convertName,
                             getNamespaceParts));
           if (tupleItemName.Length > 0 && tupleItemName != $"Item{1 + i}") {
@@ -425,11 +216,13 @@ namespace schema.util.symbols {
       }
 
       var currentNamespace
-          = sourceSymbol.NamespaceParts.Select(EscapeKeyword).ToArray();
+          = sourceSymbol.GetContainingNamespaces()
+                        .Select(EscapeKeyword)
+                        .ToArray();
       var referencedNamespace =
           (getNamespaceParts != null
               ? getNamespaceParts(referencedSymbol)
-              : referencedSymbol.NamespaceParts)
+              : referencedSymbol.GetContainingNamespaces())
           .Select(EscapeKeyword)
           .ToArray();
 
@@ -461,32 +254,19 @@ namespace schema.util.symbols {
 
       sb.Append(mergedNamespaceText);
 
-      foreach (var container in referencedSymbol.DeclaringTypeNamesDownward) {
-        sb.Append(container.EscapeKeyword());
+      foreach (var container in referencedSymbol.GetDeclaringTypesDownward()) {
+        sb.Append(container.Name.EscapeKeyword());
         sb.Append('.');
       }
 
       sb.Append(convertName != null
-                    ? convertName(referencedSymbol)
+                    ? convertName(referencedSymbol, symbolForChecks)
                     : referencedSymbol.Name.EscapeKeyword());
 
-      var typeArguments = referencedSymbol.GenericArguments.ToArray();
-      if (typeArguments.Length > 0) {
-        sb.Append("<");
-        for (var i = 0; i < typeArguments.Length; ++i) {
-          if (i > 0) {
-            sb.Append(", ");
-          }
-
-          var typeArgument = typeArguments[i];
-          sb.Append(sourceSymbol.GetQualifiedNameFromCurrentSymbol(
-                        typeArgument,
-                        convertName,
-                        getNamespaceParts));
-        }
-
-        sb.Append(">");
-      }
+      sb.AppendGenericArgumentsFor(sourceSymbol,
+                                   referencedSymbol,
+                                   convertName,
+                                   getNamespaceParts);
 
       return sb.ToString();
     }

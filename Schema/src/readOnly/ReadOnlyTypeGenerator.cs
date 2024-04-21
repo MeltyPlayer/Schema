@@ -53,8 +53,6 @@ namespace schema.readOnly {
     public string GenerateSourceForNamedType(INamedTypeSymbol typeSymbol,
                                              SemanticModel semanticModel,
                                              TypeDeclarationSyntax syntax) {
-      var typeV2 = TypeV2.FromSymbol(typeSymbol);
-
       var typeNamespace = typeSymbol.GetFullyQualifiedNamespace();
 
       var declaringTypes = typeSymbol.GetDeclaringTypesDownward();
@@ -144,9 +142,9 @@ namespace schema.readOnly {
             GetDirectBaseTypeAndInterfaces_(typeSymbol)
                 .Where(i => i.HasAttribute<GenerateReadOnlyAttribute>() ||
                             IsTypeAlreadyConst_(i))
-                .Select(i => typeV2
+                .Select(i => typeSymbol
                             .GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
-                                TypeV2.FromSymbol(i),
+                                i,
                                 semanticModel,
                                 syntax))
                 .ToArray();
@@ -154,7 +152,7 @@ namespace schema.readOnly {
           blockPrefix += " : " + string.Join(", ", parentConstNames);
         }
 
-        blockPrefix += typeV2.GetTypeConstraintsOrReadonly(
+        blockPrefix += typeSymbol.GetTypeConstraintsOrReadonly(
             typeSymbol.TypeParameters,
             semanticModel,
             syntax);
@@ -182,7 +180,7 @@ namespace schema.readOnly {
     }
 
     private static bool IsTypeAlreadyConst_(INamedTypeSymbol typeSymbol) {
-      if (typeSymbol.MatchesGeneric(typeof(IEnumerable<>))) {
+      if (typeSymbol.IsType(typeof(IEnumerable<>))) {
         return true;
       }
 
@@ -228,8 +226,6 @@ namespace schema.readOnly {
         SemanticModel semanticModel,
         TypeDeclarationSyntax syntax,
         string? interfaceName = null) {
-      var typeV2 = TypeV2.FromSymbol(typeSymbol);
-
       foreach (var memberSymbol in constMembers) {
         var methodSymbol = Asserts.AsA<IMethodSymbol>(memberSymbol);
         var memberTypeSymbol = methodSymbol.ReturnType;
@@ -243,11 +239,9 @@ namespace schema.readOnly {
 
         IPropertySymbol? associatedPropertySymbol
             = methodSymbol.AssociatedSymbol as IPropertySymbol;
-
-        var memberTypeV2 = TypeV2.FromSymbol(memberTypeSymbol);
         cbsb.Write(
-            typeV2.GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
-                memberTypeV2,
+            typeSymbol.GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
+                memberTypeSymbol,
                 semanticModel,
                 syntax,
                 associatedPropertySymbol));
@@ -279,11 +273,9 @@ namespace schema.readOnly {
               }
 
               var parameterSymbol = methodSymbol.Parameters[i];
-              var parameterTypeV2
-                  = TypeV2.FromSymbol(parameterSymbol.Type);
               cbsb.Write(
-                  typeV2.GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
-                      parameterTypeV2,
+                  typeSymbol.GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
+                      parameterSymbol.Type,
                       semanticModel,
                       syntax,
                       parameterSymbol));
@@ -331,9 +323,6 @@ namespace schema.readOnly {
             }
 
             var parameterSymbol = methodSymbol.Parameters[i];
-            var parameterTypeV2
-                = TypeV2.FromSymbol(parameterSymbol.Type);
-
             if (parameterSymbol.IsParams) {
               cbsb.Write("params ");
             }
@@ -344,9 +333,9 @@ namespace schema.readOnly {
             }
 
             cbsb.Write(
-                    typeV2
+                    typeSymbol
                         .GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
-                            parameterTypeV2,
+                            parameterSymbol.Type,
                             semanticModel,
                             syntax,
                             parameterSymbol))
@@ -378,7 +367,7 @@ namespace schema.readOnly {
           cbsb.Write(")");
 
           if (interfaceName == null) {
-            cbsb.Write(typeV2.GetTypeConstraintsOrReadonly(
+            cbsb.Write(typeSymbol.GetTypeConstraintsOrReadonly(
                            methodSymbol.TypeParameters,
                            semanticModel,
                            syntax));
@@ -417,14 +406,14 @@ namespace schema.readOnly {
             INamedTypeSymbol symbol) {
       var baseType = symbol.BaseType;
       if (baseType != null &&
-          !baseType.IsExactlyType(typeof(object)) &&
-          !baseType.IsExactlyType(typeof(ValueType))) {
+          !SymbolComparisonUtil.IsType((ISymbol) baseType, typeof(object)) &&
+          !SymbolComparisonUtil.IsType((ISymbol) baseType, typeof(ValueType))) {
         yield return baseType;
       }
 
       var parentInterfaces
           = symbol.Interfaces
-                  .Where(i => !(i.MatchesGeneric(typeof(IEquatable<>)) &&
+                  .Where(i => !(i.IsType(typeof(IEquatable<>)) &&
                                 i.TypeArguments[0]
                                  .GetFullyQualifiedNamespace() ==
                                 symbol.GetFullyQualifiedNamespace() &&
@@ -440,22 +429,19 @@ namespace schema.readOnly {
     public const string PREFIX = "IReadOnly";
 
     public static string GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
-        this ITypeV2 sourceSymbol,
-        ITypeV2 referencedSymbol,
+        this ITypeSymbol sourceSymbol,
+        ITypeSymbol referencedSymbol,
         SemanticModel semanticModel,
         TypeDeclarationSyntax sourceDeclarationSyntax,
         ISymbol? memberSymbol = null)
       => sourceSymbol.GetQualifiedNameFromCurrentSymbol(
           referencedSymbol,
-          memberSymbol == null
-              ? ConvertName_
-              : !memberSymbol.HasAttribute<KeepMutableTypeAttribute>()
-                  ? ConvertName_
-                  : null,
+          memberSymbol,
+          ConvertName_,
           r => GetNamespaceOfType(r, semanticModel, sourceDeclarationSyntax));
 
     public static string GetTypeConstraintsOrReadonly(
-        this ITypeV2 sourceSymbol,
+        this ITypeSymbol sourceSymbol,
         IReadOnlyList<ITypeParameterSymbol> typeParameters,
         SemanticModel semanticModel,
         TypeDeclarationSyntax syntax) {
@@ -487,7 +473,7 @@ namespace schema.readOnly {
     }
 
     private static IEnumerable<string> GetTypeConstraintNames_(
-        this ITypeV2 sourceSymbol,
+        this ITypeSymbol sourceSymbol,
         ITypeParameterSymbol typeParameter,
         SemanticModel semanticModel,
         TypeDeclarationSyntax sourceDeclarationSyntax) {
@@ -517,12 +503,10 @@ namespace schema.readOnly {
 
       for (var i = 0; i < typeParameter.ConstraintTypes.Length; ++i) {
         var constraintType = typeParameter.ConstraintTypes[i];
-        var constraintTypeV2 = TypeV2.FromSymbol(constraintType);
         var qualifiedName = sourceSymbol.GetQualifiedNameFromCurrentSymbol(
-            constraintTypeV2,
-            !typeParameter.HasAttribute<KeepMutableTypeAttribute>()
-                ? ConvertName_
-                : null,
+            constraintType,
+            typeParameter,
+            ConvertName_,
             r => GetNamespaceOfType(r, semanticModel, sourceDeclarationSyntax));
 
         yield return typeParameter.ConstraintNullableAnnotations[i] ==
@@ -532,23 +516,23 @@ namespace schema.readOnly {
       }
     }
 
-    private static string ConvertName_(ITypeV2 typeV2)
-      => typeV2.HasAttribute<GenerateReadOnlyAttribute>() &&
-         !typeV2.HasAttribute<KeepMutableTypeAttribute>()
-          ? typeV2.GetConstInterfaceName()
-          : typeV2.Name.EscapeKeyword();
+    private static string ConvertName_(ITypeSymbol typeSymbol,
+                                       ISymbol?
+                                           typeSymbolForAttributeChecks)
+      => typeSymbol.HasAttribute<GenerateReadOnlyAttribute>() &&
+         !(typeSymbolForAttributeChecks ?? typeSymbol)
+             .HasAttribute<KeepMutableTypeAttribute>()
+          ? typeSymbol.GetConstInterfaceName()
+          : typeSymbol.Name.EscapeKeyword();
 
     public static string GetConstInterfaceName(
-        this INamedTypeSymbol typeSymbol)
-      => GetConstInterfaceName(TypeV2.FromSymbol(typeSymbol));
-
-    public static string GetConstInterfaceName(this ITypeV2 typeV2) {
-      var baseName = typeV2.Name;
+        this ITypeSymbol typeSymbol) {
+      var baseName = typeSymbol.Name;
       if (baseName.Length >= 2) {
         if (baseName[1] is < 'a' or > 'z') {
           var firstChar = baseName[0];
-          if ((firstChar == 'I' && typeV2.IsInterface) ||
-              (firstChar == 'B' && typeV2.IsAbstractClass)) {
+          if ((firstChar == 'I' && typeSymbol.IsInterface()) ||
+              (firstChar == 'B' && typeSymbol.IsAbstractClass())) {
             baseName = baseName.Substring(1);
           }
         }
@@ -566,11 +550,12 @@ namespace schema.readOnly {
          .Where(symbol => symbol is INamedTypeSymbol)
          .Select(symbol => symbol as INamedTypeSymbol);
 
-    public static IEnumerable<string> GetNamespaceOfType(this ITypeV2 typeV2,
-      SemanticModel semanticModel,
-      TypeDeclarationSyntax syntax) {
-      if (!typeV2.Exists) {
-        var typeName = typeV2.Name;
+    public static IEnumerable<string> GetNamespaceOfType(
+        this ITypeSymbol typeSymbol,
+        SemanticModel semanticModel,
+        TypeDeclarationSyntax syntax) {
+      if (!typeSymbol.Exists()) {
+        var typeName = typeSymbol.Name;
         if (typeName.StartsWith(
                 ReadOnlyTypeGeneratorUtil.PREFIX)) {
           var nameWithoutPrefix
@@ -601,7 +586,7 @@ namespace schema.readOnly {
         }
       }
 
-      return typeV2.NamespaceParts;
+      return typeSymbol.GetContainingNamespaces();
     }
   }
 }

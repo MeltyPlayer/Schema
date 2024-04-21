@@ -1,12 +1,44 @@
 ﻿using System;
 using System.Linq;
 
+using Microsoft.CodeAnalysis;
+
 using schema.binary.attributes;
 using schema.util.asserts;
-using schema.util.types;
+using schema.util.symbols;
 
 namespace schema.binary.parser {
   internal static class MemberReferenceUtil {
+    public static INamedTypeSymbol BinaryConvertibleTypeSymbol {
+      get;
+      private set;
+    }
+
+    public static INamedTypeSymbol BinarySerializableTypeSymbol {
+      get;
+      private set;
+    }
+
+    public static INamedTypeSymbol BinaryDeserializableTypeSymbol {
+      get;
+      private set;
+    }
+
+    public static void PopulateBinaryTypes(Compilation compilation) {
+      MemberReferenceUtil.BinaryConvertibleTypeSymbol
+          = Asserts.CastNonnull(
+              compilation.GetTypeByMetadataName(
+                  "schema.binary.IBinaryConvertible"));
+      MemberReferenceUtil.BinarySerializableTypeSymbol
+          = Asserts.CastNonnull(
+              compilation.GetTypeByMetadataName(
+                  "schema.binary.IBinarySerializable"));
+      MemberReferenceUtil.BinaryDeserializableTypeSymbol
+          = Asserts.CastNonnull(
+              compilation.GetTypeByMetadataName(
+                  "schema.binary.IBinaryDeserializable"));
+    }
+
     public static IMemberType WrapTypeInfoWithMemberType(
         ITypeInfo memberTypeInfo) {
       switch (memberTypeInfo) {
@@ -32,29 +64,30 @@ namespace schema.binary.parser {
         }
         case IGenericTypeInfo genericTypeInfo: {
           var rawConstraintTypeInfos = genericTypeInfo.ConstraintTypeInfos;
-          var rawConstraintTypeVs2s = rawConstraintTypeInfos
-                                       .Select(typeInfo => typeInfo.TypeV2)
-                                       .ToArray();
+          var rawConstraintTypeSymbols = rawConstraintTypeInfos
+                                         .Select(
+                                             typeInfo => typeInfo.TypeSymbol)
+                                         .ToArray();
 
-          var isBinarySerializable = rawConstraintTypeVs2s.Any(
-              typeV2 => typeV2.IsBinarySerializable);
-          var isBinaryDeserializable = rawConstraintTypeVs2s.Any(
-              typeV2 => typeV2.IsBinaryDeserializable);
+          var isBinarySerializable = rawConstraintTypeSymbols.Any(
+              t => t.IsBinarySerializable());
+          var isBinaryDeserializable = rawConstraintTypeSymbols.Any(
+              t => t.IsBinaryDeserializable());
 
-          ITypeV2? constraintTypeV2 = null;
+          ITypeSymbol? constraintTypeSymbol = null;
           if (isBinarySerializable && isBinaryDeserializable) {
-            constraintTypeV2 = TypeV2.FromType<IBinaryConvertible>();
+            constraintTypeSymbol = BinaryConvertibleTypeSymbol;
           } else if (isBinarySerializable) {
-            constraintTypeV2 = TypeV2.FromType<IBinarySerializable>();
+            constraintTypeSymbol = BinarySerializableTypeSymbol;
           } else if (isBinaryDeserializable) {
-            constraintTypeV2 = TypeV2.FromType<IBinaryDeserializable>();
+            constraintTypeSymbol = BinaryDeserializableTypeSymbol;
           }
 
           IMemberType? constraintMemberType = null;
-          if (constraintTypeV2 != null) {
-            new TypeInfoParser().ParseTypeV2(constraintTypeV2,
-                                             genericTypeInfo.IsReadOnly,
-                                             out var constraintTypeInfo);
+          if (constraintTypeSymbol != null) {
+            new TypeInfoParser().ParseTypeSymbol(constraintTypeSymbol,
+                                                 genericTypeInfo.IsReadOnly,
+                                                 out var constraintTypeInfo);
             constraintMemberType =
                 MemberReferenceUtil
                     .WrapTypeInfoWithMemberType(constraintTypeInfo);
@@ -74,7 +107,7 @@ namespace schema.binary.parser {
                   sequenceTypeInfo.IsLengthConst
                       ? SequenceLengthSourceType.READ_ONLY
                       : sequenceTypeInfo
-                        .TypeV2
+                        .TypeSymbol
                         .HasAttribute<RSequenceUntilEndOfStreamAttribute>()
                           ? SequenceLengthSourceType.UNTIL_END_OF_STREAM
                           : SequenceLengthSourceType.UNSPECIFIED,

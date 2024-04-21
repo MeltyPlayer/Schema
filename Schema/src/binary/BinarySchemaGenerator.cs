@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using schema.binary.attributes;
+using schema.binary.parser;
 using schema.binary.text;
 using schema.util.generators;
 using schema.util.syntax;
@@ -12,7 +13,7 @@ using schema.util.types;
 
 namespace schema.binary {
   [Generator(LanguageNames.CSharp)]
-  internal class BinarySchemaGenerator
+  public class BinarySchemaGenerator
       : BMappedNamedTypesWithAttributeGenerator<BinarySchemaAttribute,
           IBinarySchemaContainer> {
     private readonly BinarySchemaContainerParser parser_ = new();
@@ -20,7 +21,7 @@ namespace schema.binary {
     private readonly BinarySchemaReaderGenerator readerImpl_ = new();
     private readonly BinarySchemaWriterGenerator writerImpl_ = new();
 
-    internal override bool TryToMap(
+    public override bool TryToMap(
         TypeDeclarationSyntax syntax,
         INamedTypeSymbol typeSymbol,
         out IBinarySchemaContainer mapped) {
@@ -33,7 +34,7 @@ namespace schema.binary {
       return true;
     }
 
-    internal override void PreprocessAllMapped(
+    public override void PreprocessAllMapped(
         IReadOnlyDictionary<INamedTypeSymbol, IBinarySchemaContainer>
             containerByNamedTypeSymbol) {
       // Hooks up size of dependencies.
@@ -63,8 +64,11 @@ namespace schema.binary {
       }
     }
 
+    public override void PreprocessCompilation(Compilation compilation) {
+      MemberReferenceUtil.PopulateBinaryTypes(compilation);
+    }
 
-    internal override IEnumerable<(string fileName, string source)>
+    public override IEnumerable<(string fileName, string source)>
         GenerateSourcesForMappedNamedType(IBinarySchemaContainer container) {
       var containerTypeV2 = TypeV2.FromSymbol(container.TypeSymbol);
       if (containerTypeV2.Implements<IBinaryDeserializable>() &&

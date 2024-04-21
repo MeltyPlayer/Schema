@@ -57,10 +57,11 @@ namespace schema.binary.text {
       }
 
       foreach (var declaringType in declaringTypes) {
-        cbsb.EnterBlock(SymbolTypeUtil.GetQualifiersAndNameAndGenericParametersFor(declaringType));
+        cbsb.EnterBlock(declaringType
+                            .GetQualifiersAndNameAndGenericParametersFor());
       }
 
-      cbsb.EnterBlock(SymbolTypeUtil.GetQualifiersAndNameAndGenericParametersFor(typeSymbol));
+      cbsb.EnterBlock(typeSymbol.GetQualifiersAndNameAndGenericParametersFor());
 
       cbsb.EnterBlock($"public void Write(IBinaryWriter {WRITER})");
       {
@@ -237,9 +238,9 @@ namespace schema.binary.text {
                 SchemaGeneratorUtil.GetPrimitiveLabel(writeType);
 
             var isNotDelayed =
-                !primitiveMemberType.SizeOfStream
-                && primitiveMemberType.AccessChainToSizeOf == null
-                && primitiveMemberType.PointerToAttribute == null;
+                !primitiveMemberType.SizeOfStream &&
+                primitiveMemberType.AccessChainToSizeOf == null &&
+                primitiveMemberType.PointerToAttribute == null;
             if (isNotDelayed) {
               var accessText = $"this.{member.Name}";
               if (member.MemberType.TypeInfo.IsNullable) {
@@ -269,11 +270,11 @@ namespace schema.binary.text {
                 if (lengthOfSequenceMembers.Length > 1) {
                   cbsb.WriteLine(
                       $"Asserts.AllEqual({string.Join(", ", lengthOfSequenceMembers.Select(
-                            member => {
-                              var lengthName =
-                                  (member.MemberTypeInfo as ISequenceTypeInfo).LengthName;
-                              return $"{member.Name}.{lengthName}";
-                            }))});");
+                          member => {
+                            var lengthName =
+                                (member.MemberTypeInfo as ISequenceTypeInfo).LengthName;
+                            return $"{member.Name}.{lengthName}";
+                          }))});");
                 }
               }
 

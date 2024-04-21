@@ -54,9 +54,9 @@ namespace schema.binary {
       if (assertOrder) {
         foreach (var node in typeChain.RootToTarget) {
           if (!node.IsOrderValid &&
-              SymbolTypeUtil.GetAttribute<SkipAttribute>(
-                  diagnosticReporter,
-                  node.MemberSymbol) == null) {
+              node.MemberSymbol
+                  .GetAttribute<SkipAttribute>(diagnosticReporter) ==
+              null) {
             diagnosticReporter.ReportDiagnostic(
                 node.MemberSymbol,
                 Rules.DependentMustComeAfterSource);
@@ -74,9 +74,8 @@ namespace schema.binary {
         var typeChainNode = accessChain.RootToTarget[i];
 
         var binarySchemaAttribute =
-            SymbolTypeUtil.GetAttribute<BinarySchemaAttribute>(
-                diagnosticReporter,
-                typeChainNode.ContainerSymbol);
+            typeChainNode.ContainerSymbol.GetAttribute<BinarySchemaAttribute>(
+                diagnosticReporter);
         if (binarySchemaAttribute == null) {
           diagnosticReporter.ReportDiagnostic(
               typeChainNode.MemberSymbol,

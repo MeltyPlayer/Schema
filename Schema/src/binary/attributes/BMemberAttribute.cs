@@ -3,11 +3,9 @@
 using Microsoft.CodeAnalysis;
 
 using schema.binary.parser;
-using schema.util;
 using schema.util.asserts;
 using schema.util.diagnostics;
 using schema.util.symbols;
-using schema.util.types;
 
 namespace schema.binary.attributes {
   public abstract class BMemberAttribute<T> : BMemberAttribute {
@@ -39,8 +37,8 @@ namespace schema.binary.attributes {
         string memberName) {
       this.diagnosticReporter_ = diagnosticReporter;
       this.containerTypeSymbol_ = containerTypeSymbol;
-      this.containerTypeInfo_ = BMemberAttribute.parser_.AssertParseTypeV2(
-          TypeV2.FromSymbol(containerTypeSymbol));
+      this.containerTypeInfo_ = BMemberAttribute.parser_.AssertParseType(
+          containerTypeSymbol);
       this.SetMemberFromName(memberName);
       this.InitFields();
     }
@@ -72,9 +70,9 @@ namespace schema.binary.attributes {
           out var memberTypeSymbol,
           out var memberTypeInfo);
 
-      if (!memberTypeInfo.TypeV2.Implements<T>()) {
+      if (!memberTypeInfo.TypeSymbol.Implements<T>()) {
         Asserts.Fail(
-            $"Type of member, {memberTypeInfo.TypeV2}, does not match expected type: {typeof(T)}");
+            $"Type of member, {memberTypeInfo.TypeSymbol}, does not match expected type: {typeof(T)}");
       }
 
       return new MemberReference<T>(
@@ -117,9 +115,9 @@ namespace schema.binary.attributes {
           out var memberTypeSymbol,
           out var memberTypeInfo);
 
-      if (!memberTypeInfo.TypeV2.Implements<T>()) {
+      if (!memberTypeInfo.TypeSymbol.Implements<T>()) {
         Asserts.Fail(
-            $"Type of other member, {memberTypeInfo.TypeV2}, does not match expected type: {typeof(T)}");
+            $"Type of other member, {memberTypeInfo.TypeSymbol}, does not match expected type: {typeof(T)}");
       }
 
       return new MemberReference<T>(
@@ -151,7 +149,7 @@ namespace schema.binary.attributes {
           this.memberThisIsAttachedTo_.Name,
           assertOrder);
 
-      var targetTypeSymbol = typeChain.Target.MemberTypeInfo.TypeV2;
+      var targetTypeSymbol = typeChain.Target.MemberTypeInfo.TypeSymbol;
       if (!targetTypeSymbol.Implements<T>()) {
         Asserts.Fail(
             $"Type of other member, {targetTypeSymbol}, does not match expected type: {typeof(T)}");
@@ -189,13 +187,15 @@ namespace schema.binary.attributes {
 
     private bool IsMemberWritePrivateOrSkipped_(ISymbol symbol)
       => symbol switch {
-          IPropertySymbol propertySymbol
-              => (propertySymbol.SetMethod
-                                ?.DeclaredAccessibility ??
-                  Accessibility.Private) == Accessibility.Private,
-          IFieldSymbol fieldSymbol
-              => fieldSymbol.DeclaredAccessibility == Accessibility.Private,
-      } || symbol.HasAttribute<SkipAttribute>();
+             IPropertySymbol propertySymbol
+                 => (propertySymbol.SetMethod
+                                   ?.DeclaredAccessibility ??
+                     Accessibility.Private) ==
+                    Accessibility.Private,
+             IFieldSymbol fieldSymbol
+                 => fieldSymbol.DeclaredAccessibility == Accessibility.Private,
+         } ||
+         symbol.HasAttribute<SkipAttribute>();
   }
 
 

@@ -45,7 +45,7 @@ namespace schema.util.symbols {
         var attributeType = typeof(TAttribute);
         return this.GetAttributeData_()
                    .Where(attributeData
-                              => attributeData.AttributeClass?.IsExactlyType(
+                              => attributeData.AttributeClass?.IsType(
                                   attributeType) ?? false);
       }
 

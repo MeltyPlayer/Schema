@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using schema.binary;
+using schema.binary.parser;
 
 
 namespace schema.util.generators {
@@ -46,12 +47,17 @@ namespace schema.util.generators {
               => this.FilterNamedTypesBeforeGenerating(syntaxAndSymbol.syntax,
                 syntaxAndSymbol.symbol));
 
+      context.RegisterImplementationSourceOutput(
+          context.CompilationProvider,
+          (_, compilation) => {
+            MemberReferenceUtil.PopulateBinaryTypes(compilation);
+          });
+
       context.RegisterSourceOutput(
           filteredSyntaxAndSymbolProvider.Combine(context.CompilationProvider),
           (context, syntaxAndSymbolAndCompilation) => {
             var (syntaxAndSymbol, compilation) = syntaxAndSymbolAndCompilation;
             var (syntax, symbol) = syntaxAndSymbol;
-
             try {
               var semanticModel
                   = compilation.GetSemanticModel(syntax.SyntaxTree);

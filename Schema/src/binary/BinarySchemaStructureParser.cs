@@ -42,7 +42,7 @@ namespace schema.binary {
 
   public interface IMemberType {
     ITypeInfo TypeInfo { get; }
-    ITypeV2 TypeV2 { get; }
+    ITypeSymbol TypeSymbol { get; }
     bool IsReadOnly { get; }
   }
 
@@ -204,10 +204,9 @@ namespace schema.binary {
           if (hasRunAtReadTimeAttribute) {
             if (isMethod) {
               if (methodSymbol.Parameters.Length == 1 &&
-                  methodSymbol
-                      .Parameters[0]
-                      .Type
-                      .IsExactlyType(typeof(IBinaryReader))) {
+                  SymbolComparisonUtil.IsType((ISymbol) methodSymbol
+                                                  .Parameters[0]
+                                                  .Type, typeof(IBinaryReader))) {
                 members.Add(
                     new SchemaMethodMember { Name = methodSymbol.Name });
               } else {
@@ -234,7 +233,6 @@ namespace schema.binary {
             !isSkipped
                 ? this.ParseNonSkippedField_(
                     containerSymbol,
-                    containerTypeV2,
                     memberBetterSymbol,
                     parsedMember)
                 : this.ParseSkippedField_(parsedMember);
@@ -283,7 +281,6 @@ namespace schema.binary {
 
     private ISchemaValueMember? ParseNonSkippedField_(
         INamedTypeSymbol containerTypeSymbol,
-        ITypeV2 containerTypeV2,
         IBetterSymbol memberBetterSymbol,
         (TypeInfoParser.ParseStatus, ISymbol, ITypeSymbol, ITypeInfo)
             parsedMember
@@ -298,8 +295,8 @@ namespace schema.binary {
 
       // Makes sure the member is serializable
       if (memberTypeInfo is IContainerTypeInfo) {
-        if (!memberTypeInfo.TypeV2.IsAtLeastAsBinaryConvertibleAs(
-                containerTypeV2)) {
+        if (!memberTypeInfo.TypeSymbol.IsAtLeastAsBinaryConvertibleAs(
+                containerTypeSymbol)) {
           memberBetterSymbol.ReportDiagnostic(
               Rules.ContainerMemberBinaryConvertabilityNeedsToSatisfyParent);
           return null;
@@ -399,7 +396,7 @@ namespace schema.binary {
 
       new SupportedElementTypeAsserter()
           .AssertElementTypesAreSupported(memberBetterSymbol,
-                                          containerTypeV2,
+                                          containerTypeSymbol,
                                           memberType);
 
       {
@@ -419,7 +416,7 @@ namespace schema.binary {
         var formatNumberType = SchemaNumberType.UNDEFINED;
         var formatIntegerType = SchemaIntegerType.UNDEFINED;
 
-        if (targetMemberType.TypeV2.IsEnum(out var underlyingType)) {
+        if (targetMemberType.TypeSymbol.IsEnum(out var underlyingType)) {
           formatIntegerType = underlyingType;
         }
 
@@ -474,8 +471,8 @@ namespace schema.binary {
         // Checks if the member is a child of the current type
         {
           if (targetMemberType is ContainerMemberType containerMemberType) {
-            if (targetMemberType.TypeV2.IsChild(out var expectedParentTypeV2)) {
-              if (expectedParentTypeV2.IsExactly(containerTypeV2)) {
+            if (targetMemberType.TypeSymbol.IsChild(out var expectedParentTypeSymbol)) {
+              if (expectedParentTypeSymbol.IsSameAs(containerTypeSymbol)) {
                 containerMemberType.IsChild = true;
               } else {
                 memberBetterSymbol.ReportDiagnostic(
@@ -602,7 +599,7 @@ namespace schema.binary {
     public class PrimitiveMemberType : IPrimitiveMemberType {
       public IPrimitiveTypeInfo PrimitiveTypeInfo { get; set; }
       public ITypeInfo TypeInfo => PrimitiveTypeInfo;
-      public ITypeV2 TypeV2 => TypeInfo.TypeV2;
+      public ITypeSymbol TypeSymbol => TypeInfo.TypeSymbol;
       public bool IsReadOnly => this.TypeInfo.IsReadOnly;
 
       public SchemaPrimitiveType PrimitiveType
@@ -621,7 +618,7 @@ namespace schema.binary {
     public class ContainerMemberType : IContainerMemberType {
       public IContainerTypeInfo ContainerTypeInfo { get; set; }
       public ITypeInfo TypeInfo => this.ContainerTypeInfo;
-      public ITypeV2 TypeV2 => TypeInfo.TypeV2;
+      public ITypeSymbol TypeSymbol => TypeInfo.TypeSymbol;
       public bool IsReadOnly => this.TypeInfo.IsReadOnly;
 
       public bool IsChild { get; set; }
@@ -631,7 +628,7 @@ namespace schema.binary {
       public IMemberType? ConstraintType { get; set; }
       public IGenericTypeInfo GenericTypeInfo { get; set; }
       public ITypeInfo TypeInfo => GenericTypeInfo;
-      public ITypeV2 TypeV2 => TypeInfo.TypeV2;
+      public ITypeSymbol TypeSymbol => TypeInfo.TypeSymbol;
       public bool IsReadOnly => this.TypeInfo.IsReadOnly;
     }
 
@@ -642,7 +639,7 @@ namespace schema.binary {
 
     public class StringType : IStringType {
       public ITypeInfo TypeInfo { get; set; }
-      public ITypeV2 TypeV2 => TypeInfo.TypeV2;
+      public ITypeSymbol TypeSymbol => TypeInfo.TypeSymbol;
       public bool IsReadOnly => this.TypeInfo.IsReadOnly;
 
       public StringEncodingType EncodingType { get; set; }
@@ -656,7 +653,7 @@ namespace schema.binary {
     public class SequenceMemberType : ISequenceMemberType {
       public ISequenceTypeInfo SequenceTypeInfo { get; set; }
       public ITypeInfo TypeInfo => SequenceTypeInfo;
-      public ITypeV2 TypeV2 => TypeInfo.TypeV2;
+      public ITypeSymbol TypeSymbol => TypeInfo.TypeSymbol;
       public bool IsReadOnly => this.TypeInfo.IsReadOnly;
 
       public SequenceLengthSourceType LengthSourceType { get; set; }

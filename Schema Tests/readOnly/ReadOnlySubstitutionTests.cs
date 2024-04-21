@@ -47,6 +47,38 @@ namespace schema.readOnly {
     }
 
     [Test]
+    public void TestDoesNotSubstituteMutableTypeConstraintsDownstream() {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          """
+          using schema.readOnly;
+
+          namespace foo.bar {
+            [GenerateReadOnly]
+            public partial interface IBase<[KeepMutableType] T1, T2> where T1 : IValue where T2 : IValue;
+          
+            [GenerateReadOnly]
+            public partial interface IChild : IBase<IValue, IValue>;
+          }
+          """,
+          """
+          namespace foo.bar {
+            public partial interface IBase<T1, T2> : IReadOnlyBase<T1, T2>;
+            
+            public interface IReadOnlyBase<T1, T2> where T1 : schema.readOnly.IValue where T2 : schema.readOnly.IReadOnlyValue;
+          }
+
+          """,
+          """
+          namespace foo.bar {
+            public partial interface IChild : IReadOnlyChild;
+            
+            public interface IReadOnlyChild : IReadOnlyBase<schema.readOnly.IValue, schema.readOnly.IReadOnlyValue>;
+          }
+
+          """);
+    }
+
+    [Test]
     public void TestSubstitutesMethodConstraints() {
       ReadOnlyGeneratorTestUtil.AssertGenerated(
           """

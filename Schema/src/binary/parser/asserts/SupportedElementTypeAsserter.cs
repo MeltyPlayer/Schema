@@ -1,12 +1,13 @@
-﻿using schema.util.diagnostics;
-using schema.util.types;
+﻿using Microsoft.CodeAnalysis;
+
+using schema.util.diagnostics;
 
 
 namespace schema.binary.parser.asserts {
   internal class SupportedElementTypeAsserter {
     public void AssertElementTypesAreSupported(
         IDiagnosticReporter diagnosticReporter,
-        ITypeV2 containerTypeV2,
+        ITypeSymbol containerTypeV2,
         IMemberType memberType) {
       if (memberType is not ISequenceMemberType sequenceMemberType) {
         return;
@@ -20,7 +21,7 @@ namespace schema.binary.parser.asserts {
 
       var elementTypeInfo = sequenceMemberType.ElementType.TypeInfo;
       if (elementTypeInfo is IContainerTypeInfo elementContainerTypeInfo) {
-        var elementContainerTypeV2 = elementContainerTypeInfo.TypeV2;
+        var elementContainerTypeV2 = elementContainerTypeInfo.TypeSymbol;
         if (!elementContainerTypeV2.IsAtLeastAsBinaryConvertibleAs(
                 containerTypeV2)) {
           diagnosticReporter.ReportDiagnostic(

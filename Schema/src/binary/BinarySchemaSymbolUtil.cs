@@ -1,0 +1,35 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+using Microsoft.CodeAnalysis;
+
+using schema.binary.attributes;
+using schema.util.symbols;
+using schema.util.types;
+
+namespace schema.binary {
+  public static class BinarySchemaSymbolUtil {
+    public static bool IsAtLeastAsBinaryConvertibleAs(this ISymbol symbol,
+      ITypeSymbol other)
+      => (!other.IsBinaryDeserializable() || symbol.IsBinaryDeserializable()) &&
+         (!other.IsBinarySerializable() || symbol.IsBinarySerializable());
+
+    public static bool IsBinarySerializable(this ISymbol symbol)
+      => symbol.Implements<IBinarySerializable>();
+
+    public static bool IsBinaryDeserializable(this ISymbol symbol)
+      => symbol.Implements<IBinaryDeserializable>();
+
+    public static bool IsChild(this ISymbol symbol, out ISymbol parent) {
+      if (symbol.Implements(typeof(IChildOf<>), out var matchingType)) {
+        parent = matchingType.TypeArguments.First();
+        return true;
+      }
+
+      parent = default;
+      return false;
+    }
+  }
+}
