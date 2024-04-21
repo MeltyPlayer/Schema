@@ -351,14 +351,14 @@ namespace schema.util.symbols {
         Func<ITypeV2, IEnumerable<string>>? getNamespaceParts = null) {
       if (referencedSymbol.IsArray(out var elementType)) {
         return
-            $"{sourceSymbol.GetQualifiedNameFromCurrentSymbol(elementType, convertName)}[]";
+            $"{sourceSymbol.GetQualifiedNameFromCurrentSymbol(elementType, convertName, getNamespaceParts)}[]";
       }
 
       if (referencedSymbol.HasNullableAnnotation) {
         if (referencedSymbol is
             { Name: "Nullable", FullyQualifiedNamespace: "System" }) {
           return
-              $"{sourceSymbol.GetQualifiedNameFromCurrentSymbol(referencedSymbol.GenericArguments.Single(), convertName)}?";
+              $"{sourceSymbol.GetQualifiedNameFromCurrentSymbol(referencedSymbol.GenericArguments.Single(), convertName, getNamespaceParts)}?";
         }
       }
 
@@ -409,7 +409,10 @@ namespace schema.util.symbols {
 
           var (tupleItemName, tupleItemType) = genericArguments[i];
           sb.Append(sourceSymbol
-                        .GetQualifiedNameFromCurrentSymbol(tupleItemType));
+                        .GetQualifiedNameFromCurrentSymbol(
+                            tupleItemType,
+                            convertName,
+                            getNamespaceParts));
           if (tupleItemName.Length > 0 && tupleItemName != $"Item{1 + i}") {
             sb.Append(" ");
             sb.Append(tupleItemName);
@@ -478,7 +481,8 @@ namespace schema.util.symbols {
           var typeArgument = typeArguments[i];
           sb.Append(sourceSymbol.GetQualifiedNameFromCurrentSymbol(
                         typeArgument,
-                        convertName));
+                        convertName,
+                        getNamespaceParts));
         }
 
         sb.Append(">");

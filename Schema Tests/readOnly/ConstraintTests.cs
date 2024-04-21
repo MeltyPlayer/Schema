@@ -45,33 +45,33 @@ namespace schema.readOnly {
       ReadOnlyGeneratorTestUtil.AssertGenerated(
           """
           using schema.readOnly;
-          
+
           namespace build.readOnly {
             [GenerateReadOnly]
-            public partial interface IFinMatrix<[KeepMutableType] TMutable, TReadOnly, TImpl>
-                where TMutable : IFinMatrix<TMutable, TReadOnly, TImpl>, TReadOnly
-                where TReadOnly : IReadOnlyFinMatrix<TMutable, TReadOnly, TImpl> {
+            public partial interface ICircular<[KeepMutableType] TMutable, TReadOnly, TImpl>
+                where TMutable : ICircular<TMutable, TReadOnly, TImpl>, TReadOnly
+                where TReadOnly : IReadOnlyCircular<TMutable, TReadOnly, TImpl> {
               [Const]
-              TMutable CloneAndAdd(TReadOnly other);
+              TMutable Foo(TReadOnly other);
           
               [Const]
-              TMutable CloneAndAdd(in TImpl other);
+              TMutable Foo(in TImpl other);
             }
           }
           """,
           """
           namespace build.readOnly {
-            public partial interface IFinMatrix<TMutable, TReadOnly, TImpl> : IReadOnlyFinMatrix<TMutable, TReadOnly, TImpl> {
-              TMutable IReadOnlyFinMatrix<TMutable, TReadOnly, TImpl>.CloneAndAdd(TReadOnly other) => CloneAndAdd(other);
-              TMutable IReadOnlyFinMatrix<TMutable, TReadOnly, TImpl>.CloneAndAdd(in TImpl other) => CloneAndAdd(in other);
+            public partial interface ICircular<TMutable, TReadOnly, TImpl> : IReadOnlyCircular<TMutable, TReadOnly, TImpl> {
+              TMutable IReadOnlyCircular<TMutable, TReadOnly, TImpl>.Foo(TReadOnly other) => Foo(other);
+              TMutable IReadOnlyCircular<TMutable, TReadOnly, TImpl>.Foo(in TImpl other) => Foo(in other);
             }
             
-            public interface IReadOnlyFinMatrix<TMutable, TReadOnly, TImpl> where TMutable : IFinMatrix<TMutable, TReadOnly, TImpl>, TReadOnly where TReadOnly : build.readOnly.IReadOnlyFinMatrix<TMutable, TReadOnly, TImpl> {
-              public TMutable CloneAndAdd(TReadOnly other);
-              public TMutable CloneAndAdd(in TImpl other);
+            public interface IReadOnlyCircular<TMutable, TReadOnly, TImpl> where TMutable : ICircular<TMutable, TReadOnly, TImpl>, TReadOnly where TReadOnly : IReadOnlyCircular<TMutable, TReadOnly, TImpl> {
+              public TMutable Foo(TReadOnly other);
+              public TMutable Foo(in TImpl other);
             }
           }
-          
+
           """);
     }
 

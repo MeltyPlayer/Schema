@@ -154,8 +154,10 @@ namespace schema.readOnly {
           blockPrefix += " : " + string.Join(", ", parentConstNames);
         }
 
-        blockPrefix
-            += typeSymbol.TypeParameters.GetTypeConstraintsOrReadonly(typeV2);
+        blockPrefix += typeV2.GetTypeConstraintsOrReadonly(
+            typeSymbol.TypeParameters,
+            semanticModel,
+            syntax);
 
         if (constMembers.Length == 0) {
           cbsb.Write(blockPrefix).WriteLine(";");
@@ -376,9 +378,10 @@ namespace schema.readOnly {
           cbsb.Write(")");
 
           if (interfaceName == null) {
-            cbsb.Write(
-                methodSymbol.TypeParameters
-                            .GetTypeConstraintsOrReadonly(typeV2));
+            cbsb.Write(typeV2.GetTypeConstraintsOrReadonly(
+                           methodSymbol.TypeParameters,
+                           semanticModel,
+                           syntax));
           }
 
           if (interfaceName == null) {
@@ -452,14 +455,17 @@ namespace schema.readOnly {
           r => GetNamespaceOfType(r, semanticModel, sourceDeclarationSyntax));
 
     public static string GetTypeConstraintsOrReadonly(
-        this IReadOnlyList<ITypeParameterSymbol> typeParameters,
-        ITypeV2 sourceSymbol) {
+        this ITypeV2 sourceSymbol,
+        IReadOnlyList<ITypeParameterSymbol> typeParameters,
+        SemanticModel semanticModel,
+        TypeDeclarationSyntax syntax) {
       var sb = new StringBuilder();
 
       foreach (var typeParameter in typeParameters) {
         var typeConstraintNames
-            = typeParameter.GetTypeConstraintNames_(sourceSymbol)
-                           .ToArray();
+            = sourceSymbol
+              .GetTypeConstraintNames_(typeParameter, semanticModel, syntax)
+              .ToArray();
         if (typeConstraintNames.Length == 0) {
           continue;
         }
@@ -481,8 +487,10 @@ namespace schema.readOnly {
     }
 
     private static IEnumerable<string> GetTypeConstraintNames_(
-        this ITypeParameterSymbol typeParameter,
-        ITypeV2 sourceSymbol) {
+        this ITypeV2 sourceSymbol,
+        ITypeParameterSymbol typeParameter,
+        SemanticModel semanticModel,
+        TypeDeclarationSyntax sourceDeclarationSyntax) {
       if (typeParameter.HasNotNullConstraint) {
         yield return "notnull";
       }
@@ -514,7 +522,8 @@ namespace schema.readOnly {
             constraintTypeV2,
             !typeParameter.HasAttribute<KeepMutableTypeAttribute>()
                 ? ConvertName_
-                : null);
+                : null,
+            r => GetNamespaceOfType(r, semanticModel, sourceDeclarationSyntax));
 
         yield return typeParameter.ConstraintNullableAnnotations[i] ==
                      NullableAnnotation.Annotated
