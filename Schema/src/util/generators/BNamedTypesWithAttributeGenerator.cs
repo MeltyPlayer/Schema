@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+using schema.binary;
+
 
 namespace schema.util.generators {
   public abstract class BNamedTypesWithAttributeGenerator<TAttribute>
@@ -50,12 +52,19 @@ namespace schema.util.generators {
             var (syntaxAndSymbol, compilation) = syntaxAndSymbolAndCompilation;
             var (syntax, symbol) = syntaxAndSymbol;
 
-            var semanticModel = compilation.GetSemanticModel(syntax.SyntaxTree);
-            foreach (var (fileName, source) in this.GenerateSourcesForNamedType(
-                         symbol,
-                         semanticModel,
-                         syntax)) {
-              context.AddSource(fileName, source);
+            try {
+              var semanticModel
+                  = compilation.GetSemanticModel(syntax.SyntaxTree);
+              foreach (var (fileName, source) in this
+                           .GenerateSourcesForNamedType(
+                               symbol,
+                               semanticModel,
+                               syntax)) {
+                context.AddSource(fileName, source);
+              }
+            } catch (Exception e) {
+              context.ReportDiagnostic(
+                  Rules.CreateExceptionDiagnostic(symbol, e));
             }
           });
     }
