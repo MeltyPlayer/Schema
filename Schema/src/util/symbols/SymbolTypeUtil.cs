@@ -10,7 +10,6 @@ using schema.binary;
 using schema.binary.parser;
 using schema.util.asserts;
 using schema.util.diagnostics;
-using schema.util.types;
 
 
 namespace schema.util.symbols {
@@ -234,11 +233,24 @@ namespace schema.util.symbols {
       } else if (referencedNamespace.Length == 0) {
         mergedNamespaceText = $"{string.Join(".", currentNamespace)}.";
       } else {
+        bool allMatching = true;
+        for (var i = 0;
+             i < Math.Min(currentNamespace.Length, referencedNamespace.Length);
+             ++i) {
+          if (currentNamespace[i] != referencedNamespace[i]) {
+            allMatching = false;
+            break;
+          }
+        }
+
         var namespaces = new List<string>();
-        var matching = true;
+        var matching = allMatching;
         for (var i = 0; i < referencedNamespace.Length; ++i) {
-          if (i >= currentNamespace.Length ||
-              referencedNamespace[i] != currentNamespace[i]) {
+          if (matching &&
+              i >= currentNamespace.Length ||
+              (i < referencedNamespace.Length &&
+               i < currentNamespace.Length &&
+               referencedNamespace[i] != currentNamespace[i])) {
             matching = false;
           }
 

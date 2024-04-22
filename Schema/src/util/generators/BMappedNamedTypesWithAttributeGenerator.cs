@@ -7,7 +7,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using schema.binary;
-using schema.binary.parser;
 
 
 namespace schema.util.generators {

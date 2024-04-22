@@ -53,7 +53,7 @@ namespace foo {
   namespace bar {
     [BinarySchema]
     public partial class Wrapper : IBinaryConvertible {
-      public A Field { get; set; }
+      public foo.A Field { get; set; }
     }
   }
 }",
@@ -135,7 +135,7 @@ namespace foo.bar {
   namespace gar {
     [BinarySchema]
     public partial class Wrapper : IBinaryConvertible {
-      public goo.A Field { get; set; }
+      public foo.bar.goo.A Field { get; set; }
     }
   }
 }",
@@ -145,7 +145,7 @@ using schema.binary;
 namespace foo.bar.gar {
   public partial class Wrapper {
     public void Read(IBinaryReader br) {
-      this.Field = (goo.A) br.ReadByte();
+      this.Field = (foo.bar.goo.A) br.ReadByte();
     }
   }
 }

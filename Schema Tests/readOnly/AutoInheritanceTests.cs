@@ -93,7 +93,7 @@ namespace schema.readOnly {
           namespace foo.bar.place2 {
             public partial class Parent {
               [GenerateReadOnly]
-              public partial class AlreadyConstWrapper : place1.OtherParent.IAlreadyConst;
+              public partial class AlreadyConstWrapper : foo.bar.place1.OtherParent.IAlreadyConst;
             }
           }
           """,
@@ -102,7 +102,7 @@ namespace schema.readOnly {
             public partial class Parent {
               public partial class AlreadyConstWrapper : IReadOnlyAlreadyConstWrapper;
               
-              public interface IReadOnlyAlreadyConstWrapper : place1.OtherParent.IAlreadyConst;
+              public interface IReadOnlyAlreadyConstWrapper : foo.bar.place1.OtherParent.IAlreadyConst;
             }
           }
 
