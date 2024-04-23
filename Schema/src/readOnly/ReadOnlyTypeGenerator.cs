@@ -694,18 +694,18 @@ namespace schema.readOnly {
     private static bool DependsOnImpl_(
         this ITypeSymbol typeSymbol,
         ITypeParameterSymbol? thisTypeParameterSymbol,
-        ITypeParameterSymbol typeParameterSymbol,
+        ITypeParameterSymbol otherTypeParameterSymbol,
         out ITypeParameterSymbol? match) {
-      if (typeSymbol.IsSameAs(typeParameterSymbol)) {
+      if (typeSymbol.IsSameAs(otherTypeParameterSymbol)) {
         match = thisTypeParameterSymbol;
         return true;
       }
 
-      if (typeSymbol.IsGeneric(out var typeParameters, out _)) {
-        foreach (var typeParameter in typeParameters) {
-          if (typeParameter.DependsOnImpl_(typeParameter,
-                                           typeParameterSymbol,
-                                           out match)) {
+      if (typeSymbol.IsGenericZipped(out var typeParamsAndArgs)) {
+        foreach (var (typeParam, typeArg) in typeParamsAndArgs) {
+          if (typeArg.DependsOnImpl_(typeParam,
+                                     otherTypeParameterSymbol,
+                                     out match)) {
             return true;
           }
         }

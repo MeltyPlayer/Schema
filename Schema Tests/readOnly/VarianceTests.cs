@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+
 using schema.binary;
 
 namespace schema.readOnly {
@@ -81,7 +82,7 @@ namespace schema.readOnly {
           """
           using schema.readOnly;
           using System.Collections.Generic;
-          
+
           namespace foo.bar {
             public interface IBase<in T>;
           
@@ -123,7 +124,6 @@ namespace schema.readOnly {
       ReadOnlyGeneratorTestUtil.AssertGenerated(
           """
           using schema.readOnly;
-          using System.Collections.Generic;
 
           namespace foo.bar {
             [GenerateReadOnly]
@@ -148,22 +148,24 @@ namespace schema.readOnly {
     }
 
     [Test]
-    public void TestDoesNotAddContravarianceIfTypeIsCovariantInOtherType() {
+    [TestCase("")]
+    [TestCase("out ")]
+    public void TestDoesNotAddContravarianceUnlessContravariantInOtherType(
+        string variance) {
       ReadOnlyGeneratorTestUtil.AssertGenerated(
-          """
-          using schema.readOnly;
-          using System.Collections.Generic;
+          $$"""
+            using schema.readOnly;
 
-          namespace foo.bar {
-            public interface IValue<out T>;
-          
-            [GenerateReadOnly]
-            public partial interface IWrapper<T> {
-              [Const]
-              public void Method(IValue<T> foo);
+            namespace foo.bar {
+              public interface IValue<{{variance}}T>;
+            
+              [GenerateReadOnly]
+              public partial interface IWrapper<T> {
+                [Const]
+                public void Method(IValue<T> foo);
+              }
             }
-          }
-          """,
+            """,
           """
           namespace foo.bar {
             public partial interface IWrapper<T> : IReadOnlyWrapper<T> {
@@ -178,23 +180,24 @@ namespace schema.readOnly {
           """);
     }
 
-
     [Test]
-    public void TestDoesNotAddCovarianceIfTypeIsContravariantInOtherType() {
+    [TestCase("")]
+    [TestCase("in ")]
+    public void TestDoesNotAddCovarianceUnlessCovariantInOtherType(
+        string variance) {
       ReadOnlyGeneratorTestUtil.AssertGenerated(
-          """
-          using schema.readOnly;
-          using System.Collections.Generic;
+          $$"""
+            using schema.readOnly;
 
-          namespace foo.bar {
-            public interface IValue<in T>;
-          
-            [GenerateReadOnly]
-            public partial interface IWrapper<T> {
-              public IValue<T> Property { get; set; }
+            namespace foo.bar {
+              public interface IValue<{{variance}}T>;
+            
+              [GenerateReadOnly]
+              public partial interface IWrapper<T> {
+                public IValue<T> Property { get; set; }
+              }
             }
-          }
-          """,
+            """,
           """
           namespace foo.bar {
             public partial interface IWrapper<T> : IReadOnlyWrapper<T> {
@@ -203,6 +206,35 @@ namespace schema.readOnly {
             
             public interface IReadOnlyWrapper<T> {
               public IValue<T> Property { get; }
+            }
+          }
+
+          """);
+    }
+
+    [Test]
+    public void TestDoesNotAddContravarianceForSet() {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          """
+            using schema.readOnly;
+            using System.Collections.Generic;
+
+            namespace foo.bar {
+              [GenerateReadOnly]
+              public partial interface IWrapper<T> {
+                [Const]
+                public void Method(ISet<T> foo);
+              }
+            }
+            """,
+          """
+          namespace foo.bar {
+            public partial interface IWrapper<T> : IReadOnlyWrapper<T> {
+              void IReadOnlyWrapper<T>.Method(System.Collections.Generic.ISet<T> foo) => Method(foo);
+            }
+            
+            public interface IReadOnlyWrapper<T> {
+              public void Method(System.Collections.Generic.ISet<T> foo);
             }
           }
 

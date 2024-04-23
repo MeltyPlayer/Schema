@@ -154,6 +154,18 @@ namespace schema.util.symbols {
     public static bool IsString(this ISymbol symbol)
       => symbol is ITypeSymbol { SpecialType: SpecialType.System_String };
 
+    public static bool IsGenericZipped(this ISymbol symbol,
+                                       out IEnumerable<(ITypeParameterSymbol,
+                                           ITypeSymbol)> typeParamsAndArgs) {
+      if (symbol is INamedTypeSymbol { IsGenericType: true } namedTypeSymbol) {
+        typeParamsAndArgs = namedTypeSymbol.GetTypeParamsAndArgs();
+        return true;
+      }
+
+      typeParamsAndArgs = default;
+      return false;
+    }
+
     public static bool IsGeneric(
         this ISymbol symbol,
         out ImmutableArray<ITypeParameterSymbol> typeParameterSymbols,
