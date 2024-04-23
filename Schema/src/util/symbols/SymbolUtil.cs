@@ -8,7 +8,6 @@ using Microsoft.CodeAnalysis;
 
 using schema.binary;
 using schema.util.sequences;
-using schema.util.types;
 
 namespace schema.util.symbols {
   public static class SymbolUtil {

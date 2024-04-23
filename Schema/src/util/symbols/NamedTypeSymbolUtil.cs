@@ -80,5 +80,15 @@ namespace schema.util.symbols {
         this StringBuilder sb,
         INamedTypeSymbol namedTypeSymbol)
       => sb.AppendGenericParameters(namedTypeSymbol.TypeParameters);
+
+    public static IEnumerable<(ITypeParameterSymbol typeParameterSymbol,
+        ITypeSymbol typeArgumentSymbol)> GetTypeParamsAndArgs(
+        this INamedTypeSymbol symbol) {
+      var typeParams = symbol.TypeParameters;
+      var typeArgs = symbol.TypeArguments;
+      for (var i = 0; i < typeParams.Length; ++i) {
+        yield return (typeParams[i], typeArgs[i]);
+      }
+    }
   }
 }

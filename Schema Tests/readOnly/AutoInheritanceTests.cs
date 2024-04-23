@@ -20,7 +20,7 @@ namespace schema.readOnly {
             namespace foo.bar {
               public partial interface IGenericWrapper<T> : IReadOnlyGenericWrapper<T>;
               
-              public interface IReadOnlyGenericWrapper<T> : {{knownBase}};
+              public interface IReadOnlyGenericWrapper<out T> : {{knownBase}};
             }
 
             """);
@@ -45,7 +45,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial class AlreadyConstWrapper<T> : IReadOnlyAlreadyConstWrapper<T>;
             
-            public interface IReadOnlyAlreadyConstWrapper<T> : IAlreadyConst where T : notnull;
+            public interface IReadOnlyAlreadyConstWrapper<out T> : IAlreadyConst where T : notnull;
           }
 
           """);
@@ -216,7 +216,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial interface IBase1<T> : IReadOnlyBase1<T>;
             
-            public interface IReadOnlyBase1<T>;
+            public interface IReadOnlyBase1<out T>;
           }
 
           """,
@@ -224,7 +224,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial interface IBase2<T> : IReadOnlyBase2<T>;
             
-            public interface IReadOnlyBase2<T>;
+            public interface IReadOnlyBase2<out T>;
           }
 
           """,

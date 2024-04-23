@@ -76,35 +76,35 @@ namespace schema.readOnly {
           = parser_
             .ParseMembers(typeSymbol)
             .Where(parsedMember => {
-                     var (parseStatus, memberSymbol, _, _) = parsedMember;
-                     if (parseStatus ==
-                         TypeInfoParser.ParseStatus
-                                       .NOT_A_FIELD_OR_PROPERTY_OR_METHOD) {
-                       return false;
-                     }
+              var (parseStatus, memberSymbol, _, _) = parsedMember;
+              if (parseStatus ==
+                  TypeInfoParser.ParseStatus
+                                .NOT_A_FIELD_OR_PROPERTY_OR_METHOD) {
+                return false;
+              }
 
-                     if (memberSymbol.DeclaredAccessibility is not (
-                         Accessibility.Public or Accessibility.Internal)) {
-                       return false;
-                     }
+              if (memberSymbol.DeclaredAccessibility is not (
+                  Accessibility.Public or Accessibility.Internal)) {
+                return false;
+              }
 
-                     if (memberSymbol is IFieldSymbol) {
-                       return false;
-                     }
+              if (memberSymbol is IFieldSymbol) {
+                return false;
+              }
 
-                     if (memberSymbol is IPropertySymbol) {
-                       return false;
-                     }
+              if (memberSymbol is IPropertySymbol) {
+                return false;
+              }
 
-                     if (memberSymbol is IMethodSymbol &&
-                         !memberSymbol.Name.StartsWith("get_") &&
-                         !memberSymbol.HasAttribute<ConstAttribute>()) {
-                       return false;
-                     }
+              if (memberSymbol is IMethodSymbol &&
+                  !memberSymbol.Name.StartsWith("get_") &&
+                  !memberSymbol.HasAttribute<ConstAttribute>()) {
+                return false;
+              }
 
-                     return true;
-                   })
-            .Select(parsedMember => parsedMember.Item2)
+              return true;
+            })
+            .Select(parsedMember => (IMethodSymbol) parsedMember.Item2)
             .ToArray();
 
       // Class
@@ -136,8 +136,9 @@ namespace schema.readOnly {
                 typeSymbol.DeclaredAccessibility));
         cbsb.Write(" interface ");
 
-        var blockPrefix
-            = typeSymbol.GetNameAndGenericParametersFor(interfaceName);
+        var blockPrefix = interfaceName;
+        blockPrefix
+            += typeSymbol.GetGenericParametersWithVarianceForReadOnlyVersion(constMembers);
         var parentConstNames =
             GetDirectBaseTypeAndInterfaces_(typeSymbol)
                 .Where(i => i.HasAttribute<GenerateReadOnlyAttribute>() ||
@@ -222,13 +223,12 @@ namespace schema.readOnly {
     private static void WriteMembers_(
         ICurlyBracketTextWriter cbsb,
         INamedTypeSymbol typeSymbol,
-        IReadOnlyList<ISymbol> constMembers,
+        IReadOnlyList<IMethodSymbol> constMembers,
         SemanticModel semanticModel,
         TypeDeclarationSyntax syntax,
         string? interfaceName = null) {
       foreach (var memberSymbol in constMembers) {
-        var methodSymbol = Asserts.AsA<IMethodSymbol>(memberSymbol);
-        var memberTypeSymbol = methodSymbol.ReturnType;
+        var memberTypeSymbol = memberSymbol.ReturnType;
 
         if (interfaceName == null) {
           cbsb.Write(
@@ -238,7 +238,7 @@ namespace schema.readOnly {
         }
 
         IPropertySymbol? associatedPropertySymbol
-            = methodSymbol.AssociatedSymbol as IPropertySymbol;
+            = memberSymbol.AssociatedSymbol as IPropertySymbol;
         cbsb.Write(
             typeSymbol.GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
                 memberTypeSymbol,
@@ -247,8 +247,6 @@ namespace schema.readOnly {
                 associatedPropertySymbol));
         cbsb.Write(" ");
 
-        var memberName = memberSymbol.Name;
-
         if (interfaceName != null) {
           cbsb.Write(interfaceName);
           cbsb.Write(typeSymbol.GetGenericParameters());
@@ -256,29 +254,28 @@ namespace schema.readOnly {
         }
 
         // Property
-        if (memberName.StartsWith("get_")) {
-          var isIndexer = methodSymbol.AssociatedSymbol?.Name == "this[]";
-
-          var accessName = isIndexer
-              ? "this"
-              : memberSymbol.Name.Substring(4).EscapeKeyword();
+        if (memberSymbol.IsPropertyGetter(out var propertyAccessName)) {
+          var isIndexer
+              = memberSymbol.IsIndexer(out var indexerParameterSymbols);
 
           if (!isIndexer) {
             cbsb.Write(memberSymbol.Name.Substring(4).EscapeKeyword());
           } else {
+            propertyAccessName = "this";
             cbsb.Write("this[");
-            for (var i = 0; i < methodSymbol.Parameters.Length; ++i) {
+            for (var i = 0; i < indexerParameterSymbols.Length; ++i) {
               if (i > 0) {
                 cbsb.Write(", ");
               }
 
-              var parameterSymbol = methodSymbol.Parameters[i];
+              var parameterSymbol = indexerParameterSymbols[i];
               cbsb.Write(
-                  typeSymbol.GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
-                      parameterSymbol.Type,
-                      semanticModel,
-                      syntax,
-                      parameterSymbol));
+                  typeSymbol
+                      .GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
+                          parameterSymbol.Type,
+                          semanticModel,
+                          syntax,
+                          parameterSymbol));
               cbsb.Write(" ");
               cbsb.Write(parameterSymbol.Name.EscapeKeyword());
             }
@@ -290,16 +287,17 @@ namespace schema.readOnly {
             cbsb.WriteLine(" { get; }");
           } else {
             cbsb.Write(" => ");
-            cbsb.Write(accessName);
+
+            cbsb.Write(propertyAccessName);
 
             if (isIndexer) {
               cbsb.Write("[");
-              for (var i = 0; i < methodSymbol.Parameters.Length; ++i) {
+              for (var i = 0; i < memberSymbol.Parameters.Length; ++i) {
                 if (i > 0) {
                   cbsb.Write(", ");
                 }
 
-                var parameterSymbol = methodSymbol.Parameters[i];
+                var parameterSymbol = memberSymbol.Parameters[i];
                 cbsb.Write(parameterSymbol.Name.EscapeKeyword());
               }
 
@@ -313,16 +311,16 @@ namespace schema.readOnly {
         else {
           var accessName = memberSymbol.Name.EscapeKeyword();
           cbsb.Write(accessName);
-          cbsb.Write(methodSymbol.TypeParameters
+          cbsb.Write(memberSymbol.TypeParameters
                                  .GetGenericParameters());
           cbsb.Write("(");
 
-          for (var i = 0; i < methodSymbol.Parameters.Length; ++i) {
+          for (var i = 0; i < memberSymbol.Parameters.Length; ++i) {
             if (i > 0) {
               cbsb.Write(", ");
             }
 
-            var parameterSymbol = methodSymbol.Parameters[i];
+            var parameterSymbol = memberSymbol.Parameters[i];
             if (parameterSymbol.IsParams) {
               cbsb.Write("params ");
             }
@@ -368,7 +366,7 @@ namespace schema.readOnly {
 
           if (interfaceName == null) {
             cbsb.Write(typeSymbol.GetTypeConstraintsOrReadonly(
-                           methodSymbol.TypeParameters,
+                           memberSymbol.TypeParameters,
                            semanticModel,
                            syntax));
           }
@@ -378,14 +376,14 @@ namespace schema.readOnly {
           } else {
             cbsb.Write(" => ")
                 .Write(accessName)
-                .Write(methodSymbol.TypeParameters.GetGenericParameters())
+                .Write(memberSymbol.TypeParameters.GetGenericParameters())
                 .Write("(");
-            for (var i = 0; i < methodSymbol.Parameters.Length; ++i) {
+            for (var i = 0; i < memberSymbol.Parameters.Length; ++i) {
               if (i > 0) {
                 cbsb.Write(", ");
               }
 
-              var parameterSymbol = methodSymbol.Parameters[i];
+              var parameterSymbol = memberSymbol.Parameters[i];
 
               var refKindString = parameterSymbol.RefKind.GetRefKindString();
               if (refKindString.Length > 0) {
@@ -395,7 +393,8 @@ namespace schema.readOnly {
               cbsb.Write(parameterSymbol.Name.EscapeKeyword());
             }
 
-            cbsb.WriteLine(");");
+            cbsb.Write(")");
+            cbsb.WriteLine(";");
           }
         }
       }
@@ -496,8 +495,7 @@ namespace schema.readOnly {
             : "class";
       }
 
-      if (typeParameter is
-          { HasValueTypeConstraint: true, HasUnmanagedTypeConstraint: false }) {
+      if (typeParameter is { HasValueTypeConstraint: true, HasUnmanagedTypeConstraint: false }) {
         yield return "struct";
       }
 
@@ -587,6 +585,96 @@ namespace schema.readOnly {
       }
 
       return typeSymbol.GetContainingNamespaces();
+    }
+
+    public static string GetGenericParametersWithVarianceForReadOnlyVersion(
+        this INamedTypeSymbol symbol,
+        IReadOnlyList<IMethodSymbol> constMembers) {
+      var typeParameters = symbol.TypeParameters;
+      if (typeParameters.Length == 0) {
+        return "";
+      }
+
+      var allParentTypes
+          = symbol.GetBaseTypes().Concat(symbol.AllInterfaces).ToArray();
+
+      var sb = new StringBuilder();
+      sb.Append("<");
+      for (var i = 0; i < typeParameters.Length; ++i) {
+        if (i > 0) {
+          sb.Append(", ");
+        }
+
+        var typeParameter = typeParameters[i];
+
+        var variance = typeParameter.Variance;
+        if (variance == VarianceKind.None) {
+          variance = typeParameter.GetExpandedVarianceForReadonlyVersion(
+              allParentTypes,
+              constMembers);
+        }
+
+        sb.Append(variance switch {
+          VarianceKind.In => "in ",
+          VarianceKind.Out => "out ",
+          VarianceKind.None => "",
+        });
+
+        sb.Append(typeParameter.Name.EscapeKeyword());
+      }
+
+      sb.Append(">");
+      return sb.ToString();
+    }
+
+    public static VarianceKind GetExpandedVarianceForReadonlyVersion(
+        this ITypeParameterSymbol typeParameterSymbol,
+        IReadOnlyList<INamedTypeSymbol> allParentTypes,
+        IReadOnlyList<IMethodSymbol> constMembers) {
+      var matchingTypeArguments
+          = allParentTypes
+            .SelectMany(NamedTypeSymbolUtil.GetTypeParamsAndArgs)
+            .Where(paramAndArg => paramAndArg.typeArgumentSymbol.Name ==
+                                  typeParameterSymbol.Name)
+            .ToArray();
+
+      if (matchingTypeArguments.Length == 0 ||
+          matchingTypeArguments.All(
+              paramAndArg => paramAndArg.typeParameterSymbol.Variance ==
+                             VarianceKind.Out)) {
+        return constMembers.Any(constMember => constMember.Parameters.Any(
+                                    p => p.Type.DependsOn(typeParameterSymbol)))
+            ? VarianceKind.None
+            : VarianceKind.Out;
+      }
+
+      if (matchingTypeArguments.Length == 0 ||
+          matchingTypeArguments.All(
+              paramAndArg => paramAndArg.typeParameterSymbol.Variance ==
+                             VarianceKind.In)) {
+        return constMembers.Any(
+            constMember
+                => constMember.ReturnType.DependsOn(typeParameterSymbol))
+            ? VarianceKind.None
+            : VarianceKind.In;
+      }
+
+      return VarianceKind.None;
+    }
+
+    public static bool DependsOn(this ITypeSymbol typeSymbol,
+                                 ITypeSymbol otherTypeSymbol) {
+      if (typeSymbol.IsSameAs(otherTypeSymbol)) {
+        return true;
+      }
+
+      if (typeSymbol.IsGeneric(out var typeParameters, out _)) {
+        if (typeParameters.Any(p => p.IsSameAs(typeSymbol))) {
+          return true;
+        }
+      }
+
+      return false;
     }
   }
 }

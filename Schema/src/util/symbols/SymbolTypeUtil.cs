@@ -38,19 +38,21 @@ namespace schema.util.symbols {
     public static StringBuilder AppendGenericParameters(
         this StringBuilder sb,
         IReadOnlyList<ITypeParameterSymbol> typeParameters) {
-      if (typeParameters.Count > 0) {
-        sb.Append("<");
-        for (var i = 0; i < typeParameters.Count; ++i) {
-          if (i > 0) {
-            sb.Append(", ");
-          }
+      if (typeParameters.Count <= 0) {
+        return sb;
+      }
 
-          var typeParameter = typeParameters[i];
-          sb.Append(typeParameter.Name.EscapeKeyword());
+      sb.Append("<");
+      for (var i = 0; i < typeParameters.Count; ++i) {
+        if (i > 0) {
+          sb.Append(", ");
         }
 
-        sb.Append(">");
+        var typeParameter = typeParameters[i];
+        sb.Append(typeParameter.Name.EscapeKeyword());
       }
+
+      sb.Append(">");
 
       return sb;
     }

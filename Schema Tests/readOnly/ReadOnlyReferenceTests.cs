@@ -198,7 +198,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial interface IWrapper<T> : IReadOnlyWrapper<T>;
             
-            public interface IReadOnlyWrapper<T> where T : other.IReadOnlyOther;
+            public interface IReadOnlyWrapper<out T> where T : other.IReadOnlyOther;
           }
 
           """);
