@@ -15,4 +15,15 @@ namespace readOnly {
     [Const]
     public void PassGetSet(ISet<T> list);
   }
+
+
+  [GenerateReadOnly]
+  public partial interface IFinCollection<out T>;
+
+  [GenerateReadOnly]
+  public partial interface ISubTypeDictionary<TKey, TValue>
+      : IFinCollection<(TKey Key, TValue Value)> {
+    [Const]
+    TValueSub Get<TValueSub>(TKey key) where TValueSub : TValue;
+  }
 }

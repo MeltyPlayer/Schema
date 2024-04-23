@@ -66,7 +66,7 @@ namespace schema.readOnly {
               TMutable IReadOnlyCircular<TMutable, TReadOnly, TImpl>.Foo(in TImpl other) => Foo(in other);
             }
             
-            public interface IReadOnlyCircular<out TMutable, TReadOnly, TImpl> where TMutable : ICircular<TMutable, TReadOnly, TImpl>, TReadOnly where TReadOnly : IReadOnlyCircular<TMutable, TReadOnly, TImpl> {
+            public interface IReadOnlyCircular<TMutable, TReadOnly, TImpl> where TMutable : ICircular<TMutable, TReadOnly, TImpl>, TReadOnly where TReadOnly : IReadOnlyCircular<TMutable, TReadOnly, TImpl> {
               public TMutable Foo(TReadOnly other);
               public TMutable Foo(in TImpl other);
             }
@@ -98,7 +98,7 @@ namespace schema.readOnly {
               T2 IReadOnlySubConstraint<T1, T2>.Bar => Bar;
             }
             
-            public interface IReadOnlySubConstraint<out T1, out T2> where T2 : T1 {
+            public interface IReadOnlySubConstraint<T1, out T2> where T2 : T1 {
               public T1 Foo<S>(S s) where S : T1;
               public T2 Bar { get; }
             }

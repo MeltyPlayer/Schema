@@ -1,5 +1,7 @@
 ﻿using NUnit.Framework;
 
+using schema.readOnly;
+
 
 namespace schema.binary.text {
   internal class VarianceGeneratorTests {

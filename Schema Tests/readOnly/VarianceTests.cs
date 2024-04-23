@@ -216,17 +216,17 @@ namespace schema.readOnly {
     public void TestDoesNotAddContravarianceForSet() {
       ReadOnlyGeneratorTestUtil.AssertGenerated(
           """
-            using schema.readOnly;
-            using System.Collections.Generic;
+          using schema.readOnly;
+          using System.Collections.Generic;
 
-            namespace foo.bar {
-              [GenerateReadOnly]
-              public partial interface IWrapper<T> {
-                [Const]
-                public void Method(ISet<T> foo);
-              }
+          namespace foo.bar {
+            [GenerateReadOnly]
+            public partial interface IWrapper<T> {
+              [Const]
+              public void Method(ISet<T> foo);
             }
-            """,
+          }
+          """,
           """
           namespace foo.bar {
             public partial interface IWrapper<T> : IReadOnlyWrapper<T> {
@@ -235,6 +235,62 @@ namespace schema.readOnly {
             
             public interface IReadOnlyWrapper<T> {
               public void Method(System.Collections.Generic.ISet<T> foo);
+            }
+          }
+
+          """);
+    }
+
+    [Test]
+    public void TestDoesNotAddVarianceWhenUsedAsTypeConstraint() {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          """
+          using schema.readOnly;
+
+          namespace foo.bar {
+            public partial interface IFinCollection<in T>;
+            
+            [GenerateReadOnly]
+            public partial interface ISubTypeDictionary<T1, T2>
+                : IFinCollection<T2>
+                where T2 : T1;
+          }
+          """,
+          """
+          namespace foo.bar {
+            public partial interface ISubTypeDictionary<T1, T2> : IReadOnlySubTypeDictionary<T1, T2>;
+            
+            public interface IReadOnlySubTypeDictionary<T1, in T2> : IFinCollection<T2> where T2 : T1;
+          }
+
+          """);
+    }
+
+    [Test]
+    public void TestDoesNotAddVarianceWhenUsedAsMethodConstraint() {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          """
+          using schema.readOnly;
+
+          namespace foo.bar {
+            public partial interface IFinCollection<out T>;
+            
+            [GenerateReadOnly]
+            public partial interface ISubTypeDictionary<TKey, TValue>
+                : IFinCollection<(TKey Key, TValue Value)> {
+              [Const]
+              TValueSub Get<TValueSub>(TKey key) where TValueSub : TValue;
+            }
+          }
+          """,
+          """
+          namespace foo.bar {
+            public partial interface ISubTypeDictionary<TKey, TValue> : IReadOnlySubTypeDictionary<TKey, TValue> {
+              TValueSub IReadOnlySubTypeDictionary<TKey, TValue>.Get<TValueSub>(TKey key) => Get<TValueSub>(key);
+            }
+            
+            public interface IReadOnlySubTypeDictionary<TKey, TValue> : IFinCollection<(TKey Key, TValue Value)> {
+              public TValueSub Get<TValueSub>(TKey key) where TValueSub : TValue;
             }
           }
 

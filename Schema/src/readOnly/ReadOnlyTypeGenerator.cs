@@ -615,6 +615,11 @@ namespace schema.readOnly {
       var allParentTypes
           = symbol.GetBaseTypes().Concat(symbol.AllInterfaces).ToArray();
 
+      var set = new TypeParameterSymbolVarianceSet(
+          typeParameters,
+          allParentTypes,
+          constMembers);
+
       var sb = new StringBuilder();
       sb.Append("<");
       for (var i = 0; i < typeParameters.Length; ++i) {
@@ -626,9 +631,7 @@ namespace schema.readOnly {
 
         var variance = typeParameter.Variance;
         if (variance == VarianceKind.None) {
-          variance = typeParameter.GetExpandedVarianceForReadonlyVersion(
-              allParentTypes,
-              constMembers);
+          variance = set.AllowedVariance(typeParameter);
         }
 
         sb.Append(variance switch {
@@ -641,90 +644,6 @@ namespace schema.readOnly {
 
       sb.Append(">");
       return sb.ToString();
-    }
-
-    public static VarianceKind GetExpandedVarianceForReadonlyVersion(
-        this ITypeParameterSymbol typeParameterSymbol,
-        IReadOnlyList<INamedTypeSymbol> allParentTypes,
-        IReadOnlyList<IMethodSymbol> constMembers) {
-      var matchingTypeArguments
-          = allParentTypes
-            .SelectMany(NamedTypeSymbolUtil.GetTypeParamsAndArgs)
-            .Where(paramAndArg => paramAndArg.typeArgumentSymbol.Name ==
-                                  typeParameterSymbol.Name)
-            .ToArray();
-
-      if (matchingTypeArguments.Length == 0 ||
-          matchingTypeArguments.All(
-              paramAndArg => paramAndArg.typeParameterSymbol.Variance ==
-                             VarianceKind.Out)) {
-        return constMembers.Any(
-            constMember
-                => constMember.Parameters.Any(
-                       p => p.Type.DependsOn(typeParameterSymbol)) ||
-                   constMember.ReturnType.DependsOnButHasWrongVariance(
-                       typeParameterSymbol,
-                       VarianceKind.Out))
-            ? VarianceKind.None
-            : VarianceKind.Out;
-      }
-
-      if (matchingTypeArguments.Length == 0 ||
-          matchingTypeArguments.All(
-              paramAndArg => paramAndArg.typeParameterSymbol.Variance ==
-                             VarianceKind.In)) {
-        return constMembers.Any(
-            constMember
-                => constMember.ReturnType.DependsOn(typeParameterSymbol) ||
-                   constMember.Parameters.Any(
-                       p => p.Type.DependsOnButHasWrongVariance(
-                           typeParameterSymbol,
-                           VarianceKind.In)))
-            ? VarianceKind.None
-            : VarianceKind.In;
-      }
-
-      return VarianceKind.None;
-    }
-
-    public static bool DependsOn(this ITypeSymbol typeSymbol,
-                                 ITypeParameterSymbol typeParameterSymbol)
-      => typeSymbol.DependsOnImpl_(null, typeParameterSymbol, out _);
-
-    private static bool DependsOnImpl_(
-        this ITypeSymbol typeSymbol,
-        ITypeParameterSymbol? thisTypeParameterSymbol,
-        ITypeParameterSymbol otherTypeParameterSymbol,
-        out ITypeParameterSymbol? match) {
-      if (typeSymbol.IsSameAs(otherTypeParameterSymbol)) {
-        match = thisTypeParameterSymbol;
-        return true;
-      }
-
-      if (typeSymbol.IsGenericZipped(out var typeParamsAndArgs)) {
-        foreach (var (typeParam, typeArg) in typeParamsAndArgs) {
-          if (typeArg.DependsOnImpl_(typeParam,
-                                     otherTypeParameterSymbol,
-                                     out match)) {
-            return true;
-          }
-        }
-      }
-
-      match = null;
-      return false;
-    }
-
-    public static bool DependsOnButHasWrongVariance(
-        this ITypeSymbol typeSymbol,
-        ITypeParameterSymbol otherTypeSymbol,
-        VarianceKind expectedVarianceKind) {
-      if (typeSymbol.DependsOnImpl_(null, otherTypeSymbol, out var match) &&
-          match != null) {
-        return match.Variance != expectedVarianceKind;
-      }
-
-      return false;
     }
 
     public static string GetCStyleCastToReadOnlyIfNeeded(
