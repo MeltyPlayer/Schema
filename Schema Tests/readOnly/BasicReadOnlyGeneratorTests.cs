@@ -125,7 +125,7 @@ namespace schema.readOnly {
               @void IReadOnlyvoid<@double>.@float => @float;
             }
             
-            public interface IReadOnlyvoid<@double> where @double : struct {
+            public interface IReadOnlyvoid<out @double> where @double : struct {
               public @void @int<@short>(@void @bool) where @short : @void;
               public @void @float { get; }
             }

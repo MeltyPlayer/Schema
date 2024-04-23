@@ -259,6 +259,7 @@ namespace schema.readOnly {
               = memberSymbol.IsIndexer(out var indexerParameterSymbols);
 
           if (!isIndexer) {
+            propertyAccessName = propertyAccessName.EscapeKeyword();
             cbsb.Write(memberSymbol.Name.Substring(4).EscapeKeyword());
           } else {
             propertyAccessName = "this";
