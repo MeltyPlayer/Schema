@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-
 using schema.binary;
 
 namespace schema.readOnly {
@@ -19,7 +18,7 @@ namespace schema.readOnly {
             """,
           $$"""
             namespace foo.bar {
-              public partial interface IWrapper<T> : IReadOnlyWrapper<T>;
+              public partial interface IWrapper<{{variance}} T> : IReadOnlyWrapper<T>;
               
               public interface IReadOnlyWrapper<{{variance}} T>;
             }

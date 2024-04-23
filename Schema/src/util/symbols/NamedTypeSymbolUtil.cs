@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using Microsoft.CodeAnalysis;
@@ -54,7 +55,8 @@ namespace schema.util.symbols {
         string? replacementName = null)
       => sb.AppendSymbolQualifiers(namedTypeSymbol)
            .Append(" ")
-           .AppendNameAndGenericParametersFor(namedTypeSymbol, replacementName);
+           .Append(replacementName ?? namedTypeSymbol.Name.EscapeKeyword())
+           .AppendGenericParametersWithVariance(namedTypeSymbol);
 
     public static string GetNameAndGenericParametersFor(
         this INamedTypeSymbol namedTypeSymbol,
@@ -89,6 +91,38 @@ namespace schema.util.symbols {
       for (var i = 0; i < typeParams.Length; ++i) {
         yield return (typeParams[i], typeArgs[i]);
       }
+    }
+
+    public static string GetGenericParametersWithVariance(
+        this INamedTypeSymbol symbol)
+      => new StringBuilder().AppendGenericParametersWithVariance(symbol)
+                            .ToString();
+
+    public static StringBuilder AppendGenericParametersWithVariance(
+        this StringBuilder sb,
+        INamedTypeSymbol symbol) {
+      var typeParameters = symbol.TypeParameters;
+      if (typeParameters.Length == 0) {
+        return sb;
+      }
+
+      sb.Append("<");
+      for (var i = 0; i < typeParameters.Length; ++i) {
+        if (i > 0) {
+          sb.Append(", ");
+        }
+
+        var typeParameter = typeParameters[i];
+        sb.Append(typeParameter.Variance switch {
+              VarianceKind.In   => "in ",
+              VarianceKind.Out  => "out ",
+              VarianceKind.None => "",
+          })
+          .Append(typeParameter.Name.EscapeKeyword());
+      }
+
+      sb.Append(">");
+      return sb;
     }
   }
 }
