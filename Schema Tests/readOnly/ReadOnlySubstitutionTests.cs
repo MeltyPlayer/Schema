@@ -191,7 +191,7 @@ namespace schema.readOnly {
     }
 
     [Test]
-    public void TestSubstitutesParameters() {
+    public void TestDoesNotSubstituteParameters() {
       ReadOnlyGeneratorTestUtil.AssertGenerated(
           """
           using schema.readOnly;
@@ -207,11 +207,11 @@ namespace schema.readOnly {
           """
           namespace foo.bar {
             public partial interface IWrapper : IReadOnlyWrapper {
-              void IReadOnlyWrapper.Foo(schema.readOnly.IReadOnlyValue value) => Foo(value);
+              void IReadOnlyWrapper.Foo(schema.readOnly.IValue value) => Foo(value);
             }
             
             public interface IReadOnlyWrapper {
-              public void Foo(schema.readOnly.IReadOnlyValue value);
+              public void Foo(schema.readOnly.IValue value);
             }
           }
 
@@ -247,7 +247,7 @@ namespace schema.readOnly {
     }
 
     [Test]
-    public void TestSubstitutesIndexerParameters() {
+    public void TestDoesNotSubstituteIndexerParameters() {
       ReadOnlyGeneratorTestUtil.AssertGenerated(
           """
           using schema.readOnly;
@@ -263,11 +263,11 @@ namespace schema.readOnly {
           """
           namespace foo.bar {
             public partial interface IWrapper : IReadOnlyWrapper {
-              int IReadOnlyWrapper.this[schema.readOnly.IReadOnlyValue value] => this[value];
+              int IReadOnlyWrapper.this[schema.readOnly.IValue value] => this[value];
             }
             
             public interface IReadOnlyWrapper {
-              public int this[schema.readOnly.IReadOnlyValue value] { get; }
+              public int this[schema.readOnly.IValue value] { get; }
             }
           }
 
@@ -396,7 +396,7 @@ namespace schema.readOnly {
           """
           namespace foo.bar {
             public partial interface IWrapper : IReadOnlyWrapper {
-              System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue> IReadOnlyWrapper.Foo() => Foo();
+              System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue> IReadOnlyWrapper.Foo() => (System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue>)(object) Foo();
             }
             
             public interface IReadOnlyWrapper {
@@ -425,7 +425,7 @@ namespace schema.readOnly {
           """
           namespace foo.bar {
             public partial interface IWrapper : IReadOnlyWrapper {
-              System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue> IReadOnlyWrapper.Foo => Foo;
+              System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue> IReadOnlyWrapper.Foo => (System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue>)(object) Foo;
             }
             
             public interface IReadOnlyWrapper {
@@ -454,7 +454,7 @@ namespace schema.readOnly {
           """
           namespace foo.bar {
             public partial interface IWrapper : IReadOnlyWrapper {
-              System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue> IReadOnlyWrapper.this[int foo] => this[foo];
+              System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue> IReadOnlyWrapper.this[int foo] => (System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue>)(object) this[foo];
             }
             
             public interface IReadOnlyWrapper {
@@ -466,7 +466,7 @@ namespace schema.readOnly {
     }
 
     [Test]
-    public void TestSubstitutesGenericIndexerParameter() {
+    public void TestDoesNotSubstituteGenericIndexerParameter() {
       ReadOnlyGeneratorTestUtil.AssertGenerated(
           """
           using schema.readOnly;
@@ -483,11 +483,11 @@ namespace schema.readOnly {
           """
           namespace foo.bar {
             public partial interface IWrapper : IReadOnlyWrapper {
-              void IReadOnlyWrapper.this[System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue> foo] => this[foo];
+              void IReadOnlyWrapper.this[System.Collections.Generic.IEnumerable<schema.readOnly.IValue> foo] => this[foo];
             }
             
             public interface IReadOnlyWrapper {
-              public void this[System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue> foo] { get; }
+              public void this[System.Collections.Generic.IEnumerable<schema.readOnly.IValue> foo] { get; }
             }
           }
 
@@ -495,7 +495,7 @@ namespace schema.readOnly {
     }
 
     [Test]
-    public void TestSubstitutesGenericMethodParameter() {
+    public void TestDoesNotSubstituteGenericMethodParameter() {
       ReadOnlyGeneratorTestUtil.AssertGenerated(
           """
           using schema.readOnly;
@@ -512,11 +512,11 @@ namespace schema.readOnly {
           """
           namespace foo.bar {
             public partial interface IWrapper : IReadOnlyWrapper {
-              void IReadOnlyWrapper.Foo(System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue> foo) => Foo(foo);
+              void IReadOnlyWrapper.Foo(System.Collections.Generic.IEnumerable<schema.readOnly.IValue> foo) => Foo(foo);
             }
             
             public interface IReadOnlyWrapper {
-              public void Foo(System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue> foo);
+              public void Foo(System.Collections.Generic.IEnumerable<schema.readOnly.IValue> foo);
             }
           }
 

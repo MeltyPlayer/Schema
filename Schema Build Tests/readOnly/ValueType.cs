@@ -3,17 +3,14 @@
 
 namespace readOnly {
   [GenerateReadOnly]
-  public partial class ValueType {
-    public string Value { get; set; }
-  }
-
-  [GenerateReadOnly]
   public partial interface IFooBar {
-    public string Value { get; set; }
-
     [Const]
-    public string Foo(int value) {
-      return "";
+    public SomeType<IValueType> Method(SomeType<IValueType> value) {
+      return value;
     }
+
+    public SomeType<IValueType> Property { get; set; }
+
+    public SomeType<IValueType> this[SomeType<IValueType> foo] { get; set; }
   }
 }

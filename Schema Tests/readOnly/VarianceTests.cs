@@ -47,7 +47,7 @@ namespace schema.readOnly {
               [Const]
               T GetField();
               [Const]
-              IEnumerable<T> GetSequence();
+              IBase<T> GetSequence();
               
               // This will be ignored since it's not const
               void IgnoredFunction(T field, IEnumerable<T> sequence);
@@ -61,7 +61,7 @@ namespace schema.readOnly {
               System.Collections.Generic.IEnumerable<T> IReadOnlyWrapper<T>.Sequence => Sequence;
               System.Collections.Generic.IEnumerable<T> IReadOnlyWrapper<T>.this[int foo] => this[foo];
               T IReadOnlyWrapper<T>.GetField() => GetField();
-              System.Collections.Generic.IEnumerable<T> IReadOnlyWrapper<T>.GetSequence() => GetSequence();
+              IBase<T> IReadOnlyWrapper<T>.GetSequence() => GetSequence();
             }
             
             public interface IReadOnlyWrapper<out T> : IBase<T> {
@@ -69,7 +69,7 @@ namespace schema.readOnly {
               public System.Collections.Generic.IEnumerable<T> Sequence { get; }
               public System.Collections.Generic.IEnumerable<T> this[int foo] { get; }
               public T GetField();
-              public System.Collections.Generic.IEnumerable<T> GetSequence();
+              public IBase<T> GetSequence();
             }
           }
 
@@ -96,7 +96,7 @@ namespace schema.readOnly {
               [Const]
               void SetField(T foo);
               [Const]
-              void SetSequence(IEnumerable<T> foo);
+              void SetSequence(IBase<T> foo);
               
               // This will be ignored since it's not const
               T field IgnoredFunction();
@@ -107,12 +107,103 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial interface IWrapper<T> : IReadOnlyWrapper<T> {
               void IReadOnlyWrapper<T>.SetField(T foo) => SetField(foo);
-              void IReadOnlyWrapper<T>.SetSequence(System.Collections.Generic.IEnumerable<T> foo) => SetSequence(foo);
+              void IReadOnlyWrapper<T>.SetSequence(IBase<T> foo) => SetSequence(foo);
             }
             
             public interface IReadOnlyWrapper<in T> : IBase<T> {
               public void SetField(T foo);
-              public void SetSequence(System.Collections.Generic.IEnumerable<T> foo);
+              public void SetSequence(IBase<T> foo);
+            }
+          }
+
+          """);
+    }
+
+    [Test]
+    public void TestDoesNotAddVarianceForBothInAndOutTypes() {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          """
+          using schema.readOnly;
+          using System.Collections.Generic;
+
+          namespace foo.bar {
+            [GenerateReadOnly]
+            public partial interface IWrapper<T> {
+              [Const]
+              public T Method(T value) => value;
+            }
+          }
+          """,
+          """
+          namespace foo.bar {
+            public partial interface IWrapper<T> : IReadOnlyWrapper<T> {
+              T IReadOnlyWrapper<T>.Method(T value) => Method(value);
+            }
+            
+            public interface IReadOnlyWrapper<T> {
+              public T Method(T value);
+            }
+          }
+
+          """);
+    }
+
+    [Test]
+    public void TestDoesNotAddContravarianceIfTypeIsCovariantInOtherType() {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          """
+          using schema.readOnly;
+          using System.Collections.Generic;
+
+          namespace foo.bar {
+            public interface IValue<out T>;
+          
+            [GenerateReadOnly]
+            public partial interface IWrapper<T> {
+              [Const]
+              public void Method(IValue<T> foo);
+            }
+          }
+          """,
+          """
+          namespace foo.bar {
+            public partial interface IWrapper<T> : IReadOnlyWrapper<T> {
+              void IReadOnlyWrapper<T>.Method(IValue<T> foo) => Method(foo);
+            }
+            
+            public interface IReadOnlyWrapper<T> {
+              public void Method(IValue<T> foo);
+            }
+          }
+
+          """);
+    }
+
+
+    [Test]
+    public void TestDoesNotAddCovarianceIfTypeIsContravariantInOtherType() {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          """
+          using schema.readOnly;
+          using System.Collections.Generic;
+
+          namespace foo.bar {
+            public interface IValue<in T>;
+          
+            [GenerateReadOnly]
+            public partial interface IWrapper<T> {
+              public IValue<T> Property { get; set; }
+            }
+          }
+          """,
+          """
+          namespace foo.bar {
+            public partial interface IWrapper<T> : IReadOnlyWrapper<T> {
+              IValue<T> IReadOnlyWrapper<T>.Property => Property;
+            }
+            
+            public interface IReadOnlyWrapper<T> {
+              public IValue<T> Property { get; }
             }
           }
 
