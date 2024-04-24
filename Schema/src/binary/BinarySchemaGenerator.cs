@@ -74,7 +74,7 @@ namespace schema.binary {
       if (containerTypeV2.Implements<IBinaryDeserializable>() &&
           container.TypeSymbol.MemberNames.All(member => member != "Read")) {
         var readerCode = this.readerImpl_.Generate(container);
-        yield return ($"{containerTypeV2.FullyQualifiedName}_reader.g",
+        yield return ($"{containerTypeV2.FullyQualifiedName}_{containerTypeV2.Arity}_reader.g",
                       readerCode);
       }
 
@@ -82,7 +82,7 @@ namespace schema.binary {
           container.TypeSymbol.MemberNames.All(
               member => member != "Write")) {
         var writerCode = this.writerImpl_.Generate(container);
-        yield return ($"{containerTypeV2.FullyQualifiedName}_writer.g",
+        yield return ($"{containerTypeV2.FullyQualifiedName}_{containerTypeV2.Arity}_writer.g",
                       writerCode);
       }
     }

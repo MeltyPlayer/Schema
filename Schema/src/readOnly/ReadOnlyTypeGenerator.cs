@@ -42,7 +42,7 @@ namespace schema.readOnly {
                                     SemanticModel semanticModel,
                                     TypeDeclarationSyntax syntax) {
       var typeV2 = TypeV2.FromSymbol(symbol);
-      yield return ($"{typeV2.FullyQualifiedName}_readOnly.g",
+      yield return ($"{typeV2.FullyQualifiedName}_{typeV2.Arity}_readOnly.g",
                     this.GenerateSourceForNamedType(
                         symbol,
                         semanticModel,
