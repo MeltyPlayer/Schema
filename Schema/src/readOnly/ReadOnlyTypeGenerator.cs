@@ -594,14 +594,16 @@ namespace schema.readOnly {
       return $"{PREFIX}{baseName}";
     }
 
-    public static IEnumerable<INamedTypeSymbol> LookupTypesWithName(
+    public static IEnumerable<INamedTypeSymbol> LookupTypesWithNameAndArity(
         SemanticModel semanticModel,
         TypeDeclarationSyntax syntax,
-        string searchString)
+        string searchString,
+        int arity)
       => semanticModel
          .LookupNamespacesAndTypes(syntax.SpanStart, null, searchString)
          .Where(symbol => symbol is INamedTypeSymbol)
-         .Select(symbol => symbol as INamedTypeSymbol);
+         .Select(symbol => symbol as INamedTypeSymbol)
+         .Where(symbol => symbol.Arity == arity);
 
     public static IEnumerable<string> GetNamespaceOfType(
         this ITypeSymbol typeSymbol,
@@ -614,21 +616,27 @@ namespace schema.readOnly {
           var nameWithoutPrefix
               = typeName.Substring(
                   ReadOnlyTypeGeneratorUtil.PREFIX.Length);
+          var arity = typeSymbol.GetArity();
 
           var typesWithName
-              = LookupTypesWithName(semanticModel, syntax, nameWithoutPrefix)
+              = LookupTypesWithNameAndArity(semanticModel,
+                                            syntax,
+                                            nameWithoutPrefix,
+                                            arity)
                   .ToArray();
           if (typesWithName.Length == 0) {
-            typesWithName = LookupTypesWithName(semanticModel,
-                                                syntax,
-                                                $"B{nameWithoutPrefix}")
+            typesWithName = LookupTypesWithNameAndArity(semanticModel,
+                  syntax,
+                  $"B{nameWithoutPrefix}",
+                  arity)
                 .ToArray();
           }
 
           if (typesWithName.Length == 0) {
-            typesWithName = LookupTypesWithName(semanticModel,
-                                                syntax,
-                                                $"I{nameWithoutPrefix}")
+            typesWithName = LookupTypesWithNameAndArity(semanticModel,
+                  syntax,
+                  $"I{nameWithoutPrefix}",
+                  arity)
                 .ToArray();
           }
 
@@ -720,8 +728,9 @@ namespace schema.readOnly {
         return true;
       }
 
-      return symbol.HasBuiltInReadOnlyType_(out _, out var canImplicitlyConvert) &&
-          !canImplicitlyConvert;
+      return symbol.HasBuiltInReadOnlyType_(out _,
+                                            out var canImplicitlyConvert) &&
+             !canImplicitlyConvert;
     }
   }
 }

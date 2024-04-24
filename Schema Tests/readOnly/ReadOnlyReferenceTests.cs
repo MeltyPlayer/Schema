@@ -288,5 +288,60 @@ namespace schema.readOnly {
 
           """);
     }
+
+    [Test]
+    public void TestGenericInOtherNamespace() {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          """
+          using schema.readOnly;
+          using foo.bar.wrong;
+          using foo.bar.correct;
+
+          namespace foo.bar.wrong {
+            [GenerateReadOnly]
+            public partial interface IOther;
+          }
+          
+          namespace foo.bar.correct {
+            [GenerateReadOnly]
+            public partial interface IOther<T> : wrong.IOther;
+          }
+
+          namespace foo.bar {
+            [GenerateReadOnly]
+            public partial interface IWrapper<T> {
+              IReadOnlyOther<T> Field { get; set; }
+            }
+          }
+          """,
+          """
+          namespace foo.bar.wrong {
+            public partial interface IOther : IReadOnlyOther;
+            
+            public interface IReadOnlyOther;
+          }
+
+          """,
+          """
+          namespace foo.bar.correct {
+            public partial interface IOther<T> : IReadOnlyOther<T>;
+            
+            public interface IReadOnlyOther<out T> : foo.bar.wrong.IReadOnlyOther;
+          }
+
+          """,
+          """
+          namespace foo.bar {
+            public partial interface IWrapper<T> : IReadOnlyWrapper<T> {
+              correct.IReadOnlyOther<T> IReadOnlyWrapper<T>.Field => Field;
+            }
+            
+            public interface IReadOnlyWrapper<T> {
+              public correct.IReadOnlyOther<T> Field { get; }
+            }
+          }
+
+          """);
+    }
   }
 }
