@@ -179,11 +179,11 @@ namespace schema.readOnly {
           """
           namespace foo.bar {
             public partial interface IWrapper : IReadOnlyWrapper {
-              schema.readOnly.IReadOnlyValue IReadOnlyWrapper.Foo() => Foo();
+              schema.readOnly.IValue IReadOnlyWrapper.Foo() => Foo();
             }
             
             public interface IReadOnlyWrapper {
-              public schema.readOnly.IReadOnlyValue Foo();
+              public schema.readOnly.IValue Foo();
             }
           }
 

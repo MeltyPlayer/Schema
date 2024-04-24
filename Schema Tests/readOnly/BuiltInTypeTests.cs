@@ -46,5 +46,68 @@ namespace schema.readOnly {
 
             """);
     }
+
+    [Test]
+    [TestCase("System.Span<int>")]
+    [TestCase("System.Collections.Generic.ICollection<int>")]
+    [TestCase("System.Collections.Generic.IList<int>")]
+    public void TestDoesNotConvertBuiltInsForMutableProperties(string mutable) {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          $$"""
+            using schema.readOnly;
+
+            namespace foo.bar {
+              [GenerateReadOnly]
+              public partial interface IWrapper {
+                [KeepMutableType]
+                {{mutable}} Property { get; set; }
+              }
+            }
+            """,
+          $$"""
+            namespace foo.bar {
+              public partial interface IWrapper : IReadOnlyWrapper {
+                {{mutable}} IReadOnlyWrapper.Property => Property;
+              }
+              
+              public interface IReadOnlyWrapper {
+                public {{mutable}} Property { get; }
+              }
+            }
+
+            """);
+    }
+
+    [Test]
+    [TestCase("System.Span<int>")]
+    [TestCase("System.Collections.Generic.ICollection<int>")]
+    [TestCase("System.Collections.Generic.IList<int>")]
+    public void TestDoesNotConvertBuiltInsForMutableMethods(string mutable) {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          $$"""
+            using schema.readOnly;
+
+            namespace foo.bar {
+              [GenerateReadOnly]
+              public partial interface IWrapper {
+                [Const]
+                [KeepMutableType]
+                {{mutable}} Convert({{mutable}} value);
+              }
+            }
+            """,
+          $$"""
+            namespace foo.bar {
+              public partial interface IWrapper : IReadOnlyWrapper {
+                {{mutable}} IReadOnlyWrapper.Convert({{mutable}} value) => Convert(value);
+              }
+              
+              public interface IReadOnlyWrapper {
+                public {{mutable}} Convert({{mutable}} value);
+              }
+            }
+
+            """);
+    }
   }
 }

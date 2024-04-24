@@ -244,7 +244,7 @@ namespace schema.readOnly {
                         memberTypeSymbol,
                         semanticModel,
                         syntax,
-                        associatedPropertySymbol))
+                        (ISymbol?) associatedPropertySymbol ?? memberSymbol))
             .Write(" ");
 
         if (interfaceName != null) {
@@ -288,6 +288,7 @@ namespace schema.readOnly {
           } else {
             cbsb.Write(" => ")
                 .Write(typeSymbol.GetCStyleCastToReadOnlyIfNeeded(
+                           associatedPropertySymbol,
                            memberSymbol.ReturnType,
                            semanticModel,
                            syntax))
@@ -377,6 +378,7 @@ namespace schema.readOnly {
           } else {
             cbsb.Write(" => ")
                 .Write(typeSymbol.GetCStyleCastToReadOnlyIfNeeded(
+                           memberSymbol,
                            memberSymbol.ReturnType,
                            semanticModel,
                            syntax))
@@ -532,9 +534,9 @@ namespace schema.readOnly {
     }
 
     private static string ConvertName_(ITypeSymbol typeSymbol,
-                                       ISymbol? typeSymbolForAttributeChecks) {
+                                       ISymbol? symbolForAttributeChecks) {
       var defaultName = typeSymbol.Name.EscapeKeyword();
-      if ((typeSymbolForAttributeChecks ?? typeSymbol)
+      if ((symbolForAttributeChecks ?? typeSymbol)
           .HasAttribute<KeepMutableTypeAttribute>()) {
         return defaultName;
       }
@@ -684,13 +686,14 @@ namespace schema.readOnly {
 
     public static string GetCStyleCastToReadOnlyIfNeeded(
         this ITypeSymbol sourceSymbol,
+        ISymbol? symbolForAttributeChecks,
         ITypeSymbol symbol,
         SemanticModel semanticModel,
         TypeDeclarationSyntax syntax) {
       // TODO: Only allow casts if generics are covariant, otherwise report
       // diagnostic error
       var sb = new StringBuilder();
-      if (symbol.IsCastNeeded()) {
+      if (symbol.IsCastNeeded(symbolForAttributeChecks)) {
         sb.Append("(")
           .Append(
               sourceSymbol
@@ -704,16 +707,20 @@ namespace schema.readOnly {
       return sb.ToString();
     }
 
-    public static bool IsCastNeeded(this ITypeSymbol symbol) {
+    public static bool IsCastNeeded(this ITypeSymbol symbol,
+                                    ISymbol? symbolForAttributeChecks) {
+      if ((symbolForAttributeChecks ?? symbol)
+          .HasAttribute<KeepMutableTypeAttribute>()) {
+        return false;
+      }
+
       if (symbol.IsGeneric(out _, out var typeArguments) &&
           typeArguments.Any(typeArgument => typeArgument
                                 .HasAttribute<GenerateReadOnlyAttribute>())) {
         return true;
       }
 
-      return
-          !symbol.HasAttribute<KeepMutableTypeAttribute>() &&
-          symbol.HasBuiltInReadOnlyType_(out _, out var canImplicitlyConvert) &&
+      return symbol.HasBuiltInReadOnlyType_(out _, out var canImplicitlyConvert) &&
           !canImplicitlyConvert;
     }
   }
