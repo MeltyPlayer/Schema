@@ -532,13 +532,49 @@ namespace schema.readOnly {
     }
 
     private static string ConvertName_(ITypeSymbol typeSymbol,
-                                       ISymbol?
-                                           typeSymbolForAttributeChecks)
-      => typeSymbol.HasAttribute<GenerateReadOnlyAttribute>() &&
-         !(typeSymbolForAttributeChecks ?? typeSymbol)
-             .HasAttribute<KeepMutableTypeAttribute>()
+                                       ISymbol? typeSymbolForAttributeChecks) {
+      var defaultName = typeSymbol.Name.EscapeKeyword();
+      if ((typeSymbolForAttributeChecks ?? typeSymbol)
+          .HasAttribute<KeepMutableTypeAttribute>()) {
+        return defaultName;
+      }
+
+      if (typeSymbol.HasBuiltInReadOnlyType_(out var builtInReadOnlyName,
+                                             out _)) {
+        return builtInReadOnlyName;
+      }
+
+      return typeSymbol.HasAttribute<GenerateReadOnlyAttribute>()
           ? typeSymbol.GetConstInterfaceName()
-          : typeSymbol.Name.EscapeKeyword();
+          : defaultName;
+    }
+
+    private static bool HasBuiltInReadOnlyType_(
+        this ITypeSymbol symbol,
+        out string readOnlyName,
+        out bool canImplicitlyConvert) {
+      if (symbol.IsType(typeof(Span<>))) {
+        readOnlyName = typeof(ReadOnlySpan<>).GetCorrectName();
+        canImplicitlyConvert = true;
+        return true;
+      }
+
+      if (symbol.IsType(typeof(IList<>))) {
+        readOnlyName = typeof(IReadOnlyList<>).GetCorrectName();
+        canImplicitlyConvert = false;
+        return true;
+      }
+
+      if (symbol.IsType(typeof(ICollection<>))) {
+        readOnlyName = typeof(IReadOnlyCollection<>).GetCorrectName();
+        canImplicitlyConvert = false;
+        return true;
+      }
+
+      readOnlyName = default;
+      canImplicitlyConvert = false;
+      return false;
+    }
 
     public static string GetConstInterfaceName(
         this ITypeSymbol typeSymbol) {
@@ -651,6 +687,8 @@ namespace schema.readOnly {
         ITypeSymbol symbol,
         SemanticModel semanticModel,
         TypeDeclarationSyntax syntax) {
+      // TODO: Only allow casts if generics are covariant, otherwise report
+      // diagnostic error
       var sb = new StringBuilder();
       if (symbol.IsCastNeeded()) {
         sb.Append("(")
@@ -666,9 +704,17 @@ namespace schema.readOnly {
       return sb.ToString();
     }
 
-    public static bool IsCastNeeded(this ITypeSymbol symbol)
-      => symbol.IsGeneric(out _, out var typeArguments) &&
-         typeArguments.Any(typeArgument => typeArgument
-                               .HasAttribute<GenerateReadOnlyAttribute>());
+    public static bool IsCastNeeded(this ITypeSymbol symbol) {
+      if (symbol.IsGeneric(out _, out var typeArguments) &&
+          typeArguments.Any(typeArgument => typeArgument
+                                .HasAttribute<GenerateReadOnlyAttribute>())) {
+        return true;
+      }
+
+      return
+          !symbol.HasAttribute<KeepMutableTypeAttribute>() &&
+          symbol.HasBuiltInReadOnlyType_(out _, out var canImplicitlyConvert) &&
+          !canImplicitlyConvert;
+    }
   }
 }
