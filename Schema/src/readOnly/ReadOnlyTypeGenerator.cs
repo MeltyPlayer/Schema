@@ -357,6 +357,9 @@ namespace schema.readOnly {
                 case string:
                   cbsb.Write($"\"{explicitDefaultValue}\"");
                   break;
+                case bool boolValue:
+                  cbsb.Write(boolValue ? "true" : "false");
+                  break;
                 default:
                   cbsb.Write(explicitDefaultValue.ToString());
                   break;
