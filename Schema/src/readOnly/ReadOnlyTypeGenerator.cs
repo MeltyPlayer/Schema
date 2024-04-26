@@ -604,6 +604,7 @@ namespace schema.readOnly {
         int arity)
       => semanticModel
          .LookupNamespacesAndTypes(syntax.SpanStart, null, searchString)
+         .Where(symbol => symbol.HasAttribute<GenerateReadOnlyAttribute>())
          .Where(symbol => symbol is INamedTypeSymbol)
          .Select(symbol => symbol as INamedTypeSymbol)
          .Where(symbol => symbol.Arity == arity);

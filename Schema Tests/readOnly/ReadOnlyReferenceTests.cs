@@ -343,5 +343,51 @@ namespace schema.readOnly {
 
           """);
     }
+
+    [Test]
+    public void TestIgnoresFakeMatches() {
+      ReadOnlyGeneratorTestUtil.AssertGenerated(
+          """
+          using schema.readOnly;
+          using foo.bar.correct;
+          using foo.bar.wrong;
+          
+          namespace foo.bar.correct {
+            public class Other;
+          }
+
+          namespace foo.bar.correct {
+            [GenerateReadOnly]
+            public partial interface IOther;
+          }
+
+          namespace foo.bar {
+            [GenerateReadOnly]
+            public partial interface IWrapper {
+              IReadOnlyOther Field { get; set; }
+            }
+          }
+          """,
+          """
+          namespace foo.bar.correct {
+            public partial interface IOther : IReadOnlyOther;
+            
+            public interface IReadOnlyOther;
+          }
+
+          """,
+          """
+          namespace foo.bar {
+            public partial interface IWrapper : IReadOnlyWrapper {
+              correct.IReadOnlyOther IReadOnlyWrapper.Field => Field;
+            }
+            
+            public interface IReadOnlyWrapper {
+              public correct.IReadOnlyOther Field { get; }
+            }
+          }
+
+          """);
+    }
   }
 }
