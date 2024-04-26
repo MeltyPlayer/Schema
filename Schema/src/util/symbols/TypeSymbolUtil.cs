@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using Microsoft.CodeAnalysis;
 
@@ -15,8 +16,26 @@ namespace schema.util.symbols {
       return false;
     }
 
-    public static bool IsNullable(this ITypeSymbol typeSymbol)
-      => typeSymbol.NullableAnnotation == NullableAnnotation.Annotated;
+    public static ITypeSymbol UnwrapNullable(this ITypeSymbol typeSymbol)
+      => typeSymbol.IsNullable(out var nullableType)
+          ? nullableType
+          : typeSymbol;
+
+    public static bool IsNullable(this ITypeSymbol typeSymbol,
+                                  out ITypeSymbol nullableType) {
+      if (typeSymbol.IsType(typeof(Nullable<>))) {
+        nullableType = (typeSymbol as INamedTypeSymbol).TypeArguments[0];
+        return true;
+      }
+
+      if (typeSymbol.NullableAnnotation == NullableAnnotation.Annotated) {
+        nullableType = typeSymbol.OriginalDefinition;
+        return true;
+      }
+
+      nullableType = default;
+      return false;
+    }
 
     public static IEnumerable<INamedTypeSymbol> GetBaseTypes(
         this ISymbol symbol) {

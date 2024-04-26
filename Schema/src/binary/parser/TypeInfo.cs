@@ -277,7 +277,7 @@ namespace schema.binary.parser {
         Asserts.True(typeSymbol.IsGeneric(out _, out var genericArguments));
         typeSymbol = genericArguments.ToArray()[0];
         isNullable = true;
-      } else if (typeSymbol.IsNullable()) {
+      } else if (typeSymbol.IsNullable(out _)) {
         isNullable = true;
       }
     }

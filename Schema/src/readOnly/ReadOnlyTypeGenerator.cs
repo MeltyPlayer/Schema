@@ -342,27 +342,37 @@ namespace schema.readOnly {
                 .Write(" ")
                 .Write(parameterSymbol.Name.EscapeKeyword());
 
+
+
             if (interfaceName == null &&
                 parameterSymbol.HasExplicitDefaultValue) {
+              var defaultValueType = parameterSymbol.Type.UnwrapNullable();
+              
               cbsb.Write(" = ");
 
               var explicitDefaultValue = parameterSymbol.ExplicitDefaultValue;
-              switch (explicitDefaultValue) {
-                case null:
-                  cbsb.Write("null");
-                  break;
-                case char:
-                  cbsb.Write($"'{explicitDefaultValue}'");
-                  break;
-                case string:
-                  cbsb.Write($"\"{explicitDefaultValue}\"");
-                  break;
-                case bool boolValue:
-                  cbsb.Write(boolValue ? "true" : "false");
-                  break;
-                default:
-                  cbsb.Write(explicitDefaultValue.ToString());
-                  break;
+              if (defaultValueType.IsEnum(out _) &&
+                  explicitDefaultValue != null) {
+                cbsb.Write(
+                    $"({typeSymbol.GetQualifiedNameFromCurrentSymbol(defaultValueType)}) {explicitDefaultValue}");
+              } else {
+                switch (explicitDefaultValue) {
+                  case null:
+                    cbsb.Write("null");
+                    break;
+                  case char:
+                    cbsb.Write($"'{explicitDefaultValue}'");
+                    break;
+                  case string:
+                    cbsb.Write($"\"{explicitDefaultValue}\"");
+                    break;
+                  case bool boolValue:
+                    cbsb.Write(boolValue ? "true" : "false");
+                    break;
+                  default:
+                    cbsb.Write(explicitDefaultValue.ToString());
+                    break;
+                }
               }
             }
           }
