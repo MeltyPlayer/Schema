@@ -9,7 +9,7 @@ using schema.binary.attributes;
 using schema.util.diagnostics;
 
 namespace schema.util.symbols {
-  public static class AttributeUtil {
+  public static class AttributeExtensions {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static IEnumerable<AttributeData>
         GetAttributeData<TAttribute>(this ISymbol symbol) {

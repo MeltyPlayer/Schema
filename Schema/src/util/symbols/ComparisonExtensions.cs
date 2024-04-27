@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis;
 using schema.util.enumerables;
 
 namespace schema.util.symbols {
-  public static class SymbolComparisonUtil {
+  public static class ComparisonExtensions {
     public static bool IsSameAs(this ISymbol symbol, ISymbol other)
       => symbol.Name == other.Name &&
          symbol.GetFullyQualifiedNamespace() ==

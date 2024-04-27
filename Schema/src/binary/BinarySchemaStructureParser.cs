@@ -201,7 +201,7 @@ namespace schema.binary {
           if (hasRunAtReadTimeAttribute) {
             if (isMethod) {
               if (methodSymbol.Parameters.Length == 1 &&
-                  SymbolComparisonUtil.IsType((ISymbol) methodSymbol
+                  ComparisonExtensions.IsType((ISymbol) methodSymbol
                                                   .Parameters[0]
                                                   .Type, typeof(IBinaryReader))) {
                 members.Add(
