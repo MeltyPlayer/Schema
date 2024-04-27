@@ -52,132 +52,118 @@ namespace schema.readOnly {
     public string GenerateSourceForNamedType(INamedTypeSymbol typeSymbol,
                                              SemanticModel semanticModel,
                                              TypeDeclarationSyntax syntax) {
-      var typeNamespace = typeSymbol.GetFullyQualifiedNamespace();
-
-      var declaringTypes = typeSymbol.GetDeclaringTypesDownward();
-
       var sb = new StringBuilder();
-      using var cbsb = new CurlyBracketTextWriter(new StringWriter(sb));
+      using var sw = new SourceWriter(new StringWriter(sb));
 
-      // TODO: Handle fancier cases here
-      if (typeNamespace != null) {
-        cbsb.EnterBlock($"namespace {typeNamespace}");
-      }
+      sw.WriteNamespaceAndParentTypeBlocks(
+          typeSymbol,
+          () => {
+            var interfaceName = typeSymbol.GetConstInterfaceName();
 
-      foreach (var declaringType in declaringTypes) {
-        cbsb.EnterBlock(declaringType
-                            .GetQualifiersAndNameAndGenericParametersFor());
-      }
+            var constMembers
+                = parser_
+                  .ParseMembers(typeSymbol)
+                  .Where(parsedMember => {
+                           var (parseStatus, memberSymbol, _, _) = parsedMember;
+                           if (parseStatus ==
+                               TypeInfoParser.ParseStatus
+                                             .NOT_A_FIELD_OR_PROPERTY_OR_METHOD) {
+                             return false;
+                           }
 
-      var interfaceName = typeSymbol.GetConstInterfaceName();
+                           if (memberSymbol.DeclaredAccessibility is not (
+                               Accessibility.Public
+                               or Accessibility.Internal)) {
+                             return false;
+                           }
 
-      var constMembers
-          = parser_
-            .ParseMembers(typeSymbol)
-            .Where(parsedMember => {
-                     var (parseStatus, memberSymbol, _, _) = parsedMember;
-                     if (parseStatus ==
-                         TypeInfoParser.ParseStatus
-                                       .NOT_A_FIELD_OR_PROPERTY_OR_METHOD) {
-                       return false;
-                     }
+                           if (memberSymbol is IFieldSymbol) {
+                             return false;
+                           }
 
-                     if (memberSymbol.DeclaredAccessibility is not (
-                         Accessibility.Public or Accessibility.Internal)) {
-                       return false;
-                     }
+                           if (memberSymbol is IPropertySymbol) {
+                             return false;
+                           }
 
-                     if (memberSymbol is IFieldSymbol) {
-                       return false;
-                     }
+                           if (memberSymbol is IMethodSymbol &&
+                               !memberSymbol.Name.StartsWith("get_") &&
+                               !memberSymbol.HasAttribute<ConstAttribute>()) {
+                             return false;
+                           }
 
-                     if (memberSymbol is IPropertySymbol) {
-                       return false;
-                     }
+                           return true;
+                         })
+                  .Select(parsedMember => (IMethodSymbol) parsedMember.Item2)
+                  .ToArray();
 
-                     if (memberSymbol is IMethodSymbol &&
-                         !memberSymbol.Name.StartsWith("get_") &&
-                         !memberSymbol.HasAttribute<ConstAttribute>()) {
-                       return false;
-                     }
+            // Class
+            {
+              var blockPrefix =
+                  typeSymbol.GetQualifiersAndNameAndGenericParametersFor() +
+                  " : " +
+                  typeSymbol.GetNameAndGenericParametersFor(interfaceName);
 
-                     return true;
-                   })
-            .Select(parsedMember => (IMethodSymbol) parsedMember.Item2)
-            .ToArray();
+              if (constMembers.Length == 0) {
+                sw.Write(blockPrefix).WriteLine(";");
+              } else {
+                sw.EnterBlock(blockPrefix);
+                WriteMembers_(sw,
+                              typeSymbol,
+                              constMembers,
+                              semanticModel,
+                              syntax,
+                              interfaceName);
+                sw.ExitBlock();
+              }
+            }
+            sw.WriteLine("");
 
-      // Class
-      {
-        var blockPrefix =
-            typeSymbol.GetQualifiersAndNameAndGenericParametersFor() +
-            " : " +
-            typeSymbol.GetNameAndGenericParametersFor(interfaceName);
+            // Interface
+            {
+              sw.Write(
+                  SymbolTypeUtil.AccessibilityToModifier(
+                      typeSymbol.DeclaredAccessibility));
+              sw.Write(" interface ");
 
-        if (constMembers.Length == 0) {
-          cbsb.Write(blockPrefix).WriteLine(";");
-        } else {
-          cbsb.EnterBlock(blockPrefix);
-          WriteMembers_(cbsb,
-                        typeSymbol,
-                        constMembers,
-                        semanticModel,
-                        syntax,
-                        interfaceName);
-          cbsb.ExitBlock();
-        }
-      }
-      cbsb.WriteLine("");
+              var blockPrefix = interfaceName;
+              blockPrefix
+                  += typeSymbol
+                      .GetGenericParametersWithVarianceForReadOnlyVersion(
+                          constMembers);
+              var parentConstNames =
+                  GetDirectBaseTypeAndInterfaces_(typeSymbol)
+                      .Where(i => i.HasAttribute<GenerateReadOnlyAttribute>() ||
+                                  IsTypeAlreadyConst_(i))
+                      .Select(i => typeSymbol
+                                  .GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
+                                      i,
+                                      semanticModel,
+                                      syntax))
+                      .ToArray();
+              if (parentConstNames.Length > 0) {
+                blockPrefix += " : " + string.Join(", ", parentConstNames);
+              }
 
-      // Interface
-      {
-        cbsb.Write(
-            SymbolTypeUtil.AccessibilityToModifier(
-                typeSymbol.DeclaredAccessibility));
-        cbsb.Write(" interface ");
+              blockPrefix += typeSymbol.GetTypeConstraintsOrReadonly(
+                  typeSymbol.TypeParameters,
+                  semanticModel,
+                  syntax);
 
-        var blockPrefix = interfaceName;
-        blockPrefix
-            += typeSymbol.GetGenericParametersWithVarianceForReadOnlyVersion(
-                constMembers);
-        var parentConstNames =
-            GetDirectBaseTypeAndInterfaces_(typeSymbol)
-                .Where(i => i.HasAttribute<GenerateReadOnlyAttribute>() ||
-                            IsTypeAlreadyConst_(i))
-                .Select(i => typeSymbol
-                            .GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
-                                i,
-                                semanticModel,
-                                syntax))
-                .ToArray();
-        if (parentConstNames.Length > 0) {
-          blockPrefix += " : " + string.Join(", ", parentConstNames);
-        }
+              if (constMembers.Length == 0) {
+                sw.Write(blockPrefix).WriteLine(";");
+              } else {
+                sw.EnterBlock(blockPrefix);
+                WriteMembers_(sw,
+                              typeSymbol,
+                              constMembers,
+                              semanticModel,
+                              syntax);
+                sw.ExitBlock();
+              }
+            }
+          });
 
-        blockPrefix += typeSymbol.GetTypeConstraintsOrReadonly(
-            typeSymbol.TypeParameters,
-            semanticModel,
-            syntax);
-
-        if (constMembers.Length == 0) {
-          cbsb.Write(blockPrefix).WriteLine(";");
-        } else {
-          cbsb.EnterBlock(blockPrefix);
-          WriteMembers_(cbsb, typeSymbol, constMembers, semanticModel, syntax);
-          cbsb.ExitBlock();
-        }
-
-        // parent types
-        foreach (var _ in declaringTypes) {
-          cbsb.ExitBlock();
-        }
-
-        // namespace
-        if (typeNamespace != null) {
-          cbsb.ExitBlock();
-        }
-
-        return sb.ToString();
-      }
+      return sb.ToString();
     }
 
     private static bool IsTypeAlreadyConst_(INamedTypeSymbol typeSymbol) {
@@ -221,7 +207,7 @@ namespace schema.readOnly {
     }
 
     private static void WriteMembers_(
-        ICurlyBracketTextWriter cbsb,
+        ISourceWriter sw,
         INamedTypeSymbol typeSymbol,
         IReadOnlyList<IMethodSymbol> constMembers,
         SemanticModel semanticModel,
@@ -231,14 +217,14 @@ namespace schema.readOnly {
         var memberTypeSymbol = memberSymbol.ReturnType;
 
         if (interfaceName == null) {
-          cbsb.Write(SymbolTypeUtil.AccessibilityToModifier(
+          sw.Write(SymbolTypeUtil.AccessibilityToModifier(
                          typeSymbol.DeclaredAccessibility))
               .Write(" ");
         }
 
         IPropertySymbol? associatedPropertySymbol
             = memberSymbol.AssociatedSymbol as IPropertySymbol;
-        cbsb.Write(
+        sw.Write(
                 typeSymbol
                     .GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
                         memberTypeSymbol,
@@ -248,7 +234,7 @@ namespace schema.readOnly {
             .Write(" ");
 
         if (interfaceName != null) {
-          cbsb.Write(interfaceName)
+          sw.Write(interfaceName)
               .Write(typeSymbol.GetGenericParameters())
               .Write(".");
         }
@@ -260,17 +246,17 @@ namespace schema.readOnly {
 
           if (!isIndexer) {
             propertyAccessName = propertyAccessName.EscapeKeyword();
-            cbsb.Write(memberSymbol.Name.Substring(4).EscapeKeyword());
+            sw.Write(memberSymbol.Name.Substring(4).EscapeKeyword());
           } else {
             propertyAccessName = "this";
-            cbsb.Write("this[");
+            sw.Write("this[");
             for (var i = 0; i < indexerParameterSymbols.Length; ++i) {
               if (i > 0) {
-                cbsb.Write(", ");
+                sw.Write(", ");
               }
 
               var parameterSymbol = indexerParameterSymbols[i];
-              cbsb.Write(
+              sw.Write(
                       typeSymbol.GetQualifiedNameAndGenericsFromCurrentSymbol(
                           parameterSymbol.Type,
                           semanticModel,
@@ -280,13 +266,13 @@ namespace schema.readOnly {
                   .Write(parameterSymbol.Name.EscapeKeyword());
             }
 
-            cbsb.Write("]");
+            sw.Write("]");
           }
 
           if (interfaceName == null) {
-            cbsb.WriteLine(" { get; }");
+            sw.WriteLine(" { get; }");
           } else {
-            cbsb.Write(" => ")
+            sw.Write(" => ")
                 .Write(typeSymbol.GetCStyleCastToReadOnlyIfNeeded(
                            associatedPropertySymbol,
                            memberSymbol.ReturnType,
@@ -295,101 +281,101 @@ namespace schema.readOnly {
                 .Write(propertyAccessName);
 
             if (isIndexer) {
-              cbsb.Write("[");
+              sw.Write("[");
               for (var i = 0; i < memberSymbol.Parameters.Length; ++i) {
                 if (i > 0) {
-                  cbsb.Write(", ");
+                  sw.Write(", ");
                 }
 
                 var parameterSymbol = memberSymbol.Parameters[i];
-                cbsb.Write(parameterSymbol.Name.EscapeKeyword());
+                sw.Write(parameterSymbol.Name.EscapeKeyword());
               }
 
-              cbsb.Write("]");
+              sw.Write("]");
             }
 
-            cbsb.WriteLine(";");
+            sw.WriteLine(";");
           }
         }
         // Method
         else {
           var accessName = memberSymbol.Name.EscapeKeyword();
-          cbsb.Write(accessName);
-          cbsb.Write(memberSymbol.TypeParameters
+          sw.Write(accessName);
+          sw.Write(memberSymbol.TypeParameters
                                  .GetGenericParameters());
-          cbsb.Write("(");
+          sw.Write("(");
 
           for (var i = 0; i < memberSymbol.Parameters.Length; ++i) {
             if (i > 0) {
-              cbsb.Write(", ");
+              sw.Write(", ");
             }
 
             var parameterSymbol = memberSymbol.Parameters[i];
             if (parameterSymbol.IsParams) {
-              cbsb.Write("params ");
+              sw.Write("params ");
             }
 
             var refKindString = parameterSymbol.RefKind.GetRefKindString();
             if (refKindString.Length > 0) {
-              cbsb.Write(refKindString).Write(" ");
+              sw.Write(refKindString).Write(" ");
             }
 
-            cbsb.Write(typeSymbol.GetQualifiedNameAndGenericsFromCurrentSymbol(
-                           parameterSymbol.Type,
-                           semanticModel,
-                           syntax,
-                           parameterSymbol))
+            sw.Write(
+                    typeSymbol.GetQualifiedNameAndGenericsFromCurrentSymbol(
+                        parameterSymbol.Type,
+                        semanticModel,
+                        syntax,
+                        parameterSymbol))
                 .Write(" ")
                 .Write(parameterSymbol.Name.EscapeKeyword());
-
 
 
             if (interfaceName == null &&
                 parameterSymbol.HasExplicitDefaultValue) {
               var defaultValueType = parameterSymbol.Type.UnwrapNullable();
-              
-              cbsb.Write(" = ");
+
+              sw.Write(" = ");
 
               var explicitDefaultValue = parameterSymbol.ExplicitDefaultValue;
               if (defaultValueType.IsEnum(out _) &&
                   explicitDefaultValue != null) {
-                cbsb.Write(
+                sw.Write(
                     $"({typeSymbol.GetQualifiedNameFromCurrentSymbol(defaultValueType)}) {explicitDefaultValue}");
               } else {
                 switch (explicitDefaultValue) {
                   case null:
-                    cbsb.Write("null");
+                    sw.Write("null");
                     break;
                   case char:
-                    cbsb.Write($"'{explicitDefaultValue}'");
+                    sw.Write($"'{explicitDefaultValue}'");
                     break;
                   case string:
-                    cbsb.Write($"\"{explicitDefaultValue}\"");
+                    sw.Write($"\"{explicitDefaultValue}\"");
                     break;
                   case bool boolValue:
-                    cbsb.Write(boolValue ? "true" : "false");
+                    sw.Write(boolValue ? "true" : "false");
                     break;
                   default:
-                    cbsb.Write(explicitDefaultValue.ToString());
+                    sw.Write(explicitDefaultValue.ToString());
                     break;
                 }
               }
             }
           }
 
-          cbsb.Write(")");
+          sw.Write(")");
 
           if (interfaceName == null) {
-            cbsb.Write(typeSymbol.GetTypeConstraintsOrReadonly(
+            sw.Write(typeSymbol.GetTypeConstraintsOrReadonly(
                            memberSymbol.TypeParameters,
                            semanticModel,
                            syntax));
           }
 
           if (interfaceName == null) {
-            cbsb.WriteLine(";");
+            sw.WriteLine(";");
           } else {
-            cbsb.Write(" => ")
+            sw.Write(" => ")
                 .Write(typeSymbol.GetCStyleCastToReadOnlyIfNeeded(
                            memberSymbol,
                            memberSymbol.ReturnType,
@@ -400,20 +386,20 @@ namespace schema.readOnly {
                 .Write("(");
             for (var i = 0; i < memberSymbol.Parameters.Length; ++i) {
               if (i > 0) {
-                cbsb.Write(", ");
+                sw.Write(", ");
               }
 
               var parameterSymbol = memberSymbol.Parameters[i];
 
               var refKindString = parameterSymbol.RefKind.GetRefKindString();
               if (refKindString.Length > 0) {
-                cbsb.Write(refKindString).Write(" ");
+                sw.Write(refKindString).Write(" ");
               }
 
-              cbsb.Write(parameterSymbol.Name.EscapeKeyword());
+              sw.Write(parameterSymbol.Name.EscapeKeyword());
             }
 
-            cbsb.WriteLine(");");
+            sw.WriteLine(");");
           }
         }
       }
@@ -446,12 +432,13 @@ namespace schema.readOnly {
   internal static class ReadOnlyTypeGeneratorUtil {
     public const string PREFIX = "IReadOnly";
 
-    public static string GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
-        this ITypeSymbol sourceSymbol,
-        ITypeSymbol referencedSymbol,
-        SemanticModel semanticModel,
-        TypeDeclarationSyntax sourceDeclarationSyntax,
-        ISymbol? memberSymbol = null)
+    public static string
+        GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
+            this ITypeSymbol sourceSymbol,
+            ITypeSymbol referencedSymbol,
+            SemanticModel semanticModel,
+            TypeDeclarationSyntax sourceDeclarationSyntax,
+            ISymbol? memberSymbol = null)
       => sourceSymbol.GetQualifiedNameFromCurrentSymbol(
           referencedSymbol,
           memberSymbol,
@@ -520,14 +507,16 @@ namespace schema.readOnly {
       }
 
       if (typeParameter.HasReferenceTypeConstraint) {
-        yield return typeParameter.ReferenceTypeConstraintNullableAnnotation ==
+        yield return typeParameter
+                         .ReferenceTypeConstraintNullableAnnotation ==
                      NullableAnnotation.Annotated
             ? "class?"
             : "class";
       }
 
-      if (typeParameter is
-          { HasValueTypeConstraint: true, HasUnmanagedTypeConstraint: false }) {
+      if (typeParameter is {
+              HasValueTypeConstraint: true, HasUnmanagedTypeConstraint: false
+          }) {
         yield return "struct";
       }
 
@@ -537,7 +526,9 @@ namespace schema.readOnly {
             constraintType,
             typeParameter,
             ConvertName_,
-            r => GetNamespaceOfType(r, semanticModel, sourceDeclarationSyntax));
+            r => GetNamespaceOfType(r,
+                                    semanticModel,
+                                    sourceDeclarationSyntax));
 
         yield return typeParameter.ConstraintNullableAnnotations[i] ==
                      NullableAnnotation.Annotated

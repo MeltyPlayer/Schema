@@ -20,13 +20,8 @@ namespace schema.binary.text {
     public string Generate(IBinarySchemaContainer container) {
       var typeSymbol = container.TypeSymbol;
 
-      var typeNamespace = typeSymbol.GetFullyQualifiedNamespace();
-
-      var declaringTypes =
-          SymbolTypeUtil.GetDeclaringTypesDownward(typeSymbol);
-
       var sb = new StringBuilder();
-      using var cbsb = new CurlyBracketTextWriter(new StringWriter(sb));
+      using var sw = new SourceWriter(new StringWriter(sb));
 
       {
         var dependencies = new List<string> { "System", "schema.binary" };
@@ -45,75 +40,61 @@ namespace schema.binary.text {
 
         dependencies.Sort(StringComparer.Ordinal);
         foreach (var dependency in dependencies) {
-          cbsb.WriteLine($"using {dependency};");
+          sw.WriteLine($"using {dependency};");
         }
 
-        cbsb.WriteLine("");
+        sw.WriteLine("");
       }
 
-      // TODO: Handle fancier cases here
-      if (typeNamespace != null) {
-        cbsb.EnterBlock($"namespace {typeNamespace}");
-      }
+      sw.WriteNamespaceAndParentTypeBlocks(
+          typeSymbol,
+          () => {
+            sw.EnterBlock(
+                typeSymbol.GetQualifiersAndNameAndGenericParametersFor());
 
-      foreach (var declaringType in declaringTypes) {
-        cbsb.EnterBlock(declaringType
-                            .GetQualifiersAndNameAndGenericParametersFor());
-      }
+            sw.EnterBlock($"public void Write(IBinaryWriter {WRITER})");
+            {
+              var hasLocalPositions = container.LocalPositions;
+              if (hasLocalPositions) {
+                sw.WriteLine($"{WRITER}.PushLocalSpace();");
+              }
 
-      cbsb.EnterBlock(typeSymbol.GetQualifiersAndNameAndGenericParametersFor());
+              var hasEndianness = container.Endianness != null;
+              if (hasEndianness) {
+                sw.WriteLine(
+                    $"{WRITER}.PushContainerEndianness({SchemaGeneratorUtil.GetEndiannessName(container.Endianness.Value)});");
+              }
 
-      cbsb.EnterBlock($"public void Write(IBinaryWriter {WRITER})");
-      {
-        var hasLocalPositions = container.LocalPositions;
-        if (hasLocalPositions) {
-          cbsb.WriteLine($"{WRITER}.PushLocalSpace();");
-        }
+              foreach (var member in container.Members
+                                              .OfType<ISchemaValueMember>()) {
+                BinarySchemaWriterGenerator.WriteValueMember_(
+                    sw,
+                    typeSymbol,
+                    member);
+              }
 
-        var hasEndianness = container.Endianness != null;
-        if (hasEndianness) {
-          cbsb.WriteLine(
-              $"{WRITER}.PushContainerEndianness({SchemaGeneratorUtil.GetEndiannessName(container.Endianness.Value)});");
-        }
+              if (hasEndianness) {
+                sw.WriteLine($"{WRITER}.PopEndianness();");
+              }
 
-        foreach (var member in container.Members.OfType<ISchemaValueMember>()) {
-          BinarySchemaWriterGenerator.WriteValueMember_(
-              cbsb,
-              typeSymbol,
-              member);
-        }
+              if (hasLocalPositions) {
+                sw.WriteLine($"{WRITER}.PopLocalSpace();");
+              }
+            }
+            sw.ExitBlock();
 
-        if (hasEndianness) {
-          cbsb.WriteLine($"{WRITER}.PopEndianness();");
-        }
+            // TODO: Handle fancier cases here
 
-        if (hasLocalPositions) {
-          cbsb.WriteLine($"{WRITER}.PopLocalSpace();");
-        }
-      }
-      cbsb.ExitBlock();
-
-      // TODO: Handle fancier cases here
-
-      // type
-      cbsb.ExitBlock();
-
-      // parent types
-      foreach (var declaringType in declaringTypes) {
-        cbsb.ExitBlock();
-      }
-
-      // namespace
-      if (typeNamespace != null) {
-        cbsb.ExitBlock();
-      }
+            // type
+            sw.ExitBlock();
+          });
 
       var generatedCode = sb.ToString();
       return generatedCode;
     }
 
     private static void WriteValueMember_(
-        ICurlyBracketTextWriter cbsb,
+        ISourceWriter sw,
         ITypeSymbol sourceSymbol,
         ISchemaValueMember member) {
       if (member.IsSkipped) {
@@ -128,12 +109,12 @@ namespace schema.binary.text {
                                member.MemberType is not IContainerMemberType;
       var ifBoolean = member.IfBoolean;
       if (ifBoolean?.SourceType == IfBooleanSourceType.IMMEDIATE_VALUE) {
-        cbsb.WriteLine(
+        sw.WriteLine(
             $"{GetWritePrimitiveText_(SchemaPrimitiveType.BOOLEAN, ifBoolean.ImmediateBooleanType.AsNumberType(), $"this.{member.Name} != null")};");
       }
 
       if (shouldSkipWhenNull) {
-        cbsb.EnterBlock($"if (this.{member.Name} != null)");
+        sw.EnterBlock($"if (this.{member.Name} != null)");
       }
 
       var memberType = member.MemberType;
@@ -143,22 +124,22 @@ namespace schema.binary.text {
 
       switch (memberType) {
         case IPrimitiveMemberType: {
-          BinarySchemaWriterGenerator.WritePrimitive_(cbsb, member);
+          BinarySchemaWriterGenerator.WritePrimitive_(sw, member);
           break;
         }
         case IStringType: {
-          BinarySchemaWriterGenerator.WriteString_(cbsb, member);
+          BinarySchemaWriterGenerator.WriteString_(sw, member);
           break;
         }
         case IContainerMemberType containerMemberType: {
           BinarySchemaWriterGenerator.WriteContainer_(
-              cbsb,
+              sw,
               containerMemberType,
               member);
           break;
         }
         case ISequenceMemberType: {
-          BinarySchemaWriterGenerator.WriteArray_(cbsb, member);
+          BinarySchemaWriterGenerator.WriteArray_(sw, member);
           break;
         }
         default:
@@ -167,12 +148,12 @@ namespace schema.binary.text {
       }
 
       if (shouldSkipWhenNull) {
-        cbsb.ExitBlock();
+        sw.ExitBlock();
       }
     }
 
     private static void Align_(
-        ICurlyBracketTextWriter cbsb,
+        ISourceWriter sw,
         ISchemaValueMember member) {
       var align = member.Align;
       if (align == null) {
@@ -183,39 +164,39 @@ namespace schema.binary.text {
           AlignSourceType.CONST        => $"{align.ConstAlign}",
           AlignSourceType.OTHER_MEMBER => $"{align.OtherMember.Name}"
       };
-      cbsb.WriteLine($"{WRITER}.Align({valueName});");
+      sw.WriteLine($"{WRITER}.Align({valueName});");
     }
 
     private static void HandleMemberEndiannessAndTracking_(
-        ICurlyBracketTextWriter cbsb,
+        ISourceWriter sw,
         ISchemaValueMember member,
         Action handler) {
-      BinarySchemaWriterGenerator.Align_(cbsb, member);
+      BinarySchemaWriterGenerator.Align_(sw, member);
 
       var hasEndianness = member.Endianness != null;
       if (hasEndianness) {
-        cbsb.WriteLine(
+        sw.WriteLine(
             $"{WRITER}.PushMemberEndianness({SchemaGeneratorUtil.GetEndiannessName(member.Endianness.Value)});");
       }
 
       var shouldTrackStartAndEnd = member.TrackStartAndEnd;
       if (shouldTrackStartAndEnd) {
-        cbsb.WriteLine($"{WRITER}.MarkStartOfMember(\"{member.Name}\");");
+        sw.WriteLine($"{WRITER}.MarkStartOfMember(\"{member.Name}\");");
       }
 
       handler();
 
       if (shouldTrackStartAndEnd) {
-        cbsb.WriteLine($"{WRITER}.MarkEndOfMember();");
+        sw.WriteLine($"{WRITER}.MarkEndOfMember();");
       }
 
       if (hasEndianness) {
-        cbsb.WriteLine($"{WRITER}.PopEndianness();");
+        sw.WriteLine($"{WRITER}.PopEndianness();");
       }
     }
 
     private static void WritePrimitive_(
-        ICurlyBracketTextWriter cbsb,
+        ISourceWriter sw,
         ISchemaValueMember member) {
       var primitiveMemberType = member.MemberType as IPrimitiveMemberType;
       if (primitiveMemberType == null) {
@@ -228,7 +209,7 @@ namespace schema.binary.text {
       var primitiveType = primitiveMemberType.PrimitiveType;
 
       HandleMemberEndiannessAndTracking_(
-          cbsb,
+          sw,
           member,
           () => {
             var writeType = useAltFormat
@@ -253,7 +234,7 @@ namespace schema.binary.text {
               if (isLengthOfString) {
                 accessText = $"{lengthOfStringMembers[0].Name}.Length";
                 if (lengthOfStringMembers.Length > 1) {
-                  cbsb.WriteLine(
+                  sw.WriteLine(
                       $"Asserts.AllEqual({string.Join(", ", lengthOfStringMembers.Select(member => $"{member.Name}.Length"))});");
                 }
               }
@@ -268,7 +249,7 @@ namespace schema.binary.text {
                     (first.MemberTypeInfo as ISequenceTypeInfo).LengthName;
                 accessText = $"{first.Name}.{firstLengthName}";
                 if (lengthOfSequenceMembers.Length > 1) {
-                  cbsb.WriteLine(
+                  sw.WriteLine(
                       $"Asserts.AllEqual({string.Join(", ", lengthOfSequenceMembers.Select(
                           member => {
                             var lengthName =
@@ -280,13 +261,13 @@ namespace schema.binary.text {
 
               if ((isLengthOfString || isLengthOfSequence) &&
                   !primitiveType.AsIntegerType().CanAcceptAnInt32()) {
-                cbsb.WriteLine(
+                sw.WriteLine(
                     $"{GetWritePrimitiveText_(
                         SchemaPrimitiveType.INT32,
                         primitiveType.AsNumberType(),
                         accessText)};");
               } else {
-                cbsb.WriteLine(
+                sw.WriteLine(
                     $"{GetWritePrimitiveText_(primitiveMemberType, accessText)};");
               }
             } else {
@@ -321,17 +302,17 @@ namespace schema.binary.text {
                 accessText = $"{WRITER}.GetAbsoluteLength()";
               }
 
-              cbsb.WriteLine(
+              sw.WriteLine(
                   $"{WRITER}.Write{writeTypeLabel}Delayed({accessText}{castText});");
             }
           });
     }
 
     private static void WriteString_(
-        ICurlyBracketTextWriter cbsb,
+        ISourceWriter sw,
         ISchemaValueMember member) {
       HandleMemberEndiannessAndTracking_(
-          cbsb,
+          sw,
           member,
           () => {
             var stringType =
@@ -352,11 +333,11 @@ namespace schema.binary.text {
 
             if (stringType.LengthSourceType ==
                 StringLengthSourceType.NULL_TERMINATED) {
-              cbsb.WriteLine(
+              sw.WriteLine(
                   $"{WRITER}.WriteStringNT({encodingTypeWithComma}this.{member.Name});");
             } else if (stringType.LengthSourceType ==
                        StringLengthSourceType.CONST) {
-              cbsb.WriteLine(
+              sw.WriteLine(
                   $"{WRITER}.WriteStringWithExactLength({encodingTypeWithComma}this.{member.Name}, {stringType.ConstLength});");
             } else if (stringType.LengthSourceType ==
                        StringLengthSourceType.IMMEDIATE_VALUE) {
@@ -373,40 +354,40 @@ namespace schema.binary.text {
               var accessText = $"this.{member.Name}.Length";
 
               var writeType = stringType.ImmediateLengthType.GetIntLabel();
-              cbsb.WriteLine(
-                      $"{WRITER}.Write{writeType}({castText}{accessText});")
-                  .WriteLine(
-                      $"{WRITER}.WriteString({encodingTypeWithComma}this.{member.Name});");
+              sw.WriteLine(
+                    $"{WRITER}.Write{writeType}({castText}{accessText});")
+                .WriteLine(
+                    $"{WRITER}.WriteString({encodingTypeWithComma}this.{member.Name});");
             } else {
-              cbsb.WriteLine(
+              sw.WriteLine(
                   $"{WRITER}.WriteString({encodingTypeWithComma}this.{member.Name});");
             }
           });
     }
 
     private static void WriteContainer_(
-        ICurlyBracketTextWriter cbsb,
+        ISourceWriter sw,
         IContainerMemberType containerMemberType,
         ISchemaValueMember member) {
       var memberName = member.Name;
       if (containerMemberType.IsChild) {
-        cbsb.WriteLine($"this.{memberName}.Parent = this;");
+        sw.WriteLine($"this.{memberName}.Parent = this;");
       }
 
       HandleMemberEndiannessAndTracking_(
-          cbsb,
+          sw,
           member,
           () => {
             if (containerMemberType.TypeInfo.IsNullable) {
-              cbsb.WriteLine($"this.{memberName}?.Write({WRITER});");
+              sw.WriteLine($"this.{memberName}?.Write({WRITER});");
             } else {
-              cbsb.WriteLine($"this.{memberName}.Write({WRITER});");
+              sw.WriteLine($"this.{memberName}.Write({WRITER});");
             }
           });
     }
 
     private static void WriteArray_(
-        ICurlyBracketTextWriter cbsb,
+        ISourceWriter sw,
         ISchemaValueMember member) {
       var sequenceMemberType =
           Asserts.CastNonnull(member.MemberType as ISequenceMemberType);
@@ -420,18 +401,18 @@ namespace schema.binary.text {
           var arrayLengthName = sequenceMemberType.SequenceTypeInfo.LengthName;
           var arrayLengthAccessor = $"this.{member.Name}.{arrayLengthName}";
 
-          cbsb.WriteLine(
+          sw.WriteLine(
               $"{GetWritePrimitiveText_(SchemaPrimitiveType.INT32, sequenceMemberType.ImmediateLengthType.AsNumberType(), arrayLengthAccessor)};");
         }
       }
 
-      BinarySchemaWriterGenerator.WriteIntoArray_(cbsb, member);
+      BinarySchemaWriterGenerator.WriteIntoArray_(sw, member);
     }
 
-    private static void WriteIntoArray_(ICurlyBracketTextWriter cbsb,
+    private static void WriteIntoArray_(ISourceWriter sw,
                                         ISchemaValueMember member) {
       HandleMemberEndiannessAndTracking_(
-          cbsb,
+          sw,
           member,
           () => {
             var sequenceMemberType =
@@ -440,7 +421,7 @@ namespace schema.binary.text {
             var sequenceType = sequenceTypeInfo.SequenceType;
 
             if (sequenceType.IsISequence()) {
-              cbsb.WriteLine($"this.{member.Name}.Write({WRITER});");
+              sw.WriteLine($"this.{member.Name}.Write({WRITER});");
               return;
             }
 
@@ -459,30 +440,30 @@ namespace schema.binary.text {
                 var label =
                     SchemaGeneratorUtil.GetPrimitiveLabel(
                         primitiveElementType.PrimitiveType);
-                cbsb.WriteLine(
+                sw.WriteLine(
                     $"{WRITER}.Write{label}s(this.{member.Name});");
                 return;
               }
 
               // Primitives that *do* need to be cast have to be written individually.
               var arrayLengthName = sequenceTypeInfo.LengthName;
-              cbsb.EnterBlock(
-                      $"for (var i = 0; i < this.{member.Name}.{arrayLengthName}; ++i)")
-                  .WriteLine(
-                      $"{GetWritePrimitiveText_(primitiveElementType, $"this.{member.Name}[i]")};")
-                  .ExitBlock();
+              sw.EnterBlock(
+                    $"for (var i = 0; i < this.{member.Name}.{arrayLengthName}; ++i)")
+                .WriteLine(
+                    $"{GetWritePrimitiveText_(primitiveElementType, $"this.{member.Name}[i]")};")
+                .ExitBlock();
               return;
             }
 
             if (elementType is IContainerMemberType containerElementType) {
-              cbsb.EnterBlock($"foreach (var e in this.{member.Name})");
+              sw.EnterBlock($"foreach (var e in this.{member.Name})");
 
               if (containerElementType.IsChild) {
-                cbsb.WriteLine("e.Parent = this;");
+                sw.WriteLine("e.Parent = this;");
               }
 
-              cbsb.WriteLine($"e.Write({WRITER});")
-                  .ExitBlock();
+              sw.WriteLine($"e.Write({WRITER});")
+                .ExitBlock();
               return;
             }
 

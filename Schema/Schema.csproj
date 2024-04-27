@@ -20,12 +20,9 @@
 
   <ItemGroup>
     <None Include="..\README.md" Pack="true" PackagePath="\" />
-    <!-- Include the netstandard2.0 DLL into the package -->
-    <None Include="$(OutputPath)$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.2.0" />
     <PackageReference Include="Encoding.SpanExtensions" Version="1.0.0" />
     <PackageReference Include="Half" Version="1.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3">
@@ -35,4 +32,22 @@
     <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.0.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <!-- Generator dependencies -->
+    <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.2.0" GeneratePathProperty="true" PrivateAssets="all" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
+  </PropertyGroup>
+
+  <Target Name="GetDependencyTargetPaths">
+    <ItemGroup>
+      <TargetPathWithTargetPlatformMoniker Include="$(PKGCommunityToolkit_HighPerformance)\lib\netstandard2.0\CommunityToolkit.HighPerformance.dll" IncludeRuntimeDependency="false" />
+      <!-- Include the netstandard2.0 DLL into the package -->
+      <None Include="$(OutputPath)$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+      <None Include="$(PKGCommunityToolkit_HighPerformance)\lib\netstandard2.0\CommunityToolkit.HighPerformance.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    </ItemGroup>
+  </Target>
 </Project>
