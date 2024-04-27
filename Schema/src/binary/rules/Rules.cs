@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -39,10 +40,11 @@ namespace schema.binary {
             "Child type must be contained in parent",
             "Type '{0}' is defined as a child, but is not actually contained in its parent type.");
 
-    public static readonly DiagnosticDescriptor ParentBinaryConvertabilityMustSatisfyChild
-        = Rules.CreateDiagnosticDescriptor_(
-            "Parent's binary convertability must satisfy child's",
-            "Type '{0}' is defined as a child, but its binary convertability is not satisfied by its parent's. The parent must at least implement the same binary serializable/deserializable interface as the child.");
+    public static readonly DiagnosticDescriptor
+        ParentBinaryConvertabilityMustSatisfyChild
+            = Rules.CreateDiagnosticDescriptor_(
+                "Parent's binary convertability must satisfy child's",
+                "Type '{0}' is defined as a child, but its binary convertability is not satisfied by its parent's. The parent must at least implement the same binary serializable/deserializable interface as the child.");
 
 
     public static readonly DiagnosticDescriptor
@@ -132,6 +134,11 @@ namespace schema.binary {
     public static DiagnosticDescriptor Exception { get; }
       = Rules.CreateDiagnosticDescriptor_(
           "Exception",
+          "Ran into an exception while generating source ({0}),{1}");
+
+    public static DiagnosticDescriptor SymbolException { get; }
+      = Rules.CreateDiagnosticDescriptor_(
+          "Exception",
           "Ran into an exception while parsing ({0}),{1}");
 
 
@@ -154,10 +161,19 @@ namespace schema.binary {
         ISymbol symbol,
         Exception exception)
       => Diagnostic.Create(
-          Rules.Exception,
+          Rules.SymbolException,
           symbol.Locations.First(),
           exception.Message,
           exception.StackTrace.Replace("\r\n", "").Replace("\n", ""));
+
+    public static Diagnostic CreateExceptionDiagnostic(
+        Exception exception)
+      => Diagnostic.Create(
+          Rules.Exception,
+          null,
+          exception.Message,
+          exception.StackTrace.Replace("\r\n", "").Replace("\n", ""));
+
 
     public static void ReportExceptionDiagnostic(
         SyntaxNodeAnalysisContext? context,

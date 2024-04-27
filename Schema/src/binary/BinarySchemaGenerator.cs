@@ -8,6 +8,7 @@ using schema.binary.attributes;
 using schema.binary.parser;
 using schema.binary.text;
 using schema.util.generators;
+using schema.util.symbols;
 using schema.util.syntax;
 using schema.util.types;
 
@@ -70,20 +71,21 @@ namespace schema.binary {
 
     public override IEnumerable<(string fileName, string source)>
         GenerateSourcesForMappedNamedType(IBinarySchemaContainer container) {
-      var containerTypeV2 = TypeV2.FromSymbol(container.TypeSymbol);
-      if (containerTypeV2.Implements<IBinaryDeserializable>() &&
-          container.TypeSymbol.MemberNames.All(member => member != "Read")) {
+      var containerSymbol = container.TypeSymbol;
+      if (containerSymbol.Implements<IBinaryDeserializable>() &&
+          containerSymbol.MemberNames.All(member => member != "Read")) {
         var readerCode = this.readerImpl_.Generate(container);
-        yield return ($"{containerTypeV2.FullyQualifiedName}_{containerTypeV2.Arity}_reader.g",
-                      readerCode);
+        yield return (
+            $"{containerSymbol.GetUniqueNameForGenerator()}_reader.g",
+            readerCode);
       }
 
-      if (containerTypeV2.Implements<IBinarySerializable>() &&
-          container.TypeSymbol.MemberNames.All(
-              member => member != "Write")) {
+      if (containerSymbol.Implements<IBinarySerializable>() &&
+          containerSymbol.MemberNames.All(member => member != "Write")) {
         var writerCode = this.writerImpl_.Generate(container);
-        yield return ($"{containerTypeV2.FullyQualifiedName}_{containerTypeV2.Arity}_writer.g",
-                      writerCode);
+        yield return (
+            $"{containerSymbol.GetUniqueNameForGenerator()}_writer.g",
+            writerCode);
       }
     }
   }

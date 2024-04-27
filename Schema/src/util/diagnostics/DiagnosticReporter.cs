@@ -56,7 +56,7 @@ namespace schema.util.diagnostics {
 
     public void ReportException(Exception exception)
       => this.ReportDiagnosticImpl_(
-          Diagnostic.Create(Rules.Exception,
+          Diagnostic.Create(Rules.SymbolException,
                             this.symbol_.Locations.First(),
                             exception.Message,
                             exception.StackTrace.Replace("\r\n", "")

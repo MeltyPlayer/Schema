@@ -29,8 +29,12 @@ namespace schema.util.generators {
     public void Initialize(IncrementalGeneratorInitializationContext context) {
       context.RegisterImplementationSourceOutput(
           context.CompilationProvider,
-          (_, compilation) => {
-            PreprocessCompilation(compilation);
+          (context, compilation) => {
+            try {
+              this.PreprocessCompilation(compilation);
+            } catch (Exception e) {
+              context.ReportDiagnostic(Rules.CreateExceptionDiagnostic(e));
+            }
           });
 
       var syntaxAndSymbolProvider

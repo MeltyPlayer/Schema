@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
+using schema.util.symbols;
 using schema.util.syntax;
 using schema.util.types;
 
@@ -24,6 +25,7 @@ namespace schema.binary {
           Rules.ChildTypeCanOnlyBeContainedInParent,
           Rules.ChildTypeMustBeContainedInParent,
           Rules.ConstUninitialized,
+          Rules.ContainerMemberBinaryConvertabilityNeedsToSatisfyParent,
           Rules.ContainerTypeMustBePartial,
           Rules.DependentMustComeAfterSource,
           Rules.EnumNeedsIntegerFormat,
@@ -38,7 +40,7 @@ namespace schema.binary {
           Rules.ReadAlreadyDefined,
           Rules.SchemaTypeMustBePartial,
           Rules.SourceMustBePrivate,
-          Rules.ContainerMemberBinaryConvertabilityNeedsToSatisfyParent,
+          Rules.SymbolException,
           Rules.UnexpectedAttribute,
           Rules.UnexpectedSequenceAttribute,
           Rules.UnsupportedArrayType,
@@ -83,10 +85,8 @@ namespace schema.binary {
         SyntaxNodeAnalysisContext context,
         TypeDeclarationSyntax syntax,
         INamedTypeSymbol symbol) {
-      var typeV2 = TypeV2.FromSymbol(symbol);
-
       try {
-        if (!typeV2.HasAttribute<BinarySchemaAttribute>()) {
+        if (!symbol.HasAttribute<BinarySchemaAttribute>()) {
           return;
         }
 

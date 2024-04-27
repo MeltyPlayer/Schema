@@ -6,6 +6,7 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 
 using schema.binary.attributes;
+using schema.util.asserts;
 using schema.util.symbols;
 using schema.util.types;
 
@@ -22,9 +23,11 @@ namespace schema.binary {
     public static bool IsBinaryDeserializable(this ISymbol symbol)
       => symbol.Implements<IBinaryDeserializable>();
 
-    public static bool IsChild(this ISymbol symbol, out ISymbol parent) {
+    public static bool
+        IsChild(this ISymbol symbol, out INamedTypeSymbol parent) {
       if (symbol.Implements(typeof(IChildOf<>), out var matchingType)) {
-        parent = matchingType.TypeArguments.First();
+        parent = Asserts.AsA<INamedTypeSymbol>(
+            matchingType.TypeArguments.First());
         return true;
       }
 

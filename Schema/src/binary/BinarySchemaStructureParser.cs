@@ -156,28 +156,25 @@ namespace schema.binary {
     public IBinarySchemaContainer ParseContainer(
         INamedTypeSymbol containerSymbol) {
       var containerBetterSymbol = BetterSymbol.FromType(containerSymbol);
-      var containerTypeV2 =
-          TypeV2.FromSymbol(containerBetterSymbol.TypedSymbol,
-                            containerBetterSymbol);
 
       // All of the types that contain the container need to be partial
       new PartialContainerAsserter(containerBetterSymbol)
           .AssertContainersArePartial(containerSymbol);
 
-      if (containerTypeV2.IsChild(out var parentTypeV2)) {
-        if (!parentTypeV2.ContainsMemberWithType(containerTypeV2)) {
+      if (containerSymbol.IsChild(out var parentSymbol)) {
+        if (!parentSymbol.ContainsMemberWithType(containerSymbol)) {
           containerBetterSymbol.ReportDiagnostic(
               Rules.ChildTypeMustBeContainedInParent);
         }
 
-        if (!parentTypeV2.IsAtLeastAsBinaryConvertibleAs(containerTypeV2)) {
+        if (!parentSymbol.IsAtLeastAsBinaryConvertibleAs(containerSymbol)) {
           containerBetterSymbol.ReportDiagnostic(
               Rules.ParentBinaryConvertabilityMustSatisfyChild);
         }
       }
 
       var localPositions =
-          containerTypeV2.HasAttribute<LocalPositionsAttribute>();
+          containerSymbol.HasAttribute<LocalPositionsAttribute>();
       var containerEndianness =
           new EndiannessParser().GetEndianness(containerBetterSymbol);
 
@@ -225,7 +222,7 @@ namespace schema.binary {
         bool isSkipped =
             memberBetterSymbol.HasAttribute<SkipAttribute>() ||
             (memberSymbol.Name == nameof(IChildOf<IBinaryConvertible>.Parent) &&
-             parentTypeV2 != null);
+             parentSymbol != null);
 
         // Skips parent field for child types
 

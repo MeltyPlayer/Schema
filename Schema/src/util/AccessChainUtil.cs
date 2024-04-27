@@ -180,9 +180,8 @@ namespace schema.binary {
           IsOrderValid = comesAfter,
       });
 
-      var containerTypeV2 = TypeV2.FromSymbol(containerSymbol);
       if (currentMemberName == nameof(IChildOf<IBinaryConvertible>.Parent) &&
-          containerTypeV2.IsChild(out _)) {
+          containerSymbol.IsChild(out _)) {
         upDownStack.PushUpFrom(prevMemberName);
       } else {
         upDownStack.PushDownTo(currentMemberName);

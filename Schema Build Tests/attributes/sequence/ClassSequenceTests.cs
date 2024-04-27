@@ -24,12 +24,12 @@ namespace build {
 
 
     [BinarySchema]
-    public partial class StructArraySequenceWrapper : IBinaryConvertible {
+    public partial class ClassArraySequenceWrapper : IBinaryConvertible {
       [SequenceLengthSource(SchemaIntegerType.BYTE)]
       public SchemaClass[] Values { get; set; }
 
       public override bool Equals(object other) {
-        if (other is StructArraySequenceWrapper otherSequenceWrapper) {
+        if (other is ClassArraySequenceWrapper otherSequenceWrapper) {
           return this.Values.SequenceEqual(otherSequenceWrapper.Values);
         }
 
@@ -39,7 +39,7 @@ namespace build {
 
     [Test]
     public void TestWriteAndReadArrayObject() {
-      var expectedSw = new StructArraySequenceWrapper {
+      var expectedSw = new ClassArraySequenceWrapper {
           Values = new[]
           {
               new SchemaClass { Value = 1 },
@@ -58,13 +58,13 @@ namespace build {
 
       var er = new SchemaBinaryReader(ms, endianness);
       er.Position = 0;
-      var actualSws = er.ReadNew<StructArraySequenceWrapper>();
+      var actualSws = er.ReadNew<ClassArraySequenceWrapper>();
       Assert.AreEqual(expectedSw, actualSws);
     }
 
     [Test]
     public void TestWriteAndReadArrayValues() {
-      var expectedSw = new StructArraySequenceWrapper {
+      var expectedSw = new ClassArraySequenceWrapper {
         Values = new[]
         {
           new SchemaClass { Value = 1 },
@@ -89,13 +89,13 @@ namespace build {
 
 
     [BinarySchema]
-    public partial class StructListSequenceWrapper : IBinaryConvertible
+    public partial class ClassListSequenceWrapper : IBinaryConvertible
     {
       [SequenceLengthSource(SchemaIntegerType.BYTE)]
       public List<SchemaClass> Values { get; set; } = new();
 
       public override bool Equals(object other) {
-        if (other is StructListSequenceWrapper otherSequenceWrapper) {
+        if (other is ClassListSequenceWrapper otherSequenceWrapper) {
           return this.Values.SequenceEqual(otherSequenceWrapper.Values);
         }
 
@@ -105,7 +105,7 @@ namespace build {
 
     [Test]
     public void TestWriteAndReadListObject() {
-      var expectedSw = new StructListSequenceWrapper {
+      var expectedSw = new ClassListSequenceWrapper {
           Values = new List<SchemaClass>
           {
               new() { Value = 1 },
@@ -124,7 +124,7 @@ namespace build {
 
       ms.Position = 0;
       var er = new SchemaBinaryReader(ms, endianness);
-      var actualSw = er.ReadNew<StructListSequenceWrapper>();
+      var actualSw = er.ReadNew<ClassListSequenceWrapper>();
       Assert.AreEqual(expectedSw, actualSw);
     }
   }
