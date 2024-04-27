@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 
 namespace schema.util.symbols {
-  public static class TypeSymbolUtil {
+  public static class TypeSymbolExtensions {
     public static bool IsArray(this ITypeSymbol typeSymbol,
                                out ITypeSymbol elementTypeSymbol) {
       if (typeSymbol is IArrayTypeSymbol arrayTypeSymbol) {
