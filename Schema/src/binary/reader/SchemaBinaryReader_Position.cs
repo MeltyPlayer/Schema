@@ -35,7 +35,7 @@ namespace schema.binary {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AssertNotEof() {
       if (this.Eof) {
-        throw new Exception(
+        throw new SchemaAssertionException(
             $"Attempted to read past the end of the stream: position '{this.Position}' of stream length '{this.Length}'");
       }
     }

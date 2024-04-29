@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
+using schema.util.asserts;
+
 
 namespace schema.binary {
   public sealed partial class SchemaBinaryReader {
@@ -18,10 +20,13 @@ namespace schema.binary {
       try {
         value = this.ReadNew<T>();
         return true;
-      } catch {
+      } catch (SchemaAssertionException) {
         this.Position = originalPosition;
         value = default;
         return false;
+      } catch {
+        this.Position = originalPosition;
+        throw;
       }
     }
 

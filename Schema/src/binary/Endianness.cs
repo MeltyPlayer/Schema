@@ -26,6 +26,15 @@ namespace schema.binary {
       => BitConverter.IsLittleEndian
           ? Endianness.LittleEndian
           : Endianness.BigEndian;
+
+    public static bool MatchesSystem(this Endianness endianness)
+      => endianness == SystemEndianness;
+
+    public static Endianness GetOpposite(this Endianness endianness)
+      => endianness switch {
+          Endianness.BigEndian    => Endianness.LittleEndian,
+          Endianness.LittleEndian => Endianness.BigEndian,
+      };
   }
 
   public interface IEndiannessStack {
@@ -52,7 +61,8 @@ namespace schema.binary {
 
     public Endianness Endianness {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      get => this.endiannessStack_.Peek()?.Item2 ?? EndiannessUtil.SystemEndianness;
+      get => this.endiannessStack_.Peek()?.Item2 ??
+             EndiannessUtil.SystemEndianness;
     }
 
     public bool IsOppositeEndiannessOfSystem { get; private set; }
@@ -89,10 +99,8 @@ namespace schema.binary {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void UpdateReverse_() {
-      IsOppositeEndiannessOfSystem =
-          this.Endianness != EndiannessUtil.SystemEndianness;
-    }
+    private void UpdateReverse_()
+      => IsOppositeEndiannessOfSystem = !this.Endianness.MatchesSystem();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static (EndiannessSource, Endianness)? PickSuperior_(

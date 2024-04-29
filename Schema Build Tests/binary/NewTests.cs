@@ -21,7 +21,18 @@ namespace schema.binary {
       Assert.AreEqual(123456, successful.Value);
     }
 
-    private class BinarySchemaThatWillFail : IBinaryDeserializable {
+    [Test]
+    public void TestTryReadNewFailsDueToEofError() {
+      using var br = SchemaMemoryStream.From(Array.Empty<byte>())
+                                       .GetBinaryReader();
+      Assert.False(
+          br.TryReadNew<BinarySchemaThatWillSucceed>(out var successful));
+      Assert.AreEqual(0, br.Position);
+      Assert.Null(successful);
+    }
+
+    private class BinarySchemaThatWillFailWithNonSchemaError
+        : IBinaryDeserializable {
       public void Read(IBinaryReader br) {
         br.ReadByte();
         throw new Exception();
@@ -29,12 +40,13 @@ namespace schema.binary {
     }
 
     [Test]
-    public void TestTryReadNewFails() {
+    public void TestTryReadNewFailsDueToNonSchemaError() {
       using var br = SchemaMemoryStream.From([123456]).GetBinaryReader();
-      Assert.False(
-          br.TryReadNew<BinarySchemaThatWillFail>(out var successful));
+      Assert.Throws<Exception>(
+          () => {
+            br.TryReadNew<BinarySchemaThatWillFailWithNonSchemaError>(out _);
+          });
       Assert.AreEqual(0, br.Position);
-      Assert.Null(successful);
     }
   }
 }
