@@ -37,17 +37,7 @@ namespace schema.util.streams {
     public void Write(ReadOnlySpan<byte> src) => impl.Write(src);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Write(IReadableStream readableStream) {
-      if (readableStream is ReadableStream readableStreamImpl) {
-        readableStreamImpl.Impl.CopyTo(impl);
-        return;
-      }
-
-      Span<byte> buffer = stackalloc byte[DEFAULT_COPY_BUFFER_SIZE];
-      int bytesRead;
-      while ((bytesRead = readableStream.Read(buffer)) != 0) {
-        impl.Write(buffer.Slice(0, bytesRead));
-      }
-    }
+    public void Write(IReadableStream readableStream)
+      => impl.WriteImpl(readableStream);
   }
 }
