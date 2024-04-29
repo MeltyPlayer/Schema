@@ -10,6 +10,9 @@ using schema.util.streams;
 namespace schema.testing {
   public class SchemaMemoryStream(MemoryStream impl)
       : ISeekableReadableStream, ISeekableWritableStream {
+    public static SchemaMemoryStream From<T>(T[] src) where T : unmanaged
+      => From((ReadOnlySpan<T>) src);
+
     public static unsafe SchemaMemoryStream From<T>(ReadOnlySpan<T> src)
         where T : unmanaged {
       var size = sizeof(T);
