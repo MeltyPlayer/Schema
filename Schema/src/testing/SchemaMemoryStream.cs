@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 
 using CommunityToolkit.HighPerformance;
 
@@ -9,13 +10,21 @@ using schema.util.streams;
 namespace schema.testing {
   public class SchemaMemoryStream(MemoryStream impl)
       : ISeekableReadableStream, ISeekableWritableStream {
-    public static unsafe SchemaMemoryStream From<T>(T[] src)
+    public static unsafe SchemaMemoryStream From<T>(ReadOnlySpan<T> src)
         where T : unmanaged {
       var size = sizeof(T);
       var data = new byte[size * src.Length];
-      src.AsSpan().AsBytes().CopyTo(data);
+      src.AsBytes().CopyTo(data);
 
       var ms = new MemoryStream(data);
+      return new SchemaMemoryStream(ms);
+    }
+
+    public static SchemaMemoryStream From(string src)
+      => From(src, Encoding.ASCII);
+
+    public static SchemaMemoryStream From(string src, Encoding encoding) {
+      var ms = new MemoryStream(encoding.GetBytes(src));
       return new SchemaMemoryStream(ms);
     }
 
