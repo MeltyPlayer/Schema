@@ -50,7 +50,7 @@ namespace schema.testing {
     public void Write(ReadOnlySpan<byte> src) => impl.Write(src);
 
     public void Write(IReadableStream readableStream)
-      => impl.WriteImpl(readableStream);
+      => readableStream.CopyTo(impl);
 
     public Endianness Endianness => EndiannessUtil.SystemEndianness;
   }
