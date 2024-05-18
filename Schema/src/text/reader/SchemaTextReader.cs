@@ -4,7 +4,7 @@ using System.IO;
 using schema.util.streams;
 
 namespace schema.text.reader {
-  public sealed partial class SchemaTextReader : ITextReader, IDisposable {
+  public sealed partial class SchemaTextReader : ITextReader {
     private readonly ISeekableReadableStream baseStream_;
 
     public SchemaTextReader(Stream baseStream, int tabWidth = 4)

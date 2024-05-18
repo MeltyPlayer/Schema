@@ -23,7 +23,7 @@ namespace schema.util.streams {
 
   public interface IReadableStream : IDisposable {
     byte ReadByte();
-    int Read(Span<byte> dst);
+    int TryToReadIntoBuffer(Span<byte> dst);
   }
 
   public interface IWritableStream : IDisposable {

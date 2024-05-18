@@ -58,14 +58,14 @@ namespace schema.binary {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FillBuffer<T>(Span<T> buffer) where T : unmanaged
-      => this.BaseStream.Read(buffer.AsBytes());
+      => this.BaseStream.TryToReadIntoBuffer(buffer.AsBytes());
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public unsafe void FillBufferAndReverse<T>(Span<T> buffer)
         where T : unmanaged {
       var bSpan = buffer.AsBytes();
-      this.BaseStream.Read(bSpan);
+      this.BaseStream.TryToReadIntoBuffer(bSpan);
 
       var sizeOf = sizeof(T);
       this.reverserImpl_.ReverseElements(bSpan, sizeOf);
@@ -75,7 +75,7 @@ namespace schema.binary {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FillBuffer(Span<byte> buffer, int? optStride = null) {
       var stride = optStride ?? buffer.Length;
-      this.BaseStream.Read(buffer);
+      this.BaseStream.TryToReadIntoBuffer(buffer);
       this.reverserImpl_.ReverseElements(buffer, stride);
     }
 
@@ -90,7 +90,7 @@ namespace schema.binary {
     public void Read<T>(out T val) where T : unmanaged {
       val = default;
       var bSpan = UnsafeUtil.AsSpan(ref val).AsBytes();
-      this.BaseStream.Read(bSpan);
+      this.BaseStream.TryToReadIntoBuffer(bSpan);
       this.reverserImpl_.Reverse(bSpan);
     }
 

@@ -2,11 +2,14 @@
 using System.Text;
 
 using schema.binary.attributes;
+using schema.util.streams;
 
 namespace schema.binary {
-  public interface IBinaryReader : IDataReader,
-                                   IEndiannessStack,
-                                   ILocalSpaceStack {
+  public interface IBinaryReader
+      : IDataReader,
+        IEndiannessStack,
+        ILocalSpaceStack,
+        IReadableStream {
     void Close();
 
     void AssertPosition(long expectedPosition);
@@ -29,6 +32,7 @@ namespace schema.binary {
                    int len,
                    Func<IBinaryReader, T> subread);
 
+    new byte ReadByte();
 
     byte[] ReadBytes(long count);
     void ReadBytes(Span<byte> dst);

@@ -37,7 +37,7 @@ namespace schema.testing {
     public void Dispose() => impl.Dispose();
 
     public byte ReadByte() => (byte) impl.ReadByte();
-    public int Read(Span<byte> dst) => impl.Read(dst);
+    public int TryToReadIntoBuffer(Span<byte> dst) => impl.Read(dst);
 
     public long Position {
       get => impl.Position;

@@ -5,9 +5,7 @@ using System.Runtime.CompilerServices;
 using schema.util.streams;
 
 namespace schema.binary {
-  public sealed partial class SchemaBinaryReader
-      : IBinaryReader,
-        IDisposable {
+  public sealed partial class SchemaBinaryReader : IBinaryReader {
     private bool disposed_;
 
     private readonly EndianBinaryBufferedStream bufferedStream_;
@@ -74,5 +72,8 @@ namespace schema.binary {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void FillBuffer_(long count, int? optStride = null)
       => this.bufferedStream_.FillBuffer(count, optStride);
+
+    public int TryToReadIntoBuffer(Span<byte> dst)
+      => this.BaseStream_.TryToReadIntoBuffer(dst);
   }
 }

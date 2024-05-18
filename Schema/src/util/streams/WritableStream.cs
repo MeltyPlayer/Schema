@@ -16,6 +16,7 @@ namespace schema.util.streams {
 
     public static implicit operator WritableStream(Stream impl) => new(impl);
 
+    internal Stream Impl => impl;
     public void Dispose() => impl.Dispose();
 
     public long Position {

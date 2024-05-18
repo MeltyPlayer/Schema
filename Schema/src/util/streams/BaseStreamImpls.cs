@@ -24,7 +24,7 @@ namespace schema.util.streams {
 
       Span<byte> buffer = stackalloc byte[DEFAULT_COPY_BUFFER_SIZE];
       int bytesRead;
-      while ((bytesRead = readableStream.Read(buffer)) != 0) {
+      while ((bytesRead = readableStream.TryToReadIntoBuffer(buffer)) != 0) {
         impl.Write(buffer.Slice(0, bytesRead));
       }
     }

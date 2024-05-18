@@ -38,6 +38,6 @@ namespace schema.util.streams {
     public byte ReadByte() => (byte) this.Impl.ReadByte();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int Read(Span<byte> dst) => this.Impl.Read(dst);
+    public int TryToReadIntoBuffer(Span<byte> dst) => this.Impl.Read(dst);
   }
 }

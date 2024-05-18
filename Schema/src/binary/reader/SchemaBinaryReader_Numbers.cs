@@ -10,6 +10,13 @@ namespace schema.binary {
     public void AssertByte(byte expectedValue)
       => SchemaBinaryReader.Assert_(expectedValue, this.ReadByte());
 
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    byte IDataReader.ReadByte() => this.ReadByte();
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    byte IReadableStream.ReadByte() => this.ReadByte();
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte ReadByte() => this.bufferedStream_.BaseStream.ReadByte();
 
@@ -22,7 +29,7 @@ namespace schema.binary {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadBytes(Span<byte> dst)
-      => this.bufferedStream_.BaseStream.Read(dst);
+      => this.bufferedStream_.BaseStream.TryToReadIntoBuffer(dst);
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

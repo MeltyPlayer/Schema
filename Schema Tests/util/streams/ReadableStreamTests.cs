@@ -54,7 +54,7 @@ namespace schema.util.streams {
 
       Span<byte> span = stackalloc byte[5];
 
-      Assert.AreEqual(3, rs.Read(span));
+      Assert.AreEqual(3, rs.TryToReadIntoBuffer(span));
       Assert.AreEqual(3, ms.Position);
       Assert.AreEqual(3, rs.Position);
 

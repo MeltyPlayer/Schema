@@ -51,7 +51,7 @@ namespace schema.util.streams {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int Read(Span<byte> dst) {
+    public int TryToReadIntoBuffer(Span<byte> dst) {
       var startOffset = this.Position;
       Asserts.True(this.offset_ <= startOffset,
                    "Attempted to read before the start of the substream!");
@@ -59,7 +59,7 @@ namespace schema.util.streams {
       var maxLength = Math.Min(dst.Length,
                                this.offset_ + this.length_ - startOffset);
 
-      return this.impl_.Read(dst.Slice(0, Convert.ToInt32(maxLength)));
+      return this.impl_.TryToReadIntoBuffer(dst.Slice(0, Convert.ToInt32(maxLength)));
     }
 
     public long Position {
