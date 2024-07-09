@@ -35,7 +35,8 @@
 
   <ItemGroup>
     <!-- Generator dependencies -->
-    <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.2.0" GeneratePathProperty="true" PrivateAssets="all" />
+    <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.2.2" GeneratePathProperty="true" PrivateAssets="all" />
+    <PackageReference Include="Tedd.BitUtils" Version="1.0.7" />
   </ItemGroup>
 
   <PropertyGroup>

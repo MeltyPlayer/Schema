@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
 
 using CommunityToolkit.HighPerformance;
 
 using schema.src.util;
 using schema.util.streams;
+
+using Tedd;
 
 namespace schema.binary {
   public interface ISpanElementReverser {
@@ -15,9 +18,33 @@ namespace schema.binary {
   public class SpanElementReverser : ISpanElementReverser {
     public void Reverse(Span<byte> span) => span.Reverse();
 
-    public void ReverseElements(Span<byte> span, int stride) {
-      for (var i = 0; i < span.Length; i += stride) {
-        span.Slice(i, stride).Reverse();
+    public void ReverseElements(Span<byte> bytes, int stride) {
+      if (stride == 2) {
+        var shorts = bytes.Cast<byte, short>();
+        for (var i = 0; i < shorts.Length; ++i) {
+          shorts[i].ReverseEndianness();
+        }
+        return;
+      }
+
+      if (stride == 4) {
+        var ints = bytes.Cast<byte, int>();
+        for (var i = 0; i < ints.Length; ++i) {
+          ints[i].ReverseEndianness();
+        }
+        return;
+      }
+
+      if (stride == 8) {
+        var longs = bytes.Cast<byte, long>();
+        for (var i = 0; i < longs.Length; ++i) {
+          longs[i].ReverseEndianness();
+        }
+        return;
+      }
+
+      for (var i = 0; i < bytes.Length; i += stride) {
+        bytes.Slice(i, stride).Reverse();
       }
     }
   }
