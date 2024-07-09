@@ -142,7 +142,7 @@ namespace schema.util.symbols {
             $"{sourceSymbol.GetQualifiedNameFromCurrentSymbol(elementType, null, convertName, getNamespaceParts)}[]";
       }
 
-      if (referencedSymbol.IsNullable(out _)) {
+      if (referencedSymbol.IsNullable(out var nullableType)) {
         if (referencedSymbol.IsType(typeof(Nullable<>))) {
           var referencedNamedTypeSymbol
               = Asserts.AsA<INamedTypeSymbol>(referencedSymbol);
@@ -151,6 +151,9 @@ namespace schema.util.symbols {
 
           return
               $"{sourceSymbol.GetQualifiedNameFromCurrentSymbol(typeArgument, typeParameter, convertName, getNamespaceParts)}?";
+        } else {
+          return
+              $"{sourceSymbol.GetQualifiedNameFromCurrentSymbol(nullableType, null, convertName, getNamespaceParts)}?";
         }
       }
 

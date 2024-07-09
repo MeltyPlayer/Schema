@@ -29,7 +29,8 @@ namespace schema.util.symbols {
       }
 
       if (typeSymbol.NullableAnnotation == NullableAnnotation.Annotated) {
-        nullableType = typeSymbol.OriginalDefinition;
+        nullableType
+            = typeSymbol.WithNullableAnnotation(NullableAnnotation.None);
         return true;
       }
 
@@ -45,5 +46,8 @@ namespace schema.util.symbols {
         baseType = baseType.BaseType;
       }
     }
+
+    public static ITypeSymbol AsNonNullable(this ITypeSymbol symbol)
+      => symbol.IsNullable(out var nullableType) ? nullableType : symbol;
   }
 }

@@ -15,6 +15,10 @@ namespace foo.bar {
     [IfBoolean(SchemaIntegerType.BYTE)]
     public A? ImmediateValue { get; set; }
 
+    [IfBoolean(SchemaIntegerType.BYTE)]
+    [SequenceLengthSource(4)]
+    public A[]? NullableArray { get; set; }
+
     [IntegerFormat(SchemaIntegerType.BYTE)]
     private bool Field { get; set; }
 
@@ -25,7 +29,9 @@ namespace foo.bar {
   public class A : IBinaryConvertible { }
 }",
                                      @"using System;
+using System.Collections.Generic;
 using schema.binary;
+using schema.util.sequences;
 
 namespace foo.bar {
   public partial class ByteWrapper {
@@ -37,6 +43,18 @@ namespace foo.bar {
         }
         else {
           this.ImmediateValue = null;
+        }
+      }
+      {
+        var b = br.ReadByte() != 0;
+        if (b) {
+          this.NullableArray = SequencesUtil.CloneAndResizeSequence(this.NullableArray, 4);
+          foreach (var e in this.NullableArray) {
+            e.Read(br);
+          }
+        }
+        else {
+          this.NullableArray = null;
         }
       }
       this.Field = br.ReadByte() != 0;
@@ -58,6 +76,12 @@ namespace foo.bar {
     public void Write(IBinaryWriter bw) {
       bw.WriteByte((byte) (this.ImmediateValue != null ? 1 : 0));
       this.ImmediateValue?.Write(bw);
+      bw.WriteByte((byte) (this.NullableArray != null ? 1 : 0));
+      if (this.NullableArray != null) {
+        foreach (var e in this.NullableArray) {
+          e.Write(bw);
+        }
+      }
       bw.WriteByte((byte) (this.Field ? 1 : 0));
       if (this.OtherValue != null) {
         bw.WriteInt32(this.OtherValue.Value);

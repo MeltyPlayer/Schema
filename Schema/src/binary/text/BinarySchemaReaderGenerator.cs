@@ -119,16 +119,16 @@ namespace schema.binary.text {
         var readBlockPrefix = "";
         if (nullValue != null) {
           sw.EnterBlock($"if (this.{offset.OffsetName.Name} == {nullValue})")
-              .WriteLine($"this.{member.Name} = null;")
-              .ExitBlock();
+            .WriteLine($"this.{member.Name} = null;")
+            .ExitBlock();
 
           readBlockPrefix = "else";
         }
 
         sw.EnterBlock(readBlockPrefix)
-            .WriteLine($"var tempLocation = {READER}.Position;")
-            .WriteLine(
-                $"{READER}.Position = this.{offset.OffsetName.Name};");
+          .WriteLine($"var tempLocation = {READER}.Position;")
+          .WriteLine(
+              $"{READER}.Position = this.{offset.OffsetName.Name};");
       }
 
       var ifBoolean = member.IfBoolean;
@@ -145,8 +145,8 @@ namespace schema.binary.text {
           var booleanPrimitiveLabel =
               SchemaGeneratorUtil.GetPrimitiveLabel(booleanPrimitiveType);
           sw.WriteLine(
-                  $"var b = {READER}.Read{booleanPrimitiveLabel}() != 0;")
-              .EnterBlock("if (b)");
+                $"var b = {READER}.Read{booleanPrimitiveLabel}() != 0;")
+            .EnterBlock("if (b)");
         } else {
           sw.EnterBlock($"if (this.{ifBoolean.OtherMember.Name})");
         }
@@ -158,7 +158,7 @@ namespace schema.binary.text {
                     .MUTABLE_ARRAY
             }) {
           sw.WriteLine(
-              $"this.{member.Name} = new {sourceSymbol.GetQualifiedNameFromCurrentSymbol(member.MemberType.TypeSymbol)}();");
+              $"this.{member.Name} = new {sourceSymbol.GetQualifiedNameFromCurrentSymbol(member.MemberType.TypeSymbol.AsNonNullable())}();");
         }
       }
 
@@ -198,9 +198,9 @@ namespace schema.binary.text {
 
       if (ifBoolean != null) {
         sw.ExitBlock()
-            .EnterBlock("else")
-            .WriteLine($"this.{member.Name} = null;")
-            .ExitBlock();
+          .EnterBlock("else")
+          .WriteLine($"this.{member.Name} = null;")
+          .ExitBlock();
         if (immediateIfBoolean) {
           sw.ExitBlock();
         }
@@ -208,7 +208,7 @@ namespace schema.binary.text {
 
       if (offset != null) {
         sw.WriteLine($"{READER}.Position = tempLocation;")
-            .ExitBlock();
+          .ExitBlock();
       }
     }
 
@@ -328,10 +328,10 @@ namespace schema.binary.text {
                   SchemaGeneratorUtil.GetIntLabel(
                       stringType.ImmediateLengthType);
               sw.EnterBlock()
-                  .WriteLine($"var l = {READER}.Read{readType}();")
-                  .WriteLine(
-                      $"this.{member.Name} = {READER}.{readMethod}({encodingTypeWithComma}l);")
-                  .ExitBlock();
+                .WriteLine($"var l = {READER}.Read{readType}();")
+                .WriteLine(
+                    $"this.{member.Name} = {READER}.{readMethod}({encodingTypeWithComma}l);")
+                .ExitBlock();
               return;
             }
 
@@ -368,7 +368,7 @@ namespace schema.binary.text {
             var qualifiedTypeName =
                 SymbolTypeUtil.GetQualifiedNameFromCurrentSymbol(
                     sourceSymbol,
-                    containerMemberType.TypeSymbol);
+                    containerMemberType.TypeSymbol.AsNonNullable());
 
             if (isNullable) {
               sw.WriteLine(
@@ -378,10 +378,10 @@ namespace schema.binary.text {
                 sw.WriteLine($"this.{memberName}.Read({READER});");
               } else {
                 sw.EnterBlock()
-                    .WriteLine($"var value = this.{memberName};")
-                    .WriteLine($"value.Read({READER});")
-                    .WriteLine($"this.{memberName} = value;")
-                    .ExitBlock();
+                  .WriteLine($"var value = this.{memberName};")
+                  .WriteLine($"value.Read({READER});")
+                  .WriteLine($"this.{memberName} = value;")
+                  .ExitBlock();
               }
             }
           });
@@ -426,12 +426,12 @@ namespace schema.binary.text {
                   $"{memberAccessor} = {READER}.Read{label}s({readCountAccessor});");
             } else {
               sw.WriteLine(
-                      $"{memberAccessor} = new {qualifiedElementName}[{readCountAccessor}];")
-                  .EnterBlock(
-                      $"for (var i = 0; i < {memberAccessor}.Length; ++i)")
-                  .WriteLine(
-                      $"{memberAccessor}[i] = {GetReadPrimitiveText_(sourceSymbol, primitiveElementType)};")
-                  .ExitBlock();
+                    $"{memberAccessor} = new {qualifiedElementName}[{readCountAccessor}];")
+                .EnterBlock(
+                    $"for (var i = 0; i < {memberAccessor}.Length; ++i)")
+                .WriteLine(
+                    $"{memberAccessor}[i] = {GetReadPrimitiveText_(sourceSymbol, primitiveElementType)};")
+                .ExitBlock();
             }
 
             return;
@@ -463,7 +463,10 @@ namespace schema.binary.text {
                   $"{target}.Add({GetReadPrimitiveText_(sourceSymbol, primitiveElementType)});");
             } else if
                 (elementType is IContainerMemberType containerElementType) {
-              sw.WriteLine($"var e = new {qualifiedElementName}();");
+              sw.WriteLine(
+                  $"var e = new {SymbolTypeUtil.GetQualifiedNameFromCurrentSymbol(
+                      sourceSymbol,
+                      arrayType.ElementType.TypeSymbol.AsNonNullable())}();");
 
               if (containerElementType.IsChild) {
                 sw.WriteLine("e.Parent = this;");
@@ -512,7 +515,7 @@ namespace schema.binary.text {
           var readType = SchemaGeneratorUtil.GetIntLabel(
               arrayType.ImmediateLengthType);
           sw.EnterBlock()
-              .WriteLine($"var {lengthName} = {READER}.Read{readType}();");
+            .WriteLine($"var {lengthName} = {READER}.Read{readType}();");
         }
 
         var inPlace =
@@ -585,18 +588,18 @@ namespace schema.binary.text {
                 var arrayLengthName = sequenceTypeInfo.LengthName;
 
                 sw.EnterBlock(
-                        $"for (var i = 0; i < this.{member.Name}.{arrayLengthName}; ++i)")
-                    .WriteLine(
-                        $"this.{member.Name}[i] = {GetReadPrimitiveText_(sourceSymbol, primitiveElementType)};")
-                    .ExitBlock();
+                      $"for (var i = 0; i < this.{member.Name}.{arrayLengthName}; ++i)")
+                  .WriteLine(
+                      $"this.{member.Name}[i] = {GetReadPrimitiveText_(sourceSymbol, primitiveElementType)};")
+                  .ExitBlock();
               } else {
                 sw.EnterBlock(
-                        $"foreach (var e in this.{member.Name})")
-                    .WriteLine(
-                        $"{GetAssertPrimitiveText_(
-                            primitiveElementType,
-                            "e")};")
-                    .ExitBlock();
+                      $"foreach (var e in this.{member.Name})")
+                  .WriteLine(
+                      $"{GetAssertPrimitiveText_(
+                          primitiveElementType,
+                          "e")};")
+                  .ExitBlock();
               }
 
               return;
