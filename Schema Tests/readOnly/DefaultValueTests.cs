@@ -27,6 +27,7 @@ namespace schema.readOnly {
                 void IReadOnlyWrapper.Foo(bool? value) => Foo(value);
               }
               
+              #nullable enable
               public interface IReadOnlyWrapper {
                 public void Foo(bool? value = {{boolValue}});
               }
@@ -59,6 +60,7 @@ namespace schema.readOnly {
                 void IReadOnlyWrapper.Foo(int? value) => Foo(value);
               }
               
+              #nullable enable
               public interface IReadOnlyWrapper {
                 public void Foo(int? value = {{intValue}});
               }
@@ -97,6 +99,7 @@ namespace schema.readOnly {
                 void IReadOnlyWrapper.Foo(other.SomeType? value) => Foo(value);
               }
               
+              #nullable enable
               public interface IReadOnlyWrapper {
                 public void Foo(other.SomeType? value = {{readonlyValue}});
               }

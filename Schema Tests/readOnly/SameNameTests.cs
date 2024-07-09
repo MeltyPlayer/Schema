@@ -23,6 +23,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial interface ISameName : IReadOnlySameName;
             
+            #nullable enable
             public interface IReadOnlySameName;
           }
 
@@ -31,6 +32,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial interface ISameName<T> : IReadOnlySameName<T>;
             
+            #nullable enable
             public interface IReadOnlySameName<out T> : IReadOnlySameName;
           }
 

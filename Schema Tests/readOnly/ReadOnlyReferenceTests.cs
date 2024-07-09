@@ -27,6 +27,7 @@ namespace schema.readOnly {
           namespace foo.bar.other {
             public partial interface IOther : IReadOnlyOther;
             
+            #nullable enable
             public interface IReadOnlyOther;
           }
 
@@ -37,6 +38,7 @@ namespace schema.readOnly {
               other.IReadOnlyOther IReadOnlyWrapper.Field => Field;
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper {
               public other.IReadOnlyOther Field { get; }
             }
@@ -68,6 +70,7 @@ namespace schema.readOnly {
           namespace foo.bar.other {
             public partial interface IOther : IReadOnlyOther;
             
+            #nullable enable
             public interface IReadOnlyOther;
           }
 
@@ -78,6 +81,7 @@ namespace schema.readOnly {
               other.IReadOnlyOther? IReadOnlyWrapper.Field => Field;
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper {
               public other.IReadOnlyOther? Field { get; }
             }
@@ -110,6 +114,7 @@ namespace schema.readOnly {
           namespace foo.bar.other {
             public partial interface IOther : IReadOnlyOther;
             
+            #nullable enable
             public interface IReadOnlyOther;
           }
 
@@ -120,6 +125,7 @@ namespace schema.readOnly {
               System.Collections.Generic.IEnumerable<other.IReadOnlyOther> IReadOnlyWrapper.Field => Field;
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper {
               public System.Collections.Generic.IEnumerable<other.IReadOnlyOther> Field { get; }
             }
@@ -151,6 +157,7 @@ namespace schema.readOnly {
           namespace foo.bar.other {
             public partial interface IOther : IReadOnlyOther;
             
+            #nullable enable
             public interface IReadOnlyOther;
           }
 
@@ -161,6 +168,7 @@ namespace schema.readOnly {
               (other.IReadOnlyOther, int) IReadOnlyWrapper.Field => Field;
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper {
               public (other.IReadOnlyOther, int) Field { get; }
             }
@@ -190,6 +198,7 @@ namespace schema.readOnly {
           namespace foo.bar.other {
             public partial interface IOther : IReadOnlyOther;
             
+            #nullable enable
             public interface IReadOnlyOther;
           }
 
@@ -198,6 +207,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial interface IWrapper<T> : IReadOnlyWrapper<T>;
             
+            #nullable enable
             public interface IReadOnlyWrapper<out T> where T : other.IReadOnlyOther;
           }
 
@@ -228,6 +238,7 @@ namespace schema.readOnly {
           namespace foo.bar.other {
             public partial interface IOther : IReadOnlyOther;
             
+            #nullable enable
             public interface IReadOnlyOther;
           }
 
@@ -238,6 +249,7 @@ namespace schema.readOnly {
               void IReadOnlyWrapper.Foo<T>() => Foo<T>();
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper {
               public void Foo<T>() where T : other.IReadOnlyOther;
             }
@@ -270,6 +282,7 @@ namespace schema.readOnly {
             public partial class Parent {
               public partial interface IOther : IReadOnlyOther;
               
+              #nullable enable
               public interface IReadOnlyOther;
             }
           }
@@ -281,6 +294,7 @@ namespace schema.readOnly {
               Parent.IReadOnlyOther IReadOnlyWrapper.Field => Field;
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper {
               public Parent.IReadOnlyOther Field { get; }
             }
@@ -318,6 +332,7 @@ namespace schema.readOnly {
           namespace foo.bar.wrong {
             public partial interface IOther : IReadOnlyOther;
             
+            #nullable enable
             public interface IReadOnlyOther;
           }
 
@@ -326,6 +341,7 @@ namespace schema.readOnly {
           namespace foo.bar.correct {
             public partial interface IOther<T> : IReadOnlyOther<T>;
             
+            #nullable enable
             public interface IReadOnlyOther<out T> : foo.bar.wrong.IReadOnlyOther;
           }
 
@@ -336,6 +352,7 @@ namespace schema.readOnly {
               correct.IReadOnlyOther<T> IReadOnlyWrapper<T>.Field => Field;
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper<T> {
               public correct.IReadOnlyOther<T> Field { get; }
             }
@@ -372,6 +389,7 @@ namespace schema.readOnly {
           namespace foo.bar.correct {
             public partial interface IOther : IReadOnlyOther;
             
+            #nullable enable
             public interface IReadOnlyOther;
           }
 
@@ -382,6 +400,7 @@ namespace schema.readOnly {
               correct.IReadOnlyOther IReadOnlyWrapper.Field => Field;
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper {
               public correct.IReadOnlyOther Field { get; }
             }

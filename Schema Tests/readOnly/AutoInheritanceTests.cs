@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿
+using NUnit.Framework;
 
 using schema.binary;
 
@@ -20,6 +21,7 @@ namespace schema.readOnly {
             namespace foo.bar {
               public partial interface IGenericWrapper<T> : IReadOnlyGenericWrapper<T>;
               
+              #nullable enable
               public interface IReadOnlyGenericWrapper<out T> : {{knownBase}};
             }
 
@@ -45,6 +47,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial class AlreadyConstWrapper<T> : IReadOnlyAlreadyConstWrapper<T>;
             
+            #nullable enable
             public interface IReadOnlyAlreadyConstWrapper<out T> : IAlreadyConst where T : notnull;
           }
 
@@ -70,6 +73,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial class AlreadyConstWrapper : IReadOnlyAlreadyConstWrapper;
             
+            #nullable enable
             public interface IReadOnlyAlreadyConstWrapper : IAlreadyConst;
           }
 
@@ -102,6 +106,7 @@ namespace schema.readOnly {
             public partial class Parent {
               public partial class AlreadyConstWrapper : IReadOnlyAlreadyConstWrapper;
               
+              #nullable enable
               public interface IReadOnlyAlreadyConstWrapper : foo.bar.place1.OtherParent.IAlreadyConst;
             }
           }
@@ -127,6 +132,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial interface IBase : IReadOnlyBase;
             
+            #nullable enable
             public interface IReadOnlyBase;
           }
 
@@ -135,6 +141,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial interface IChild : IReadOnlyChild;
             
+            #nullable enable
             public interface IReadOnlyChild : IReadOnlyBase;
           }
 
@@ -172,6 +179,7 @@ namespace schema.readOnly {
                 bool IReadOnlyBase.Foo => Foo;
               }
               
+              #nullable enable
               public interface IReadOnlyBase {
                 public bool Foo { get; }
               }
@@ -186,6 +194,7 @@ namespace schema.readOnly {
                 bool IReadOnlyChild.Value => Value;
               }
               
+              #nullable enable
               public interface IReadOnlyChild : other.OtherParent.IReadOnlyBase {
                 public bool Value { get; }
               }
@@ -216,6 +225,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial interface IBase1<T> : IReadOnlyBase1<T>;
             
+            #nullable enable
             public interface IReadOnlyBase1<out T>;
           }
 
@@ -224,6 +234,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial interface IBase2<T> : IReadOnlyBase2<T>;
             
+            #nullable enable
             public interface IReadOnlyBase2<out T>;
           }
 
@@ -232,6 +243,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial interface IChild<T1, T2> : IReadOnlyChild<T1, T2>;
             
+            #nullable enable
             public interface IReadOnlyChild<T1, T2> : IReadOnlyBase1<T1>, IReadOnlyBase2<T2>;
           }
 

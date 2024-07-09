@@ -38,6 +38,7 @@ namespace schema.readOnly {
                 {{readOnly}} IReadOnlyWrapper.Convert({{mutable}} value) => {{(needsToCast ? $"({readOnly})(object) " : "")}}Convert(value);
               }
               
+              #nullable enable
               public interface IReadOnlyWrapper {
                 public {{readOnly}} Property { get; }
                 public {{readOnly}} Convert({{mutable}} value);
@@ -70,6 +71,7 @@ namespace schema.readOnly {
                 {{mutable}} IReadOnlyWrapper.Property => Property;
               }
               
+              #nullable enable
               public interface IReadOnlyWrapper {
                 public {{mutable}} Property { get; }
               }
@@ -102,6 +104,7 @@ namespace schema.readOnly {
                 {{mutable}} IReadOnlyWrapper.Convert({{mutable}} value) => Convert(value);
               }
               
+              #nullable enable
               public interface IReadOnlyWrapper {
                 public {{mutable}} Convert({{mutable}} value);
               }

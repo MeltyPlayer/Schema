@@ -21,6 +21,7 @@ namespace schema.readOnly {
             namespace foo.bar {
               public partial interface IWrapper<{{variance}} T> : IReadOnlyWrapper<T>;
               
+              #nullable enable
               public interface IReadOnlyWrapper<{{variance}} T>;
             }
 
@@ -64,6 +65,7 @@ namespace schema.readOnly {
               IBase<T> IReadOnlyWrapper<T>.GetSequence() => GetSequence();
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper<out T> : IBase<T> {
               public T Field { get; }
               public System.Collections.Generic.IEnumerable<T> Sequence { get; }
@@ -110,6 +112,7 @@ namespace schema.readOnly {
               void IReadOnlyWrapper<T>.SetSequence(IBase<T> foo) => SetSequence(foo);
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper<in T> : IBase<T> {
               public void SetField(T foo);
               public void SetSequence(IBase<T> foo);
@@ -139,6 +142,7 @@ namespace schema.readOnly {
               T IReadOnlyWrapper<T>.Method(T value) => Method(value);
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper<T> {
               public T Method(T value);
             }
@@ -172,6 +176,7 @@ namespace schema.readOnly {
               void IReadOnlyWrapper<T>.Method(IValue<T> foo) => Method(foo);
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper<T> {
               public void Method(IValue<T> foo);
             }
@@ -204,6 +209,7 @@ namespace schema.readOnly {
               IValue<T> IReadOnlyWrapper<T>.Property => Property;
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper<T> {
               public IValue<T> Property { get; }
             }
@@ -233,6 +239,7 @@ namespace schema.readOnly {
               void IReadOnlyWrapper<T>.Method(System.Collections.Generic.ISet<T> foo) => Method(foo);
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper<T> {
               public void Method(System.Collections.Generic.ISet<T> foo);
             }
@@ -260,6 +267,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial interface ISubTypeDictionary<T1, T2> : IReadOnlySubTypeDictionary<T1, T2>;
             
+            #nullable enable
             public interface IReadOnlySubTypeDictionary<T1, in T2> : IFinCollection<T2> where T2 : T1;
           }
 
@@ -289,6 +297,7 @@ namespace schema.readOnly {
               TValueSub IReadOnlySubTypeDictionary<TKey, TValue>.Get<TValueSub>(TKey key) => Get<TValueSub>(key);
             }
             
+            #nullable enable
             public interface IReadOnlySubTypeDictionary<TKey, TValue> : IFinCollection<(TKey Key, TValue Value)> {
               public TValueSub Get<TValueSub>(TKey key) where TValueSub : TValue;
             }

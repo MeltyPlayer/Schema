@@ -19,6 +19,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial interface IWrapper<T> : IReadOnlyWrapper<T>;
             
+            #nullable enable
             public interface IReadOnlyWrapper<out T> where T : schema.readOnly.IReadOnlyValue;
           }
 
@@ -40,6 +41,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial interface IWrapper<T> : IReadOnlyWrapper<T>;
             
+            #nullable enable
             public interface IReadOnlyWrapper<out T> where T : schema.readOnly.IValue;
           }
 
@@ -64,6 +66,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial interface IBase<T1, T2> : IReadOnlyBase<T1, T2>;
             
+            #nullable enable
             public interface IReadOnlyBase<out T1, out T2> where T1 : schema.readOnly.IValue where T2 : schema.readOnly.IReadOnlyValue;
           }
 
@@ -72,6 +75,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial interface IChild : IReadOnlyChild;
             
+            #nullable enable
             public interface IReadOnlyChild : IReadOnlyBase<schema.readOnly.IValue, schema.readOnly.IReadOnlyValue>;
           }
 
@@ -98,6 +102,7 @@ namespace schema.readOnly {
               void IReadOnlyWrapper.Foo<T>() => Foo<T>();
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper {
               public void Foo<T>() where T : schema.readOnly.IReadOnlyValue;
             }
@@ -126,6 +131,7 @@ namespace schema.readOnly {
               void IReadOnlyWrapper.Foo<T>() => Foo<T>();
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper {
               public void Foo<T>() where T : schema.readOnly.IValue;
             }
@@ -154,6 +160,7 @@ namespace schema.readOnly {
               schema.readOnly.IReadOnlyValue IReadOnlyWrapper.Foo() => Foo();
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper {
               public schema.readOnly.IReadOnlyValue Foo();
             }
@@ -182,6 +189,7 @@ namespace schema.readOnly {
               schema.readOnly.IValue IReadOnlyWrapper.Foo() => Foo();
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper {
               public schema.readOnly.IValue Foo();
             }
@@ -210,6 +218,7 @@ namespace schema.readOnly {
               void IReadOnlyWrapper.Foo(schema.readOnly.IValue value) => Foo(value);
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper {
               public void Foo(schema.readOnly.IValue value);
             }
@@ -238,6 +247,7 @@ namespace schema.readOnly {
               void IReadOnlyWrapper.Foo(schema.readOnly.IValue value) => Foo(value);
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper {
               public void Foo(schema.readOnly.IValue value);
             }
@@ -266,6 +276,7 @@ namespace schema.readOnly {
               int IReadOnlyWrapper.this[schema.readOnly.IValue value] => this[value];
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper {
               public int this[schema.readOnly.IValue value] { get; }
             }
@@ -294,6 +305,7 @@ namespace schema.readOnly {
               int IReadOnlyWrapper.this[schema.readOnly.IValue value] => this[value];
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper {
               public int this[schema.readOnly.IValue value] { get; }
             }
@@ -321,6 +333,7 @@ namespace schema.readOnly {
               schema.readOnly.IReadOnlyValue IReadOnlyWrapper.Foo => Foo;
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper {
               public schema.readOnly.IReadOnlyValue Foo { get; }
             }
@@ -348,6 +361,7 @@ namespace schema.readOnly {
               schema.readOnly.IValue IReadOnlyWrapper.Foo => Foo;
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper {
               public schema.readOnly.IValue Foo { get; }
             }
@@ -372,6 +386,7 @@ namespace schema.readOnly {
           namespace foo.bar {
             public partial interface IWrapper : IReadOnlyWrapper;
             
+            #nullable enable
             public interface IReadOnlyWrapper : System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue>;
           }
 
@@ -399,6 +414,7 @@ namespace schema.readOnly {
               System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue> IReadOnlyWrapper.Foo() => (System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue>)(object) Foo();
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper {
               public System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue> Foo();
             }
@@ -428,6 +444,7 @@ namespace schema.readOnly {
               System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue> IReadOnlyWrapper.Foo => (System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue>)(object) Foo;
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper {
               public System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue> Foo { get; }
             }
@@ -457,6 +474,7 @@ namespace schema.readOnly {
               System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue> IReadOnlyWrapper.this[int foo] => (System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue>)(object) this[foo];
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper {
               public System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue> this[int foo] { get; }
             }
@@ -486,6 +504,7 @@ namespace schema.readOnly {
               void IReadOnlyWrapper.this[System.Collections.Generic.IEnumerable<schema.readOnly.IValue> foo] => this[foo];
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper {
               public void this[System.Collections.Generic.IEnumerable<schema.readOnly.IValue> foo] { get; }
             }
@@ -515,6 +534,7 @@ namespace schema.readOnly {
               void IReadOnlyWrapper.Foo(System.Collections.Generic.IEnumerable<schema.readOnly.IValue> foo) => Foo(foo);
             }
             
+            #nullable enable
             public interface IReadOnlyWrapper {
               public void Foo(System.Collections.Generic.IEnumerable<schema.readOnly.IValue> foo);
             }

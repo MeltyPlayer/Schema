@@ -119,6 +119,7 @@ namespace schema.readOnly {
 
             // Interface
             {
+              sw.WriteLine("#nullable enable");
               sw.Write(
                   SymbolTypeUtil.AccessibilityToModifier(
                       typeSymbol.DeclaredAccessibility));
