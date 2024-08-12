@@ -1,5 +1,6 @@
 ﻿using System;
 
+
 namespace schema.text.reader {
   public sealed partial class SchemaTextReader {
     public bool Matches(out char match, ReadOnlySpan<char> matches) {

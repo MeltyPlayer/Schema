@@ -40,21 +40,21 @@ namespace schema.binary {
                    })
                    .Select(t => t.Parent?.Parent as AttributeSyntax)
                    .Select(attributeSyntax => {
-                             var attributeListSyntax
-                                 = Asserts.AsA<AttributeListSyntax>(
-                                     attributeSyntax.Parent);
-                             var declarationSyntax
-                                 = Asserts.AsA<TypeDeclarationSyntax>(
-                                     attributeListSyntax.Parent);
+                     var attributeListSyntax
+                         = Asserts.AsA<AttributeListSyntax>(
+                             attributeSyntax.Parent);
+                     var declarationSyntax
+                         = Asserts.AsA<TypeDeclarationSyntax>(
+                             attributeListSyntax.Parent);
 
-                             var symbol
-                                 = semanticModel
-                                     .GetDeclaredSymbol(declarationSyntax);
-                             var namedTypeSymbol
-                                 = symbol as INamedTypeSymbol;
+                     var symbol
+                         = semanticModel
+                             .GetDeclaredSymbol(declarationSyntax);
+                     var namedTypeSymbol
+                         = symbol as INamedTypeSymbol;
 
-                             return (namedTypeSymbol, declarationSyntax);
-                           })
+                     return (namedTypeSymbol, declarationSyntax);
+                   })
                    .Select(symbolAndSyntax
                                => new ReadOnlyTypeGenerator()
                                   .GenerateSourceForNamedType(

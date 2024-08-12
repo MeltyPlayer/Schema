@@ -3,6 +3,7 @@
 using schema.binary;
 using schema.binary.attributes;
 
+
 namespace build.attributes.sequence {
   public partial class RSequenceLengthSourceAttributeTests {
     [BinarySchema]

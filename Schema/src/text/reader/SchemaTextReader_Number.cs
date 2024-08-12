@@ -3,6 +3,7 @@ using System.Linq;
 
 using schema.util.asserts;
 
+
 namespace schema.text.reader {
   public sealed partial class SchemaTextReader {
     public void AssertByte(byte expectedValue)
@@ -80,11 +81,11 @@ namespace schema.text.reader {
         digitMatches_;
 
     private static readonly char[] negativeIntegerMatches_ =
-        positiveIntegerMatches_.Concat(new[] { '-' }).ToArray();
+        positiveIntegerMatches_.Concat(new[] {'-'}).ToArray();
 
 
     private static readonly char[] floatMatches_ =
-        negativeIntegerMatches_.Concat(new[] { '.' }).ToArray();
+        negativeIntegerMatches_.Concat(new[] {'.'}).ToArray();
 
     private string ReadPositiveIntegerChars_()
       => this.ReadMatchingNonWhitespaceChars_(

@@ -1,5 +1,6 @@
 ﻿using schema.binary.attributes;
 
+
 namespace schema.binary.types.data {
   /// <summary>
   ///   Schema class that implements a uint32-sized section without needing to

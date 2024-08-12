@@ -11,7 +11,7 @@ namespace schema.binary.attributes {
                                     IMemberType memberType) {
       var lengthOfStringAttributes =
           memberBetterSymbol.GetAttributes<WLengthOfStringAttribute>()
-                      .ToArray();
+                            .ToArray();
       if (lengthOfStringAttributes.Length == 0) {
         return;
       }

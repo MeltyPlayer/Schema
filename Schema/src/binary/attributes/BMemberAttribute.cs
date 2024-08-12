@@ -7,6 +7,7 @@ using schema.util.asserts;
 using schema.util.diagnostics;
 using schema.util.symbols;
 
+
 namespace schema.binary.attributes {
   public abstract class BMemberAttribute<T> : BMemberAttribute {
     protected override void SetMemberFromName(string memberName) {

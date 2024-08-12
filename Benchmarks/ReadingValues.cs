@@ -5,6 +5,7 @@ using BenchmarkDotNet.Attributes;
 
 using schema.binary;
 
+
 namespace benchmarks {
   [MemoryDiagnoser]
   public class ReadingValues {

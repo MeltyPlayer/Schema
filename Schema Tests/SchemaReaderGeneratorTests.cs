@@ -1,9 +1,10 @@
 using NUnit.Framework;
 
+
 namespace schema.binary.text {
   public class SchemaReaderGeneratorTests {
     [SetUp]
-    public void Setup() {}
+    public void Setup() { }
 
     [Test]
     public void TestByte() {
@@ -385,7 +386,8 @@ namespace foo.bar {
       var structure = BinarySchemaTestUtil.ParseFirst(src);
       Assert.IsEmpty(structure.Diagnostics);
 
-      var actualGenerated = new BinarySchemaReaderGenerator().Generate(structure);
+      var actualGenerated =
+          new BinarySchemaReaderGenerator().Generate(structure);
       Assert.AreEqual(expectedGenerated, actualGenerated.ReplaceLineEndings());
     }
   }

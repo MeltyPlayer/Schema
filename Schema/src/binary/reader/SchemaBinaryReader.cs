@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 
 using schema.util.streams;
 
+
 namespace schema.binary {
   public sealed partial class SchemaBinaryReader : IBinaryReader {
     private bool disposed_;

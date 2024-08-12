@@ -17,7 +17,7 @@ namespace foo.bar {
   }
 }");
       BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
-                                       Rules.IfBooleanNeedsNullable);
+                                             Rules.IfBooleanNeedsNullable);
     }
 
     [Test]
@@ -38,7 +38,7 @@ namespace foo.bar {
   }
 }");
       BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
-                                       Rules.IfBooleanNeedsNullable);
+                                             Rules.IfBooleanNeedsNullable);
     }
 
     [Test]
@@ -60,7 +60,8 @@ namespace foo.bar {
   public class A : IBinaryConvertible { }
 }");
       BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
-                                       Rules.DependentMustComeAfterSource);
+                                             Rules
+                                                 .DependentMustComeAfterSource);
     }
 
     [Test]
@@ -82,7 +83,7 @@ namespace foo.bar {
   public class A : IBinaryConvertible { }
 }");
       BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
-                                       Rules.SourceMustBePrivate);
+                                             Rules.SourceMustBePrivate);
     }
 
     [Test]
@@ -104,7 +105,7 @@ namespace foo.bar {
   public class A : IBinaryConvertible { }
 }");
       BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
-                                       Rules.SourceMustBePrivate);
+                                             Rules.SourceMustBePrivate);
     }
 
     [Test]
@@ -126,7 +127,7 @@ namespace foo.bar {
   public class A : IBinaryConvertible { }
 }");
       BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
-                                       Rules.SourceMustBePrivate);
+                                             Rules.SourceMustBePrivate);
     }
 
     [Test]
@@ -148,7 +149,7 @@ namespace foo.bar {
   public class A : IBinaryConvertible { }
 }");
       BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
-                                       Rules.SourceMustBePrivate);
+                                             Rules.SourceMustBePrivate);
     }
 
     [Test]
@@ -170,7 +171,7 @@ namespace foo.bar {
   public class A : IBinaryConvertible { }
 }");
       BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
-                                       Rules.SourceMustBePrivate);
+                                             Rules.SourceMustBePrivate);
     }
 
     [Test]
@@ -192,7 +193,7 @@ namespace foo.bar {
   public class A : IBinaryConvertible { }
 }");
       BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
-                                       Rules.SourceMustBePrivate);
+                                             Rules.SourceMustBePrivate);
     }
   }
 }

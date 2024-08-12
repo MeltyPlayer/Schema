@@ -1,5 +1,6 @@
 ﻿using schema.binary.text;
 
+
 namespace schema.binary {
   public static class SchemaTypeExtensions {
     public static string GetTypeName(this SchemaNumberType type)

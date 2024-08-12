@@ -3,6 +3,7 @@ using System.IO;
 
 using CommunityToolkit.HighPerformance;
 
+
 namespace schema.util.text {
   public interface ISourceWriter : IDisposable {
     ISourceWriter Write(string text);

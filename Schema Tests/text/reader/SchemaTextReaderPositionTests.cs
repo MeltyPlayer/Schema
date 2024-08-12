@@ -86,7 +86,7 @@ namespace schema.text.reader {
 
       using var tr = TextSchemaTestUtil.CreateTextReader("abc\n\t1\t23\nfoo");
 
-      
+
       Assert.AreEqual(0, tr.Position);
       Assert.AreEqual(0, tr.LineNumber);
       Assert.AreEqual(0, tr.IndexInLine);

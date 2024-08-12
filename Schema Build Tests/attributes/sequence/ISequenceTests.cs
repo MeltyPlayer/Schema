@@ -7,7 +7,6 @@ using NUnit.Framework;
 
 using schema.binary;
 using schema.binary.attributes;
-
 using schema.util.enumerables;
 using schema.util.sequences;
 
@@ -32,8 +31,8 @@ namespace build {
     public void TestWriteAndRead1() {
       var expectedSw = new MutableSequenceWrapper1();
       expectedSw.Sequence.AddRange(
-          new[] { 1, 2, 3, 4, 5, 9, 8, 7, 6 }
-              .Select(value => new IntWrapper { Value = value }));
+          new[] {1, 2, 3, 4, 5, 9, 8, 7, 6}
+              .Select(value => new IntWrapper {Value = value}));
 
       var ms = new MemoryStream();
 
@@ -75,8 +74,8 @@ namespace build {
     public void TestWriteAndRead2() {
       var expectedSw = new MutableSequenceWrapper2();
       expectedSw.Sequence.AddRange(
-          new[] { 1, 2, 3, 4, 5, 9, 8, 7, 6 }
-              .Select(value => new IntWrapper { Value = value }));
+          new[] {1, 2, 3, 4, 5, 9, 8, 7, 6}
+              .Select(value => new IntWrapper {Value = value}));
 
       var ms = new MemoryStream();
 

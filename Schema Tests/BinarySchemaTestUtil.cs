@@ -31,7 +31,7 @@ namespace schema.binary {
     public static IReadOnlyList<IBinarySchemaContainer> ParseAll(string src) {
       var syntaxTree = CSharpSyntaxTree.ParseText(src);
       var compilation = BinarySchemaTestUtil.Compilation.Clone()
-          .AddSyntaxTrees(syntaxTree);
+                                            .AddSyntaxTrees(syntaxTree);
 
       new BinarySchemaGenerator().PreprocessCompilation(compilation);
 
@@ -40,53 +40,55 @@ namespace schema.binary {
       var structures = syntaxTree
                        .GetRoot()
                        .DescendantTokens()
-                       .Where(t => t is { Text: "BinarySchema", Parent.Parent: AttributeSyntax })
+                       .Where(t => t is {
+                           Text: "BinarySchema", Parent.Parent: AttributeSyntax
+                       })
                        .Select(t => t.Parent?.Parent as AttributeSyntax)
                        .Select(attributeSyntax => {
-                                 var attributeSpan = attributeSyntax!.FullSpan;
+                         var attributeSpan = attributeSyntax!.FullSpan;
 
-                                 var classIndex =
-                                     src.IndexOf("class",
-                                                 attributeSpan.Start +
-                                                 attributeSpan.Length);
-                                 var classNameIndex
-                                     = src.IndexOf(' ', classIndex) + 1;
-                                 var classNameLength =
-                                     src.IndexOf(' ', classNameIndex) -
-                                     classNameIndex;
+                         var classIndex =
+                             src.IndexOf("class",
+                                         attributeSpan.Start +
+                                         attributeSpan.Length);
+                         var classNameIndex
+                             = src.IndexOf(' ', classIndex) + 1;
+                         var classNameLength =
+                             src.IndexOf(' ', classNameIndex) -
+                             classNameIndex;
 
-                                 var typeName =
-                                     src.Substring(
-                                         classNameIndex,
-                                         classNameLength);
-                                 var angleBracketIndex = typeName.IndexOf('<');
-                                 if (angleBracketIndex > -1) {
-                                   typeName
-                                       = typeName.Substring(
-                                           0,
-                                           angleBracketIndex);
-                                 }
+                         var typeName =
+                             src.Substring(
+                                 classNameIndex,
+                                 classNameLength);
+                         var angleBracketIndex = typeName.IndexOf('<');
+                         if (angleBracketIndex > -1) {
+                           typeName
+                               = typeName.Substring(
+                                   0,
+                                   angleBracketIndex);
+                         }
 
-                                 var typeNode = syntaxTree.GetRoot()
-                                     .DescendantTokens()
-                                     .Single(t =>
-                                                 t.Text ==
-                                                 typeName &&
-                                                 t.Parent is
-                                                     ClassDeclarationSyntax
-                                                     or StructDeclarationSyntax
-                                     )
-                                     .Parent;
+                         var typeNode = syntaxTree.GetRoot()
+                                                  .DescendantTokens()
+                                                  .Single(t =>
+                                                      t.Text ==
+                                                      typeName &&
+                                                      t.Parent is
+                                                          ClassDeclarationSyntax
+                                                          or StructDeclarationSyntax
+                                                  )
+                                                  .Parent;
 
-                                 var symbol
-                                     = semanticModel
-                                         .GetDeclaredSymbol(typeNode);
-                                 var namedTypeSymbol
-                                     = symbol as INamedTypeSymbol;
+                         var symbol
+                             = semanticModel
+                                 .GetDeclaredSymbol(typeNode);
+                         var namedTypeSymbol
+                             = symbol as INamedTypeSymbol;
 
-                                 return new BinarySchemaContainerParser()
-                                     .ParseContainer(namedTypeSymbol);
-                               })
+                         return new BinarySchemaContainerParser()
+                             .ParseContainer(namedTypeSymbol);
+                       })
                        .ToArray();
 
       var structureByNamedTypeSymbol =

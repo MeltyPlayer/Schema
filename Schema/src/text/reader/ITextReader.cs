@@ -1,5 +1,6 @@
 ﻿using System;
 
+
 namespace schema.text.reader {
   public interface ITextReader : ITextStream, IDataReader {
     void AdvanceIfTrue(Func<ITextReader, bool> handler);

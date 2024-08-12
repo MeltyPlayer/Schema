@@ -5,6 +5,7 @@ using NUnit.Framework;
 using schema.binary;
 using schema.binary.attributes;
 
+
 namespace build {
   public partial class StringLengthSourceTests {
     [BinarySchema]
@@ -37,8 +38,7 @@ namespace build {
     [Test]
     public void TestWriteAndReadMultiple() {
       var expectedSw = new MultipleStringWrapper {
-          String1 = "holy",
-          String2 = "moly",
+          String1 = "holy", String2 = "moly",
       };
 
       var ms = new MemoryStream();

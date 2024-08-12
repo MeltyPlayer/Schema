@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis;
 
 using schema.util.enumerables;
 
+
 namespace schema.util.symbols {
   public static class ComparisonExtensions {
     public static bool IsSameAs(this ISymbol symbol, ISymbol other)

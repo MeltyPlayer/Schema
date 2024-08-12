@@ -7,6 +7,7 @@ using NUnit.Framework;
 using schema.binary;
 using schema.binary.attributes;
 
+
 namespace build {
   public partial class StructSequenceTests {
     [BinarySchema]
@@ -41,9 +42,9 @@ namespace build {
     public void TestWriteAndReadArrayObject() {
       var expectedSw = new StructArraySequenceWrapper {
           Values = new[] {
-              new SchemaStruct { Value = 1 },
-              new SchemaStruct { Value = 2 },
-              new SchemaStruct { Value = 3 }
+              new SchemaStruct {Value = 1},
+              new SchemaStruct {Value = 2},
+              new SchemaStruct {Value = 3}
           }
       };
 
@@ -65,9 +66,9 @@ namespace build {
     public void TestWriteAndReadArrayValues() {
       var expectedSw = new StructArraySequenceWrapper {
           Values = new[] {
-              new SchemaStruct { Value = 1 },
-              new SchemaStruct { Value = 2 },
-              new SchemaStruct { Value = 3 }
+              new SchemaStruct {Value = 1},
+              new SchemaStruct {Value = 2},
+              new SchemaStruct {Value = 3}
           }
       };
 
@@ -104,7 +105,7 @@ namespace build {
     public void TestWriteAndReadListObject() {
       var expectedSw = new StructListSequenceWrapper {
           Values = new List<SchemaStruct> {
-              new() { Value = 1 }, new() { Value = 2 }, new() { Value = 3 }
+              new() {Value = 1}, new() {Value = 2}, new() {Value = 3}
           }
       };
 

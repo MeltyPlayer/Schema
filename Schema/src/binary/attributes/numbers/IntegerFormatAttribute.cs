@@ -1,7 +1,7 @@
 ﻿using System;
 
-namespace schema.binary.attributes {
 
+namespace schema.binary.attributes {
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
   public class IntegerFormatAttribute : Attribute {
     public IntegerFormatAttribute(SchemaIntegerType integerType) {

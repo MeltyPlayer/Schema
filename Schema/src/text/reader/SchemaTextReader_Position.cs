@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
+
 namespace schema.text.reader {
   public partial class SchemaTextReader {
     public int TabWidth { get; } = 4;

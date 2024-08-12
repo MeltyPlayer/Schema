@@ -13,6 +13,7 @@ using schema.util.symbols;
 using schema.util.text;
 using schema.util.types;
 
+
 namespace schema.readOnly {
   [AttributeUsage(AttributeTargets.Class |
                   AttributeTargets.Interface |
@@ -63,35 +64,35 @@ namespace schema.readOnly {
                 = parser_
                   .ParseMembers(typeSymbol)
                   .Where(parsedMember => {
-                           var (parseStatus, memberSymbol, _, _) = parsedMember;
-                           if (parseStatus ==
-                               TypeInfoParser.ParseStatus
-                                             .NOT_A_FIELD_OR_PROPERTY_OR_METHOD) {
-                             return false;
-                           }
+                    var (parseStatus, memberSymbol, _, _) = parsedMember;
+                    if (parseStatus ==
+                        TypeInfoParser.ParseStatus
+                                      .NOT_A_FIELD_OR_PROPERTY_OR_METHOD) {
+                      return false;
+                    }
 
-                           if (memberSymbol.DeclaredAccessibility is not (
-                               Accessibility.Public
-                               or Accessibility.Internal)) {
-                             return false;
-                           }
+                    if (memberSymbol.DeclaredAccessibility is not (
+                        Accessibility.Public
+                        or Accessibility.Internal)) {
+                      return false;
+                    }
 
-                           if (memberSymbol is IFieldSymbol) {
-                             return false;
-                           }
+                    if (memberSymbol is IFieldSymbol) {
+                      return false;
+                    }
 
-                           if (memberSymbol is IPropertySymbol) {
-                             return false;
-                           }
+                    if (memberSymbol is IPropertySymbol) {
+                      return false;
+                    }
 
-                           if (memberSymbol is IMethodSymbol &&
-                               !memberSymbol.Name.StartsWith("get_") &&
-                               !memberSymbol.HasAttribute<ConstAttribute>()) {
-                             return false;
-                           }
+                    if (memberSymbol is IMethodSymbol &&
+                        !memberSymbol.Name.StartsWith("get_") &&
+                        !memberSymbol.HasAttribute<ConstAttribute>()) {
+                      return false;
+                    }
 
-                           return true;
-                         })
+                    return true;
+                  })
                   .Select(parsedMember => (IMethodSymbol) parsedMember.Item2)
                   .ToArray();
 
@@ -189,7 +190,7 @@ namespace schema.readOnly {
           continue;
         }
 
-        if (memberSymbol is IPropertySymbol { IsReadOnly: true }) {
+        if (memberSymbol is IPropertySymbol {IsReadOnly: true}) {
           continue;
         }
 
@@ -218,25 +219,25 @@ namespace schema.readOnly {
 
         if (interfaceName == null) {
           sw.Write(SymbolTypeUtil.AccessibilityToModifier(
-                         typeSymbol.DeclaredAccessibility))
-              .Write(" ");
+                       typeSymbol.DeclaredAccessibility))
+            .Write(" ");
         }
 
         IPropertySymbol? associatedPropertySymbol
             = memberSymbol.AssociatedSymbol as IPropertySymbol;
         sw.Write(
-                typeSymbol
-                    .GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
-                        memberTypeSymbol,
-                        semanticModel,
-                        syntax,
-                        (ISymbol?) associatedPropertySymbol ?? memberSymbol))
-            .Write(" ");
+              typeSymbol
+                  .GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
+                      memberTypeSymbol,
+                      semanticModel,
+                      syntax,
+                      (ISymbol?) associatedPropertySymbol ?? memberSymbol))
+          .Write(" ");
 
         if (interfaceName != null) {
           sw.Write(interfaceName)
-              .Write(typeSymbol.GetGenericParameters())
-              .Write(".");
+            .Write(typeSymbol.GetGenericParameters())
+            .Write(".");
         }
 
         // Property
@@ -257,13 +258,13 @@ namespace schema.readOnly {
 
               var parameterSymbol = indexerParameterSymbols[i];
               sw.Write(
-                      typeSymbol.GetQualifiedNameAndGenericsFromCurrentSymbol(
-                          parameterSymbol.Type,
-                          semanticModel,
-                          syntax,
-                          parameterSymbol))
-                  .Write(" ")
-                  .Write(parameterSymbol.Name.EscapeKeyword());
+                    typeSymbol.GetQualifiedNameAndGenericsFromCurrentSymbol(
+                        parameterSymbol.Type,
+                        semanticModel,
+                        syntax,
+                        parameterSymbol))
+                .Write(" ")
+                .Write(parameterSymbol.Name.EscapeKeyword());
             }
 
             sw.Write("]");
@@ -273,12 +274,12 @@ namespace schema.readOnly {
             sw.WriteLine(" { get; }");
           } else {
             sw.Write(" => ")
-                .Write(typeSymbol.GetCStyleCastToReadOnlyIfNeeded(
-                           associatedPropertySymbol,
-                           memberSymbol.ReturnType,
-                           semanticModel,
-                           syntax))
-                .Write(propertyAccessName);
+              .Write(typeSymbol.GetCStyleCastToReadOnlyIfNeeded(
+                         associatedPropertySymbol,
+                         memberSymbol.ReturnType,
+                         semanticModel,
+                         syntax))
+              .Write(propertyAccessName);
 
             if (isIndexer) {
               sw.Write("[");
@@ -302,7 +303,7 @@ namespace schema.readOnly {
           var accessName = memberSymbol.Name.EscapeKeyword();
           sw.Write(accessName);
           sw.Write(memberSymbol.TypeParameters
-                                 .GetGenericParameters());
+                               .GetGenericParameters());
           sw.Write("(");
 
           for (var i = 0; i < memberSymbol.Parameters.Length; ++i) {
@@ -321,13 +322,13 @@ namespace schema.readOnly {
             }
 
             sw.Write(
-                    typeSymbol.GetQualifiedNameAndGenericsFromCurrentSymbol(
-                        parameterSymbol.Type,
-                        semanticModel,
-                        syntax,
-                        parameterSymbol))
-                .Write(" ")
-                .Write(parameterSymbol.Name.EscapeKeyword());
+                  typeSymbol.GetQualifiedNameAndGenericsFromCurrentSymbol(
+                      parameterSymbol.Type,
+                      semanticModel,
+                      syntax,
+                      parameterSymbol))
+              .Write(" ")
+              .Write(parameterSymbol.Name.EscapeKeyword());
 
 
             if (interfaceName == null &&
@@ -367,23 +368,23 @@ namespace schema.readOnly {
 
           if (interfaceName == null) {
             sw.Write(typeSymbol.GetTypeConstraintsOrReadonly(
-                           memberSymbol.TypeParameters,
-                           semanticModel,
-                           syntax));
+                         memberSymbol.TypeParameters,
+                         semanticModel,
+                         syntax));
           }
 
           if (interfaceName == null) {
             sw.WriteLine(";");
           } else {
             sw.Write(" => ")
-                .Write(typeSymbol.GetCStyleCastToReadOnlyIfNeeded(
-                           memberSymbol,
-                           memberSymbol.ReturnType,
-                           semanticModel,
-                           syntax))
-                .Write(accessName)
-                .Write(memberSymbol.TypeParameters.GetGenericParameters())
-                .Write("(");
+              .Write(typeSymbol.GetCStyleCastToReadOnlyIfNeeded(
+                         memberSymbol,
+                         memberSymbol.ReturnType,
+                         semanticModel,
+                         syntax))
+              .Write(accessName)
+              .Write(memberSymbol.TypeParameters.GetGenericParameters())
+              .Write("(");
             for (var i = 0; i < memberSymbol.Parameters.Length; ++i) {
               if (i > 0) {
                 sw.Write(", ");

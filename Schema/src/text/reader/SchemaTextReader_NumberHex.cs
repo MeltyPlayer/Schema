@@ -3,6 +3,7 @@
 using schema.util;
 using schema.util.asserts;
 
+
 namespace schema.text.reader {
   public sealed partial class SchemaTextReader {
     public void AssertHexByte(byte expectedValue)
@@ -54,13 +55,13 @@ namespace schema.text.reader {
       => this.ConvertHexUInt64_(this.ReadHexChars_());
 
 
-    private static readonly string[] hexSpecifierMatches_ = { "0x", "0X" };
+    private static readonly string[] hexSpecifierMatches_ = {"0x", "0X"};
 
     private static readonly char[] hexMatches =
         digitMatches_
             .Concat(
-                new[] { 'a', 'b', 'c', 'd', 'e', 'f' }.SelectMany(
-                    c => new[] { char.ToLower(c), char.ToUpper(c) }))
+                new[] {'a', 'b', 'c', 'd', 'e', 'f'}.SelectMany(
+                    c => new[] {char.ToLower(c), char.ToUpper(c)}))
             .ToArray();
 
     private string ReadHexChars_() {

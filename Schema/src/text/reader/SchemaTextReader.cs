@@ -3,6 +3,7 @@ using System.IO;
 
 using schema.util.streams;
 
+
 namespace schema.text.reader {
   public sealed partial class SchemaTextReader : ITextReader {
     private readonly ISeekableReadableStream baseStream_;
@@ -10,7 +11,8 @@ namespace schema.text.reader {
     public SchemaTextReader(Stream baseStream, int tabWidth = 4)
         : this(new ReadableStream(baseStream), tabWidth) { }
 
-    public SchemaTextReader(ISeekableReadableStream baseStream, int tabWidth = 4) {
+    public SchemaTextReader(ISeekableReadableStream baseStream,
+                            int tabWidth = 4) {
       this.baseStream_ = baseStream;
       this.TabWidth = tabWidth;
     }

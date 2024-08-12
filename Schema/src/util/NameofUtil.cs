@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 
 using schema.util.symbols;
 
+
 namespace schema.util {
   public static class NameofUtil {
     private struct TypeAndNamespace {
@@ -16,7 +17,7 @@ namespace schema.util {
     public static string GetChainedAccessFromCallerArgumentExpression(
         string text)
       => NameofUtil.GetChainedAccessFromCallerArgumentExpression_(
-          new TypeAndNamespace { Defined = false },
+          new TypeAndNamespace {Defined = false},
           text);
 
     public static string GetChainedAccessFromCallerArgumentExpression(

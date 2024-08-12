@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using schema.util.asserts;
 using schema.util.streams;
 
+
 namespace schema.binary {
   public interface ILocalSpaceStack {
     void PushLocalSpace();

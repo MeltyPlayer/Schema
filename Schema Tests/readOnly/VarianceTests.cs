@@ -2,6 +2,7 @@
 
 using schema.binary;
 
+
 namespace schema.readOnly {
   internal class VarianceTests {
     [Test]

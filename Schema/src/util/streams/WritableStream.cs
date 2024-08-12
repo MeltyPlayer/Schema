@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 
 using CommunityToolkit.HighPerformance;
 
+
 namespace schema.util.streams {
   public class WritableStream(Stream impl) : ISeekableWritableStream {
     public static implicit operator WritableStream(Stream impl) => new(impl);

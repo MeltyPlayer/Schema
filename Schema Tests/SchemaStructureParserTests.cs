@@ -2,6 +2,7 @@ using Microsoft.CodeAnalysis;
 
 using NUnit.Framework;
 
+
 namespace schema.binary {
   public partial class SchemaStructureParserTests {
     [Test]
@@ -149,8 +150,10 @@ namespace foo.bar {
 
       var memberType = field.MemberType;
       var arrayType = (memberType as ISequenceMemberType)!;
-      Assert.AreEqual(SequenceType.MUTABLE_ARRAY, arrayType.SequenceTypeInfo.SequenceType);
-      Assert.AreEqual(SequenceLengthSourceType.READ_ONLY, arrayType.LengthSourceType);
+      Assert.AreEqual(SequenceType.MUTABLE_ARRAY,
+                      arrayType.SequenceTypeInfo.SequenceType);
+      Assert.AreEqual(SequenceLengthSourceType.READ_ONLY,
+                      arrayType.LengthSourceType);
 
       var primitiveType = (arrayType.ElementType as IPrimitiveMemberType)!;
       Assert.AreEqual(SchemaPrimitiveType.INT32, primitiveType.PrimitiveType);
@@ -176,8 +179,10 @@ namespace foo.bar {
 
       var memberType = field.MemberType;
       var arrayType = (memberType as ISequenceMemberType)!;
-      Assert.AreEqual(SequenceType.MUTABLE_ARRAY, arrayType.SequenceTypeInfo.SequenceType);
-      Assert.AreEqual(SequenceLengthSourceType.READ_ONLY, arrayType.LengthSourceType);
+      Assert.AreEqual(SequenceType.MUTABLE_ARRAY,
+                      arrayType.SequenceTypeInfo.SequenceType);
+      Assert.AreEqual(SequenceLengthSourceType.READ_ONLY,
+                      arrayType.LengthSourceType);
 
       var primitiveType = (arrayType.ElementType as IPrimitiveMemberType)!;
       Assert.AreEqual(SchemaPrimitiveType.CHAR, primitiveType.PrimitiveType);

@@ -1,5 +1,6 @@
 ﻿using schema.binary.attributes;
 
+
 namespace schema.binary.types.data {
   [BinarySchema]
   public partial class PassThruUInt32SizedSection<T> : ISizedSection<T>

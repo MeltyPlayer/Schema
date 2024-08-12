@@ -93,7 +93,7 @@ namespace schema.util.symbols {
            .Append(SymbolTypeUtil.AccessibilityToModifier(
                        typeSymbol.DeclaredAccessibility))
            .Append(" ")
-           .Append(typeSymbol is { IsAbstract: true, TypeKind: TypeKind.Class }
+           .Append(typeSymbol is {IsAbstract: true, TypeKind: TypeKind.Class}
                        ? "abstract "
                        : "")
            .Append("partial ")

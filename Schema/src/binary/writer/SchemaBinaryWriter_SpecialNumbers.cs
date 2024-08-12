@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 
 using CommunityToolkit.HighPerformance;
 
+
 namespace schema.binary {
   public sealed partial class SchemaBinaryWriter {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

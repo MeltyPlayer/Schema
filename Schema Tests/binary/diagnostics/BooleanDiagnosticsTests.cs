@@ -13,7 +13,7 @@ namespace foo.bar {
   }
 }");
       BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
-                                       Rules.BooleanNeedsIntegerFormat);
+                                             Rules.BooleanNeedsIntegerFormat);
     }
   }
 }

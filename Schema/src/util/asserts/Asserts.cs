@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
+
 namespace schema.util.asserts {
   public sealed class Asserts {
     /**
@@ -17,7 +18,7 @@ namespace schema.util.asserts {
         get {
           List<string> stackTrace = new List<string>();
           stackTrace.AddRange(base.StackTrace!.Split(
-                                  new string[] { Environment.NewLine },
+                                  new string[] {Environment.NewLine},
                                   StringSplitOptions.None));
 
           var assertLine = new Regex("\\s*Asserts\\.");

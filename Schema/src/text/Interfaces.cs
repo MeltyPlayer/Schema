@@ -1,6 +1,7 @@
 ﻿using schema.text.reader;
 using schema.text.writer;
 
+
 namespace schema.text {
   public interface ITextDeserializable {
     void Read(ITextReader tr);

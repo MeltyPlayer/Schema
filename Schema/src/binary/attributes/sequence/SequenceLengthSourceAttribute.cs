@@ -1,8 +1,10 @@
 ﻿using System;
 
+
 namespace schema.binary.attributes {
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-  public class SequenceLengthSourceAttribute : Attribute, ISequenceLengthSourceAttribute {
+  public class SequenceLengthSourceAttribute : Attribute,
+                                               ISequenceLengthSourceAttribute {
     /// <summary>
     ///   Parses an integer length with the given format immediately before the array.
     /// </summary>

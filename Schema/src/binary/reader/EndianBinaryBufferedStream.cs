@@ -9,6 +9,7 @@ using schema.util.streams;
 
 using Tedd;
 
+
 namespace schema.binary {
   public interface ISpanElementReverser {
     void Reverse(Span<byte> span);

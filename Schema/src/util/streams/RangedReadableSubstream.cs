@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 
 using schema.util.asserts;
 
+
 namespace schema.util.streams {
   /// <summary>
   /// Represents a substream of an underlying <see cref="Stream" />.
@@ -59,7 +60,8 @@ namespace schema.util.streams {
       var maxLength = Math.Min(dst.Length,
                                this.offset_ + this.length_ - startOffset);
 
-      return this.impl_.TryToReadIntoBuffer(dst.Slice(0, Convert.ToInt32(maxLength)));
+      return this.impl_.TryToReadIntoBuffer(
+          dst.Slice(0, Convert.ToInt32(maxLength)));
     }
 
     public long Position {

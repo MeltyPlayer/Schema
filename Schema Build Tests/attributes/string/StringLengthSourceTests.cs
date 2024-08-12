@@ -5,6 +5,7 @@ using NUnit.Framework;
 using schema.binary;
 using schema.binary.attributes;
 
+
 namespace build {
   public partial class StringLengthSourceTests {
     [BinarySchema]
@@ -33,8 +34,7 @@ namespace build {
     [Test]
     public void TestWriteAndRead() {
       var expectedSw = new StringWrapper {
-          TextWithByteLength = "foobar",
-          TextWithConstLength = "foob",
+          TextWithByteLength = "foobar", TextWithConstLength = "foob",
       };
 
       var ms = new MemoryStream();

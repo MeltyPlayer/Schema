@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 
+
 namespace schema.text.reader {
   public sealed partial class SchemaTextReader {
     public bool Matches(out string text, ReadOnlySpan<string> matches) {

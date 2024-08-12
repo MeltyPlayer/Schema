@@ -4,6 +4,7 @@ using System.Linq;
 
 using schema.util.enumerables;
 
+
 namespace schema.util.strings {
   public static class StringExtensions {
     public static IEnumerable<string> SplitViaChar(

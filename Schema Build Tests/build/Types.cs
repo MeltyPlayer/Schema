@@ -3,6 +3,7 @@
 using schema.binary;
 using schema.binary.attributes;
 
+
 namespace build {
   [BinarySchema]
   public partial class ClassWithInt16Bools : IBinaryConvertible {

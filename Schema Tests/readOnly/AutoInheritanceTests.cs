@@ -1,7 +1,7 @@
-﻿
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 using schema.binary;
+
 
 namespace schema.readOnly {
   internal class AutoInheritanceTests {

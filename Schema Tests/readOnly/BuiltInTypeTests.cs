@@ -2,6 +2,7 @@
 
 using schema.binary;
 
+
 namespace schema.readOnly {
   internal class BuiltInTypeTests {
     [Test]

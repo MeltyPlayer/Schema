@@ -14,6 +14,7 @@ using schema.util.diagnostics;
 using schema.util.symbols;
 using schema.util.types;
 
+
 namespace schema.binary {
   public interface IChain<out T> {
     T Root { get; }

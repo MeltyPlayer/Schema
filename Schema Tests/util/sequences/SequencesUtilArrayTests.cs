@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 
+
 namespace schema.util.sequences {
   public class SequencesUtilArrayTests {
     [Test]
@@ -12,29 +13,29 @@ namespace schema.util.sequences {
     [Test]
     public void TestResizeArrayOriginallyNull() {
       CollectionAssert.AreEqual(
-          new[] { 0, 0, 0 },
+          new[] {0, 0, 0},
           SequencesUtil.CloneAndResizeSequence((int[]?) null, 3));
     }
 
     [Test]
     public void TestResizeArrayGrowing() {
-      var inputList = new[] { 1, 2, 3 };
+      var inputList = new[] {1, 2, 3};
       CollectionAssert.AreEqual(
-          new[] { 1, 2, 3, 0 },
+          new[] {1, 2, 3, 0},
           SequencesUtil.CloneAndResizeSequence(inputList, 4));
     }
 
     [Test]
     public void TestResizeArrayShrinking() {
-      var inputList = new[] { 1, 2, 3 };
+      var inputList = new[] {1, 2, 3};
       CollectionAssert.AreEqual(
-          new[] { 1, 2, },
+          new[] {1, 2,},
           SequencesUtil.CloneAndResizeSequence(inputList, 2));
     }
 
     [Test]
     public void TestResizingArrayReturnsSameWhenLengthIsSame() {
-      var inputList = new[] { 1, 2, 3 };
+      var inputList = new[] {1, 2, 3};
       Assert.AreSame(inputList,
                      SequencesUtil.CloneAndResizeSequence(
                          inputList,

@@ -21,7 +21,7 @@ namespace build {
     [TestCase("Hello world!")]
     [TestCase("Multiple\nLines")]
     public async Task TestAscii(string text) {
-      var asciiWrapper = new AsciiWrapper { Text = text };
+      var asciiWrapper = new AsciiWrapper {Text = text};
       await BinarySchemaAssert.WritesAndReadsIdentically(asciiWrapper);
     }
 
@@ -39,7 +39,7 @@ namespace build {
     [TestCase("Multiple\nLines")]
     [TestCase("你好世界")]
     public async Task TestUtf8(string text) {
-      var utf8Wrapper = new Utf8Wrapper { Text = text };
+      var utf8Wrapper = new Utf8Wrapper {Text = text};
       await BinarySchemaAssert.WritesAndReadsIdentically(utf8Wrapper);
     }
 
@@ -62,7 +62,7 @@ namespace build {
     [TestCase("你好世界", Endianness.LittleEndian)]
     [TestCase("你好世界", Endianness.BigEndian)]
     public async Task TestUtf16(string text, Endianness endianness) {
-      var utf16Wrapper = new Utf16Wrapper { Text = text };
+      var utf16Wrapper = new Utf16Wrapper {Text = text};
       await BinarySchemaAssert.WritesAndReadsIdentically(
           utf16Wrapper,
           endianness);
@@ -82,7 +82,7 @@ namespace build {
     [TestCase("Multiple\nLines")]
     [TestCase("你好世界")]
     public async Task TestUtf32(string text) {
-      var utf32Wrapper = new Utf32Wrapper { Text = text };
+      var utf32Wrapper = new Utf32Wrapper {Text = text};
       await BinarySchemaAssert.WritesAndReadsIdentically(utf32Wrapper);
     }
   }

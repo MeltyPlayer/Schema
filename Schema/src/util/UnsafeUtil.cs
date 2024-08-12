@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
+
 namespace schema.src.util {
   public static class UnsafeUtil {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

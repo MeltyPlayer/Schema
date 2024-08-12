@@ -2,6 +2,7 @@
 
 using Microsoft.CodeAnalysis;
 
+
 namespace schema.util.symbols {
   public static class MemberSymbolUtil {
     public static bool IsPropertyGetter(this IMethodSymbol symbol,
@@ -18,7 +19,7 @@ namespace schema.util.symbols {
     public static bool IsIndexer(
         this IMethodSymbol symbol,
         out ImmutableArray<IParameterSymbol> parameterSymbols) {
-      if (symbol is { AssociatedSymbol.Name: "this[]" } methodSymbol) {
+      if (symbol is {AssociatedSymbol.Name: "this[]"} methodSymbol) {
         parameterSymbols = methodSymbol.Parameters;
         return true;
       }

@@ -26,8 +26,8 @@ namespace schema.text.reader {
     [Test]
     public void TestReadStrings() {
       using var tr = TextSchemaTestUtil.CreateTextReader("abc,,xyz, 123");
-      Assert.AreEqual(new[] { "abc", String.Empty, "xyz", " 123" },
-                      tr.ReadStrings(new[] { "," }, new[] { "\n" }));
+      Assert.AreEqual(new[] {"abc", String.Empty, "xyz", " 123"},
+                      tr.ReadStrings(new[] {","}, new[] {"\n"}));
     }
   }
 }

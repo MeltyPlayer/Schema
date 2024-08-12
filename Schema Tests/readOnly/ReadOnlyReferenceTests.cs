@@ -2,6 +2,7 @@
 
 using schema.binary;
 
+
 namespace schema.readOnly {
   internal class ReadOnlyReferenceTests {
     [Test]
@@ -97,7 +98,7 @@ namespace schema.readOnly {
           using schema.readOnly;
           using foo.bar.other;
           using System.Collections.Generic;
-          
+
           namespace foo.bar.other {
             [GenerateReadOnly]
             public partial interface IOther;
@@ -315,7 +316,7 @@ namespace schema.readOnly {
             [GenerateReadOnly]
             public partial interface IOther;
           }
-          
+
           namespace foo.bar.correct {
             [GenerateReadOnly]
             public partial interface IOther<T> : wrong.IOther;
@@ -368,7 +369,7 @@ namespace schema.readOnly {
           using schema.readOnly;
           using foo.bar.correct;
           using foo.bar.wrong;
-          
+
           namespace foo.bar.correct {
             public class Other;
           }

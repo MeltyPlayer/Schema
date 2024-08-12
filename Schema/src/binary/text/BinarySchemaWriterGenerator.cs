@@ -13,6 +13,7 @@ using schema.util.asserts;
 using schema.util.symbols;
 using schema.util.text;
 
+
 namespace schema.binary.text {
   public class BinarySchemaWriterGenerator {
     public const string WRITER = "bw";
@@ -24,7 +25,7 @@ namespace schema.binary.text {
       using var sw = new SourceWriter(new StringWriter(sb));
 
       {
-        var dependencies = new List<string> { "System", "schema.binary" };
+        var dependencies = new List<string> {"System", "schema.binary"};
 
         if (container.DependsOnSchemaAttributes()) {
           dependencies.Add("schema.binary.attributes");
@@ -230,7 +231,7 @@ namespace schema.binary.text {
 
               var lengthOfStringMembers =
                   primitiveMemberType.LengthOfStringMembers;
-              var isLengthOfString = lengthOfStringMembers is { Length: > 0 };
+              var isLengthOfString = lengthOfStringMembers is {Length: > 0};
               if (isLengthOfString) {
                 accessText = $"{lengthOfStringMembers[0].Name}.Length";
                 if (lengthOfStringMembers.Length > 1) {
@@ -242,7 +243,7 @@ namespace schema.binary.text {
               var lengthOfSequenceMembers =
                   primitiveMemberType.LengthOfSequenceMembers;
               var isLengthOfSequence = lengthOfSequenceMembers is
-                  { Length: > 0 };
+                  {Length: > 0};
               if (isLengthOfSequence) {
                 var first = lengthOfSequenceMembers[0];
                 var firstLengthName =
@@ -251,11 +252,11 @@ namespace schema.binary.text {
                 if (lengthOfSequenceMembers.Length > 1) {
                   sw.WriteLine(
                       $"Asserts.AllEqual({string.Join(", ", lengthOfSequenceMembers.Select(
-                          member => {
-                            var lengthName =
-                                (member.MemberTypeInfo as ISequenceTypeInfo).LengthName;
-                            return $"{member.Name}.{lengthName}";
-                          }))});");
+                            member => {
+                              var lengthName =
+                                  (member.MemberTypeInfo as ISequenceTypeInfo).LengthName;
+                              return $"{member.Name}.{lengthName}";
+                            }))});");
                 }
               }
 

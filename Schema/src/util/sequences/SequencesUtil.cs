@@ -5,6 +5,7 @@ using System.Linq;
 
 using schema.util.enumerables;
 
+
 namespace schema.util.sequences {
   public static class SequencesUtil {
     private static void AssertLengthNonnegative_(int length) {

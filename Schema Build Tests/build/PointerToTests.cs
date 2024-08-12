@@ -34,7 +34,7 @@ namespace build {
       parent.Write(bw);
 
       var bytes = await BinarySchemaAssert.GetEndianBinaryWriterBytes(bw);
-      CollectionAssert.AreEqual(new byte[] { 1, 12, 0, 0, 0 }, bytes);
+      CollectionAssert.AreEqual(new byte[] {1, 12, 0, 0, 0}, bytes);
     }
   }
 }

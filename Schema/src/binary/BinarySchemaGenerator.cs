@@ -12,6 +12,7 @@ using schema.util.symbols;
 using schema.util.syntax;
 using schema.util.types;
 
+
 namespace schema.binary {
   [Generator(LanguageNames.CSharp)]
   public class BinarySchemaGenerator

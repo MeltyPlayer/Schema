@@ -3,6 +3,7 @@ using System.IO;
 
 using BenchmarkDotNet.Attributes;
 
+
 namespace benchmarks {
   public class StringComparison {
     public const int w = 100;

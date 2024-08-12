@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 
 using schema.util.symbols;
 
+
 namespace schema.util.text {
   public static class SourceWriterSymbolExtensions {
     public static void WriteNamespaceAndParentTypeBlocks(

@@ -7,6 +7,7 @@ using schema.binary.attributes;
 using schema.util.asserts;
 using schema.util.symbols;
 
+
 namespace schema.binary.parser {
   internal static class MemberReferenceUtil {
     public static INamedTypeSymbol BinaryConvertibleTypeSymbol {

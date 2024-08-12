@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 
 using schema.util.diagnostics;
 
+
 namespace schema.util.symbols {
   internal interface IBetterSymbol : IDiagnosticReporter {
     ISymbol Symbol { get; }

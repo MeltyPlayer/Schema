@@ -2,6 +2,7 @@
 
 using schema.util.streams;
 
+
 namespace schema {
   public interface IDataReader : ISeekableStream {
     bool Eof { get; }
@@ -23,7 +24,7 @@ namespace schema {
 
     void AssertUInt32(uint expectedValue);
     uint ReadUInt32();
-    
+
     void AssertInt64(long expectedValue);
     long ReadInt64();
 

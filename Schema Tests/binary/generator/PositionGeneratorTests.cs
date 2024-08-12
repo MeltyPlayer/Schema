@@ -21,7 +21,7 @@ namespace foo.bar {
     public long ExpectedPosition { get; }
   }
 }",
-                                     @"using System;
+                                           @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -34,7 +34,7 @@ namespace foo.bar {
   }
 }
 ",
-                                     @"using System;
+                                           @"using System;
 using schema.binary;
 
 namespace foo.bar {

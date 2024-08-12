@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 
+
 namespace schema.text.reader {
   public sealed partial class SchemaTextReader {
     private byte ConvertByte_(string text) => byte.Parse(text);

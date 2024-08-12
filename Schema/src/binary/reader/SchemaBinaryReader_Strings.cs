@@ -5,6 +5,7 @@ using System.Text;
 using schema.binary.attributes;
 using schema.text.reader;
 
+
 namespace schema.binary {
   public sealed partial class SchemaBinaryReader {
     // ASCII Chars
@@ -88,7 +89,8 @@ namespace schema.binary {
       var decoder = encoding.GetDecoder();
       while (maxByteCount > 0) {
         this.Position = basePosition;
-        this.bufferedStream_.BaseStream.TryToReadIntoBuffer(buffer.Slice(0, maxByteCount));
+        this.bufferedStream_.BaseStream.TryToReadIntoBuffer(
+            buffer.Slice(0, maxByteCount));
 
         decoder.Convert(bufferPtr,
                         maxByteCount,

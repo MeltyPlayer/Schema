@@ -1,9 +1,10 @@
 ﻿using System;
 
+
 namespace schema.binary.attributes {
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
   public class RSequenceLengthSourceAttribute : BMemberAttribute,
-                                            ISequenceLengthSourceAttribute {
+                                                ISequenceLengthSourceAttribute {
     private string? otherMemberName_;
 
     /// <summary>

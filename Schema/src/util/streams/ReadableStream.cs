@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 
 using CommunityToolkit.HighPerformance;
 
+
 namespace schema.util.streams {
   public class ReadableStream : ISeekableReadableStream {
     internal Stream Impl { get; }

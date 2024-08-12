@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 using schema.binary;
 
+
 namespace schema.util.diagnostics {
   internal class DiagnosticReporter : IDiagnosticReporter {
     private readonly ISymbol symbol_;

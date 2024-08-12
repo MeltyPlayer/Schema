@@ -7,6 +7,7 @@ using CommunityToolkit.HighPerformance;
 using schema.binary;
 using schema.util.streams;
 
+
 namespace schema.testing {
   public class SchemaMemoryStream(MemoryStream impl)
       : ISeekableReadableStream, ISeekableWritableStream {

@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 using schema.testing;
 
+
 namespace schema.binary {
   public class SchemaBinaryReaderStringTests {
     [Test]

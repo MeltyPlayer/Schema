@@ -2,16 +2,17 @@
 
 using NUnit.Framework;
 
+
 namespace schema.util.strings {
   public class StringExtensionsTests {
     [Test]
-    [TestCase("foobar", ' ', false, new[] { "foobar" })]
-    [TestCase("foobar", ' ', true, new[] { "foobar" })]
-    [TestCase("  hello world  ", ' ', false, new[] { "hello", "world" })]
+    [TestCase("foobar", ' ', false, new[] {"foobar"})]
+    [TestCase("foobar", ' ', true, new[] {"foobar"})]
+    [TestCase("  hello world  ", ' ', false, new[] {"hello", "world"})]
     [TestCase("  hello world  ",
               ' ',
               true,
-              new[] { "", "", "hello", "world", "", "" })]
+              new[] {"", "", "hello", "world", "", ""})]
     public void TestSplitViaChar(string input,
                                  char separator,
                                  bool includeEmpty,
@@ -21,17 +22,17 @@ namespace schema.util.strings {
     }
 
     [Test]
-    [TestCase("1\t2\n3", "\t\n", false, new[] { "1", "2", "3" })]
-    [TestCase("1\t2\n3", "\t\n", true, new[] { "1", "2", "3" })]
-    [TestCase("foobar", "", true, new[] { "foobar" })]
+    [TestCase("1\t2\n3", "\t\n", false, new[] {"1", "2", "3"})]
+    [TestCase("1\t2\n3", "\t\n", true, new[] {"1", "2", "3"})]
+    [TestCase("foobar", "", true, new[] {"foobar"})]
     [TestCase("\t\nhello world\t\n",
               " \t\n",
               false,
-              new[] { "hello", "world" })]
+              new[] {"hello", "world"})]
     [TestCase("\t\nhello world\t\n",
               " \t\n",
               true,
-              new[] { "", "", "hello", "world", "", "" })]
+              new[] {"", "", "hello", "world", "", ""})]
     public void TestSplitViaChars(string input,
                                   string separators,
                                   bool includeEmpty,
@@ -41,15 +42,15 @@ namespace schema.util.strings {
     }
 
     [Test]
-    [TestCase("foo", "", true, new[] { "foo" })]
-    [TestCase("foobar", " ", false, new[] { "foobar" })]
-    [TestCase("foobar", " ", true, new[] { "foobar" })]
-    [TestCase("  hello world  ", " ", false, new[] { "hello", "world" })]
+    [TestCase("foo", "", true, new[] {"foo"})]
+    [TestCase("foobar", " ", false, new[] {"foobar"})]
+    [TestCase("foobar", " ", true, new[] {"foobar"})]
+    [TestCase("  hello world  ", " ", false, new[] {"hello", "world"})]
     [TestCase("  hello world  ",
               " ",
               true,
-              new[] { "", "", "hello", "world", "", "" })]
-    [TestCase("foo123bar", "123", true, new[] { "foo", "bar" })]
+              new[] {"", "", "hello", "world", "", ""})]
+    [TestCase("foo123bar", "123", true, new[] {"foo", "bar"})]
     public void TestSplitViaString(string input,
                                    string separator,
                                    bool includeEmpty,
@@ -59,26 +60,26 @@ namespace schema.util.strings {
     }
 
     [Test]
-    [TestCase("foo", new[] { "" }, true, new[] { "foo" })]
-    [TestCase("foobar", new[] { " " }, false, new[] { "foobar" })]
-    [TestCase("foobar", new[] { " " }, true, new[] { "foobar" })]
+    [TestCase("foo", new[] {""}, true, new[] {"foo"})]
+    [TestCase("foobar", new[] {" "}, false, new[] {"foobar"})]
+    [TestCase("foobar", new[] {" "}, true, new[] {"foobar"})]
     [TestCase("  hello world  ",
-              new[] { " " },
+              new[] {" "},
               false,
-              new[] { "hello", "world" })]
+              new[] {"hello", "world"})]
     [TestCase("  hello world  ",
-              new[] { " " },
+              new[] {" "},
               true,
-              new[] { "", "", "hello", "world", "", "" })]
-    [TestCase("foo123bar", new[] { "123" }, true, new[] { "foo", "bar" })]
+              new[] {"", "", "hello", "world", "", ""})]
+    [TestCase("foo123bar", new[] {"123"}, true, new[] {"foo", "bar"})]
     [TestCase("\nline1\r\nline2\nline3\r\n",
-              new[] { "\n", "\r\n" },
+              new[] {"\n", "\r\n"},
               false,
-              new[] { "line1", "line2", "line3" })]
+              new[] {"line1", "line2", "line3"})]
     [TestCase("\nline1\r\nline2\nline3\r\n",
-              new[] { "\n", "\r\n" },
+              new[] {"\n", "\r\n"},
               true,
-              new[] { "", "line1", "line2", "line3", "" })]
+              new[] {"", "line1", "line2", "line3", ""})]
     public void TestSplitViaStrings(string input,
                                     string[] separators,
                                     bool includeEmpty,

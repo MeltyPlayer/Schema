@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis;
 using schema.binary;
 using schema.util.sequences;
 
+
 namespace schema.util.symbols {
   public static class IsExtensions {
     public static bool IsEnum(this ISymbol symbol,
@@ -51,7 +52,7 @@ namespace schema.util.symbols {
     }
 
     public static bool IsClass(this ISymbol symbol)
-      => symbol is INamedTypeSymbol { TypeKind: TypeKind.Class };
+      => symbol is INamedTypeSymbol {TypeKind: TypeKind.Class};
 
     public static bool IsAbstractClass(this ISymbol symbol)
       => symbol is INamedTypeSymbol {
@@ -59,18 +60,18 @@ namespace schema.util.symbols {
       };
 
     public static bool IsInterface(this ISymbol symbol)
-      => symbol is INamedTypeSymbol { TypeKind: TypeKind.Interface };
+      => symbol is INamedTypeSymbol {TypeKind: TypeKind.Interface};
 
     public static bool IsStruct(this ISymbol symbol)
-      => symbol is INamedTypeSymbol { TypeKind: TypeKind.Struct };
+      => symbol is INamedTypeSymbol {TypeKind: TypeKind.Struct};
 
     public static bool IsString(this ISymbol symbol)
-      => symbol is ITypeSymbol { SpecialType: SpecialType.System_String };
+      => symbol is ITypeSymbol {SpecialType: SpecialType.System_String};
 
     public static bool IsGenericZipped(this ISymbol symbol,
                                        out IEnumerable<(ITypeParameterSymbol,
                                            ITypeSymbol)> typeParamsAndArgs) {
-      if (symbol is INamedTypeSymbol { IsGenericType: true } namedTypeSymbol) {
+      if (symbol is INamedTypeSymbol {IsGenericType: true} namedTypeSymbol) {
         typeParamsAndArgs = namedTypeSymbol.GetTypeParamsAndArgs();
         return true;
       }
@@ -83,7 +84,7 @@ namespace schema.util.symbols {
         this ISymbol symbol,
         out ImmutableArray<ITypeParameterSymbol> typeParameterSymbols,
         out ImmutableArray<ITypeSymbol> typeArgumentSymbols) {
-      if (symbol is INamedTypeSymbol { IsGenericType: true } namedTypeSymbol) {
+      if (symbol is INamedTypeSymbol {IsGenericType: true} namedTypeSymbol) {
         typeParameterSymbols = namedTypeSymbol.TypeParameters;
         typeArgumentSymbols = namedTypeSymbol.TypeArguments;
         return true;
@@ -117,7 +118,7 @@ namespace schema.util.symbols {
 
     public static bool IsTuple(this ISymbol symbol,
                                out IEnumerable<IFieldSymbol> tupleParameters) {
-      if (symbol is INamedTypeSymbol { IsTupleType: true } namedTypeSymbol) {
+      if (symbol is INamedTypeSymbol {IsTupleType: true} namedTypeSymbol) {
         tupleParameters = namedTypeSymbol.TupleElements;
         return true;
       }

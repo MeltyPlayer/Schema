@@ -20,29 +20,29 @@ namespace schema.binary.text {
             }
             """,
           $$"""
-          using System;
-          using schema.binary;
+            using System;
+            using schema.binary;
 
-          namespace foo.bar {
-            public partial class Wrapper<{{variance}} T> {
-              public void Read(IBinaryReader br) {
+            namespace foo.bar {
+              public partial class Wrapper<{{variance}} T> {
+                public void Read(IBinaryReader br) {
+                }
               }
             }
-          }
 
-          """,
+            """,
           $$"""
-          using System;
-          using schema.binary;
+            using System;
+            using schema.binary;
 
-          namespace foo.bar {
-            public partial class Wrapper<{{variance}} T> {
-              public void Write(IBinaryWriter bw) {
+            namespace foo.bar {
+              public partial class Wrapper<{{variance}} T> {
+                public void Write(IBinaryWriter bw) {
+                }
               }
             }
-          }
 
-          """);
+            """);
     }
   }
 }

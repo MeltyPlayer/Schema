@@ -1,5 +1,6 @@
 ﻿using System;
 
+
 namespace schema.text.writer {
   public interface ITextWriter : ITextStream, IDataWriter, IIndentable {
     void WriteBytes(ReadOnlySpan<byte> values, string separator);

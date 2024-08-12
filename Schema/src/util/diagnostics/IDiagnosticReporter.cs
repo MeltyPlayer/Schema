@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
+
 namespace schema.util.diagnostics {
   internal interface IDiagnosticReporter {
     void WithContext(SyntaxNodeAnalysisContext context);

@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
+
 namespace schema.binary {
   public sealed partial class SchemaBinaryWriter : IEndiannessStack {
     public Endianness Endianness {

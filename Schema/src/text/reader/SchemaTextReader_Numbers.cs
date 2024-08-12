@@ -4,6 +4,7 @@ using System.Linq;
 
 using schema.util.strings;
 
+
 namespace schema.text.reader {
   public sealed partial class SchemaTextReader {
     public byte[] ReadBytes(ReadOnlySpan<string> separators,

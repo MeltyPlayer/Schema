@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis;
 
 using schema.binary.attributes;
 
+
 namespace schema.util.symbols {
   internal static partial class BetterSymbol {
     private partial class BetterSymbolImpl {

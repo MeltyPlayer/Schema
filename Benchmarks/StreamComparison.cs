@@ -4,6 +4,7 @@ using BenchmarkDotNet.Attributes;
 
 using schema.util.streams;
 
+
 namespace benchmarks {
   public class StreamComparison {
     public const int n = 10000;

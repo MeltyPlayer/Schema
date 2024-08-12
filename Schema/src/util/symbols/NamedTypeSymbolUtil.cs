@@ -31,7 +31,7 @@ namespace schema.util.symbols {
           }
 
           // Skips indexers.
-          if (memberSymbol is IPropertySymbol { IsIndexer: true }) {
+          if (memberSymbol is IPropertySymbol {IsIndexer: true}) {
             continue;
           }
 

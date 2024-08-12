@@ -4,6 +4,7 @@ using System.Linq;
 
 using Microsoft.CodeAnalysis;
 
+
 namespace schema.util.symbols {
   public interface ITypeParameterSymbolVarianceSet {
     VarianceKind AllowedVariance(ITypeParameterSymbol typeParameterSymbol);

@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 
 using CommunityToolkit.HighPerformance;
 
+
 namespace schema.util.streams {
   public static class StreamExtensions {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

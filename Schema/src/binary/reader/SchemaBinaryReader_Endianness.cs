@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
+
 namespace schema.binary {
   public sealed partial class SchemaBinaryReader {
     public Endianness Endianness {

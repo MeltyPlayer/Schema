@@ -2,6 +2,7 @@
 
 using schema.util.streams;
 
+
 namespace schema.binary {
   public partial class SchemaBinaryReader {
     public void Subread(int len, Action<IBinaryReader> subread) {

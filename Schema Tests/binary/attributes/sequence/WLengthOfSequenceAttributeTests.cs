@@ -148,6 +148,5 @@ namespace foo.bar {
 }
 ");
     }
-
   }
 }

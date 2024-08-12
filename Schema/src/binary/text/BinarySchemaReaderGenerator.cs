@@ -11,6 +11,7 @@ using schema.util.asserts;
 using schema.util.symbols;
 using schema.util.text;
 
+
 namespace schema.binary.text {
   public class BinarySchemaReaderGenerator {
     public const string READER = "br";
@@ -22,7 +23,7 @@ namespace schema.binary.text {
       using var sw = new SourceWriter(new StringWriter(sb));
 
       {
-        var dependencies = new List<string> { "System", "schema.binary" };
+        var dependencies = new List<string> {"System", "schema.binary"};
         if (container.DependsOnSequenceImports()) {
           dependencies.Add("schema.util.sequences");
         }

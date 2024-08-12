@@ -3,6 +3,7 @@ using System.Numerics;
 
 using NUnit.Framework;
 
+
 namespace schema.binary {
   public class SchemaBinaryReaderNumbersTests {
     delegate void ReadSpan<T>(Span<T> span);
@@ -43,11 +44,11 @@ namespace schema.binary {
 
     [Test]
     [TestCase(Endianness.LittleEndian,
-              new byte[] { 0x00, 0xFF, 0x7F, 0x80 },
-              new byte[] { byte.MinValue, byte.MaxValue, 127, 128 })]
+              new byte[] {0x00, 0xFF, 0x7F, 0x80},
+              new byte[] {byte.MinValue, byte.MaxValue, 127, 128})]
     [TestCase(Endianness.BigEndian,
-              new byte[] { 0x00, 0xFF, 0x7F, 0x80 },
-              new byte[] { byte.MinValue, byte.MaxValue, 127, 128 })]
+              new byte[] {0x00, 0xFF, 0x7F, 0x80},
+              new byte[] {byte.MinValue, byte.MaxValue, 127, 128})]
     public void TestReadAndAssertBytes(Endianness endianness,
                                        byte[] bytes,
                                        byte[] expectedValues) {
@@ -60,11 +61,11 @@ namespace schema.binary {
 
     [Test]
     [TestCase(Endianness.LittleEndian,
-              new byte[] { 0x00, 0xFF, 0x7F, 0x80 },
-              new sbyte[] { 0, -1, sbyte.MaxValue, sbyte.MinValue })]
+              new byte[] {0x00, 0xFF, 0x7F, 0x80},
+              new sbyte[] {0, -1, sbyte.MaxValue, sbyte.MinValue})]
     [TestCase(Endianness.BigEndian,
-              new byte[] { 0x00, 0xFF, 0x7F, 0x80 },
-              new sbyte[] { 0, -1, sbyte.MaxValue, sbyte.MinValue })]
+              new byte[] {0x00, 0xFF, 0x7F, 0x80},
+              new sbyte[] {0, -1, sbyte.MaxValue, sbyte.MinValue})]
     public void TestReadAndAssertSBytes(Endianness endianness,
                                         byte[] bytes,
                                         sbyte[] expectedValues) {
@@ -78,11 +79,11 @@ namespace schema.binary {
 
     [Test]
     [TestCase(Endianness.LittleEndian,
-              new byte[] { 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x7F, 0x00, 0x80 },
-              new short[] { 0, -1, short.MaxValue, short.MinValue })]
+              new byte[] {0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x7F, 0x00, 0x80},
+              new short[] {0, -1, short.MaxValue, short.MinValue})]
     [TestCase(Endianness.BigEndian,
-              new byte[] { 0x00, 0x00, 0xFF, 0xFF, 0x7F, 0xFF, 0x80, 0x00 },
-              new short[] { 0, -1, short.MaxValue, short.MinValue })]
+              new byte[] {0x00, 0x00, 0xFF, 0xFF, 0x7F, 0xFF, 0x80, 0x00},
+              new short[] {0, -1, short.MaxValue, short.MinValue})]
     public void TestReadAndAssertInt16s(Endianness endianness,
                                         byte[] bytes,
                                         short[] expectedValues) {
@@ -95,11 +96,11 @@ namespace schema.binary {
 
     [Test]
     [TestCase(Endianness.LittleEndian,
-              new byte[] { 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x7F, 0x00, 0x80 },
-              new ushort[] { ushort.MinValue, ushort.MaxValue, 32767, 32768 })]
+              new byte[] {0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x7F, 0x00, 0x80},
+              new ushort[] {ushort.MinValue, ushort.MaxValue, 32767, 32768})]
     [TestCase(Endianness.BigEndian,
-              new byte[] { 0x00, 0x00, 0xFF, 0xFF, 0x7F, 0xFF, 0x80, 0x00 },
-              new ushort[] { ushort.MinValue, ushort.MaxValue, 32767, 32768 })]
+              new byte[] {0x00, 0x00, 0xFF, 0xFF, 0x7F, 0xFF, 0x80, 0x00},
+              new ushort[] {ushort.MinValue, ushort.MaxValue, 32767, 32768})]
     public void TestReadAndAssertUInt16s(Endianness endianness,
                                          byte[] bytes,
                                          ushort[] expectedValues) {
@@ -112,18 +113,38 @@ namespace schema.binary {
 
 
     [Test]
-    [TestCase(Endianness.LittleEndian, new byte[] {
-        0x00, 0x00, 0x00,
-        0xFF, 0xFF, 0xFF,
-        0xFF, 0xFF, 0x7F,
-        0x00, 0x00, 0x80,
-    }, new[] { 0, -1, 8388607, -8388608 })]
-    [TestCase(Endianness.BigEndian, new byte[] {
-        0x00, 0x00, 0x00,
-        0xFF, 0xFF, 0xFF,
-        0x7F, 0xFF, 0xFF,
-        0x80, 0x00, 0x00,
-    }, new[] { 0, -1, 8388607, -8388608 })]
+    [TestCase(Endianness.LittleEndian,
+              new byte[] {
+                  0x00,
+                  0x00,
+                  0x00,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0x7F,
+                  0x00,
+                  0x00,
+                  0x80,
+              },
+              new[] {0, -1, 8388607, -8388608})]
+    [TestCase(Endianness.BigEndian,
+              new byte[] {
+                  0x00,
+                  0x00,
+                  0x00,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0x7F,
+                  0xFF,
+                  0xFF,
+                  0x80,
+                  0x00,
+                  0x00,
+              },
+              new[] {0, -1, 8388607, -8388608})]
     public void TestReadAndAssertInt24s(Endianness endianness,
                                         byte[] bytes,
                                         int[] expectedValues) {
@@ -137,20 +158,36 @@ namespace schema.binary {
     [Test]
     [TestCase(Endianness.LittleEndian,
               new byte[] {
-                  0x00, 0x00, 0x00,
-                  0xFF, 0xFF, 0xFF,
-                  0xFF, 0xFF, 0x7F,
-                  0x00, 0x00, 0x80,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0x7F,
+                  0x00,
+                  0x00,
+                  0x80,
               },
-              new uint[] { 0, 16777215, 8388607, 8388608 })]
+              new uint[] {0, 16777215, 8388607, 8388608})]
     [TestCase(Endianness.BigEndian,
               new byte[] {
-                  0x00, 0x00, 0x00,
-                  0xFF, 0xFF, 0xFF,
-                  0x7F, 0xFF, 0xFF,
-                  0x80, 0x00, 0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0x7F,
+                  0xFF,
+                  0xFF,
+                  0x80,
+                  0x00,
+                  0x00,
               },
-              new uint[] { 0, 16777215, 8388607, 8388608 })]
+              new uint[] {0, 16777215, 8388607, 8388608})]
     public void TestReadAndAssertUInt24s(Endianness endianness,
                                          byte[] bytes,
                                          uint[] expectedValues) {
@@ -165,20 +202,44 @@ namespace schema.binary {
     [Test]
     [TestCase(Endianness.LittleEndian,
               new byte[] {
-                  0x00, 0x00, 0x00, 0x00,
-                  0xFF, 0xFF, 0xFF, 0xFF,
-                  0xFF, 0xFF, 0xFF, 0x7F,
-                  0x00, 0x00, 0x00, 0x80,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0x7F,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x80,
               },
-              new[] { 0, -1, int.MaxValue, int.MinValue})]
+              new[] {0, -1, int.MaxValue, int.MinValue})]
     [TestCase(Endianness.BigEndian,
               new byte[] {
-                  0x00, 0x00, 0x00, 0x00,
-                  0xFF, 0xFF, 0xFF, 0xFF,
-                  0x7F, 0xFF, 0xFF, 0xFF,
-                  0x80, 0x00, 0x00, 0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0x7F,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0x80,
+                  0x00,
+                  0x00,
+                  0x00,
               },
-              new[] { 0, -1, int.MaxValue, int.MinValue })]
+              new[] {0, -1, int.MaxValue, int.MinValue})]
     public void TestReadAndAssertInt32s(Endianness endianness,
                                         byte[] bytes,
                                         int[] expectedValues) {
@@ -192,20 +253,44 @@ namespace schema.binary {
     [Test]
     [TestCase(Endianness.LittleEndian,
               new byte[] {
-                  0x00, 0x00, 0x00, 0x00,
-                  0xFF, 0xFF, 0xFF, 0xFF,
-                  0xFF, 0xFF, 0xFF, 0x7F,
-                  0x00, 0x00, 0x00, 0x80,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0x7F,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x80,
               },
               new uint[] {
                   uint.MinValue, uint.MaxValue, 2147483647, 2147483648
               })]
     [TestCase(Endianness.BigEndian,
               new byte[] {
-                  0x00, 0x00, 0x00, 0x00,
-                  0xFF, 0xFF, 0xFF, 0xFF,
-                  0x7F, 0xFF, 0xFF, 0xFF,
-                  0x80, 0x00, 0x00, 0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0x7F,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0x80,
+                  0x00,
+                  0x00,
+                  0x00,
               },
               new uint[] {
                   uint.MinValue, uint.MaxValue, 2147483647, 2147483648
@@ -224,20 +309,76 @@ namespace schema.binary {
     [Test]
     [TestCase(Endianness.LittleEndian,
               new byte[] {
-                  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x7F,
-                  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0x7F,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x80,
               },
-              new[] { 0, -1, long.MaxValue, long.MinValue })]
+              new[] {0, -1, long.MaxValue, long.MinValue})]
     [TestCase(Endianness.BigEndian,
               new byte[] {
-                  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-                  0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-                  0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0x7F,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0x80,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
               },
-              new[] { 0, -1, long.MaxValue, long.MinValue })]
+              new[] {0, -1, long.MaxValue, long.MinValue})]
     public void TestReadAndAssertInt64s(Endianness endianness,
                                         byte[] bytes,
                                         long[] expectedValues) {
@@ -251,10 +392,38 @@ namespace schema.binary {
     [Test]
     [TestCase(Endianness.LittleEndian,
               new byte[] {
-                  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x7F,
-                  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0x7F,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x80,
               },
               new ulong[] {
                   ulong.MinValue,
@@ -264,10 +433,38 @@ namespace schema.binary {
               })]
     [TestCase(Endianness.BigEndian,
               new byte[] {
-                  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-                  0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-                  0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0x7F,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0xFF,
+                  0x80,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
               },
               new ulong[] {
                   ulong.MinValue,
@@ -288,11 +485,11 @@ namespace schema.binary {
 
     [Test]
     [TestCase(Endianness.LittleEndian,
-              new byte[] { 0x00, 0x00, 0x00, 0x3C },
-              new float[] { 0, 1 })]
+              new byte[] {0x00, 0x00, 0x00, 0x3C},
+              new float[] {0, 1})]
     [TestCase(Endianness.BigEndian,
-              new byte[] { 0x00, 0x00, 0x3C, 0x00 },
-              new float[] { 0, 1 })]
+              new byte[] {0x00, 0x00, 0x3C, 0x00},
+              new float[] {0, 1})]
     public void TestReadAndAssertHalfs(Endianness endianness,
                                        byte[] bytes,
                                        float[] expectedValues) {
@@ -305,17 +502,11 @@ namespace schema.binary {
 
     [Test]
     [TestCase(Endianness.LittleEndian,
-              new byte[] {
-                  0x00, 0x00, 0x00, 0x00,
-                  0x00, 0x00, 0x80, 0x3F,
-              },
-              new float[] { 0, 1})]
+              new byte[] {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x3F,},
+              new float[] {0, 1})]
     [TestCase(Endianness.BigEndian,
-              new byte[] {
-                  0x00, 0x00, 0x00, 0x00,
-                  0x3F, 0x80, 0x00, 0x00,
-              },
-              new float[] { 0, 1 })]
+              new byte[] {0x00, 0x00, 0x00, 0x00, 0x3F, 0x80, 0x00, 0x00,},
+              new float[] {0, 1})]
     public void TestReadAndAssertSingles(Endianness endianness,
                                          byte[] bytes,
                                          float[] expectedValues) {
@@ -329,16 +520,44 @@ namespace schema.binary {
     [Test]
     [TestCase(Endianness.LittleEndian,
               new byte[] {
-                  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x3F
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0xF0,
+                  0x3F
               },
-              new double[] { 0, 1 })]
+              new double[] {0, 1})]
     [TestCase(Endianness.BigEndian,
               new byte[] {
-                  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                  0x3F, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x3F,
+                  0xF0,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x00
               },
-              new double[] { 0, 1 })]
+              new double[] {0, 1})]
     public void TestReadAndAssertDoubles(Endianness endianness,
                                          byte[] bytes,
                                          double[] expectedValues) {
@@ -352,21 +571,15 @@ namespace schema.binary {
 
     [Test]
     [TestCase(Endianness.LittleEndian,
-              new byte[] { 
-                  0x00, 0x20, 0x40, 0x60, 0x7F, 
-                  0x80, 0xA0, 0xC0, 0xE0, 0xFF },
-              new[] {
-                  0, .25f, .5f, .75f, 1,
-                  -1, -.75f, -.5f, -.25f, 0,
-              })]
+              new byte[] {
+                  0x00, 0x20, 0x40, 0x60, 0x7F, 0x80, 0xA0, 0xC0, 0xE0, 0xFF
+              },
+              new[] {0, .25f, .5f, .75f, 1, -1, -.75f, -.5f, -.25f, 0,})]
     [TestCase(Endianness.BigEndian,
               new byte[] {
-                  0x00, 0x20, 0x40, 0x60, 0x7F,
-                  0x80, 0xA0, 0xC0, 0xE0, 0xFF },
-              new[] {
-                  0, .25f, .5f, .75f, 1,
-                  -1, -.75f, -.5f, -.25f, 0,
-              })]
+                  0x00, 0x20, 0x40, 0x60, 0x7F, 0x80, 0xA0, 0xC0, 0xE0, 0xFF
+              },
+              new[] {0, .25f, .5f, .75f, 1, -1, -.75f, -.5f, -.25f, 0,})]
     public void TestReadAndAssertSn8s(Endianness endianness,
                                       byte[] bytes,
                                       float[] expectedValues) {
@@ -379,11 +592,11 @@ namespace schema.binary {
 
     [Test]
     [TestCase(Endianness.LittleEndian,
-              new byte[] { 0x00, 0x40, 0x80, 0xC0, 0xFF },
-              new [] { 0, .25f, .5f, .75f, 1 })]
+              new byte[] {0x00, 0x40, 0x80, 0xC0, 0xFF},
+              new[] {0, .25f, .5f, .75f, 1})]
     [TestCase(Endianness.BigEndian,
-              new byte[] { 0x00, 0x40, 0x80, 0xC0, 0xFF },
-              new[] { 0, .25f, .5f, .75f, 1 })]
+              new byte[] {0x00, 0x40, 0x80, 0xC0, 0xFF},
+              new[] {0, .25f, .5f, .75f, 1})]
     public void TestReadAndAssertUn8s(Endianness endianness,
                                       byte[] bytes,
                                       float[] expectedValues) {
@@ -396,20 +609,54 @@ namespace schema.binary {
 
 
     [Test]
-    [TestCase(Endianness.LittleEndian, new byte[] {
-        0x00, 0x00, 0x00, 0x20, 0x00, 0x40, 0x00, 0x60, 0xFF, 0x7F,
-        0x00, 0x80, 0x00, 0xA0, 0x00, 0xC0, 0x00, 0xE0, 0xFF, 0xFF,
-    }, new [] {
-        0, .25f, .5f, .75f, 1,
-        -1, -.75f, -.5f, -.25f, 0,
-    })]
-    [TestCase(Endianness.BigEndian, new byte[] {
-        0x00, 0x00, 0x20, 0x00, 0x40, 0x00, 0x60, 0x00, 0x7F, 0xFF,
-        0x80, 0x00, 0xA0, 0x00, 0xC0, 0x00, 0xE0, 0x00, 0xFF, 0xFF,
-    }, new [] {
-        0, .25f, .5f, .75f, 1,
-        -1, -.75f, -.5f, -.25f, 0,
-    })]
+    [TestCase(Endianness.LittleEndian,
+              new byte[] {
+                  0x00,
+                  0x00,
+                  0x00,
+                  0x20,
+                  0x00,
+                  0x40,
+                  0x00,
+                  0x60,
+                  0xFF,
+                  0x7F,
+                  0x00,
+                  0x80,
+                  0x00,
+                  0xA0,
+                  0x00,
+                  0xC0,
+                  0x00,
+                  0xE0,
+                  0xFF,
+                  0xFF,
+              },
+              new[] {0, .25f, .5f, .75f, 1, -1, -.75f, -.5f, -.25f, 0,})]
+    [TestCase(Endianness.BigEndian,
+              new byte[] {
+                  0x00,
+                  0x00,
+                  0x20,
+                  0x00,
+                  0x40,
+                  0x00,
+                  0x60,
+                  0x00,
+                  0x7F,
+                  0xFF,
+                  0x80,
+                  0x00,
+                  0xA0,
+                  0x00,
+                  0xC0,
+                  0x00,
+                  0xE0,
+                  0x00,
+                  0xFF,
+                  0xFF,
+              },
+              new[] {0, .25f, .5f, .75f, 1, -1, -.75f, -.5f, -.25f, 0,})]
     public void TestReadAndAssertSn16s(Endianness endianness,
                                        byte[] bytes,
                                        float[] expectedValues) {
@@ -421,20 +668,16 @@ namespace schema.binary {
     }
 
     [Test]
-    [TestCase(Endianness.LittleEndian, new byte[] {
-        0x00, 0x00,
-        0x00, 0x40,
-        0x00, 0x80,
-        0x00, 0xC0,
-        0xFF, 0xFF,
-    }, new[] { 0, .25f, .5f, .75f, 1 })]
-    [TestCase(Endianness.BigEndian, new byte[] {
-        0x00, 0x00,
-        0x40, 0x00,
-        0x80, 0x00,
-        0xC0, 0x00,
-        0xFF, 0xFF,
-    }, new[] { 0, .25f, .5f, .75f, 1 })]
+    [TestCase(Endianness.LittleEndian,
+              new byte[] {
+                  0x00, 0x00, 0x00, 0x40, 0x00, 0x80, 0x00, 0xC0, 0xFF, 0xFF,
+              },
+              new[] {0, .25f, .5f, .75f, 1})]
+    [TestCase(Endianness.BigEndian,
+              new byte[] {
+                  0x00, 0x00, 0x40, 0x00, 0x80, 0x00, 0xC0, 0x00, 0xFF, 0xFF,
+              },
+              new[] {0, .25f, .5f, .75f, 1})]
     public void TestReadAndAssertUn16s(Endianness endianness,
                                        byte[] bytes,
                                        float[] expectedValues) {

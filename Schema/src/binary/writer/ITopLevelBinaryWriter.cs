@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using schema.binary.attributes;
 using schema.util.streams;
 
+
 namespace schema.binary {
   public interface ITopLevelBinaryWriter : IBinaryWriter, IDisposable {
     void CompleteAndCopyTo(Stream stream);

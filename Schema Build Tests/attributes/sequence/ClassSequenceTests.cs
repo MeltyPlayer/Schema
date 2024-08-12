@@ -7,6 +7,7 @@ using NUnit.Framework;
 using schema.binary;
 using schema.binary.attributes;
 
+
 namespace build {
   public partial class ClassSequenceTests {
     [BinarySchema]
@@ -40,11 +41,10 @@ namespace build {
     [Test]
     public void TestWriteAndReadArrayObject() {
       var expectedSw = new ClassArraySequenceWrapper {
-          Values = new[]
-          {
-              new SchemaClass { Value = 1 },
-              new SchemaClass { Value = 2 },
-              new SchemaClass { Value = 3 }
+          Values = new[] {
+              new SchemaClass {Value = 1},
+              new SchemaClass {Value = 2},
+              new SchemaClass {Value = 3}
           }
       };
 
@@ -65,18 +65,17 @@ namespace build {
     [Test]
     public void TestWriteAndReadArrayValues() {
       var expectedSw = new ClassArraySequenceWrapper {
-        Values = new[]
-        {
-          new SchemaClass { Value = 1 },
-          new SchemaClass { Value = 2 },
-          new SchemaClass { Value = 3 }
-        }
+          Values = new[] {
+              new SchemaClass {Value = 1},
+              new SchemaClass {Value = 2},
+              new SchemaClass {Value = 3}
+          }
       };
 
       var ms = new MemoryStream();
 
       var endianness = Endianness.BigEndian;
-      
+
       var ew = new SchemaBinaryWriter(endianness);
       expectedSw.Write(ew);
       ew.CompleteAndCopyTo(ms);
@@ -89,8 +88,7 @@ namespace build {
 
 
     [BinarySchema]
-    public partial class ClassListSequenceWrapper : IBinaryConvertible
-    {
+    public partial class ClassListSequenceWrapper : IBinaryConvertible {
       [SequenceLengthSource(SchemaIntegerType.BYTE)]
       public List<SchemaClass> Values { get; set; } = new();
 
@@ -106,11 +104,8 @@ namespace build {
     [Test]
     public void TestWriteAndReadListObject() {
       var expectedSw = new ClassListSequenceWrapper {
-          Values = new List<SchemaClass>
-          {
-              new() { Value = 1 },
-              new() { Value = 2 },
-              new() { Value = 3 }
+          Values = new List<SchemaClass> {
+              new() {Value = 1}, new() {Value = 2}, new() {Value = 3}
           }
       };
 

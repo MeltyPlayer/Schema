@@ -2,6 +2,7 @@ using System;
 
 using NUnit.Framework;
 
+
 namespace schema.binary {
   public class SchemaBinaryReaderEndiannessTests {
     [Test]

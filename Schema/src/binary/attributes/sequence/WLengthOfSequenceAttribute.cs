@@ -1,5 +1,6 @@
 ﻿using System;
 
+
 namespace schema.binary.attributes {
   /// <summary>
   ///   Attribute for specifying that an integer represents the length of some

@@ -6,6 +6,7 @@ using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+
 namespace schema.util {
   public static class AttributeUtil {
     public static TAttribute Instantiate<TAttribute>(

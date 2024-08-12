@@ -1,5 +1,6 @@
 ﻿using System;
 
+
 namespace schema.binary.attributes {
   public interface IIfBooleanAttribute {
     IfBooleanSourceType SourceType { get; }

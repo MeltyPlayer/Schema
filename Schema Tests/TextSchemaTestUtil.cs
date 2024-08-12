@@ -2,6 +2,7 @@
 
 using schema.text.reader;
 
+
 namespace schema.text {
   internal static class TextSchemaTestUtil {
     public static SchemaTextReader CreateTextReader(string text) {

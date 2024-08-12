@@ -2,6 +2,7 @@
 
 using schema.readOnly;
 
+
 namespace foo.bar {
   [GenerateReadOnly]
   public partial interface IWrapper {

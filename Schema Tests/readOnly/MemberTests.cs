@@ -2,6 +2,7 @@
 
 using schema.binary;
 
+
 namespace schema.readOnly {
   internal class MemberTests {
     [Test]
@@ -167,17 +168,17 @@ namespace schema.readOnly {
     public void TestSpecialParameterTypes(string paramType) {
       ReadOnlyGeneratorTestUtil.AssertGenerated(
           $$"""
-          using schema.readOnly;
-          using System.Collections.Generic;
+            using schema.readOnly;
+            using System.Collections.Generic;
 
-          namespace foo.bar {
-            [GenerateReadOnly]
-            public partial interface IWrapper {
-              [Const]
-              public void Foo({{paramType}} int bar) {}
+            namespace foo.bar {
+              [GenerateReadOnly]
+              public partial interface IWrapper {
+                [Const]
+                public void Foo({{paramType}} int bar) {}
+              }
             }
-          }
-          """,
+            """,
           $$"""
             namespace foo.bar {
               public partial interface IWrapper : IReadOnlyWrapper {
@@ -235,7 +236,7 @@ namespace schema.readOnly {
               public partial interface IWrapper {
                 [Const]
                 public int? Foo(int? bar) {}
-
+            
                 public int? Bar { get; }
               }
             }

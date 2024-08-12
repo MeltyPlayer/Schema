@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 using schema.util.diagnostics;
 
+
 namespace schema.util.symbols {
   internal partial class BetterSymbol {
     private partial class BetterSymbolImpl {

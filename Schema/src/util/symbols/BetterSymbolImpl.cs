@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 using schema.util.diagnostics;
 
+
 namespace schema.util.symbols {
   internal static partial class BetterSymbol {
     public static IBetterSymbol<INamedTypeSymbol> FromType(

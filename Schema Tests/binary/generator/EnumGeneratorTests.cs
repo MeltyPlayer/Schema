@@ -23,7 +23,7 @@ namespace foo.bar {
     public B fieldB;
   }
 }",
-                                     @"using System;
+                                           @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -35,7 +35,7 @@ namespace foo.bar {
   }
 }
 ",
-                                     @"using System;
+                                           @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -115,7 +115,7 @@ namespace foo.bar {
     public readonly B[] fieldB = new B[5];
   }
 }",
-                                     @"using System;
+                                           @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -131,7 +131,7 @@ namespace foo.bar {
   }
 }
 ",
-                                     @"using System;
+                                           @"using System;
 using schema.binary;
 
 namespace foo.bar {

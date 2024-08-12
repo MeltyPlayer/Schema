@@ -2,10 +2,11 @@ using Microsoft.CodeAnalysis;
 
 using NUnit.Framework;
 
+
 namespace schema.binary.text {
   public class SchemaWriterGeneratorTests {
     [SetUp]
-    public void Setup() {}
+    public void Setup() { }
 
     [Test]
     public void TestByte() {
@@ -376,7 +377,8 @@ namespace foo.bar {
       var structure = BinarySchemaTestUtil.ParseFirst(src);
       Assert.IsEmpty(structure.Diagnostics);
 
-      var actualGenerated = new BinarySchemaWriterGenerator().Generate(structure);
+      var actualGenerated =
+          new BinarySchemaWriterGenerator().Generate(structure);
       Assert.AreEqual(expectedGenerated, actualGenerated.ReplaceLineEndings());
     }
   }

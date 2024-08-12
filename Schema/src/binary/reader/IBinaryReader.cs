@@ -4,6 +4,7 @@ using System.Text;
 using schema.binary.attributes;
 using schema.util.streams;
 
+
 namespace schema.binary {
   public interface IBinaryReader
       : IDataReader,

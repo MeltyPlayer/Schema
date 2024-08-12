@@ -6,6 +6,7 @@ using NUnit.Framework;
 using schema.binary;
 using schema.binary.attributes;
 
+
 namespace build {
   public partial class SequenceTests {
     [BinarySchema]
@@ -25,13 +26,13 @@ namespace build {
     [Test]
     public void TestWriteAndRead() {
       var expectedSw = new SequenceWrapper {
-        Values = new[] { 1, 2, 3, 4, 5, 9, 8, 7, 6 }
+          Values = new[] {1, 2, 3, 4, 5, 9, 8, 7, 6}
       };
 
       var ms = new MemoryStream();
 
       var endianness = Endianness.BigEndian;
-      
+
       var ew = new SchemaBinaryWriter(endianness);
       expectedSw.Write(ew);
       ew.CompleteAndCopyTo(ms);
@@ -41,7 +42,6 @@ namespace build {
       var actualSw = er.ReadNew<SequenceWrapper>();
       Assert.AreEqual(expectedSw, actualSw);
     }
-
 
 
     [BinarySchema]
@@ -61,7 +61,7 @@ namespace build {
     [Test]
     public void TestWriteAndReadWithUint32Length() {
       var expectedSw = new Uint32LengthSequenceWrapper {
-          Values = new[] { 1, 2, 3, 4, 5, 9, 8, 7, 6 }
+          Values = new[] {1, 2, 3, 4, 5, 9, 8, 7, 6}
       };
 
       var ms = new MemoryStream();
@@ -77,7 +77,6 @@ namespace build {
       var actualSw = er.ReadNew<Uint32LengthSequenceWrapper>();
       Assert.AreEqual(expectedSw, actualSw);
     }
-
 
 
     [BinarySchema]
@@ -100,7 +99,7 @@ namespace build {
     [Test]
     public void TestWriteAndReadWithUint16Length() {
       var expectedSw = new Uint16LengthSequenceWrapper {
-          Values = new[] { 1, 2, 3, 4, 5, 9, 8, 7, 6 }
+          Values = new[] {1, 2, 3, 4, 5, 9, 8, 7, 6}
       };
 
       var ms = new MemoryStream();
@@ -118,12 +117,11 @@ namespace build {
     }
 
 
-
     [BinarySchema]
     public partial class Uint64LengthSequenceWrapper : IBinaryConvertible {
       [WLengthOfSequence(nameof(Values))]
       private ulong length;
-      
+
       [RSequenceLengthSource(nameof(length))]
       public int[] Values { get; set; }
 
@@ -139,7 +137,7 @@ namespace build {
     [Test]
     public void TestWriteAndReadWithUint64Length() {
       var expectedSw = new Uint64LengthSequenceWrapper {
-          Values = new[] { 1, 2, 3, 4, 5, 9, 8, 7, 6 }
+          Values = new[] {1, 2, 3, 4, 5, 9, 8, 7, 6}
       };
 
       var ms = new MemoryStream();

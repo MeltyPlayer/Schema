@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 
 using Microsoft.CodeAnalysis;
 
+
 namespace schema.util.symbols {
   public static class NamespaceExtensions {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

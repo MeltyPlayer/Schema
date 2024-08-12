@@ -1,5 +1,6 @@
 ﻿using System;
 
+
 namespace schema.binary.attributes {
   public class RIfBooleanAttribute : BMemberAttribute, IIfBooleanAttribute {
     private readonly string? otherMemberName_;

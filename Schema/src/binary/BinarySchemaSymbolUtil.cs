@@ -10,6 +10,7 @@ using schema.util.asserts;
 using schema.util.symbols;
 using schema.util.types;
 
+
 namespace schema.binary {
   public static class BinarySchemaSymbolUtil {
     public static bool IsAtLeastAsBinaryConvertibleAs(this ISymbol symbol,

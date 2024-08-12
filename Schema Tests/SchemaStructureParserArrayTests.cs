@@ -1,5 +1,6 @@
 using NUnit.Framework;
 
+
 namespace schema.binary {
   public partial class SchemaStructureParserTests {
     public class Array {
@@ -12,7 +13,9 @@ namespace foo.bar {
     public int[] field;
   }
 }");
-        BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics, Rules.MutableArrayNeedsLengthSource);
+        BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
+                                               Rules
+                                                   .MutableArrayNeedsLengthSource);
       }
     }
   }

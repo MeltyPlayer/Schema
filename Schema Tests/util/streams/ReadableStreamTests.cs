@@ -3,11 +3,12 @@ using System.IO;
 
 using NUnit.Framework;
 
+
 namespace schema.util.streams {
   public class ReadableStreamTests {
     [Test]
     public void TestPosition() {
-      var ms = new MemoryStream(new byte[] { 1, 2, 3 });
+      var ms = new MemoryStream(new byte[] {1, 2, 3});
       var rs = new ReadableStream(ms);
 
       Assert.AreEqual(0, ms.Position);
@@ -20,7 +21,7 @@ namespace schema.util.streams {
 
     [Test]
     public void TestLength() {
-      var ms = new MemoryStream(new byte[] { 1, 2, 3 });
+      var ms = new MemoryStream(new byte[] {1, 2, 3});
       var rs = new ReadableStream(ms);
 
       Assert.AreEqual(3, ms.Length);
@@ -29,7 +30,7 @@ namespace schema.util.streams {
 
     [Test]
     public void TestReadByte() {
-      var ms = new MemoryStream(new byte[] { 1, 2, 3 });
+      var ms = new MemoryStream(new byte[] {1, 2, 3});
       var rs = new ReadableStream(ms);
 
       Assert.AreEqual(0, ms.Position);
@@ -46,7 +47,7 @@ namespace schema.util.streams {
 
     [Test]
     public void TestReadSpan() {
-      var ms = new MemoryStream(new byte[] { 1, 2, 3 });
+      var ms = new MemoryStream(new byte[] {1, 2, 3});
       var rs = new ReadableStream(ms);
 
       Assert.AreEqual(0, ms.Position);
@@ -58,7 +59,7 @@ namespace schema.util.streams {
       Assert.AreEqual(3, ms.Position);
       Assert.AreEqual(3, rs.Position);
 
-      CollectionAssert.AreEqual(new[] { 1, 2, 3, 0, 0 }, span.ToArray());
+      CollectionAssert.AreEqual(new[] {1, 2, 3, 0, 0}, span.ToArray());
     }
   }
 }

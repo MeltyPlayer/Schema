@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 using schema.binary;
 
+
 namespace build {
   public partial class StructBuildTests {
     [BinarySchema]
@@ -40,7 +41,7 @@ namespace build {
     [Test]
     public void TestWriteAndRead() {
       var expectedSw =
-          new StructWrapper { Value = new SchemaStruct { Value = 1 } };
+          new StructWrapper {Value = new SchemaStruct {Value = 1}};
 
       var ms = new MemoryStream();
 

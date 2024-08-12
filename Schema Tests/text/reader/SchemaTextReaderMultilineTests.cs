@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 
+
 namespace schema.text.reader {
   internal class SchemaTextReaderMultilineTests {
     [Test]
@@ -27,7 +28,7 @@ namespace schema.text.reader {
       var inputText = "1 2 3\nfoobar";
 
       using var tr = TextSchemaTestUtil.CreateTextReader(inputText);
-      Assert.AreEqual(new[] { 1, 2, 3 },
+      Assert.AreEqual(new[] {1, 2, 3},
                       tr.ReadInt32s(
                           TextReaderConstants.WHITESPACE_STRINGS,
                           TextReaderConstants.NEWLINE_STRINGS));

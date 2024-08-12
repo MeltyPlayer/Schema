@@ -2,6 +2,7 @@
 
 using NUnit.Framework;
 
+
 namespace schema.util.streams {
   public class RangedReadableSubstreamTests {
     [Test]
@@ -12,7 +13,7 @@ namespace schema.util.streams {
 
     [Test]
     public void TestThrowsErrorIfOffsetIsNegative() {
-      var data = new byte[] { 1, 2, 3, 4, 5, 6, 7 };
+      var data = new byte[] {1, 2, 3, 4, 5, 6, 7};
       var rs = new ReadableStream(data);
       Assert.That(() => new RangedReadableSubstream(rs, -1, 0),
                   Throws.Exception);
@@ -20,7 +21,7 @@ namespace schema.util.streams {
 
     [Test]
     public void TestThrowsErrorIfLengthIsNegative() {
-      var data = new byte[] { 1, 2, 3, 4, 5, 6, 7 };
+      var data = new byte[] {1, 2, 3, 4, 5, 6, 7};
       var rs = new ReadableStream(data);
       Assert.That(() => new RangedReadableSubstream(rs, 0, -1),
                   Throws.Exception);
@@ -28,7 +29,7 @@ namespace schema.util.streams {
 
     [Test]
     public void TestFullSubstream() {
-      var data = new byte[] { 1, 2, 3, 4, 5, 6, 7 };
+      var data = new byte[] {1, 2, 3, 4, 5, 6, 7};
       var rs = new ReadableStream(data);
       var rrs = new RangedReadableSubstream(rs, 0, rs.Length);
 
@@ -44,7 +45,7 @@ namespace schema.util.streams {
 
     [Test]
     public void TestPartialSubstream() {
-      var data = new byte[] { 1, 2, 3, 4, 5, 6, 7 };
+      var data = new byte[] {1, 2, 3, 4, 5, 6, 7};
       var rs = new ReadableStream(data);
 
       var rrs = new RangedReadableSubstream(rs, 1, rs.Length - 2);

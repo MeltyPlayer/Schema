@@ -22,7 +22,7 @@ namespace foo.bar {
     public readonly float[] field3 = new float[5];
   }
 }",
-                                     @"using System;
+                                           @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -37,7 +37,7 @@ namespace foo.bar {
   }
 }
 ",
-                                     @"using System;
+                                           @"using System;
 using schema.binary;
 
 namespace foo.bar {

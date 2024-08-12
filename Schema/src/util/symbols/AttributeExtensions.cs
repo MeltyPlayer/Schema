@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis;
 using schema.binary.attributes;
 using schema.util.diagnostics;
 
+
 namespace schema.util.symbols {
   public static class AttributeExtensions {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -43,15 +44,15 @@ namespace schema.util.symbols {
         where TAttribute : Attribute
       => symbol.GetAttributeData<TAttribute>()
                .Select(attributeData => {
-                         var attribute
-                             = attributeData.Instantiate<TAttribute>(symbol);
-                         if (attribute is BMemberAttribute memberAttribute) {
-                           memberAttribute.Init(diagnosticReporter,
-                                                symbol.ContainingType,
-                                                symbol.Name);
-                         }
+                 var attribute
+                     = attributeData.Instantiate<TAttribute>(symbol);
+                 if (attribute is BMemberAttribute memberAttribute) {
+                   memberAttribute.Init(diagnosticReporter,
+                                        symbol.ContainingType,
+                                        symbol.Name);
+                 }
 
-                         return attribute;
-                       });
+                 return attribute;
+               });
   }
 }

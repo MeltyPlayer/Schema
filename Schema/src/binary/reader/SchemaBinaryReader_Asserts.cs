@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Text;
 
+
 namespace schema.binary {
   public sealed partial class SchemaBinaryReader {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -48,7 +48,7 @@ namespace readOnly {
   public class CastTests {
     [Test]
     public void TestParameterCasting() {
-      var expectedValue = new SomeType<IValueType> { Data = new ValueType() };
+      var expectedValue = new SomeType<IValueType> {Data = new ValueType()};
 
       IReadOnlyParameterCastWrapper fooBar = new ParameterCastWrapper();
       var returnValue = fooBar.Method(expectedValue);
@@ -58,10 +58,12 @@ namespace readOnly {
 
     [Test]
     public void TestGenericReturnValueCasting() {
-      var expectedValue = new SomeType<IValueType> { Data = new ValueType() };
+      var expectedValue = new SomeType<IValueType> {Data = new ValueType()};
 
       IReadOnlyGenericReturnValueCastWrapper<IValueType> fooBar
-          = new GenericReturnValueCastWrapper<IValueType> { Property = expectedValue };
+          = new GenericReturnValueCastWrapper<IValueType> {
+              Property = expectedValue
+          };
       var returnValue = fooBar.Method();
 
       Assert.AreSame(expectedValue, returnValue);

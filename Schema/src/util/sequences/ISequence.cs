@@ -2,6 +2,7 @@
 
 using schema.binary;
 
+
 namespace schema.util.sequences {
   public interface IReadOnlySequence<out TSelf, out T>
       : IEnumerable<T>, IBinaryConvertible

@@ -216,13 +216,13 @@ namespace schema.binary.parser {
                 .ConstraintTypes
                 .Where(t => t is not IErrorTypeSymbol)
                 .Select(constraintType => {
-                          var parseStatus = this.ParseTypeSymbol(
-                              constraintType,
-                              isReadonly,
-                              out var constraintTypeInfo);
-                          Asserts.Equal(ParseStatus.SUCCESS, parseStatus);
-                          return constraintTypeInfo;
-                        })
+                  var parseStatus = this.ParseTypeSymbol(
+                      constraintType,
+                      isReadonly,
+                      out var constraintTypeInfo);
+                  Asserts.Equal(ParseStatus.SUCCESS, parseStatus);
+                  return constraintTypeInfo;
+                })
                 .ToArray();
 
         typeInfo = new GenericTypeInfo(

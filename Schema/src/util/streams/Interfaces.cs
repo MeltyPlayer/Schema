@@ -1,5 +1,6 @@
 ﻿using System;
 
+
 namespace schema.util.streams {
   // Common interfaces for C# streams.
   //

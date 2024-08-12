@@ -4,6 +4,7 @@ using BenchmarkDotNet.Attributes;
 
 using Cysharp.Text;
 
+
 namespace benchmarks {
   public class StringBuilderComparison {
     public const int w = 100;

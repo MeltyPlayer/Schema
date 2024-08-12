@@ -1,11 +1,14 @@
 ﻿using System.Collections;
 using System.Threading.Tasks;
+
 using NUnit.Framework;
 
 using System.Collections.Generic;
 using System.Text;
+
 using schema.util;
 using schema.util.asserts;
+
 
 namespace schema.util.data {
   public class NestedListsTests {
@@ -54,8 +57,13 @@ namespace schema.util.data {
 
       AssertSequence_(
           new[] {
-              "before children", "in child 1", "in grandchild 1A",
-              "between children", "in twin 2i", "in twin 2ii", "after children"
+              "before children",
+              "in child 1",
+              "in grandchild 1A",
+              "between children",
+              "in twin 2i",
+              "in twin 2ii",
+              "after children"
           },
           impl);
     }

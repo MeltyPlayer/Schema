@@ -203,9 +203,10 @@ namespace schema.binary {
               if (methodSymbol.Parameters.Length == 1 &&
                   ComparisonExtensions.IsType((ISymbol) methodSymbol
                                                   .Parameters[0]
-                                                  .Type, typeof(IBinaryReader))) {
+                                                  .Type,
+                                              typeof(IBinaryReader))) {
                 members.Add(
-                    new SchemaMethodMember { Name = methodSymbol.Name });
+                    new SchemaMethodMember {Name = methodSymbol.Name});
               } else {
                 memberBetterSymbol.ReportDiagnostic(Rules.NotSupported);
               }
@@ -468,7 +469,8 @@ namespace schema.binary {
         // Checks if the member is a child of the current type
         {
           if (targetMemberType is ContainerMemberType containerMemberType) {
-            if (targetMemberType.TypeSymbol.IsChild(out var expectedParentTypeSymbol)) {
+            if (targetMemberType.TypeSymbol.IsChild(
+                    out var expectedParentTypeSymbol)) {
               if (expectedParentTypeSymbol.IsSameAs(containerTypeSymbol)) {
                 containerMemberType.IsChild = true;
               } else {

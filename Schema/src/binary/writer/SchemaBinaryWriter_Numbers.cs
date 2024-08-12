@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
+
 namespace schema.binary {
   public sealed partial class SchemaBinaryWriter {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 using schema.util.asserts;
 
+
 namespace schema.binary.testing {
   public static class BinarySchemaAssert {
     public static async Task<byte[]> GetEndianBinaryWriterBytes(

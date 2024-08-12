@@ -34,7 +34,7 @@ namespace build {
 
     [Test]
     public async Task TestReadNonnull() {
-      var ms = new MemoryStream(new byte[] { 1, 12, 0, 0, 0 });
+      var ms = new MemoryStream(new byte[] {1, 12, 0, 0, 0});
       using var br = new SchemaBinaryReader(ms);
 
       var parent = br.ReadNew<ParentImpl>();
@@ -44,7 +44,7 @@ namespace build {
 
     [Test]
     public async Task TestReadNull() {
-      var ms = new MemoryStream(new byte[] { 123 });
+      var ms = new MemoryStream(new byte[] {123});
       using var br = new SchemaBinaryReader(ms);
 
       var parent = br.ReadNew<ParentImpl>();
@@ -56,13 +56,13 @@ namespace build {
     [Test]
     public async Task TestWriteNonnull() {
       var parent = new ParentImpl();
-      parent.Field = new A { Value = 12 };
+      parent.Field = new A {Value = 12};
 
       var bw = new SchemaBinaryWriter();
       parent.Write(bw);
 
       var bytes = await BinarySchemaAssert.GetEndianBinaryWriterBytes(bw);
-      CollectionAssert.AreEqual(new byte[] { 1, 12, 0, 0, 0 }, bytes);
+      CollectionAssert.AreEqual(new byte[] {1, 12, 0, 0, 0}, bytes);
     }
 
     [Test]
@@ -74,7 +74,7 @@ namespace build {
       parent.Write(bw);
 
       var bytes = await BinarySchemaAssert.GetEndianBinaryWriterBytes(bw);
-      CollectionAssert.AreEqual(new byte[] { 123 }, bytes);
+      CollectionAssert.AreEqual(new byte[] {123}, bytes);
     }
   }
 }

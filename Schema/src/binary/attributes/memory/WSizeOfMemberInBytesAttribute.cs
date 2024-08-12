@@ -26,7 +26,8 @@ namespace schema.binary.attributes {
     protected override void InitFields() {
       this.AccessChainToOtherMember =
           this.GetAccessChainRelativeToContainer(
-              this.otherMemberName_, false);
+              this.otherMemberName_,
+              false);
     }
 
     public IChain<IAccessChainNode> AccessChainToOtherMember {

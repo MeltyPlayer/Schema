@@ -87,14 +87,14 @@ namespace schema.binary {
     public void WriteByteDelayed(Task<byte> delayedValue)
       => this.WriteBufferDelayed_(
           delayedValue.ContinueWith(
-              valueTask => new[] { valueTask.Result }),
+              valueTask => new[] {valueTask.Result}),
           Task.FromResult((long) sizeof(byte)));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WriteSByteDelayed(Task<sbyte> delayedValue)
       => this.WriteBufferDelayed_(
           delayedValue.ContinueWith(
-              valueTask => new[] { (byte) valueTask.Result }),
+              valueTask => new[] {(byte) valueTask.Result}),
           Task.FromResult((long) sizeof(sbyte)));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

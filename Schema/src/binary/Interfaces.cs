@@ -1,5 +1,6 @@
 ﻿using System.IO;
 
+
 namespace schema.binary {
   public interface IBinary { }
 

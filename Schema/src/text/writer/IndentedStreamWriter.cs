@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.CompilerServices;
 
+
 namespace schema.text.writer {
   public interface IIndentable {
     int CurrentIndentAmount { get; }

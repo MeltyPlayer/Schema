@@ -18,7 +18,7 @@ namespace foo.bar {
     public byte Foo;
   }
 }",
-                                     @"using System;
+                                           @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -30,7 +30,7 @@ namespace foo.bar {
   }
 }
 ",
-                                     @"using System;
+                                           @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -66,7 +66,7 @@ namespace foo.bar {
     public byte Bar;
   }
 }",
-                                     @"using System;
+                                           @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -78,7 +78,7 @@ namespace foo.bar {
   }
 }
 ",
-                                     @"using System;
+                                           @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -117,7 +117,7 @@ namespace foo.bar {
   }
 }",
 // Size Wrapper                                           
-                                           (@"using System;
+                                                 (@"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -128,7 +128,7 @@ namespace foo.bar {
   }
 }
 ",
-                                            @"using System;
+                                                  @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -140,7 +140,7 @@ namespace foo.bar {
 }
 "),
 // Parent Impl
-                                           (@"using System;
+                                                 (@"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -153,7 +153,7 @@ namespace foo.bar {
   }
 }
 ",
-                                            @"using System;
+                                                  @"using System;
 using schema.binary;
 
 namespace foo.bar {

@@ -2,6 +2,7 @@
 
 using NUnit.Framework;
 
+
 namespace schema.util {
   public class NameofUtilTests {
     public static uint Value { get; set; }

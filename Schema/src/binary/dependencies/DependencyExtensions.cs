@@ -2,6 +2,7 @@
 
 using schema.binary.attributes;
 
+
 namespace schema.binary.dependencies {
   public static class DependencyExtensions {
     public static bool DependsOnSequenceImports(
@@ -13,7 +14,7 @@ namespace schema.binary.dependencies {
              member => member.MemberType is ISequenceMemberType {
                  LengthSourceType: not SequenceLengthSourceType
                      .UNTIL_END_OF_STREAM,
-                 SequenceTypeInfo: { IsLengthConst: false },
+                 SequenceTypeInfo: {IsLengthConst: false},
              });
 
     public static bool DependsOnSchemaAttributes(
@@ -49,7 +50,7 @@ namespace schema.binary.dependencies {
          .Members
          .OfType<ISchemaValueMember>()
          .Any(member => member.MemberType is IPrimitiveMemberType {
-             PointerToAttribute: { NullValue: { } }
+             PointerToAttribute: {NullValue: { }}
          });
 
     public static bool DependsOnCollectionsImports(

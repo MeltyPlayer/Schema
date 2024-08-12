@@ -21,10 +21,10 @@ namespace schema.text {
   public class ReadUpToAttribute : Attribute {
     public ReadUpToAttribute(char primary, params char[] secondary)
       => this.UpToStrings =
-          new[] { primary }.Concat(secondary).Select(c => $"{c}").ToArray();
+          new[] {primary}.Concat(secondary).Select(c => $"{c}").ToArray();
 
     public ReadUpToAttribute(string primary, params string[] secondary)
-      => this.UpToStrings = new[] { primary }.Concat(secondary).ToArray();
+      => this.UpToStrings = new[] {primary}.Concat(secondary).ToArray();
 
     public IReadOnlyList<string> UpToStrings { get; }
   }
@@ -33,10 +33,10 @@ namespace schema.text {
   public class ReadUpToRegexAttribute : Attribute {
     public ReadUpToRegexAttribute(char primary, params char[] secondary)
       => this.UpToRegexStrings =
-          new[] { primary }.Concat(secondary).Select(c => $"{c}").ToArray();
+          new[] {primary}.Concat(secondary).Select(c => $"{c}").ToArray();
 
     public ReadUpToRegexAttribute(string primary, params string[] secondary)
-      => this.UpToRegexStrings = new[] { primary }.Concat(secondary).ToArray();
+      => this.UpToRegexStrings = new[] {primary}.Concat(secondary).ToArray();
 
     public IReadOnlyList<string> UpToRegexStrings { get; }
   }
@@ -45,10 +45,10 @@ namespace schema.text {
   public class ReadWhileAttribute : Attribute {
     public ReadWhileAttribute(char primary, params char[] secondary)
       => this.WhileStrings =
-          new[] { primary }.Concat(secondary).Select(c => $"{c}").ToArray();
+          new[] {primary}.Concat(secondary).Select(c => $"{c}").ToArray();
 
     public ReadWhileAttribute(string primary, params string[] secondary)
-      => this.WhileStrings = new[] { primary }.Concat(secondary).ToArray();
+      => this.WhileStrings = new[] {primary}.Concat(secondary).ToArray();
 
     public IReadOnlyList<string> WhileStrings { get; }
   }
@@ -57,10 +57,10 @@ namespace schema.text {
   public class ReadWhileRegexAttribute : Attribute {
     public ReadWhileRegexAttribute(char primary, params char[] secondary)
       => this.WhileRegexStrings =
-          new[] { primary }.Concat(secondary).Select(c => $"{c}").ToArray();
+          new[] {primary}.Concat(secondary).Select(c => $"{c}").ToArray();
 
     public ReadWhileRegexAttribute(string primary, params string[] secondary)
-      => this.WhileRegexStrings = new[] { primary }.Concat(secondary).ToArray();
+      => this.WhileRegexStrings = new[] {primary}.Concat(secondary).ToArray();
 
     public IReadOnlyList<string> WhileRegexStrings { get; }
   }

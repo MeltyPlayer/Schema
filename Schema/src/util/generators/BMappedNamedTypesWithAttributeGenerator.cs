@@ -86,7 +86,10 @@ namespace schema.util.generators {
                 }
               }
             } catch (Exception ex) {
-              context.ReportDiagnostic(Rules.CreateExceptionDiagnostic(mappedBySymbol.Keys.First(), ex));
+              context.ReportDiagnostic(
+                  Rules.CreateExceptionDiagnostic(
+                      mappedBySymbol.Keys.First(),
+                      ex));
             }
           });
     }
