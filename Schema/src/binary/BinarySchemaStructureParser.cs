@@ -7,7 +7,6 @@ using schema.binary.attributes;
 using schema.binary.parser;
 using schema.binary.parser.asserts;
 using schema.util.symbols;
-using schema.util.types;
 
 
 namespace schema.binary {

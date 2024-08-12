@@ -1,7 +1,4 @@
-﻿using System.IO;
-
-
-namespace schema.binary {
+﻿namespace schema.binary {
   public interface IBinary { }
 
   public interface IBinarySerializable : IBinary {

@@ -12,7 +12,6 @@ using schema.binary.parser;
 using schema.util.asserts;
 using schema.util.diagnostics;
 using schema.util.symbols;
-using schema.util.types;
 
 
 namespace schema.binary {

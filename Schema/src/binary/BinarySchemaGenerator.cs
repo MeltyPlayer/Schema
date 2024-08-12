@@ -10,7 +10,6 @@ using schema.binary.text;
 using schema.util.generators;
 using schema.util.symbols;
 using schema.util.syntax;
-using schema.util.types;
 
 
 namespace schema.binary {

@@ -1,6 +1,4 @@
-﻿using System.Collections.Concurrent;
-
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 using schema.util.diagnostics;

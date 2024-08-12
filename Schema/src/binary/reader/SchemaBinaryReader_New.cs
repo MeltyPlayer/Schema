@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-using schema.util.asserts;
-
 
 namespace schema.binary {
   public sealed partial class SchemaBinaryReader {

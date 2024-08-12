@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 
 using Microsoft.CodeAnalysis;
 
 using schema.binary.attributes;
 using schema.util.asserts;
 using schema.util.symbols;
-using schema.util.types;
 
 
 namespace schema.binary {

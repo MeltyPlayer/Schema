@@ -9,7 +9,6 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 using schema.util.symbols;
 using schema.util.syntax;
-using schema.util.types;
 
 
 namespace schema.binary {

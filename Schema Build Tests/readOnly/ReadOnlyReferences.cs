@@ -1,6 +1,4 @@
-﻿using readOnly;
-
-using schema.readOnly;
+﻿using schema.readOnly;
 
 
 namespace foo.bar {
