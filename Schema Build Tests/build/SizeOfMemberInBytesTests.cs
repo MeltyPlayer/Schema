@@ -28,13 +28,13 @@ internal partial class SizeOfMemberInBytesTests {
 
   [Test]
   public async Task TestSizeOfThroughParent() {
-      var parent = new ParentImpl();
-      parent.Field = 12;
+    var parent = new ParentImpl();
+    parent.Field = 12;
 
-      var bw = new SchemaBinaryWriter();
-      parent.Write(bw);
+    var bw = new SchemaBinaryWriter();
+    parent.Write(bw);
 
-      var bytes = await BinarySchemaAssert.GetEndianBinaryWriterBytes(bw);
-      CollectionAssert.AreEqual(new byte[] {4, 12, 0, 0, 0}, bytes);
-    }
+    var bytes = await BinarySchemaAssert.GetEndianBinaryWriterBytes(bw);
+    CollectionAssert.AreEqual(new byte[] {4, 12, 0, 0, 0}, bytes);
+  }
 }

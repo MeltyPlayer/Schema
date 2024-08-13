@@ -16,12 +16,12 @@ public partial class ClassSequenceTests {
     public int Value { get; set; }
 
     public override bool Equals(object other) {
-        if (other is SchemaClass otherStruct) {
-          return this.Value.Equals(otherStruct.Value);
-        }
-
-        return false;
+      if (other is SchemaClass otherStruct) {
+        return this.Value.Equals(otherStruct.Value);
       }
+
+      return false;
+    }
   }
 
 
@@ -31,61 +31,61 @@ public partial class ClassSequenceTests {
     public SchemaClass[] Values { get; set; }
 
     public override bool Equals(object other) {
-        if (other is ClassArraySequenceWrapper otherSequenceWrapper) {
-          return this.Values.SequenceEqual(otherSequenceWrapper.Values);
-        }
-
-        return false;
+      if (other is ClassArraySequenceWrapper otherSequenceWrapper) {
+        return this.Values.SequenceEqual(otherSequenceWrapper.Values);
       }
+
+      return false;
+    }
   }
 
   [Test]
   public void TestWriteAndReadArrayObject() {
-      var expectedSw = new ClassArraySequenceWrapper {
-          Values = new[] {
-              new SchemaClass {Value = 1},
-              new SchemaClass {Value = 2},
-              new SchemaClass {Value = 3}
-          }
-      };
+    var expectedSw = new ClassArraySequenceWrapper {
+        Values = new[] {
+            new SchemaClass {Value = 1},
+            new SchemaClass {Value = 2},
+            new SchemaClass {Value = 3}
+        }
+    };
 
-      var ms = new MemoryStream();
+    var ms = new MemoryStream();
 
-      var endianness = Endianness.BigEndian;
+    var endianness = Endianness.BigEndian;
 
-      var ew = new SchemaBinaryWriter(endianness);
-      expectedSw.Write(ew);
-      ew.CompleteAndCopyTo(ms);
+    var ew = new SchemaBinaryWriter(endianness);
+    expectedSw.Write(ew);
+    ew.CompleteAndCopyTo(ms);
 
-      var er = new SchemaBinaryReader(ms, endianness);
-      er.Position = 0;
-      var actualSws = er.ReadNew<ClassArraySequenceWrapper>();
-      Assert.AreEqual(expectedSw, actualSws);
-    }
+    var er = new SchemaBinaryReader(ms, endianness);
+    er.Position = 0;
+    var actualSws = er.ReadNew<ClassArraySequenceWrapper>();
+    Assert.AreEqual(expectedSw, actualSws);
+  }
 
   [Test]
   public void TestWriteAndReadArrayValues() {
-      var expectedSw = new ClassArraySequenceWrapper {
-          Values = new[] {
-              new SchemaClass {Value = 1},
-              new SchemaClass {Value = 2},
-              new SchemaClass {Value = 3}
-          }
-      };
+    var expectedSw = new ClassArraySequenceWrapper {
+        Values = new[] {
+            new SchemaClass {Value = 1},
+            new SchemaClass {Value = 2},
+            new SchemaClass {Value = 3}
+        }
+    };
 
-      var ms = new MemoryStream();
+    var ms = new MemoryStream();
 
-      var endianness = Endianness.BigEndian;
+    var endianness = Endianness.BigEndian;
 
-      var ew = new SchemaBinaryWriter(endianness);
-      expectedSw.Write(ew);
-      ew.CompleteAndCopyTo(ms);
+    var ew = new SchemaBinaryWriter(endianness);
+    expectedSw.Write(ew);
+    ew.CompleteAndCopyTo(ms);
 
-      var er = new SchemaBinaryReader(ms, endianness);
-      er.Position = 1;
-      var actualSws = er.ReadNews<SchemaClass>(expectedSw.Values.Length);
-      Assert.True(expectedSw.Values.SequenceEqual(actualSws));
-    }
+    var er = new SchemaBinaryReader(ms, endianness);
+    er.Position = 1;
+    var actualSws = er.ReadNews<SchemaClass>(expectedSw.Values.Length);
+    Assert.True(expectedSw.Values.SequenceEqual(actualSws));
+  }
 
 
   [BinarySchema]
@@ -94,33 +94,33 @@ public partial class ClassSequenceTests {
     public List<SchemaClass> Values { get; set; } = new();
 
     public override bool Equals(object other) {
-        if (other is ClassListSequenceWrapper otherSequenceWrapper) {
-          return this.Values.SequenceEqual(otherSequenceWrapper.Values);
-        }
-
-        return false;
+      if (other is ClassListSequenceWrapper otherSequenceWrapper) {
+        return this.Values.SequenceEqual(otherSequenceWrapper.Values);
       }
+
+      return false;
+    }
   }
 
   [Test]
   public void TestWriteAndReadListObject() {
-      var expectedSw = new ClassListSequenceWrapper {
-          Values = new List<SchemaClass> {
-              new() {Value = 1}, new() {Value = 2}, new() {Value = 3}
-          }
-      };
+    var expectedSw = new ClassListSequenceWrapper {
+        Values = new List<SchemaClass> {
+            new() {Value = 1}, new() {Value = 2}, new() {Value = 3}
+        }
+    };
 
-      var ms = new MemoryStream();
+    var ms = new MemoryStream();
 
-      var endianness = Endianness.BigEndian;
+    var endianness = Endianness.BigEndian;
 
-      var ew = new SchemaBinaryWriter(endianness);
-      expectedSw.Write(ew);
-      ew.CompleteAndCopyTo(ms);
+    var ew = new SchemaBinaryWriter(endianness);
+    expectedSw.Write(ew);
+    ew.CompleteAndCopyTo(ms);
 
-      ms.Position = 0;
-      var er = new SchemaBinaryReader(ms, endianness);
-      var actualSw = er.ReadNew<ClassListSequenceWrapper>();
-      Assert.AreEqual(expectedSw, actualSw);
-    }
+    ms.Position = 0;
+    var er = new SchemaBinaryReader(ms, endianness);
+    var actualSw = er.ReadNew<ClassListSequenceWrapper>();
+    Assert.AreEqual(expectedSw, actualSw);
+  }
 }

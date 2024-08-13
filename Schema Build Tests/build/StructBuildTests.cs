@@ -16,12 +16,12 @@ public partial class StructBuildTests {
     public override String ToString() => this.Value.ToString();
 
     public override bool Equals(object other) {
-        if (other is SchemaStruct otherStruct) {
-          return this.Value.Equals(otherStruct.Value);
-        }
-
-        return false;
+      if (other is SchemaStruct otherStruct) {
+        return this.Value.Equals(otherStruct.Value);
       }
+
+      return false;
+    }
   }
 
   [BinarySchema]
@@ -31,31 +31,31 @@ public partial class StructBuildTests {
     public override String ToString() => this.Value.ToString();
 
     public override bool Equals(object other) {
-        if (other is StructWrapper otherWrapper) {
-          return this.Value.Equals(otherWrapper.Value);
-        }
-
-        return false;
+      if (other is StructWrapper otherWrapper) {
+        return this.Value.Equals(otherWrapper.Value);
       }
+
+      return false;
+    }
   }
 
   [Test]
   public void TestWriteAndRead() {
-      var expectedSw =
-          new StructWrapper {Value = new SchemaStruct {Value = 1}};
+    var expectedSw =
+        new StructWrapper {Value = new SchemaStruct {Value = 1}};
 
-      var ms = new MemoryStream();
+    var ms = new MemoryStream();
 
-      var endianness = Endianness.BigEndian;
-      var ew = new SchemaBinaryWriter(endianness);
+    var endianness = Endianness.BigEndian;
+    var ew = new SchemaBinaryWriter(endianness);
 
-      expectedSw.Write(ew);
-      ew.CompleteAndCopyTo(ms);
+    expectedSw.Write(ew);
+    ew.CompleteAndCopyTo(ms);
 
-      ms.Position = 0;
-      var er = new SchemaBinaryReader(ms, endianness);
-      var actualSw = er.ReadNew<StructWrapper>();
+    ms.Position = 0;
+    var er = new SchemaBinaryReader(ms, endianness);
+    var actualSw = er.ReadNew<StructWrapper>();
 
-      Assert.AreEqual(expectedSw, actualSw);
-    }
+    Assert.AreEqual(expectedSw, actualSw);
+  }
 }

@@ -223,7 +223,9 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
       bool isSkipped =
           memberBetterSymbol.HasAttribute<SkipAttribute>() ||
           (memberSymbol.Name == nameof(IChildOf<IBinaryConvertible>.Parent) &&
-           parentSymbol != null);
+           parentSymbol != null) ||
+          (containerSymbol.IsIndexed() &&
+           memberSymbol.Name == nameof(IIndexed.Index));
 
       // Skips parent field for child types
 

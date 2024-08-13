@@ -21,8 +21,7 @@ public static class BinarySchemaSymbolUtil {
   public static bool IsBinaryDeserializable(this ISymbol symbol)
     => symbol.Implements<IBinaryDeserializable>();
 
-  public static bool
-      IsChild(this ISymbol symbol, out INamedTypeSymbol parent) {
+  public static bool IsChild(this ISymbol symbol, out INamedTypeSymbol parent) {
     if (symbol.Implements(typeof(IChildOf<>), out var matchingType)) {
       parent = Asserts.AsA<INamedTypeSymbol>(
           matchingType.TypeArguments.First());
@@ -32,4 +31,7 @@ public static class BinarySchemaSymbolUtil {
     parent = default;
     return false;
   }
+
+  public static bool IsIndexed(this ISymbol symbol)
+    => symbol.Implements<IIndexed>();
 }

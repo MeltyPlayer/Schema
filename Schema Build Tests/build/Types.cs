@@ -57,7 +57,6 @@ public partial class ClassWithInt64Bools : IBinaryConvertible {
   public bool[] ReadonlyBools { get; set; }
 }
 
-
 [BinarySchema]
 public partial class ClassWithChars : IBinaryConvertible {
   public char Char { get; private set; }
@@ -70,7 +69,6 @@ public partial class ClassWithChars : IBinaryConvertible {
   [SequenceLengthSource(4)]
   public char[] ReadonlyChars { get; set; }
 }
-
 
 public interface IMagicSection<T> {
   T Data { get; }
