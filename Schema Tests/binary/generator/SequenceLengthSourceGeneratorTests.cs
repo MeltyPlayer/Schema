@@ -1,11 +1,12 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.text {
-  internal class SequenceLengthSourceGeneratorTests {
-    [Test]
-    public void TestConstLength() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+namespace schema.binary.text;
+
+internal class SequenceLengthSourceGeneratorTests {
+  [Test]
+  public void TestConstLength() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using System.Collections.Generic;
 using schema.binary;
 using schema.binary.attributes;
@@ -31,7 +32,7 @@ namespace foo.bar {
     public List<int>? IfBooleanList { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using System.Collections.Generic;
 using schema.binary;
 using schema.util.sequences;
@@ -64,7 +65,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -86,11 +87,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestISequence() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestISequence() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 using schema.util.sequences;
@@ -105,7 +106,7 @@ namespace foo.bar {
   public class SequenceImpl<T1, T2> : ISequence<SequenceImpl<(T1 First, T2 Second)>, (T1 First, T2 Second)> { 
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 using schema.util.sequences;
 
@@ -118,7 +119,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -129,6 +130,5 @@ namespace foo.bar {
   }
 }
 ");
-    }
   }
 }

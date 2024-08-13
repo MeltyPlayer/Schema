@@ -12,81 +12,81 @@ using schema.util.symbols;
 using schema.util.syntax;
 
 
-namespace schema.binary {
-  [Generator(LanguageNames.CSharp)]
-  public class BinarySchemaGenerator
-      : BMappedNamedTypesWithAttributeGenerator<BinarySchemaAttribute,
-          IBinarySchemaContainer> {
-    private readonly BinarySchemaContainerParser parser_ = new();
+namespace schema.binary;
 
-    private readonly BinarySchemaReaderGenerator readerImpl_ = new();
-    private readonly BinarySchemaWriterGenerator writerImpl_ = new();
+[Generator(LanguageNames.CSharp)]
+public class BinarySchemaGenerator
+    : BMappedNamedTypesWithAttributeGenerator<BinarySchemaAttribute,
+        IBinarySchemaContainer> {
+  private readonly BinarySchemaContainerParser parser_ = new();
 
-    public override bool TryToMap(
-        TypeDeclarationSyntax syntax,
-        INamedTypeSymbol typeSymbol,
-        out IBinarySchemaContainer mapped) {
-      mapped = default;
-      if (!syntax.IsPartial()) {
-        return false;
-      }
+  private readonly BinarySchemaReaderGenerator readerImpl_ = new();
+  private readonly BinarySchemaWriterGenerator writerImpl_ = new();
 
-      mapped = this.parser_.ParseContainer(typeSymbol);
-      return true;
+  public override bool TryToMap(
+      TypeDeclarationSyntax syntax,
+      INamedTypeSymbol typeSymbol,
+      out IBinarySchemaContainer mapped) {
+    mapped = default;
+    if (!syntax.IsPartial()) {
+      return false;
     }
 
-    public override void PreprocessAllMapped(
-        IReadOnlyDictionary<INamedTypeSymbol, IBinarySchemaContainer>
-            containerByNamedTypeSymbol) {
-      // Hooks up size of dependencies.
-      {
-        var sizeOfMemberInBytesDependencyFixer =
-            new WSizeOfMemberInBytesDependencyFixer();
-        foreach (var container in containerByNamedTypeSymbol.Values) {
-          foreach (var member in
-                   container.Members.OfType<ISchemaValueMember>()) {
-            if (member.MemberType is IPrimitiveMemberType
-                primitiveMemberType) {
-              if (primitiveMemberType.AccessChainToSizeOf != null) {
-                sizeOfMemberInBytesDependencyFixer.AddDependenciesForContainer(
-                    containerByNamedTypeSymbol,
-                    primitiveMemberType.AccessChainToSizeOf);
-              }
+    mapped = this.parser_.ParseContainer(typeSymbol);
+    return true;
+  }
 
-              var pointerToAttribute = primitiveMemberType.PointerToAttribute;
-              if (pointerToAttribute != null) {
-                sizeOfMemberInBytesDependencyFixer.AddDependenciesForContainer(
-                    containerByNamedTypeSymbol,
-                    pointerToAttribute.AccessChainToOtherMember);
-              }
+  public override void PreprocessAllMapped(
+      IReadOnlyDictionary<INamedTypeSymbol, IBinarySchemaContainer>
+          containerByNamedTypeSymbol) {
+    // Hooks up size of dependencies.
+    {
+      var sizeOfMemberInBytesDependencyFixer =
+          new WSizeOfMemberInBytesDependencyFixer();
+      foreach (var container in containerByNamedTypeSymbol.Values) {
+        foreach (var member in
+                 container.Members.OfType<ISchemaValueMember>()) {
+          if (member.MemberType is IPrimitiveMemberType
+              primitiveMemberType) {
+            if (primitiveMemberType.AccessChainToSizeOf != null) {
+              sizeOfMemberInBytesDependencyFixer.AddDependenciesForContainer(
+                  containerByNamedTypeSymbol,
+                  primitiveMemberType.AccessChainToSizeOf);
+            }
+
+            var pointerToAttribute = primitiveMemberType.PointerToAttribute;
+            if (pointerToAttribute != null) {
+              sizeOfMemberInBytesDependencyFixer.AddDependenciesForContainer(
+                  containerByNamedTypeSymbol,
+                  pointerToAttribute.AccessChainToOtherMember);
             }
           }
         }
       }
     }
+  }
 
-    public override void PreprocessCompilation(Compilation compilation) {
-      MemberReferenceUtil.PopulateBinaryTypes(compilation);
+  public override void PreprocessCompilation(Compilation compilation) {
+    MemberReferenceUtil.PopulateBinaryTypes(compilation);
+  }
+
+  public override IEnumerable<(string fileName, string source)>
+      GenerateSourcesForMappedNamedType(IBinarySchemaContainer container) {
+    var containerSymbol = container.TypeSymbol;
+    if (containerSymbol.Implements<IBinaryDeserializable>() &&
+        containerSymbol.MemberNames.All(member => member != "Read")) {
+      var readerCode = this.readerImpl_.Generate(container);
+      yield return (
+          $"{containerSymbol.GetUniqueNameForGenerator()}_reader.g",
+          readerCode);
     }
 
-    public override IEnumerable<(string fileName, string source)>
-        GenerateSourcesForMappedNamedType(IBinarySchemaContainer container) {
-      var containerSymbol = container.TypeSymbol;
-      if (containerSymbol.Implements<IBinaryDeserializable>() &&
-          containerSymbol.MemberNames.All(member => member != "Read")) {
-        var readerCode = this.readerImpl_.Generate(container);
-        yield return (
-            $"{containerSymbol.GetUniqueNameForGenerator()}_reader.g",
-            readerCode);
-      }
-
-      if (containerSymbol.Implements<IBinarySerializable>() &&
-          containerSymbol.MemberNames.All(member => member != "Write")) {
-        var writerCode = this.writerImpl_.Generate(container);
-        yield return (
-            $"{containerSymbol.GetUniqueNameForGenerator()}_writer.g",
-            writerCode);
-      }
+    if (containerSymbol.Implements<IBinarySerializable>() &&
+        containerSymbol.MemberNames.All(member => member != "Write")) {
+      var writerCode = this.writerImpl_.Generate(container);
+      yield return (
+          $"{containerSymbol.GetUniqueNameForGenerator()}_writer.g",
+          writerCode);
     }
   }
 }

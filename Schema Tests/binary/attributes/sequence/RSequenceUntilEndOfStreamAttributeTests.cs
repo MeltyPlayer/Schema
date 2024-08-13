@@ -1,11 +1,12 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.attributes {
-  internal class RSequenceUntilEndOfStreamAttributeTests {
-    [Test]
-    public void TestByteArrayUntilEndOfStream() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+namespace schema.binary.attributes;
+
+internal class RSequenceUntilEndOfStreamAttributeTests {
+  [Test]
+  public void TestByteArrayUntilEndOfStream() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -16,7 +17,7 @@ namespace foo.bar {
     public byte[] Field { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using System.Collections.Generic;
 using schema.binary;
 
@@ -28,7 +29,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -39,11 +40,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestByteListUntilEndOfStream() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestByteListUntilEndOfStream() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using System.Collections.Generic;
 
 using schema.binary;
@@ -56,7 +57,7 @@ namespace foo.bar {
     public List<byte> Field { get; } = new();
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using System.Collections.Generic;
 using schema.binary;
 
@@ -73,7 +74,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -86,11 +87,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestIntArrayUntilEndOfStream() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestIntArrayUntilEndOfStream() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -101,7 +102,7 @@ namespace foo.bar {
     public int[] Field { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using System.Collections.Generic;
 using schema.binary;
 
@@ -113,7 +114,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -124,11 +125,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestIntListUntilEndOfStream() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestIntListUntilEndOfStream() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using System.Collections.Generic;
 
 using schema.binary;
@@ -141,7 +142,7 @@ namespace foo.bar {
     public List<int> Field { get; } = new();
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using System.Collections.Generic;
 using schema.binary;
 
@@ -158,7 +159,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -171,11 +172,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestClassArrayUntilEndOfStream() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestClassArrayUntilEndOfStream() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -188,7 +189,7 @@ namespace foo.bar {
     public A[] Field { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using System.Collections.Generic;
 using schema.binary;
 
@@ -208,7 +209,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -221,11 +222,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestClassListUntilEndOfStream() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestClassListUntilEndOfStream() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using System.Collections.Generic;
 
 using schema.binary;
@@ -240,7 +241,7 @@ namespace foo.bar {
     public List<A> Field { get; } = new();
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using System.Collections.Generic;
 using schema.binary;
 
@@ -259,7 +260,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -272,11 +273,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestStructArrayUntilEndOfStream() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestStructArrayUntilEndOfStream() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -289,7 +290,7 @@ namespace foo.bar {
     public A[] Field { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using System.Collections.Generic;
 using schema.binary;
 
@@ -309,7 +310,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -322,11 +323,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestStructListUntilEndOfStream() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestStructListUntilEndOfStream() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using System.Collections.Generic;
 
 using schema.binary;
@@ -341,7 +342,7 @@ namespace foo.bar {
     public List<A> Field { get; } = new();
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using System.Collections.Generic;
 using schema.binary;
 
@@ -360,7 +361,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -373,6 +374,5 @@ namespace foo.bar {
   }
 }
 ");
-    }
   }
 }

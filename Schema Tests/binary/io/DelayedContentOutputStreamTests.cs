@@ -13,17 +13,18 @@ using schema.util.asserts;
 using schema.util.streams;
 
 
-namespace schema.util.data {
-  public class DelayedContentOutputStreamTests {
-    [Test]
-    public async Task TestEmptyStream() {
+namespace schema.util.data;
+
+public class DelayedContentOutputStreamTests {
+  [Test]
+  public async Task TestEmptyStream() {
       var impl = new DelayedContentOutputStream(null);
       var actualBytes = await ToBytes_(impl);
       Assert.AreEqual(0, actualBytes.Length);
     }
 
-    [Test]
-    public async Task TestEmptySynchronousStream() {
+  [Test]
+  public async Task TestEmptySynchronousStream() {
       var impl = new DelayedContentOutputStream(null);
 
       impl.WriteBytes(Array.Empty<byte>());
@@ -32,8 +33,8 @@ namespace schema.util.data {
       Assert.AreEqual(0, actualBytes.Length);
     }
 
-    [Test]
-    public async Task TestEmptyDelayedStream() {
+  [Test]
+  public async Task TestEmptyDelayedStream() {
       var impl = new DelayedContentOutputStream(null);
 
       impl.WriteDelayed(Task.FromResult(Array.Empty<byte>()));
@@ -43,8 +44,8 @@ namespace schema.util.data {
     }
 
 
-    [Test]
-    public async Task TestWriteIndividual() {
+  [Test]
+  public async Task TestWriteIndividual() {
       var impl = new DelayedContentOutputStream(null);
 
       impl.WriteByte(1);
@@ -55,8 +56,8 @@ namespace schema.util.data {
       AssertSequence_(new byte[] {1, 2, 3}, actualBytes);
     }
 
-    [Test]
-    public async Task TestWriteArrays() {
+  [Test]
+  public async Task TestWriteArrays() {
       var impl = new DelayedContentOutputStream(null);
 
       impl.WriteBytes(new byte[] {1, 2});
@@ -67,8 +68,8 @@ namespace schema.util.data {
       AssertSequence_(new byte[] {1, 2, 3, 4, 5, 6}, actualBytes);
     }
 
-    [Test]
-    public async Task TestWriteDelayed() {
+  [Test]
+  public async Task TestWriteDelayed() {
       var impl = new DelayedContentOutputStream(null);
 
       impl.WriteDelayed(Task.FromResult(new byte[] {1, 2}));
@@ -79,8 +80,8 @@ namespace schema.util.data {
       AssertSequence_(new byte[] {1, 2, 3, 4, 5, 6}, actualBytes);
     }
 
-    [Test]
-    public async Task TestWriteEverything() {
+  [Test]
+  public async Task TestWriteEverything() {
       var impl = new DelayedContentOutputStream(null);
 
       impl.WriteByte(1);
@@ -96,8 +97,8 @@ namespace schema.util.data {
     }
 
 
-    [Test]
-    public async Task TestPosition() {
+  [Test]
+  public async Task TestPosition() {
       var impl = new DelayedContentOutputStream(null);
 
       var positionTask1 = impl.GetAbsolutePosition();
@@ -135,8 +136,8 @@ namespace schema.util.data {
                       actualBytes);
     }
 
-    [Test]
-    public async Task TestLength() {
+  [Test]
+  public async Task TestLength() {
       var impl = new DelayedContentOutputStream(null);
 
       var lengthTask = impl.GetAbsoluteLength();
@@ -156,8 +157,8 @@ namespace schema.util.data {
                       actualBytes);
     }
 
-    [Test]
-    public async Task TestBlockLength() {
+  [Test]
+  public async Task TestBlockLength() {
       var impl = new DelayedContentOutputStream(null);
 
       impl.WriteDelayed(
@@ -233,8 +234,8 @@ namespace schema.util.data {
           actualBytes);
     }
 
-    [Test]
-    public async Task TestAbsoluteDelayedLength() {
+  [Test]
+  public async Task TestAbsoluteDelayedLength() {
       var impl = new DelayedContentOutputStream(null);
 
       var lengthTask = impl.GetAbsoluteLength();
@@ -250,17 +251,17 @@ namespace schema.util.data {
     }
 
 
-    private async Task<byte[]> ToBytes_(
-        DelayedContentOutputStream subDelayedContentOutputStream) {
+  private async Task<byte[]> ToBytes_(
+      DelayedContentOutputStream subDelayedContentOutputStream) {
       using var memoryStream = new MemoryStream();
       await subDelayedContentOutputStream
           .CompleteAndCopyToDelayed(new WritableStream(memoryStream));
       return memoryStream.ToArray();
     }
 
-    private void AssertSequence_<TEnumerable>(
-        TEnumerable enumerableA,
-        TEnumerable enumerableB) where TEnumerable : IEnumerable {
+  private void AssertSequence_<TEnumerable>(
+      TEnumerable enumerableA,
+      TEnumerable enumerableB) where TEnumerable : IEnumerable {
       var enumeratorA = enumerableA.GetEnumerator();
       var enumeratorB = enumerableB.GetEnumerator();
 
@@ -289,7 +290,7 @@ namespace schema.util.data {
                    $"  B: {ConvertSequenceToString_(enumerableB)}");
     }
 
-    private string ConvertSequenceToString_(IEnumerable enumerable) {
+  private string ConvertSequenceToString_(IEnumerable enumerable) {
       var str = new StringBuilder();
       foreach (var value in enumerable) {
         if (str.Length > 0) {
@@ -301,5 +302,4 @@ namespace schema.util.data {
 
       return str.ToString();
     }
-  }
 }

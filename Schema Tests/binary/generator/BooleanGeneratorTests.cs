@@ -1,11 +1,12 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.text {
-  internal class BooleanGeneratorTests {
-    [Test]
-    public void TestByte() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+namespace schema.binary.text;
+
+internal class BooleanGeneratorTests {
+  [Test]
+  public void TestByte() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -19,7 +20,7 @@ namespace foo.bar {
     public bool ReadonlyField { get; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -31,7 +32,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -43,12 +44,12 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
 
-    [Test]
-    public void TestInt16() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestInt16() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -62,7 +63,7 @@ namespace foo.bar {
     public bool ReadonlyField { get; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -74,7 +75,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -86,12 +87,12 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
 
-    [Test]
-    public void TestInt32() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestInt32() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -105,7 +106,7 @@ namespace foo.bar {
     public bool ReadonlyField { get; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -117,7 +118,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -129,12 +130,12 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
 
-    [Test]
-    public void TestByteArray() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestByteArray() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -146,7 +147,7 @@ namespace foo.bar {
     public bool[] Field { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 using schema.util.sequences;
 
@@ -161,7 +162,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -174,6 +175,5 @@ namespace foo.bar {
   }
 }
 ");
-    }
   }
 }

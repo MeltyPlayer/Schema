@@ -1,10 +1,11 @@
 using NUnit.Framework;
 
 
-namespace schema.binary {
-  public class BooleanDiagnosticTests {
-    [Test]
-    public void TestBooleanWithoutAltFormat() {
+namespace schema.binary;
+
+public class BooleanDiagnosticTests {
+  [Test]
+  public void TestBooleanWithoutAltFormat() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 namespace foo.bar {
   [BinarySchema]
@@ -15,5 +16,4 @@ namespace foo.bar {
       BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
                                              Rules.BooleanNeedsIntegerFormat);
     }
-  }
 }

@@ -1,11 +1,12 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.attributes {
-  internal partial class StringLengthSourceAttributeTests {
-    [Test]
-    public void TestConstString() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+namespace schema.binary.attributes;
+
+internal partial class StringLengthSourceAttributeTests {
+  [Test]
+  public void TestConstString() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -14,7 +15,7 @@ namespace foo.bar {
     public readonly string Field = ""foo"";
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -25,7 +26,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -36,11 +37,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestConstLengthString() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestConstLengthString() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -51,7 +52,7 @@ namespace foo.bar {
     public string Field;
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -62,7 +63,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -73,6 +74,5 @@ namespace foo.bar {
   }
 }
 ");
-    }
   }
 }

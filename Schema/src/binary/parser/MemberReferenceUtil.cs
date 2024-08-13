@@ -8,24 +8,25 @@ using schema.util.asserts;
 using schema.util.symbols;
 
 
-namespace schema.binary.parser {
-  internal static class MemberReferenceUtil {
-    public static INamedTypeSymbol BinaryConvertibleTypeSymbol {
-      get;
-      private set;
-    }
+namespace schema.binary.parser;
 
-    public static INamedTypeSymbol BinarySerializableTypeSymbol {
-      get;
-      private set;
-    }
+internal static class MemberReferenceUtil {
+  public static INamedTypeSymbol BinaryConvertibleTypeSymbol {
+    get;
+    private set;
+  }
 
-    public static INamedTypeSymbol BinaryDeserializableTypeSymbol {
-      get;
-      private set;
-    }
+  public static INamedTypeSymbol BinarySerializableTypeSymbol {
+    get;
+    private set;
+  }
 
-    public static void PopulateBinaryTypes(Compilation compilation) {
+  public static INamedTypeSymbol BinaryDeserializableTypeSymbol {
+    get;
+    private set;
+  }
+
+  public static void PopulateBinaryTypes(Compilation compilation) {
       MemberReferenceUtil.BinaryConvertibleTypeSymbol
           = Asserts.CastNonnull(
               compilation.GetTypeByMetadataName(
@@ -40,8 +41,8 @@ namespace schema.binary.parser {
                   "schema.binary.IBinaryDeserializable"));
     }
 
-    public static IMemberType WrapTypeInfoWithMemberType(
-        ITypeInfo memberTypeInfo) {
+  public static IMemberType WrapTypeInfoWithMemberType(
+      ITypeInfo memberTypeInfo) {
       switch (memberTypeInfo) {
         case IIntegerTypeInfo integerTypeInfo:
         case INumberTypeInfo numberTypeInfo:
@@ -119,13 +120,12 @@ namespace schema.binary.parser {
       }
     }
 
-    public static BinarySchemaContainerParser.SchemaValueMember
-        WrapMemberReference(
-            IMemberReference memberReference)
-      => new() {
-          Name = memberReference.Name,
-          MemberType = MemberReferenceUtil.WrapTypeInfoWithMemberType(
-              memberReference.MemberTypeInfo),
-      };
-  }
+  public static BinarySchemaContainerParser.SchemaValueMember
+      WrapMemberReference(
+          IMemberReference memberReference)
+    => new() {
+        Name = memberReference.Name,
+        MemberType = MemberReferenceUtil.WrapTypeInfoWithMemberType(
+            memberReference.MemberTypeInfo),
+    };
 }

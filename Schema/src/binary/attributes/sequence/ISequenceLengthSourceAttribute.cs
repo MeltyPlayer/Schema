@@ -1,9 +1,9 @@
-﻿namespace schema.binary.attributes {
-  public interface ISequenceLengthSourceAttribute {
-    SequenceLengthSourceType Method { get; }
+﻿namespace schema.binary.attributes;
 
-    SchemaIntegerType LengthType { get; }
-    IMemberReference OtherMember { get; }
-    uint ConstLength { get; }
-  }
+public interface ISequenceLengthSourceAttribute {
+  SequenceLengthSourceType Method { get; }
+
+  SchemaIntegerType LengthType { get; }
+  IMemberReference OtherMember { get; }
+  uint ConstLength { get; }
 }

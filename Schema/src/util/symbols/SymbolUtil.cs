@@ -3,9 +3,10 @@
 using Microsoft.CodeAnalysis;
 
 
-namespace schema.util.symbols {
-  public static class SymbolUtil {
-    public static string GetUniqueNameForGenerator(this ISymbol symbol) {
+namespace schema.util.symbols;
+
+public static class SymbolUtil {
+  public static string GetUniqueNameForGenerator(this ISymbol symbol) {
       var sb = new StringBuilder();
 
       var fullyQualifiedNamespace = symbol.GetFullyQualifiedNamespace();
@@ -27,10 +28,9 @@ namespace schema.util.symbols {
       return sb.ToString();
     }
 
-    public static int GetArity(this ISymbol symbol)
-      => (symbol as INamedTypeSymbol)?.TypeArguments.Length ?? 0;
+  public static int GetArity(this ISymbol symbol)
+    => (symbol as INamedTypeSymbol)?.TypeArguments.Length ?? 0;
 
-    public static bool Exists(this ISymbol symbol)
-      => symbol.Locations.Length > 1;
-  }
+  public static bool Exists(this ISymbol symbol)
+    => symbol.Locations.Length > 1;
 }

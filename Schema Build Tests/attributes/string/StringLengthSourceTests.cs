@@ -6,17 +6,18 @@ using schema.binary;
 using schema.binary.attributes;
 
 
-namespace build {
-  public partial class StringLengthSourceTests {
-    [BinarySchema]
-    public partial class StringWrapper : IBinaryConvertible {
-      [StringLengthSource(SchemaIntegerType.BYTE)]
-      public string TextWithByteLength { get; set; }
+namespace build;
 
-      [StringLengthSource(4)]
-      public string TextWithConstLength { get; set; }
+public partial class StringLengthSourceTests {
+  [BinarySchema]
+  public partial class StringWrapper : IBinaryConvertible {
+    [StringLengthSource(SchemaIntegerType.BYTE)]
+    public string TextWithByteLength { get; set; }
 
-      public override bool Equals(object other) {
+    [StringLengthSource(4)]
+    public string TextWithConstLength { get; set; }
+
+    public override bool Equals(object other) {
         if (other is StringWrapper otherStringWrapper) {
           return this.TextWithByteLength.Equals(
                      otherStringWrapper.TextWithByteLength) &&
@@ -27,12 +28,12 @@ namespace build {
         return false;
       }
 
-      public override string ToString()
-        => $"{this.TextWithByteLength}, {this.TextWithConstLength}";
-    }
+    public override string ToString()
+      => $"{this.TextWithByteLength}, {this.TextWithConstLength}";
+  }
 
-    [Test]
-    public void TestWriteAndRead() {
+  [Test]
+  public void TestWriteAndRead() {
       var expectedSw = new StringWrapper {
           TextWithByteLength = "foobar", TextWithConstLength = "foob",
       };
@@ -51,5 +52,4 @@ namespace build {
 
       Assert.AreEqual(expectedSw, actualSw);
     }
-  }
 }

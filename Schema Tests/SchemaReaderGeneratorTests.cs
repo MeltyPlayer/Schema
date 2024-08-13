@@ -1,13 +1,14 @@
 using NUnit.Framework;
 
 
-namespace schema.binary.text {
-  public class SchemaReaderGeneratorTests {
-    [SetUp]
-    public void Setup() { }
+namespace schema.binary.text;
 
-    [Test]
-    public void TestByte() {
+public class SchemaReaderGeneratorTests {
+  [SetUp]
+  public void Setup() { }
+
+  [Test]
+  public void TestByte() {
       this.AssertGenerated_(@"
 using schema.binary;
 
@@ -30,8 +31,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestSByte() {
+  [Test]
+  public void TestSByte() {
       this.AssertGenerated_(@"
 using schema.binary;
 
@@ -54,8 +55,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestInt16() {
+  [Test]
+  public void TestInt16() {
       this.AssertGenerated_(@"
 using schema.binary;
 
@@ -78,8 +79,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestConstArray() {
+  [Test]
+  public void TestConstArray() {
       this.AssertGenerated_(@"
 using schema.binary;
 
@@ -102,8 +103,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestArrayOtherMemberLength() {
+  [Test]
+  public void TestArrayOtherMemberLength() {
       this.AssertGenerated_(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -133,8 +134,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestNestedClass() {
+  [Test]
+  public void TestNestedClass() {
       this.AssertGenerated_(@"
 using schema.binary;
 
@@ -172,8 +173,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestConstCharArray() {
+  [Test]
+  public void TestConstCharArray() {
       this.AssertGenerated_(@"
 using schema.binary;
 
@@ -196,8 +197,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestField() {
+  [Test]
+  public void TestField() {
       this.AssertGenerated_(@"
 using schema.binary;
 
@@ -220,8 +221,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestProperty() {
+  [Test]
+  public void TestProperty() {
       this.AssertGenerated_(@"
 using schema.binary;
 
@@ -244,8 +245,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestReadonlyPrimitiveField() {
+  [Test]
+  public void TestReadonlyPrimitiveField() {
       this.AssertGenerated_(@"
 using schema.binary;
 
@@ -268,8 +269,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestReadonlyPrimitiveProperty() {
+  [Test]
+  public void TestReadonlyPrimitiveProperty() {
       this.AssertGenerated_(@"
 using schema.binary;
 
@@ -292,8 +293,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestEverything() {
+  [Test]
+  public void TestEverything() {
       this.AssertGenerated_(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -382,7 +383,7 @@ namespace foo.bar {
 ");
     }
 
-    private void AssertGenerated_(string src, string expectedGenerated) {
+  private void AssertGenerated_(string src, string expectedGenerated) {
       var structure = BinarySchemaTestUtil.ParseFirst(src);
       Assert.IsEmpty(structure.Diagnostics);
 
@@ -390,5 +391,4 @@ namespace foo.bar {
           new BinarySchemaReaderGenerator().Generate(structure);
       Assert.AreEqual(expectedGenerated, actualGenerated.ReplaceLineEndings());
     }
-  }
 }

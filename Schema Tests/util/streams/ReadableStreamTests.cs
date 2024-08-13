@@ -4,10 +4,11 @@ using System.IO;
 using NUnit.Framework;
 
 
-namespace schema.util.streams {
-  public class ReadableStreamTests {
-    [Test]
-    public void TestPosition() {
+namespace schema.util.streams;
+
+public class ReadableStreamTests {
+  [Test]
+  public void TestPosition() {
       var ms = new MemoryStream(new byte[] {1, 2, 3});
       var rs = new ReadableStream(ms);
 
@@ -19,8 +20,8 @@ namespace schema.util.streams {
       Assert.AreEqual(2, rs.Position);
     }
 
-    [Test]
-    public void TestLength() {
+  [Test]
+  public void TestLength() {
       var ms = new MemoryStream(new byte[] {1, 2, 3});
       var rs = new ReadableStream(ms);
 
@@ -28,8 +29,8 @@ namespace schema.util.streams {
       Assert.AreEqual(3, rs.Length);
     }
 
-    [Test]
-    public void TestReadByte() {
+  [Test]
+  public void TestReadByte() {
       var ms = new MemoryStream(new byte[] {1, 2, 3});
       var rs = new ReadableStream(ms);
 
@@ -45,8 +46,8 @@ namespace schema.util.streams {
       Assert.AreEqual(2, rs.Position);
     }
 
-    [Test]
-    public void TestReadSpan() {
+  [Test]
+  public void TestReadSpan() {
       var ms = new MemoryStream(new byte[] {1, 2, 3});
       var rs = new ReadableStream(ms);
 
@@ -61,5 +62,4 @@ namespace schema.util.streams {
 
       CollectionAssert.AreEqual(new[] {1, 2, 3, 0, 0}, span.ToArray());
     }
-  }
 }

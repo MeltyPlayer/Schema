@@ -1,11 +1,12 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.attributes {
-  internal class SkipGeneratorTests {
-    [Test]
-    public void TestSkip() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+namespace schema.binary.attributes;
+
+internal class SkipGeneratorTests {
+  [Test]
+  public void TestSkip() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -16,7 +17,7 @@ namespace foo.bar {
     public byte Field { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -26,7 +27,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -36,11 +37,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestSkipOnLambdaBody() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestSkipOnLambdaBody() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -51,7 +52,7 @@ namespace foo.bar {
     public byte Field => 0;
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -61,7 +62,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -71,11 +72,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestSkipFromParent() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestSkipFromParent() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -90,7 +91,7 @@ namespace foo.bar {
     public byte Field { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -100,7 +101,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -110,6 +111,5 @@ namespace foo.bar {
   }
 }
 ");
-    }
   }
 }

@@ -3,12 +3,13 @@ using Microsoft.CodeAnalysis;
 using NUnit.Framework;
 
 
-namespace schema.binary {
-  public partial class SchemaStructureParserTests {
-    public class Enum {
-      [Test]
-      public void TestEnumWithFormat() {
-        var structure = BinarySchemaTestUtil.ParseFirst(@"
+namespace schema.binary;
+
+public partial class SchemaStructureParserTests {
+  public class Enum {
+    [Test]
+    public void TestEnumWithFormat() {
+      var structure = BinarySchemaTestUtil.ParseFirst(@"
 namespace foo.bar {
   public enum ValueType : byte {
     A,
@@ -21,14 +22,14 @@ namespace foo.bar {
     public ValueType field;
   }
 }");
-        BinarySchemaTestUtil.AssertDiagnostics(
-            structure.Diagnostics,
-            System.Array.Empty<DiagnosticDescriptor>());
-      }
+      BinarySchemaTestUtil.AssertDiagnostics(
+          structure.Diagnostics,
+          System.Array.Empty<DiagnosticDescriptor>());
+    }
 
-      [Test]
-      public void TestEnumWithoutFormat() {
-        var structure = BinarySchemaTestUtil.ParseFirst(@"
+    [Test]
+    public void TestEnumWithoutFormat() {
+      var structure = BinarySchemaTestUtil.ParseFirst(@"
 namespace foo.bar {
   public enum ValueType {
     A,
@@ -41,14 +42,14 @@ namespace foo.bar {
     public ValueType field;
   }
 }");
-        BinarySchemaTestUtil.AssertDiagnostics(
-            structure.Diagnostics,
-            System.Array.Empty<DiagnosticDescriptor>());
-      }
+      BinarySchemaTestUtil.AssertDiagnostics(
+          structure.Diagnostics,
+          System.Array.Empty<DiagnosticDescriptor>());
+    }
 
-      [Test]
-      public void TestEnumArrayWithoutFormat() {
-        var structure = BinarySchemaTestUtil.ParseFirst(@"
+    [Test]
+    public void TestEnumArrayWithoutFormat() {
+      var structure = BinarySchemaTestUtil.ParseFirst(@"
 namespace foo.bar {
   public enum ValueType {
     A,
@@ -61,10 +62,9 @@ namespace foo.bar {
     public readonly ValueType[] field = new ValueType[1];
   }
 }");
-        BinarySchemaTestUtil.AssertDiagnostics(
-            structure.Diagnostics,
-            System.Array.Empty<DiagnosticDescriptor>());
-      }
+      BinarySchemaTestUtil.AssertDiagnostics(
+          structure.Diagnostics,
+          System.Array.Empty<DiagnosticDescriptor>());
     }
   }
 }

@@ -11,24 +11,25 @@ using schema.util.enumerables;
 using schema.util.sequences;
 
 
-namespace build {
-  public partial class ISequenceTests {
-    [BinarySchema]
-    public partial class MutableSequenceWrapper1 : IBinaryConvertible {
-      [SequenceLengthSource(SchemaIntegerType.UINT32)]
-      public MutableSequenceImpl<IntWrapper> Sequence { get; } = new();
+namespace build;
 
-      public override bool Equals(object? otherObj) {
+public partial class ISequenceTests {
+  [BinarySchema]
+  public partial class MutableSequenceWrapper1 : IBinaryConvertible {
+    [SequenceLengthSource(SchemaIntegerType.UINT32)]
+    public MutableSequenceImpl<IntWrapper> Sequence { get; } = new();
+
+    public override bool Equals(object? otherObj) {
         if (otherObj is MutableSequenceWrapper1 other) {
           return this.Sequence.Equals(other.Sequence);
         }
 
         return false;
       }
-    }
+  }
 
-    [Test]
-    public void TestWriteAndRead1() {
+  [Test]
+  public void TestWriteAndRead1() {
       var expectedSw = new MutableSequenceWrapper1();
       expectedSw.Sequence.AddRange(
           new[] {1, 2, 3, 4, 5, 9, 8, 7, 6}
@@ -51,27 +52,27 @@ namespace build {
     }
 
 
-    [BinarySchema]
-    public partial class MutableSequenceWrapper2 : IBinaryConvertible {
-      public int Count {
-        get => this.Sequence.Count;
-        private set => this.Sequence.Count = value;
-      }
+  [BinarySchema]
+  public partial class MutableSequenceWrapper2 : IBinaryConvertible {
+    public int Count {
+      get => this.Sequence.Count;
+      private set => this.Sequence.Count = value;
+    }
 
-      [RSequenceLengthSource(nameof(Count))]
-      public MutableSequenceImpl<IntWrapper> Sequence { get; } = new();
+    [RSequenceLengthSource(nameof(Count))]
+    public MutableSequenceImpl<IntWrapper> Sequence { get; } = new();
 
-      public override bool Equals(object? otherObj) {
+    public override bool Equals(object? otherObj) {
         if (otherObj is MutableSequenceWrapper2 other) {
           return this.Sequence.Equals(other.Sequence);
         }
 
         return false;
       }
-    }
+  }
 
-    [Test]
-    public void TestWriteAndRead2() {
+  [Test]
+  public void TestWriteAndRead2() {
       var expectedSw = new MutableSequenceWrapper2();
       expectedSw.Sequence.AddRange(
           new[] {1, 2, 3, 4, 5, 9, 8, 7, 6}
@@ -94,68 +95,67 @@ namespace build {
     }
 
 
-    [BinarySchema]
-    public partial class MutableSequenceImpl<T>
-        : ISequence<MutableSequenceImpl<T>, T>
-        where T : IBinaryConvertible, new() {
-      [RSequenceLengthSource(nameof(Count))]
-      private readonly List<T> impl_ = new();
+  [BinarySchema]
+  public partial class MutableSequenceImpl<T>
+      : ISequence<MutableSequenceImpl<T>, T>
+      where T : IBinaryConvertible, new() {
+    [RSequenceLengthSource(nameof(Count))]
+    private readonly List<T> impl_ = new();
 
-      public T GetDefault() => new();
+    public T GetDefault() => new();
 
-      [Skip]
-      public int Count {
-        get => this.impl_.Count;
-        set => SequencesUtil.ResizeSequenceInPlace(this.impl_, value);
-      }
+    [Skip]
+    public int Count {
+      get => this.impl_.Count;
+      set => SequencesUtil.ResizeSequenceInPlace(this.impl_, value);
+    }
 
-      [Skip]
-      public IReadOnlyList<T> Values => this.impl_;
+    [Skip]
+    public IReadOnlyList<T> Values => this.impl_;
 
-      [Skip]
-      public T this[int index] {
-        get => this.impl_[index];
-        set => this.impl_[index] = value;
-      }
+    [Skip]
+    public T this[int index] {
+      get => this.impl_[index];
+      set => this.impl_[index] = value;
+    }
 
-      public void Clear() => this.impl_.Clear();
+    public void Clear() => this.impl_.Clear();
 
-      public void ResizeInPlace(int newLength) {
+    public void ResizeInPlace(int newLength) {
         SequencesUtil.ResizeSequenceInPlace(this.impl_, newLength);
       }
 
-      public void AddRange(IEnumerable<T> values)
-        => this.impl_.AddRange(values);
+    public void AddRange(IEnumerable<T> values)
+      => this.impl_.AddRange(values);
 
-      public MutableSequenceImpl<T> CloneWithNewLength(int newLength) {
+    public MutableSequenceImpl<T> CloneWithNewLength(int newLength) {
         var sequence = new MutableSequenceImpl<T>();
         sequence.AddRange(this.impl_.Resized(newLength));
         return sequence;
       }
 
-      IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-      public IEnumerator<T> GetEnumerator() => this.impl_.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+    public IEnumerator<T> GetEnumerator() => this.impl_.GetEnumerator();
 
-      public override bool Equals(object? otherObj) {
+    public override bool Equals(object? otherObj) {
         if (otherObj is MutableSequenceImpl<T> other) {
           return this.Values.SequenceEqual(other.Values);
         }
 
         return false;
       }
-    }
+  }
 
-    [BinarySchema]
-    public partial class IntWrapper : IBinaryConvertible {
-      public int Value { get; set; }
+  [BinarySchema]
+  public partial class IntWrapper : IBinaryConvertible {
+    public int Value { get; set; }
 
-      public override bool Equals(object? otherObj) {
+    public override bool Equals(object? otherObj) {
         if (otherObj is IntWrapper other) {
           return this.Value == other.Value;
         }
 
         return false;
       }
-    }
   }
 }

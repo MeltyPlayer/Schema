@@ -9,24 +9,25 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using schema.binary;
 
 
-namespace schema.util.generators {
-  public abstract class BMappedNamedTypesWithAttributeGenerator<
-      TAttribute, TMapped>
-      : IIncrementalGenerator where TAttribute : Attribute {
-    public abstract bool TryToMap(TypeDeclarationSyntax syntax,
-                                  INamedTypeSymbol typeSymbol,
-                                  out TMapped mapped);
+namespace schema.util.generators;
 
-    public abstract void PreprocessAllMapped(
-        IReadOnlyDictionary<INamedTypeSymbol, TMapped> secondaries);
+public abstract class BMappedNamedTypesWithAttributeGenerator<
+    TAttribute, TMapped>
+    : IIncrementalGenerator where TAttribute : Attribute {
+  public abstract bool TryToMap(TypeDeclarationSyntax syntax,
+                                INamedTypeSymbol typeSymbol,
+                                out TMapped mapped);
 
-    public abstract void PreprocessCompilation(
-        Compilation compilation);
+  public abstract void PreprocessAllMapped(
+      IReadOnlyDictionary<INamedTypeSymbol, TMapped> secondaries);
 
-    public abstract IEnumerable<(string fileName, string source)>
-        GenerateSourcesForMappedNamedType(TMapped mapped);
+  public abstract void PreprocessCompilation(
+      Compilation compilation);
 
-    public void Initialize(IncrementalGeneratorInitializationContext context) {
+  public abstract IEnumerable<(string fileName, string source)>
+      GenerateSourcesForMappedNamedType(TMapped mapped);
+
+  public void Initialize(IncrementalGeneratorInitializationContext context) {
       context.RegisterImplementationSourceOutput(
           context.CompilationProvider,
           (context, compilation) => {
@@ -94,10 +95,10 @@ namespace schema.util.generators {
           });
     }
 
-    private const string ATTRIBUTE_SUFFIX = "Attribute";
+  private const string ATTRIBUTE_SUFFIX = "Attribute";
 
-    private static bool IsCorrectAttributeSyntax_(
-        AttributeSyntax syntax) {
+  private static bool IsCorrectAttributeSyntax_(
+      AttributeSyntax syntax) {
       var syntaxName = syntax.Name.ToString();
       var typeName = typeof(TAttribute).Name;
 
@@ -109,5 +110,4 @@ namespace schema.util.generators {
              typeName.StartsWith(syntaxName) &&
              typeName.EndsWith(ATTRIBUTE_SUFFIX);
     }
-  }
 }

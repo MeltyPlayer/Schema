@@ -11,47 +11,47 @@ using System.Threading.Tasks;
 using schema.binary.io;
 
 
-namespace schema.binary {
-  public sealed partial class SchemaBinaryWriter : ITopLevelBinaryWriter {
-    private readonly IDelayedContentOutputStream impl_;
+namespace schema.binary;
 
-    private bool disposed_;
+public sealed partial class SchemaBinaryWriter : ITopLevelBinaryWriter {
+  private readonly IDelayedContentOutputStream impl_;
 
-    public SchemaBinaryWriter() {
-      this.impl_ = new DelayedContentOutputStream(null);
-      this.localPositionStack_.Push(Task.FromResult(0L));
-    }
+  private bool disposed_;
 
-    public SchemaBinaryWriter(Endianness endianness) {
-      this.impl_ = new DelayedContentOutputStream(endianness);
-      this.localPositionStack_.Push(Task.FromResult(0L));
-    }
+  public SchemaBinaryWriter() {
+    this.impl_ = new DelayedContentOutputStream(null);
+    this.localPositionStack_.Push(Task.FromResult(0L));
+  }
 
-    private SchemaBinaryWriter(Endianness? endianness,
-                               ISubDelayedContentOutputStream impl) {
-      this.impl_ = impl as IDelayedContentOutputStream;
-      this.localPositionStack_.Push(Task.FromResult(0L));
-    }
+  public SchemaBinaryWriter(Endianness endianness) {
+    this.impl_ = new DelayedContentOutputStream(endianness);
+    this.localPositionStack_.Push(Task.FromResult(0L));
+  }
 
-    ~SchemaBinaryWriter() {
-      this.Dispose(false);
-    }
+  private SchemaBinaryWriter(Endianness? endianness,
+                             ISubDelayedContentOutputStream impl) {
+    this.impl_ = impl as IDelayedContentOutputStream;
+    this.localPositionStack_.Push(Task.FromResult(0L));
+  }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Align(uint amt) => this.impl_.Align(amt);
+  ~SchemaBinaryWriter() {
+    this.Dispose(false);
+  }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Close() => this.Dispose();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public void Align(uint amt) => this.impl_.Align(amt);
 
-    public void Dispose() {
-      this.Dispose(true);
-      GC.SuppressFinalize((object) this);
-    }
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public void Close() => this.Dispose();
 
-    private void Dispose(bool disposing) {
-      if (this.disposed_)
-        return;
-      this.disposed_ = true;
-    }
+  public void Dispose() {
+    this.Dispose(true);
+    GC.SuppressFinalize((object) this);
+  }
+
+  private void Dispose(bool disposing) {
+    if (this.disposed_)
+      return;
+    this.disposed_ = true;
   }
 }

@@ -1,11 +1,12 @@
 using NUnit.Framework;
 
 
-namespace schema.binary {
-  public partial class SchemaStructureParserTests {
-    public class Array {
-      [Test]
-      public void TestMutableArrayWithoutLength() {
+namespace schema.binary;
+
+public partial class SchemaStructureParserTests {
+  public class Array {
+    [Test]
+    public void TestMutableArrayWithoutLength() {
         var structure = BinarySchemaTestUtil.ParseFirst(@"
 namespace foo.bar {
   [BinarySchema]
@@ -17,6 +18,5 @@ namespace foo.bar {
                                                Rules
                                                    .MutableArrayNeedsLengthSource);
       }
-    }
   }
 }

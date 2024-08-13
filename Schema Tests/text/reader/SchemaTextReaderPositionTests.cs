@@ -1,10 +1,11 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.text.reader {
-  internal class SchemaTextReaderPositionTests {
-    [Test]
-    public void TestGetPositions() {
+namespace schema.text.reader;
+
+internal class SchemaTextReaderPositionTests {
+  [Test]
+  public void TestGetPositions() {
       using var tr = TextSchemaTestUtil.CreateTextReader("abc");
 
       Assert.AreEqual(0, tr.Position);
@@ -17,8 +18,8 @@ namespace schema.text.reader {
       Assert.AreEqual(1, tr.IndexInLine);
     }
 
-    [Test]
-    public void TestGetPositionsWithTabs() {
+  [Test]
+  public void TestGetPositionsWithTabs() {
       using var tr = TextSchemaTestUtil.CreateTextReader("\t1\t");
 
       Assert.AreEqual(0, tr.Position);
@@ -41,8 +42,8 @@ namespace schema.text.reader {
       Assert.AreEqual(8, tr.IndexInLine);
     }
 
-    [Test]
-    public void TestGetPositionsAcrossLines() {
+  [Test]
+  public void TestGetPositionsAcrossLines() {
       using var tr = TextSchemaTestUtil.CreateTextReader("ab\n12\nfoo");
 
       Assert.AreEqual(0, tr.Position);
@@ -80,8 +81,8 @@ namespace schema.text.reader {
       Assert.AreEqual(0, tr.IndexInLine);
     }
 
-    [Test]
-    public void TestGetPositionsAcrossLinesWhenReadingMultiple() {
+  [Test]
+  public void TestGetPositionsAcrossLinesWhenReadingMultiple() {
       var text = "abc\n\t1\t23\nfoo";
 
       using var tr = TextSchemaTestUtil.CreateTextReader("abc\n\t1\t23\nfoo");
@@ -117,10 +118,9 @@ namespace schema.text.reader {
       Assert.AreEqual(3, tr.IndexInLine);
     }
 
-    [Test]
-    public void TestLength() {
+  [Test]
+  public void TestLength() {
       using var tr = TextSchemaTestUtil.CreateTextReader("abc");
       Assert.AreEqual(3, tr.Length);
     }
-  }
 }

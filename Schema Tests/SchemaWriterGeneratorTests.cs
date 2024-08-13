@@ -1,14 +1,15 @@
 using NUnit.Framework;
 
 
-namespace schema.binary.text {
-  public class SchemaWriterGeneratorTests {
-    [SetUp]
-    public void Setup() { }
+namespace schema.binary.text;
 
-    [Test]
-    public void TestByte() {
-      this.AssertGenerated_(@"using schema.binary;
+public class SchemaWriterGeneratorTests {
+  [SetUp]
+  public void Setup() { }
+
+  [Test]
+  public void TestByte() {
+    this.AssertGenerated_(@"using schema.binary;
 
 namespace foo.bar {
   [BinarySchema]
@@ -16,7 +17,7 @@ namespace foo.bar {
     public byte Field { get; }
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -27,11 +28,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestSByte() {
-      this.AssertGenerated_(@"
+  [Test]
+  public void TestSByte() {
+    this.AssertGenerated_(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -40,7 +41,7 @@ namespace foo.bar {
     public sbyte Field { get; }
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -51,11 +52,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestInt16() {
-      this.AssertGenerated_(@"
+  [Test]
+  public void TestInt16() {
+    this.AssertGenerated_(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -64,7 +65,7 @@ namespace foo.bar {
     public short Field { get; }
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -75,11 +76,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestConstArray() {
-      this.AssertGenerated_(@"
+  [Test]
+  public void TestConstArray() {
+    this.AssertGenerated_(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -88,7 +89,7 @@ namespace foo.bar {
     public readonly int[] field;
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -99,11 +100,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestArrayOtherMemberLength() {
-      this.AssertGenerated_(@"using schema.binary;
+  [Test]
+  public void TestArrayOtherMemberLength() {
+    this.AssertGenerated_(@"using schema.binary;
 using schema.binary.attributes;
 
 namespace foo.bar {
@@ -115,7 +116,7 @@ namespace foo.bar {
     public int[] field;
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -127,11 +128,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestNestedClass() {
-      this.AssertGenerated_(@"
+  [Test]
+  public void TestNestedClass() {
+    this.AssertGenerated_(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -150,7 +151,7 @@ namespace foo.bar {
     }
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -166,11 +167,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestConstCharArray() {
-      this.AssertGenerated_(@"
+  [Test]
+  public void TestConstCharArray() {
+    this.AssertGenerated_(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -179,7 +180,7 @@ namespace foo.bar {
     public char[] Array { get; }
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -190,11 +191,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestField() {
-      this.AssertGenerated_(@"
+  [Test]
+  public void TestField() {
+    this.AssertGenerated_(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -203,7 +204,7 @@ namespace foo.bar {
     public short Field { get; }
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -214,11 +215,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestProperty() {
-      this.AssertGenerated_(@"
+  [Test]
+  public void TestProperty() {
+    this.AssertGenerated_(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -227,7 +228,7 @@ namespace foo.bar {
     public byte field { get; set; }
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -238,11 +239,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestReadonlyPrimitiveField() {
-      this.AssertGenerated_(@"
+  [Test]
+  public void TestReadonlyPrimitiveField() {
+    this.AssertGenerated_(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -251,7 +252,7 @@ namespace foo.bar {
     public readonly byte field;
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -262,11 +263,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestReadonlyPrimitiveProperty() {
-      this.AssertGenerated_(@"
+  [Test]
+  public void TestReadonlyPrimitiveProperty() {
+    this.AssertGenerated_(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -275,7 +276,7 @@ namespace foo.bar {
     public byte Field { get; }
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -286,11 +287,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestEverything() {
-      this.AssertGenerated_(@"
+  [Test]
+  public void TestEverything() {
+    this.AssertGenerated_(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -335,29 +336,29 @@ namespace foo {
     }
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 
 namespace foo.bar {
   public partial class EverythingWrapper {
     public void Write(IBinaryWriter bw) {" +
-                            @"
+                          @"
       bw.WriteString(this.magicText);" +
-                            @"
+                          @"
       bw.WriteByte(this.byteField);
       bw.WriteSByte(this.sbyteProperty);
       bw.WriteInt16(this.constShortField);
       bw.WriteUInt16(this.constUshortProperty);" +
-                            @"
+                          @"
       bw.WriteInt16((short) this.nakedShortField);
       bw.WriteInt16((short) this.constNakedShortField);
       bw.WriteInt32((int) this.intField);
       bw.WriteInt32((int) this.constIntField);" +
-                            @"
+                          @"
       bw.WriteInt32s(this.constLengthIntValues);
       bw.WriteUInt32((uint) this.intValues.Length);
       bw.WriteInt32s(this.intValues);" +
-                            @"
+                          @"
       this.other.Write(bw);
       bw.WriteInt32(this.others.Length);
       foreach (var e in this.others) {
@@ -369,15 +370,14 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    private void AssertGenerated_(string src, string expectedGenerated) {
-      var structure = BinarySchemaTestUtil.ParseFirst(src);
-      Assert.IsEmpty(structure.Diagnostics);
+  private void AssertGenerated_(string src, string expectedGenerated) {
+    var structure = BinarySchemaTestUtil.ParseFirst(src);
+    Assert.IsEmpty(structure.Diagnostics);
 
-      var actualGenerated =
-          new BinarySchemaWriterGenerator().Generate(structure);
-      Assert.AreEqual(expectedGenerated, actualGenerated.ReplaceLineEndings());
-    }
+    var actualGenerated =
+        new BinarySchemaWriterGenerator().Generate(structure);
+    Assert.AreEqual(expectedGenerated, actualGenerated.ReplaceLineEndings());
   }
 }

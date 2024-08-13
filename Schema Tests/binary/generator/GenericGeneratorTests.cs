@@ -1,11 +1,12 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.text {
-  internal class GenericGeneratorTests {
-    [Test]
-    public void Test1GenericArgumentClass() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+namespace schema.binary.text;
+
+internal class GenericGeneratorTests {
+  [Test]
+  public void Test1GenericArgumentClass() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -14,7 +15,7 @@ namespace foo.bar {
     public T Data { get; } = new();
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -25,7 +26,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -36,11 +37,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void Test2GenericArgumentClass() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void Test2GenericArgumentClass() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -52,7 +53,7 @@ namespace foo.bar {
     public T2 Data2 { get; } = new();
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -64,7 +65,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -76,11 +77,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestGenericStructureArray() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestGenericStructureArray() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -89,7 +90,7 @@ namespace foo.bar {
     public T[] Data { get; } = {};
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -102,7 +103,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -115,11 +116,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestCanSkipInvalidGenerics() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestCanSkipInvalidGenerics() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -130,7 +131,7 @@ namespace foo.bar {
     public T[] Data { get; } = {};
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -140,7 +141,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -150,11 +151,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestSkipsSkippedFieldsThatFailedToParse() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestSkipsSkippedFieldsThatFailedToParse() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -182,7 +183,7 @@ public partial class SwitchMagicStringUInt32SizedSection<T> : IMagicSection<T>
   [Skip]
   public T Data => this.impl_.Data;
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 public partial class SwitchMagicStringUInt32SizedSection<T> {
@@ -191,7 +192,7 @@ public partial class SwitchMagicStringUInt32SizedSection<T> {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 public partial class SwitchMagicStringUInt32SizedSection<T> {
@@ -200,6 +201,5 @@ public partial class SwitchMagicStringUInt32SizedSection<T> {
   }
 }
 ");
-    }
   }
 }

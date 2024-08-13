@@ -6,23 +6,23 @@ using Microsoft.CodeAnalysis;
 using schema.util.diagnostics;
 
 
-namespace schema.util.symbols {
-  internal interface IBetterSymbol : IDiagnosticReporter {
-    ISymbol Symbol { get; }
-    string Name { get; }
+namespace schema.util.symbols;
 
-    IBetterSymbol GetChild(ISymbol child);
+internal interface IBetterSymbol : IDiagnosticReporter {
+  ISymbol Symbol { get; }
+  string Name { get; }
 
-    // Attributes
-    bool HasAttribute<TAttribute>() where TAttribute : Attribute;
-    TAttribute? GetAttribute<TAttribute>() where TAttribute : Attribute;
+  IBetterSymbol GetChild(ISymbol child);
 
-    IEnumerable<TAttribute> GetAttributes<TAttribute>()
-        where TAttribute : Attribute;
-  }
+  // Attributes
+  bool HasAttribute<TAttribute>() where TAttribute : Attribute;
+  TAttribute? GetAttribute<TAttribute>() where TAttribute : Attribute;
 
-  internal interface IBetterSymbol<out TSymbol> : IBetterSymbol
-      where TSymbol : ISymbol {
-    TSymbol TypedSymbol { get; }
-  }
+  IEnumerable<TAttribute> GetAttributes<TAttribute>()
+      where TAttribute : Attribute;
+}
+
+internal interface IBetterSymbol<out TSymbol> : IBetterSymbol
+    where TSymbol : ISymbol {
+  TSymbol TypedSymbol { get; }
 }

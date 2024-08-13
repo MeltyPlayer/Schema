@@ -5,19 +5,20 @@ using System.Runtime.CompilerServices;
 using schema.util.asserts;
 
 
-namespace schema.util.streams {
-  /// <summary>
-  /// Represents a substream of an underlying <see cref="Stream" />.
-  /// </summary>
-  public class RangedReadableSubstream : ISeekableReadableStream {
-    private readonly ISeekableReadableStream impl_;
+namespace schema.util.streams;
 
-    private readonly long offset_ = 0L;
-    private readonly long length_ = 0L;
+/// <summary>
+/// Represents a substream of an underlying <see cref="Stream" />.
+/// </summary>
+public class RangedReadableSubstream : ISeekableReadableStream {
+  private readonly ISeekableReadableStream impl_;
 
-    public RangedReadableSubstream(ISeekableReadableStream stream,
-                                   long offset,
-                                   long length) {
+  private readonly long offset_ = 0L;
+  private readonly long length_ = 0L;
+
+  public RangedReadableSubstream(ISeekableReadableStream stream,
+                                 long offset,
+                                 long length) {
       this.impl_ = stream ?? throw new ArgumentNullException(nameof(stream));
 
       if (offset < 0) {
@@ -34,13 +35,13 @@ namespace schema.util.streams {
       this.length_ = length;
     }
 
-    public void Dispose() {
+  public void Dispose() {
       // Should not dispose of impl, since it may still need to be used
       // afterwards.
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte ReadByte() {
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public byte ReadByte() {
       var startOffset = this.Position;
       if (startOffset >= this.offset_ + this.length_) {
         return unchecked((byte) -1);
@@ -51,8 +52,8 @@ namespace schema.util.streams {
       return this.impl_.ReadByte();
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int TryToReadIntoBuffer(Span<byte> dst) {
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public int TryToReadIntoBuffer(Span<byte> dst) {
       var startOffset = this.Position;
       Asserts.True(this.offset_ <= startOffset,
                    "Attempted to read before the start of the substream!");
@@ -64,22 +65,21 @@ namespace schema.util.streams {
           dst.Slice(0, Convert.ToInt32(maxLength)));
     }
 
-    public long Position {
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      get => this.impl_.Position;
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      set {
+  public long Position {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get => this.impl_.Position;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    set {
         Asserts.True(this.offset_ <= value,
                      "Attempted to seek before the start of the substream!");
         Asserts.True(value < this.offset_ + this.length_,
                      "Attempted to seek past the end of the substream!");
         this.impl_.Position = value;
       }
-    }
+  }
 
-    public long Length {
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      get => this.offset_ + this.length_;
-    }
+  public long Length {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get => this.offset_ + this.length_;
   }
 }

@@ -5,39 +5,40 @@ using System.Runtime.CompilerServices;
 using schema.util.streams;
 
 
-namespace schema.binary {
-  public sealed partial class SchemaBinaryReader : IBinaryReader {
-    private bool disposed_;
+namespace schema.binary;
 
-    private readonly EndianBinaryBufferedStream bufferedStream_;
-    private StreamPositionManager positionManagerImpl_;
+public sealed partial class SchemaBinaryReader : IBinaryReader {
+  private bool disposed_;
 
-    private ISeekableReadableStream BaseStream_ {
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      get => this.bufferedStream_.BaseStream;
-    }
+  private readonly EndianBinaryBufferedStream bufferedStream_;
+  private StreamPositionManager positionManagerImpl_;
 
-    public SchemaBinaryReader(byte[] data)
-        : this(new ReadableStream(data), null) { }
+  private ISeekableReadableStream BaseStream_ {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get => this.bufferedStream_.BaseStream;
+  }
 
-    public SchemaBinaryReader(byte[] data, Endianness endianness)
-        : this(new ReadableStream(data), endianness) { }
+  public SchemaBinaryReader(byte[] data)
+      : this(new ReadableStream(data), null) { }
 
-    public SchemaBinaryReader(Stream baseStream)
-        : this(new ReadableStream(baseStream), null) { }
+  public SchemaBinaryReader(byte[] data, Endianness endianness)
+      : this(new ReadableStream(data), endianness) { }
 
-    public SchemaBinaryReader(Stream baseStream, Endianness endianness)
-        : this(new ReadableStream(baseStream), endianness) { }
+  public SchemaBinaryReader(Stream baseStream)
+      : this(new ReadableStream(baseStream), null) { }
 
-    public SchemaBinaryReader(ISeekableReadableStream baseStream)
-        : this(baseStream, null) { }
+  public SchemaBinaryReader(Stream baseStream, Endianness endianness)
+      : this(new ReadableStream(baseStream), endianness) { }
 
-    public SchemaBinaryReader(ISeekableReadableStream baseStream,
-                              Endianness endianness)
-        : this(baseStream, (Endianness?) endianness) { }
+  public SchemaBinaryReader(ISeekableReadableStream baseStream)
+      : this(baseStream, null) { }
 
-    private SchemaBinaryReader(ISeekableReadableStream baseStream,
-                               Endianness? endianness) {
+  public SchemaBinaryReader(ISeekableReadableStream baseStream,
+                            Endianness endianness)
+      : this(baseStream, (Endianness?) endianness) { }
+
+  private SchemaBinaryReader(ISeekableReadableStream baseStream,
+                             Endianness? endianness) {
       if (baseStream == null) {
         throw new ArgumentNullException(nameof(baseStream));
       }
@@ -48,17 +49,17 @@ namespace schema.binary {
       this.positionManagerImpl_ = new StreamPositionManager(baseStream);
     }
 
-    ~SchemaBinaryReader() => this.Dispose(false);
+  ~SchemaBinaryReader() => this.Dispose(false);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Close() => Dispose();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public void Close() => Dispose();
 
-    public void Dispose() {
+  public void Dispose() {
       this.Dispose(true);
       GC.SuppressFinalize((object) this);
     }
 
-    private void Dispose(bool disposing) {
+  private void Dispose(bool disposing) {
       if (this.disposed_) {
         return;
       }
@@ -70,11 +71,10 @@ namespace schema.binary {
       this.disposed_ = true;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void FillBuffer_(long count, int? optStride = null)
-      => this.bufferedStream_.FillBuffer(count, optStride);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private void FillBuffer_(long count, int? optStride = null)
+    => this.bufferedStream_.FillBuffer(count, optStride);
 
-    public int TryToReadIntoBuffer(Span<byte> dst)
-      => this.BaseStream_.TryToReadIntoBuffer(dst);
-  }
+  public int TryToReadIntoBuffer(Span<byte> dst)
+    => this.BaseStream_.TryToReadIntoBuffer(dst);
 }

@@ -7,26 +7,27 @@ using schema.binary.attributes;
 using schema.binary.testing;
 
 
-namespace build {
-  internal partial class SizeOfMemberInBytesTests {
-    [BinarySchema]
-    public partial class ParentImpl : IBinaryConvertible {
-      public Child Child { get; } = new();
+namespace build;
 
-      public int Field { get; set; }
-    }
+internal partial class SizeOfMemberInBytesTests {
+  [BinarySchema]
+  public partial class ParentImpl : IBinaryConvertible {
+    public Child Child { get; } = new();
 
-    [BinarySchema]
-    public partial class Child : IChildOf<ParentImpl>, IBinaryConvertible {
-      public ParentImpl Parent { get; set; }
+    public int Field { get; set; }
+  }
 
-      [WSizeOfMemberInBytes(nameof(Parent.Field))]
-      private byte fieldSize_;
-    }
+  [BinarySchema]
+  public partial class Child : IChildOf<ParentImpl>, IBinaryConvertible {
+    public ParentImpl Parent { get; set; }
+
+    [WSizeOfMemberInBytes(nameof(Parent.Field))]
+    private byte fieldSize_;
+  }
 
 
-    [Test]
-    public async Task TestSizeOfThroughParent() {
+  [Test]
+  public async Task TestSizeOfThroughParent() {
       var parent = new ParentImpl();
       parent.Field = 12;
 
@@ -36,5 +37,4 @@ namespace build {
       var bytes = await BinarySchemaAssert.GetEndianBinaryWriterBytes(bw);
       CollectionAssert.AreEqual(new byte[] {4, 12, 0, 0, 0}, bytes);
     }
-  }
 }

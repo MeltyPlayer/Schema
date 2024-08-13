@@ -4,27 +4,28 @@ using System.IO;
 using CommunityToolkit.HighPerformance;
 
 
-namespace schema.util.text {
-  public interface ISourceWriter : IDisposable {
-    ISourceWriter Write(string text);
-  }
+namespace schema.util.text;
 
-  public sealed class SourceWriter(TextWriter impl) : ISourceWriter {
-    private int indentLevel_;
-    private bool hasIndentedOnCurrentLine_;
+public interface ISourceWriter : IDisposable {
+  ISourceWriter Write(string text);
+}
 
-    ~SourceWriter() => this.ReleaseUnmanagedResources_();
+public sealed class SourceWriter(TextWriter impl) : ISourceWriter {
+  private int indentLevel_;
+  private bool hasIndentedOnCurrentLine_;
 
-    public void Dispose() {
+  ~SourceWriter() => this.ReleaseUnmanagedResources_();
+
+  public void Dispose() {
       this.ReleaseUnmanagedResources_();
       GC.SuppressFinalize(this);
     }
 
-    private void ReleaseUnmanagedResources_() {
+  private void ReleaseUnmanagedResources_() {
       impl.Dispose();
     }
 
-    public ISourceWriter Write(string text) {
+  public ISourceWriter Write(string text) {
       var lines = text.Split('\n');
       for (var i = 0; i < lines.Length; ++i) {
         var line = lines[i];
@@ -54,7 +55,7 @@ namespace schema.util.text {
       return this;
     }
 
-    private void TryToPrintIndent_() {
+  private void TryToPrintIndent_() {
       if (this.hasIndentedOnCurrentLine_) {
         return;
       }
@@ -64,5 +65,4 @@ namespace schema.util.text {
         impl.Write("  ");
       }
     }
-  }
 }

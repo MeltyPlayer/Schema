@@ -3,10 +3,11 @@
 using NUnit.Framework;
 
 
-namespace schema.util.sequences {
-  public class SequencesUtilReadOnlyListTests {
-    [Test]
-    public void TestResizeListNegativeThrowsError() {
+namespace schema.util.sequences;
+
+public class SequencesUtilReadOnlyListTests {
+  [Test]
+  public void TestResizeListNegativeThrowsError() {
       Assert.That(
           () => SequencesUtil.CloneAndResizeSequence(
               (IReadOnlyList<int>?) null,
@@ -14,15 +15,15 @@ namespace schema.util.sequences {
           Throws.Exception);
     }
 
-    [Test]
-    public void TestResizeListOriginallyNull() {
+  [Test]
+  public void TestResizeListOriginallyNull() {
       CollectionAssert.AreEqual(
           new List<int> {0, 0, 0},
           SequencesUtil.CloneAndResizeSequence((IReadOnlyList<int>?) null, 3));
     }
 
-    [Test]
-    public void TestResizeListGrowing() {
+  [Test]
+  public void TestResizeListGrowing() {
       var inputList = new List<int> {1, 2, 3};
 
       var resizedList =
@@ -33,8 +34,8 @@ namespace schema.util.sequences {
       CollectionAssert.AreEqual(new List<int> {1, 2, 3, 0}, resizedList);
     }
 
-    [Test]
-    public void TestResizeListShrinking() {
+  [Test]
+  public void TestResizeListShrinking() {
       var inputList = new List<int> {1, 2, 3};
 
       var resizedList =
@@ -45,8 +46,8 @@ namespace schema.util.sequences {
       CollectionAssert.AreEqual(new List<int> {1, 2}, resizedList);
     }
 
-    [Test]
-    public void TestResizingListLengthIsSame() {
+  [Test]
+  public void TestResizingListLengthIsSame() {
       var inputList = new List<int> {1, 2, 3};
 
       var resizedList =
@@ -56,5 +57,4 @@ namespace schema.util.sequences {
       Assert.AreSame(inputList, resizedList);
       CollectionAssert.AreEqual(new List<int> {1, 2, 3}, resizedList);
     }
-  }
 }

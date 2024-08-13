@@ -1,10 +1,11 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.text.reader {
-  internal class SchemaTextReaderMultilineTests {
-    [Test]
-    public void TestReadAcrossMultipleLinesSeparately() {
+namespace schema.text.reader;
+
+internal class SchemaTextReaderMultilineTests {
+  [Test]
+  public void TestReadAcrossMultipleLinesSeparately() {
       var inputText = "1 2 3\n4, 5, 6\n7\n8\n9\nfoobar";
 
       using var tr = TextSchemaTestUtil.CreateTextReader(inputText);
@@ -23,8 +24,8 @@ namespace schema.text.reader {
       Assert.AreEqual("foobar", tr.ReadLine());
     }
 
-    [Test]
-    public void TestReadAcrossMultipleLinesCombined() {
+  [Test]
+  public void TestReadAcrossMultipleLinesCombined() {
       var inputText = "1 2 3\nfoobar";
 
       using var tr = TextSchemaTestUtil.CreateTextReader(inputText);
@@ -35,5 +36,4 @@ namespace schema.text.reader {
 
       Assert.AreEqual("foobar", tr.ReadLine());
     }
-  }
 }

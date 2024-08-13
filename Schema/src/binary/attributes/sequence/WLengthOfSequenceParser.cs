@@ -4,11 +4,12 @@ using schema.binary.parser;
 using schema.util.symbols;
 
 
-namespace schema.binary.attributes {
-  internal class WLengthOfSequenceParser : IAttributeParser {
-    public void ParseIntoMemberType(IBetterSymbol memberBetterSymbol,
-                                    ITypeInfo memberTypeInfo,
-                                    IMemberType memberType) {
+namespace schema.binary.attributes;
+
+internal class WLengthOfSequenceParser : IAttributeParser {
+  public void ParseIntoMemberType(IBetterSymbol memberBetterSymbol,
+                                  ITypeInfo memberTypeInfo,
+                                  IMemberType memberType) {
       var lengthOfSequenceAttributes =
           memberBetterSymbol.GetAttributes<WLengthOfSequenceAttribute>()
                             .ToArray();
@@ -26,5 +27,4 @@ namespace schema.binary.attributes {
         memberBetterSymbol.ReportDiagnostic(Rules.NotSupported);
       }
     }
-  }
 }

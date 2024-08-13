@@ -5,32 +5,32 @@ using schema.util.diagnostics;
 using schema.util.syntax;
 
 
-namespace schema.binary.parser.asserts {
-  internal class PartialContainerAsserter {
-    private readonly IDiagnosticReporter diagnosticReporter_;
+namespace schema.binary.parser.asserts;
 
-    public PartialContainerAsserter(IDiagnosticReporter diagnosticReporter) {
-      this.diagnosticReporter_ = diagnosticReporter;
-    }
+internal class PartialContainerAsserter {
+  private readonly IDiagnosticReporter diagnosticReporter_;
 
-    /// <summary>
-    ///   All of the types that contain the given container need to be partial for the code generator to work.
-    /// </summary>
-    public void AssertContainersArePartial(INamedTypeSymbol containerSymbol) {
-      var containingType = containerSymbol.ContainingType;
-      while (containingType != null) {
-        var typeDeclarationSyntax =
-            containingType.DeclaringSyntaxReferences[0].GetSyntax() as
-                TypeDeclarationSyntax;
+  public PartialContainerAsserter(IDiagnosticReporter diagnosticReporter) {
+    this.diagnosticReporter_ = diagnosticReporter;
+  }
 
-        if (!typeDeclarationSyntax!.IsPartial()) {
-          this.diagnosticReporter_.ReportDiagnostic(
-              containingType,
-              Rules.ContainerTypeMustBePartial);
-        }
+  /// <summary>
+  ///   All of the types that contain the given container need to be partial for the code generator to work.
+  /// </summary>
+  public void AssertContainersArePartial(INamedTypeSymbol containerSymbol) {
+    var containingType = containerSymbol.ContainingType;
+    while (containingType != null) {
+      var typeDeclarationSyntax =
+          containingType.DeclaringSyntaxReferences[0].GetSyntax() as
+              TypeDeclarationSyntax;
 
-        containingType = containingType.ContainingType;
+      if (!typeDeclarationSyntax!.IsPartial()) {
+        this.diagnosticReporter_.ReportDiagnostic(
+            containingType,
+            Rules.ContainerTypeMustBePartial);
       }
+
+      containingType = containingType.ContainingType;
     }
   }
 }

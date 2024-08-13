@@ -4,97 +4,97 @@ using schema.binary;
 using schema.binary.attributes;
 
 
-namespace build {
-  [BinarySchema]
-  public partial class ClassWithInt16Bools : IBinaryConvertible {
-    [IntegerFormat(SchemaIntegerType.INT16)]
-    public bool Bool { get; private set; }
+namespace build;
 
-    [IntegerFormat(SchemaIntegerType.INT16)]
-    public bool ReadonlyBool { get; }
+[BinarySchema]
+public partial class ClassWithInt16Bools : IBinaryConvertible {
+  [IntegerFormat(SchemaIntegerType.INT16)]
+  public bool Bool { get; private set; }
 
-    [SequenceLengthSource(4)]
-    [IntegerFormat(SchemaIntegerType.INT16)]
-    public bool[] Bools { get; set; }
+  [IntegerFormat(SchemaIntegerType.INT16)]
+  public bool ReadonlyBool { get; }
 
-    [SequenceLengthSource(4)]
-    [IntegerFormat(SchemaIntegerType.INT16)]
-    public bool[] ReadonlyBools { get; set; }
-  }
+  [SequenceLengthSource(4)]
+  [IntegerFormat(SchemaIntegerType.INT16)]
+  public bool[] Bools { get; set; }
 
-  [BinarySchema]
-  public partial class ClassWithInt32Bools : IBinaryConvertible {
-    [IntegerFormat(SchemaIntegerType.INT32)]
-    public bool Bool { get; private set; }
+  [SequenceLengthSource(4)]
+  [IntegerFormat(SchemaIntegerType.INT16)]
+  public bool[] ReadonlyBools { get; set; }
+}
 
-    [IntegerFormat(SchemaIntegerType.INT32)]
-    public bool ReadonlyBool { get; }
+[BinarySchema]
+public partial class ClassWithInt32Bools : IBinaryConvertible {
+  [IntegerFormat(SchemaIntegerType.INT32)]
+  public bool Bool { get; private set; }
 
-    [SequenceLengthSource(4)]
-    [IntegerFormat(SchemaIntegerType.INT32)]
-    public bool[] Bools { get; set; }
+  [IntegerFormat(SchemaIntegerType.INT32)]
+  public bool ReadonlyBool { get; }
 
-    [SequenceLengthSource(4)]
-    [IntegerFormat(SchemaIntegerType.INT32)]
-    public bool[] ReadonlyBools { get; set; }
-  }
+  [SequenceLengthSource(4)]
+  [IntegerFormat(SchemaIntegerType.INT32)]
+  public bool[] Bools { get; set; }
 
-  [BinarySchema]
-  public partial class ClassWithInt64Bools : IBinaryConvertible {
-    [IntegerFormat(SchemaIntegerType.INT64)]
-    public bool Bool { get; private set; }
+  [SequenceLengthSource(4)]
+  [IntegerFormat(SchemaIntegerType.INT32)]
+  public bool[] ReadonlyBools { get; set; }
+}
 
-    [IntegerFormat(SchemaIntegerType.INT64)]
-    public bool ReadonlyBool { get; }
+[BinarySchema]
+public partial class ClassWithInt64Bools : IBinaryConvertible {
+  [IntegerFormat(SchemaIntegerType.INT64)]
+  public bool Bool { get; private set; }
 
-    [SequenceLengthSource(4)]
-    [IntegerFormat(SchemaIntegerType.INT64)]
-    public bool[] Bools { get; set; }
+  [IntegerFormat(SchemaIntegerType.INT64)]
+  public bool ReadonlyBool { get; }
 
-    [SequenceLengthSource(4)]
-    [IntegerFormat(SchemaIntegerType.INT64)]
-    public bool[] ReadonlyBools { get; set; }
-  }
+  [SequenceLengthSource(4)]
+  [IntegerFormat(SchemaIntegerType.INT64)]
+  public bool[] Bools { get; set; }
 
-
-  [BinarySchema]
-  public partial class ClassWithChars : IBinaryConvertible {
-    public char Char { get; private set; }
-
-    public char ReadonlyChar { get; }
-
-    [SequenceLengthSource(4)]
-    public char[] Chars { get; set; }
-
-    [SequenceLengthSource(4)]
-    public char[] ReadonlyChars { get; set; }
-  }
+  [SequenceLengthSource(4)]
+  [IntegerFormat(SchemaIntegerType.INT64)]
+  public bool[] ReadonlyBools { get; set; }
+}
 
 
-  public interface IMagicSection<T> {
-    T Data { get; }
-  }
+[BinarySchema]
+public partial class ClassWithChars : IBinaryConvertible {
+  public char Char { get; private set; }
 
-  public class MagicSectionStub<T> : IMagicSection<T>, IBinaryConvertible {
-    public T Data { get; set; }
-    public void Write(IBinaryWriter ew) { }
-    public void Read(IBinaryReader br) { }
-  }
+  public char ReadonlyChar { get; }
 
-  [BinarySchema]
-  public partial class SwitchMagicStringUInt32SizedSection<T> : IMagicSection<T>
-      where T : IBinaryConvertible {
-    [Skip]
-    private readonly int magicLength_;
+  [SequenceLengthSource(4)]
+  public char[] Chars { get; set; }
 
-    [Skip]
-    private readonly Func<string, T> createTypeHandler_;
+  [SequenceLengthSource(4)]
+  public char[] ReadonlyChars { get; set; }
+}
 
-    private readonly MagicSectionStub<T> impl_ = new();
 
-    [Skip]
-    public T Data => this.impl_.Data;
+public interface IMagicSection<T> {
+  T Data { get; }
+}
 
-    public void Read(IBinaryReader br) { }
-  }
+public class MagicSectionStub<T> : IMagicSection<T>, IBinaryConvertible {
+  public T Data { get; set; }
+  public void Write(IBinaryWriter ew) { }
+  public void Read(IBinaryReader br) { }
+}
+
+[BinarySchema]
+public partial class SwitchMagicStringUInt32SizedSection<T> : IMagicSection<T>
+    where T : IBinaryConvertible {
+  [Skip]
+  private readonly int magicLength_;
+
+  [Skip]
+  private readonly Func<string, T> createTypeHandler_;
+
+  private readonly MagicSectionStub<T> impl_ = new();
+
+  [Skip]
+  public T Data => this.impl_.Data;
+
+  public void Read(IBinaryReader br) { }
 }

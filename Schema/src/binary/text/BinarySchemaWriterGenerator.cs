@@ -14,11 +14,12 @@ using schema.util.symbols;
 using schema.util.text;
 
 
-namespace schema.binary.text {
-  public class BinarySchemaWriterGenerator {
-    public const string WRITER = "bw";
+namespace schema.binary.text;
 
-    public string Generate(IBinarySchemaContainer container) {
+public class BinarySchemaWriterGenerator {
+  public const string WRITER = "bw";
+
+  public string Generate(IBinarySchemaContainer container) {
       var typeSymbol = container.TypeSymbol;
 
       var sb = new StringBuilder();
@@ -94,10 +95,10 @@ namespace schema.binary.text {
       return generatedCode;
     }
 
-    private static void WriteValueMember_(
-        ISourceWriter sw,
-        ITypeSymbol sourceSymbol,
-        ISchemaValueMember member) {
+  private static void WriteValueMember_(
+      ISourceWriter sw,
+      ITypeSymbol sourceSymbol,
+      ISchemaValueMember member) {
       if (member.IsSkipped) {
         return;
       }
@@ -153,9 +154,9 @@ namespace schema.binary.text {
       }
     }
 
-    private static void Align_(
-        ISourceWriter sw,
-        ISchemaValueMember member) {
+  private static void Align_(
+      ISourceWriter sw,
+      ISchemaValueMember member) {
       var align = member.Align;
       if (align == null) {
         return;
@@ -168,10 +169,10 @@ namespace schema.binary.text {
       sw.WriteLine($"{WRITER}.Align({valueName});");
     }
 
-    private static void HandleMemberEndiannessAndTracking_(
-        ISourceWriter sw,
-        ISchemaValueMember member,
-        Action handler) {
+  private static void HandleMemberEndiannessAndTracking_(
+      ISourceWriter sw,
+      ISchemaValueMember member,
+      Action handler) {
       BinarySchemaWriterGenerator.Align_(sw, member);
 
       var hasEndianness = member.Endianness != null;
@@ -196,9 +197,9 @@ namespace schema.binary.text {
       }
     }
 
-    private static void WritePrimitive_(
-        ISourceWriter sw,
-        ISchemaValueMember member) {
+  private static void WritePrimitive_(
+      ISourceWriter sw,
+      ISchemaValueMember member) {
       var primitiveMemberType = member.MemberType as IPrimitiveMemberType;
       if (primitiveMemberType == null) {
         Asserts.Fail();
@@ -309,9 +310,9 @@ namespace schema.binary.text {
           });
     }
 
-    private static void WriteString_(
-        ISourceWriter sw,
-        ISchemaValueMember member) {
+  private static void WriteString_(
+      ISourceWriter sw,
+      ISchemaValueMember member) {
       HandleMemberEndiannessAndTracking_(
           sw,
           member,
@@ -366,10 +367,10 @@ namespace schema.binary.text {
           });
     }
 
-    private static void WriteContainer_(
-        ISourceWriter sw,
-        IContainerMemberType containerMemberType,
-        ISchemaValueMember member) {
+  private static void WriteContainer_(
+      ISourceWriter sw,
+      IContainerMemberType containerMemberType,
+      ISchemaValueMember member) {
       var memberName = member.Name;
       if (containerMemberType.IsChild) {
         sw.WriteLine($"this.{memberName}.Parent = this;");
@@ -387,9 +388,9 @@ namespace schema.binary.text {
           });
     }
 
-    private static void WriteArray_(
-        ISourceWriter sw,
-        ISchemaValueMember member) {
+  private static void WriteArray_(
+      ISourceWriter sw,
+      ISchemaValueMember member) {
       var sequenceMemberType =
           Asserts.CastNonnull(member.MemberType as ISequenceMemberType);
       if (sequenceMemberType.LengthSourceType !=
@@ -410,8 +411,8 @@ namespace schema.binary.text {
       BinarySchemaWriterGenerator.WriteIntoArray_(sw, member);
     }
 
-    private static void WriteIntoArray_(ISourceWriter sw,
-                                        ISchemaValueMember member) {
+  private static void WriteIntoArray_(ISourceWriter sw,
+                                      ISchemaValueMember member) {
       HandleMemberEndiannessAndTracking_(
           sw,
           member,
@@ -473,20 +474,20 @@ namespace schema.binary.text {
           });
     }
 
-    private static string GetWritePrimitiveText_(
-        IPrimitiveMemberType primitiveMemberType,
-        string accessText)
-      => GetWritePrimitiveText_(
-          primitiveMemberType.UseAltFormat,
-          primitiveMemberType.PrimitiveType,
-          primitiveMemberType.AltFormat.AsPrimitiveType(),
-          accessText);
+  private static string GetWritePrimitiveText_(
+      IPrimitiveMemberType primitiveMemberType,
+      string accessText)
+    => GetWritePrimitiveText_(
+        primitiveMemberType.UseAltFormat,
+        primitiveMemberType.PrimitiveType,
+        primitiveMemberType.AltFormat.AsPrimitiveType(),
+        accessText);
 
-    private static string GetWritePrimitiveText_(
-        bool useAltFormat,
-        SchemaPrimitiveType primitiveType,
-        SchemaPrimitiveType altFormat,
-        string accessText) {
+  private static string GetWritePrimitiveText_(
+      bool useAltFormat,
+      SchemaPrimitiveType primitiveType,
+      SchemaPrimitiveType altFormat,
+      string accessText) {
       var writeType = useAltFormat ? altFormat : primitiveType;
       var writeMethod =
           $"{WRITER}.Write{SchemaGeneratorUtil.GetPrimitiveLabel(writeType)}";
@@ -514,10 +515,10 @@ namespace schema.binary.text {
     }
 
 
-    private static string GetWritePrimitiveText_(
-        SchemaPrimitiveType srcType,
-        SchemaNumberType dstType,
-        string accessText) {
+  private static string GetWritePrimitiveText_(
+      SchemaPrimitiveType srcType,
+      SchemaNumberType dstType,
+      string accessText) {
       var dstPrimitiveType = dstType.AsPrimitiveType();
       var writeType = SchemaGeneratorUtil.GetPrimitiveLabel(dstPrimitiveType);
       var writeMethod = $"{WRITER}.Write{writeType}";
@@ -542,5 +543,4 @@ namespace schema.binary.text {
 
       return $"{writeMethod}({castText}{accessText})";
     }
-  }
 }

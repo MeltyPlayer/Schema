@@ -8,10 +8,11 @@ using schema.binary;
 using schema.util.sequences;
 
 
-namespace schema.util.symbols {
-  public static class IsExtensions {
-    public static bool IsEnum(this ISymbol symbol,
-                              out SchemaIntegerType underlyingType) {
+namespace schema.util.symbols;
+
+public static class IsExtensions {
+  public static bool IsEnum(this ISymbol symbol,
+                            out SchemaIntegerType underlyingType) {
       var underlyingSymbol = (symbol as INamedTypeSymbol)?.EnumUnderlyingType;
       if (underlyingSymbol == null) {
         underlyingType = default;
@@ -24,8 +25,8 @@ namespace schema.util.symbols {
       return returnStatus;
     }
 
-    public static bool IsPrimitive(this ISymbol symbol,
-                                   out SchemaPrimitiveType primitiveType) {
+  public static bool IsPrimitive(this ISymbol symbol,
+                                 out SchemaPrimitiveType primitiveType) {
       var typeSymbol = symbol as ITypeSymbol;
 
       if (typeSymbol?.TypeKind == TypeKind.Enum) {
@@ -51,26 +52,26 @@ namespace schema.util.symbols {
       return primitiveType != SchemaPrimitiveType.UNDEFINED;
     }
 
-    public static bool IsClass(this ISymbol symbol)
-      => symbol is INamedTypeSymbol {TypeKind: TypeKind.Class};
+  public static bool IsClass(this ISymbol symbol)
+    => symbol is INamedTypeSymbol {TypeKind: TypeKind.Class};
 
-    public static bool IsAbstractClass(this ISymbol symbol)
-      => symbol is INamedTypeSymbol {
-          IsAbstract: true, TypeKind: TypeKind.Class
-      };
+  public static bool IsAbstractClass(this ISymbol symbol)
+    => symbol is INamedTypeSymbol {
+        IsAbstract: true, TypeKind: TypeKind.Class
+    };
 
-    public static bool IsInterface(this ISymbol symbol)
-      => symbol is INamedTypeSymbol {TypeKind: TypeKind.Interface};
+  public static bool IsInterface(this ISymbol symbol)
+    => symbol is INamedTypeSymbol {TypeKind: TypeKind.Interface};
 
-    public static bool IsStruct(this ISymbol symbol)
-      => symbol is INamedTypeSymbol {TypeKind: TypeKind.Struct};
+  public static bool IsStruct(this ISymbol symbol)
+    => symbol is INamedTypeSymbol {TypeKind: TypeKind.Struct};
 
-    public static bool IsString(this ISymbol symbol)
-      => symbol is ITypeSymbol {SpecialType: SpecialType.System_String};
+  public static bool IsString(this ISymbol symbol)
+    => symbol is ITypeSymbol {SpecialType: SpecialType.System_String};
 
-    public static bool IsGenericZipped(this ISymbol symbol,
-                                       out IEnumerable<(ITypeParameterSymbol,
-                                           ITypeSymbol)> typeParamsAndArgs) {
+  public static bool IsGenericZipped(this ISymbol symbol,
+                                     out IEnumerable<(ITypeParameterSymbol,
+                                         ITypeSymbol)> typeParamsAndArgs) {
       if (symbol is INamedTypeSymbol {IsGenericType: true} namedTypeSymbol) {
         typeParamsAndArgs = namedTypeSymbol.GetTypeParamsAndArgs();
         return true;
@@ -80,10 +81,10 @@ namespace schema.util.symbols {
       return false;
     }
 
-    public static bool IsGeneric(
-        this ISymbol symbol,
-        out ImmutableArray<ITypeParameterSymbol> typeParameterSymbols,
-        out ImmutableArray<ITypeSymbol> typeArgumentSymbols) {
+  public static bool IsGeneric(
+      this ISymbol symbol,
+      out ImmutableArray<ITypeParameterSymbol> typeParameterSymbols,
+      out ImmutableArray<ITypeSymbol> typeArgumentSymbols) {
       if (symbol is INamedTypeSymbol {IsGenericType: true} namedTypeSymbol) {
         typeParameterSymbols = namedTypeSymbol.TypeParameters;
         typeArgumentSymbols = namedTypeSymbol.TypeArguments;
@@ -95,9 +96,9 @@ namespace schema.util.symbols {
       return false;
     }
 
-    public static bool IsGenericTypeParameter(
-        this ISymbol symbol,
-        out ITypeParameterSymbol typeParameterSymbol) {
+  public static bool IsGenericTypeParameter(
+      this ISymbol symbol,
+      out ITypeParameterSymbol typeParameterSymbol) {
       if (symbol is not ITypeParameterSymbol tps) {
         typeParameterSymbol = default;
         return false;
@@ -107,8 +108,8 @@ namespace schema.util.symbols {
       return true;
     }
 
-    public static bool IsArray(this ISymbol symbol,
-                               out ITypeSymbol elementType) {
+  public static bool IsArray(this ISymbol symbol,
+                             out ITypeSymbol elementType) {
       var arrayTypeSymbol = symbol as IArrayTypeSymbol;
       elementType = arrayTypeSymbol != null
           ? arrayTypeSymbol.ElementType
@@ -116,8 +117,8 @@ namespace schema.util.symbols {
       return arrayTypeSymbol != null;
     }
 
-    public static bool IsTuple(this ISymbol symbol,
-                               out IEnumerable<IFieldSymbol> tupleParameters) {
+  public static bool IsTuple(this ISymbol symbol,
+                             out IEnumerable<IFieldSymbol> tupleParameters) {
       if (symbol is INamedTypeSymbol {IsTupleType: true} namedTypeSymbol) {
         tupleParameters = namedTypeSymbol.TupleElements;
         return true;
@@ -127,9 +128,9 @@ namespace schema.util.symbols {
       return false;
     }
 
-    public static bool IsSequence(this ISymbol symbol,
-                                  out ITypeSymbol elementType,
-                                  out SequenceType sequenceType) {
+  public static bool IsSequence(this ISymbol symbol,
+                                out ITypeSymbol elementType,
+                                out SequenceType sequenceType) {
       if (symbol.IsArray(out elementType)) {
         sequenceType = SequenceType.MUTABLE_ARRAY;
         return true;
@@ -179,5 +180,4 @@ namespace schema.util.symbols {
       sequenceType = default;
       return false;
     }
-  }
 }

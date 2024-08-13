@@ -12,10 +12,11 @@ using schema.util.asserts;
 using schema.util.diagnostics;
 
 
-namespace schema.util.symbols {
-  public static class SymbolTypeUtil {
-    public static INamedTypeSymbol[] GetDeclaringTypesDownward(
-        this ISymbol type) {
+namespace schema.util.symbols;
+
+public static class SymbolTypeUtil {
+  public static INamedTypeSymbol[] GetDeclaringTypesDownward(
+      this ISymbol type) {
       var declaringTypes = new List<INamedTypeSymbol>();
 
       var declaringType = type.ContainingType;
@@ -29,15 +30,15 @@ namespace schema.util.symbols {
       return declaringTypes.ToArray();
     }
 
-    public static string GetGenericParameters(
-        this IReadOnlyList<ITypeParameterSymbol> typeParameters)
-      => new StringBuilder()
-         .AppendGenericParameters(typeParameters)
-         .ToString();
+  public static string GetGenericParameters(
+      this IReadOnlyList<ITypeParameterSymbol> typeParameters)
+    => new StringBuilder()
+       .AppendGenericParameters(typeParameters)
+       .ToString();
 
-    public static StringBuilder AppendGenericParameters(
-        this StringBuilder sb,
-        IReadOnlyList<ITypeParameterSymbol> typeParameters) {
+  public static StringBuilder AppendGenericParameters(
+      this StringBuilder sb,
+      IReadOnlyList<ITypeParameterSymbol> typeParameters) {
       if (typeParameters.Count <= 0) {
         return sb;
       }
@@ -57,12 +58,12 @@ namespace schema.util.symbols {
       return sb;
     }
 
-    public static StringBuilder AppendGenericArgumentsFor(
-        this StringBuilder sb,
-        ITypeSymbol sourceSymbol,
-        ITypeSymbol referencedSymbol,
-        Func<ITypeSymbol, ISymbol?, string>? convertName = null,
-        Func<ITypeSymbol, IEnumerable<string>>? getNamespaceParts = null) {
+  public static StringBuilder AppendGenericArgumentsFor(
+      this StringBuilder sb,
+      ITypeSymbol sourceSymbol,
+      ITypeSymbol referencedSymbol,
+      Func<ITypeSymbol, ISymbol?, string>? convertName = null,
+      Func<ITypeSymbol, IEnumerable<string>>? getNamespaceParts = null) {
       if (referencedSymbol.IsGeneric(out var typeParameters,
                                      out var typeArguments)) {
         sb.Append("<");
@@ -85,58 +86,58 @@ namespace schema.util.symbols {
       return sb;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendSymbolQualifiers(
-        this StringBuilder sb,
-        INamedTypeSymbol typeSymbol)
-      => sb.Append(typeSymbol.IsStatic ? "static " : "")
-           .Append(SymbolTypeUtil.AccessibilityToModifier(
-                       typeSymbol.DeclaredAccessibility))
-           .Append(" ")
-           .Append(typeSymbol is {IsAbstract: true, TypeKind: TypeKind.Class}
-                       ? "abstract "
-                       : "")
-           .Append("partial ")
-           .Append(typeSymbol.TypeKind switch {
-               TypeKind.Class => typeSymbol.IsRecord ? "record" : "class",
-               TypeKind.Struct => typeSymbol.IsRecord
-                   ? "record struct"
-                   : "struct",
-               TypeKind.Interface => "interface"
-           });
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public static StringBuilder AppendSymbolQualifiers(
+      this StringBuilder sb,
+      INamedTypeSymbol typeSymbol)
+    => sb.Append(typeSymbol.IsStatic ? "static " : "")
+         .Append(SymbolTypeUtil.AccessibilityToModifier(
+                     typeSymbol.DeclaredAccessibility))
+         .Append(" ")
+         .Append(typeSymbol is {IsAbstract: true, TypeKind: TypeKind.Class}
+                     ? "abstract "
+                     : "")
+         .Append("partial ")
+         .Append(typeSymbol.TypeKind switch {
+             TypeKind.Class => typeSymbol.IsRecord ? "record" : "class",
+             TypeKind.Struct => typeSymbol.IsRecord
+                 ? "record struct"
+                 : "struct",
+             TypeKind.Interface => "interface"
+         });
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string AccessibilityToModifier(Accessibility accessibility)
-      => accessibility switch {
-          Accessibility.Private   => "private",
-          Accessibility.Protected => "protected",
-          Accessibility.Internal  => "internal",
-          Accessibility.Public    => "public",
-          _ => throw new ArgumentOutOfRangeException(
-              nameof(accessibility),
-              accessibility,
-              null)
-      };
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public static string AccessibilityToModifier(Accessibility accessibility)
+    => accessibility switch {
+        Accessibility.Private   => "private",
+        Accessibility.Protected => "protected",
+        Accessibility.Internal  => "internal",
+        Accessibility.Public    => "public",
+        _ => throw new ArgumentOutOfRangeException(
+            nameof(accessibility),
+            accessibility,
+            null)
+    };
 
-    public static string GetRefKindString(this RefKind refKind)
-      => refKind switch {
-          RefKind.In  => "in",
-          RefKind.Out => "out",
-          RefKind.Ref => "ref",
-          _           => "",
-      };
+  public static string GetRefKindString(this RefKind refKind)
+    => refKind switch {
+        RefKind.In  => "in",
+        RefKind.Out => "out",
+        RefKind.Ref => "ref",
+        _           => "",
+    };
 
-    public static string GetQualifiedNameFromCurrentSymbol(
-        this ITypeSymbol sourceSymbol,
-        ITypeSymbol referencedSymbol)
-      => sourceSymbol.GetQualifiedNameFromCurrentSymbol(referencedSymbol, null);
+  public static string GetQualifiedNameFromCurrentSymbol(
+      this ITypeSymbol sourceSymbol,
+      ITypeSymbol referencedSymbol)
+    => sourceSymbol.GetQualifiedNameFromCurrentSymbol(referencedSymbol, null);
 
-    public static string GetQualifiedNameFromCurrentSymbol(
-        this ITypeSymbol sourceSymbol,
-        ITypeSymbol referencedSymbol,
-        ISymbol? symbolForChecks,
-        Func<ITypeSymbol, ISymbol?, string>? convertName = null,
-        Func<ITypeSymbol, IEnumerable<string>>? getNamespaceParts = null) {
+  public static string GetQualifiedNameFromCurrentSymbol(
+      this ITypeSymbol sourceSymbol,
+      ITypeSymbol referencedSymbol,
+      ISymbol? symbolForChecks,
+      Func<ITypeSymbol, ISymbol?, string>? convertName = null,
+      Func<ITypeSymbol, IEnumerable<string>>? getNamespaceParts = null) {
       if (referencedSymbol.IsArray(out var elementType)) {
         return
             $"{sourceSymbol.GetQualifiedNameFromCurrentSymbol(elementType, null, convertName, getNamespaceParts)}[]";
@@ -289,29 +290,29 @@ namespace schema.util.symbols {
     }
 
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void GetMemberInContainer(
-        this ITypeSymbol containerSymbol,
-        string memberName,
-        out ISymbol memberSymbol,
-        out ITypeSymbol memberTypeSymbol,
-        out ITypeInfo memberTypeInfo
-    ) {
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public static void GetMemberInContainer(
+      this ITypeSymbol containerSymbol,
+      string memberName,
+      out ISymbol memberSymbol,
+      out ITypeSymbol memberTypeSymbol,
+      out ITypeInfo memberTypeInfo
+  ) {
       memberSymbol = containerSymbol.GetMembers(memberName).Single();
       new TypeInfoParser().ParseMember(memberSymbol,
                                        out memberTypeSymbol,
                                        out memberTypeInfo);
     }
 
-    internal static void GetMemberRelativeToAnother(
-        IDiagnosticReporter? diagnosticReporter,
-        INamedTypeSymbol containerTypeSymbol,
-        string otherMemberName,
-        string thisMemberNameForFirstPass,
-        bool assertOrder,
-        out ISymbol memberSymbol,
-        out ITypeSymbol memberTypeSymbol,
-        out ITypeInfo memberTypeInfo) {
+  internal static void GetMemberRelativeToAnother(
+      IDiagnosticReporter? diagnosticReporter,
+      INamedTypeSymbol containerTypeSymbol,
+      string otherMemberName,
+      string thisMemberNameForFirstPass,
+      bool assertOrder,
+      out ISymbol memberSymbol,
+      out ITypeSymbol memberTypeSymbol,
+      out ITypeInfo memberTypeInfo) {
       var typeChain = AccessChainUtil.GetAccessChainForRelativeMember(
           diagnosticReporter,
           containerTypeSymbol,
@@ -325,31 +326,30 @@ namespace schema.util.symbols {
       memberTypeInfo = target.MemberTypeInfo;
     }
 
-    public static string EscapeKeyword(this string text)
-      => !text.IsKeyword() ? text : $"@{text}";
+  public static string EscapeKeyword(this string text)
+    => !text.IsKeyword() ? text : $"@{text}";
 
-    public static bool IsKeyword(this string text)
-      => text is "as"
-                 or "bool"
-                 or "char"
-                 or "class"
-                 or "const"
-                 or "double"
-                 or "float"
-                 or "for"
-                 or "foreach"
-                 or "in"
-                 or "int"
-                 or "internal"
-                 or "public"
-                 or "private"
-                 or "protected"
-                 or "short"
-                 or "static"
-                 or "string"
-                 or "struct"
-                 or "this"
-                 or "unmanaged"
-                 or "void";
-  }
+  public static bool IsKeyword(this string text)
+    => text is "as"
+               or "bool"
+               or "char"
+               or "class"
+               or "const"
+               or "double"
+               or "float"
+               or "for"
+               or "foreach"
+               or "in"
+               or "int"
+               or "internal"
+               or "public"
+               or "private"
+               or "protected"
+               or "short"
+               or "static"
+               or "string"
+               or "struct"
+               or "this"
+               or "unmanaged"
+               or "void";
 }

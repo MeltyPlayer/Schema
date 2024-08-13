@@ -1,9 +1,10 @@
 ﻿using System;
 
 
-namespace schema.text.reader {
-  public sealed partial class SchemaTextReader {
-    public bool Matches(out char match, ReadOnlySpan<char> matches) {
+namespace schema.text.reader;
+
+public sealed partial class SchemaTextReader {
+  public bool Matches(out char match, ReadOnlySpan<char> matches) {
       var c = this.PeekChar_();
 
       for (var i = 0; i < matches.Length; ++i) {
@@ -17,5 +18,4 @@ namespace schema.text.reader {
       match = default;
       return false;
     }
-  }
 }

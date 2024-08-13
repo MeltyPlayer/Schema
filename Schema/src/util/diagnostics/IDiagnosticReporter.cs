@@ -5,19 +5,19 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 
-namespace schema.util.diagnostics {
-  internal interface IDiagnosticReporter {
-    void WithContext(SyntaxNodeAnalysisContext context);
+namespace schema.util.diagnostics;
 
-    IDiagnosticReporter GetSubReporter(ISymbol childSymbol);
+internal interface IDiagnosticReporter {
+  void WithContext(SyntaxNodeAnalysisContext context);
 
-    void ReportDiagnostic(DiagnosticDescriptor diagnosticDescriptor);
+  IDiagnosticReporter GetSubReporter(ISymbol childSymbol);
 
-    void ReportDiagnostic(ISymbol symbol,
-                          DiagnosticDescriptor diagnosticDescriptor);
+  void ReportDiagnostic(DiagnosticDescriptor diagnosticDescriptor);
 
-    void ReportException(Exception exception);
+  void ReportDiagnostic(ISymbol symbol,
+                        DiagnosticDescriptor diagnosticDescriptor);
 
-    IReadOnlyList<Diagnostic> Diagnostics { get; }
-  }
+  void ReportException(Exception exception);
+
+  IReadOnlyList<Diagnostic> Diagnostics { get; }
 }

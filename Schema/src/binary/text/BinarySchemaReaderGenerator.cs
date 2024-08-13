@@ -12,11 +12,12 @@ using schema.util.symbols;
 using schema.util.text;
 
 
-namespace schema.binary.text {
-  public class BinarySchemaReaderGenerator {
-    public const string READER = "br";
+namespace schema.binary.text;
 
-    public string Generate(IBinarySchemaContainer container) {
+public class BinarySchemaReaderGenerator {
+  public const string READER = "br";
+
+  public string Generate(IBinarySchemaContainer container) {
       var typeSymbol = container.TypeSymbol;
 
       var sb = new StringBuilder();
@@ -94,10 +95,10 @@ namespace schema.binary.text {
       return generatedCode;
     }
 
-    private static void ReadValueMember_(
-        ISourceWriter sw,
-        ITypeSymbol sourceSymbol,
-        ISchemaValueMember member) {
+  private static void ReadValueMember_(
+      ISourceWriter sw,
+      ITypeSymbol sourceSymbol,
+      ISchemaValueMember member) {
       if (member.IsPosition) {
         if (member.MemberType.IsReadOnly) {
           sw.WriteLine($"{READER}.AssertPosition(this.{member.Name});");
@@ -213,9 +214,9 @@ namespace schema.binary.text {
       }
     }
 
-    private static void Align_(
-        ISourceWriter sw,
-        ISchemaValueMember member) {
+  private static void Align_(
+      ISourceWriter sw,
+      ISchemaValueMember member) {
       var align = member.Align;
       if (align == null) {
         return;
@@ -228,10 +229,10 @@ namespace schema.binary.text {
       sw.WriteLine($"{READER}.Align({valueName});");
     }
 
-    private static void HandleMemberEndianness_(
-        ISourceWriter sw,
-        ISchemaValueMember member,
-        Action handler) {
+  private static void HandleMemberEndianness_(
+      ISourceWriter sw,
+      ISchemaValueMember member,
+      Action handler) {
       var hasEndianness = member.Endianness != null;
       if (hasEndianness) {
         sw.WriteLine(
@@ -247,10 +248,10 @@ namespace schema.binary.text {
       }
     }
 
-    private static void ReadPrimitive_(
-        ISourceWriter sw,
-        ITypeSymbol sourceSymbol,
-        ISchemaValueMember member) {
+  private static void ReadPrimitive_(
+      ISourceWriter sw,
+      ITypeSymbol sourceSymbol,
+      ISchemaValueMember member) {
       var primitiveType =
           Asserts.CastNonnull(member.MemberType as IPrimitiveMemberType);
 
@@ -269,9 +270,9 @@ namespace schema.binary.text {
           });
     }
 
-    private static void ReadString_(
-        ISourceWriter sw,
-        ISchemaValueMember member) {
+  private static void ReadString_(
+      ISourceWriter sw,
+      ISchemaValueMember member) {
       HandleMemberEndianness_(
           sw,
           member,
@@ -348,11 +349,11 @@ namespace schema.binary.text {
           });
     }
 
-    private static void ReadContainer_(
-        ISourceWriter sw,
-        ITypeSymbol sourceSymbol,
-        IContainerMemberType containerMemberType,
-        ISchemaValueMember member) {
+  private static void ReadContainer_(
+      ISourceWriter sw,
+      ITypeSymbol sourceSymbol,
+      IContainerMemberType containerMemberType,
+      ISchemaValueMember member) {
       // TODO: Do value types need to be handled differently?
       var memberName = member.Name;
       if (containerMemberType.IsChild) {
@@ -388,10 +389,10 @@ namespace schema.binary.text {
           });
     }
 
-    private static void ReadArray_(
-        ISourceWriter sw,
-        ITypeSymbol sourceSymbol,
-        ISchemaValueMember member) {
+  private static void ReadArray_(
+      ISourceWriter sw,
+      ITypeSymbol sourceSymbol,
+      ISchemaValueMember member) {
       var arrayType =
           Asserts.CastNonnull(member.MemberType as ISequenceMemberType);
       var sequenceType = arrayType.SequenceTypeInfo.SequenceType;
@@ -542,10 +543,10 @@ namespace schema.binary.text {
       BinarySchemaReaderGenerator.ReadIntoArray_(sw, sourceSymbol, member);
     }
 
-    private static void ReadIntoArray_(
-        ISourceWriter sw,
-        ITypeSymbol sourceSymbol,
-        ISchemaValueMember member) {
+  private static void ReadIntoArray_(
+      ISourceWriter sw,
+      ITypeSymbol sourceSymbol,
+      ISchemaValueMember member) {
       HandleMemberEndianness_(
           sw,
           member,
@@ -643,9 +644,9 @@ namespace schema.binary.text {
           });
     }
 
-    private static string GetReadPrimitiveText_(
-        ITypeSymbol sourceSymbol,
-        IPrimitiveMemberType primitiveMemberType) {
+  private static string GetReadPrimitiveText_(
+      ITypeSymbol sourceSymbol,
+      IPrimitiveMemberType primitiveMemberType) {
       var primitiveType = primitiveMemberType.PrimitiveType;
       var altFormat = primitiveMemberType.AltFormat;
 
@@ -677,9 +678,9 @@ namespace schema.binary.text {
       return $"{castText}{readText}";
     }
 
-    private static string GetAssertPrimitiveText_(
-        IPrimitiveMemberType primitiveMemberType,
-        string accessText) {
+  private static string GetAssertPrimitiveText_(
+      IPrimitiveMemberType primitiveMemberType,
+      string accessText) {
       var primitiveType = primitiveMemberType.PrimitiveType;
       var altFormat = primitiveMemberType.AltFormat;
 
@@ -711,5 +712,4 @@ namespace schema.binary.text {
 
       return $"{assertMethod}({castText}{accessText})";
     }
-  }
 }

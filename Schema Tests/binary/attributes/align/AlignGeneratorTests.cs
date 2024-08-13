@@ -1,11 +1,12 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.attributes {
-  internal class AlignGeneratorTests {
-    [Test]
-    public void TestConstAlign() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+namespace schema.binary.attributes;
+
+internal class AlignGeneratorTests {
+  [Test]
+  public void TestConstAlign() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -16,7 +17,7 @@ namespace foo.bar {
     public byte Field { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -28,7 +29,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -40,11 +41,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestOtherAlign() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestOtherAlign() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -57,7 +58,7 @@ namespace foo.bar {
     public byte Field { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -70,7 +71,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -83,11 +84,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestNestedOtherAlign() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestNestedOtherAlign() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -104,7 +105,7 @@ namespace foo.bar {
     public uint Value { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -117,7 +118,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -130,11 +131,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestAlignWithImmediate() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestAlignWithImmediate() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -146,7 +147,7 @@ namespace foo.bar {
     public int[] Field { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 using schema.util.sequences;
 
@@ -163,7 +164,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -176,6 +177,5 @@ namespace foo.bar {
   }
 }
 ");
-    }
   }
 }

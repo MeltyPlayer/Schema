@@ -1,10 +1,11 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.text {
-  internal class EnumGeneratorTests {
-    [Test]
-    public void TestReadEnum() {
+namespace schema.binary.text;
+
+internal class EnumGeneratorTests {
+  [Test]
+  public void TestReadEnum() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -49,8 +50,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestAssertEnum() {
+  [Test]
+  public void TestAssertEnum() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -95,8 +96,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestReadEnumArray() {
+  [Test]
+  public void TestReadEnumArray() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -148,5 +149,4 @@ namespace foo.bar {
 }
 ");
     }
-  }
 }

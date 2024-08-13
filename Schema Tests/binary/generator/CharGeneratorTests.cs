@@ -1,11 +1,12 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.text {
-  internal class CharGeneratorTests {
-    [Test]
-    public void TestChar() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+namespace schema.binary.text;
+
+internal class CharGeneratorTests {
+  [Test]
+  public void TestChar() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -17,7 +18,7 @@ namespace foo.bar {
     public char ReadonlyField { get; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -29,7 +30,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -41,12 +42,12 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
 
-    [Test]
-    public void TestCharArray() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestCharArray() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -57,7 +58,7 @@ namespace foo.bar {
     public char[] Field { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 using schema.util.sequences;
 
@@ -70,7 +71,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -81,6 +82,5 @@ namespace foo.bar {
   }
 }
 ");
-    }
   }
 }

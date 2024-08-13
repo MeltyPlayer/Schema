@@ -4,19 +4,20 @@ using System.IO;
 using BenchmarkDotNet.Attributes;
 
 
-namespace benchmarks {
-  public class StringComparison {
-    public const int w = 100;
-    public const int n = 100;
-    private readonly Stream stream_ = new MemoryStream(n);
+namespace benchmarks;
 
-    [IterationSetup]
-    public void BeforeEach() {
+public class StringComparison {
+  public const int w = 100;
+  public const int n = 100;
+  private readonly Stream stream_ = new MemoryStream(n);
+
+  [IterationSetup]
+  public void BeforeEach() {
       this.stream_.Position = 0;
     }
 
-    [Benchmark]
-    public void ReadCharsSeparately() {
+  [Benchmark]
+  public void ReadCharsSeparately() {
       for (var iteration = 0; iteration < w; ++iteration) {
         this.stream_.Position = 0;
 
@@ -27,8 +28,8 @@ namespace benchmarks {
       }
     }
 
-    [Benchmark]
-    public void ReadCharsViaByteBuffer() {
+  [Benchmark]
+  public void ReadCharsViaByteBuffer() {
       for (var iteration = 0; iteration < w; ++iteration) {
         this.stream_.Position = 0;
 
@@ -41,5 +42,4 @@ namespace benchmarks {
         }
       }
     }
-  }
 }

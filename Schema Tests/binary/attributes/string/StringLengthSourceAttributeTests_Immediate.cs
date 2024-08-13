@@ -1,10 +1,11 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.attributes {
-  internal partial class StringLengthSourceAttributeTests {
-    [Test]
-    public void TestImmediateLengthUInt32() {
+namespace schema.binary.attributes;
+
+internal partial class StringLengthSourceAttributeTests {
+  [Test]
+  public void TestImmediateLengthUInt32() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -44,8 +45,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestImmediateLengthByte() {
+  [Test]
+  public void TestImmediateLengthByte() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -84,5 +85,4 @@ namespace foo.bar {
 }
 ");
     }
-  }
 }

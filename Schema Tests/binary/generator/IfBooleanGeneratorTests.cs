@@ -1,10 +1,11 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.text {
-  internal class IfBooleanGeneratorTests {
-    [Test]
-    public void TestIfBoolean() {
+namespace schema.binary.text;
+
+internal class IfBooleanGeneratorTests {
+  [Test]
+  public void TestIfBoolean() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -92,8 +93,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestIfBooleanWithPrivateSetter() {
+  [Test]
+  public void TestIfBooleanWithPrivateSetter() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -143,8 +144,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestUsingBoolFromChild() {
+  [Test]
+  public void TestUsingBoolFromChild() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -194,5 +195,4 @@ namespace foo.bar {
 }
 ");
     }
-  }
 }

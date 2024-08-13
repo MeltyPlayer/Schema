@@ -7,31 +7,31 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using schema.util.diagnostics;
 
 
-namespace schema.util.symbols {
-  internal partial class BetterSymbol {
-    private partial class BetterSymbolImpl {
-      private readonly IDiagnosticReporter diagnosticReporter_;
+namespace schema.util.symbols;
 
-      public void WithContext(SyntaxNodeAnalysisContext context)
-        => this.diagnosticReporter_.WithContext(context);
+internal partial class BetterSymbol {
+  private partial class BetterSymbolImpl {
+    private readonly IDiagnosticReporter diagnosticReporter_;
 
-      public IDiagnosticReporter GetSubReporter(ISymbol childSymbol)
-        => this.diagnosticReporter_.GetSubReporter(childSymbol);
+    public void WithContext(SyntaxNodeAnalysisContext context)
+      => this.diagnosticReporter_.WithContext(context);
 
-      public void ReportDiagnostic(DiagnosticDescriptor diagnosticDescriptor)
-        => this.diagnosticReporter_.ReportDiagnostic(diagnosticDescriptor);
+    public IDiagnosticReporter GetSubReporter(ISymbol childSymbol)
+      => this.diagnosticReporter_.GetSubReporter(childSymbol);
 
-      public void ReportDiagnostic(ISymbol symbol,
-                                   DiagnosticDescriptor diagnosticDescriptor)
-        => this.diagnosticReporter_.ReportDiagnostic(
-            symbol,
-            diagnosticDescriptor);
+    public void ReportDiagnostic(DiagnosticDescriptor diagnosticDescriptor)
+      => this.diagnosticReporter_.ReportDiagnostic(diagnosticDescriptor);
 
-      public void ReportException(Exception exception)
-        => this.diagnosticReporter_.ReportException(exception);
+    public void ReportDiagnostic(ISymbol symbol,
+                                 DiagnosticDescriptor diagnosticDescriptor)
+      => this.diagnosticReporter_.ReportDiagnostic(
+          symbol,
+          diagnosticDescriptor);
 
-      public IReadOnlyList<Diagnostic> Diagnostics
-        => this.diagnosticReporter_.Diagnostics;
-    }
+    public void ReportException(Exception exception)
+      => this.diagnosticReporter_.ReportException(exception);
+
+    public IReadOnlyList<Diagnostic> Diagnostics
+      => this.diagnosticReporter_.Diagnostics;
   }
 }

@@ -1,11 +1,12 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.attributes {
-  internal class RStringLengthSourceAttributeTests {
-    [Test]
-    public void TestOther() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+namespace schema.binary.attributes;
+
+internal class RStringLengthSourceAttributeTests {
+  [Test]
+  public void TestOther() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -19,7 +20,7 @@ namespace foo.bar {
     public string Field { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -31,7 +32,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -43,11 +44,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestOtherViaThis() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestOtherViaThis() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -61,7 +62,7 @@ namespace foo.bar {
     public string Field { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -73,7 +74,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -85,11 +86,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestOtherViaName() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestOtherViaName() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -103,7 +104,7 @@ namespace foo.bar {
     public string Field { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -115,7 +116,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -127,11 +128,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestOtherViaFullyQualifiedName() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestOtherViaFullyQualifiedName() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -145,7 +146,7 @@ namespace foo.bar {
     public string Field { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -157,7 +158,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -169,11 +170,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestOtherViaPartiallyQualifiedName() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestOtherViaPartiallyQualifiedName() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -187,7 +188,7 @@ namespace foo.bar {
     public string Field { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -199,7 +200,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -211,6 +212,5 @@ namespace foo.bar {
   }
 }
 ");
-    }
   }
 }

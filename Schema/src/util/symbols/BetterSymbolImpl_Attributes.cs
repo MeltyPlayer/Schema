@@ -9,40 +9,41 @@ using Microsoft.CodeAnalysis;
 using schema.binary.attributes;
 
 
-namespace schema.util.symbols {
-  internal static partial class BetterSymbol {
-    private partial class BetterSymbolImpl {
-      private ImmutableArray<AttributeData> attributeData_;
+namespace schema.util.symbols;
 
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      public bool HasAttribute<TAttribute>() where TAttribute : Attribute
-        => this.GetAttributeData_<TAttribute>().Any();
+internal static partial class BetterSymbol {
+  private partial class BetterSymbolImpl {
+    private ImmutableArray<AttributeData> attributeData_;
 
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      public TAttribute? GetAttribute<TAttribute>()
-          where TAttribute : Attribute
-        => this.GetAttributes<TAttribute>()
-               .SingleOrDefault();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool HasAttribute<TAttribute>() where TAttribute : Attribute
+      => this.GetAttributeData_<TAttribute>().Any();
 
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      public IEnumerable<TAttribute> GetAttributes<TAttribute>()
-          where TAttribute : Attribute
-        => this.GetAttributeData_<TAttribute>()
-               .Select(attributeData => {
-                 var attribute =
-                     attributeData.Instantiate<TAttribute>(this.Symbol);
-                 if (attribute is BMemberAttribute memberAttribute) {
-                   memberAttribute.Init(this,
-                                        this.Symbol.ContainingType,
-                                        this.Symbol.Name);
-                 }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public TAttribute? GetAttribute<TAttribute>()
+        where TAttribute : Attribute
+      => this.GetAttributes<TAttribute>()
+             .SingleOrDefault();
 
-                 return attribute;
-               });
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public IEnumerable<TAttribute> GetAttributes<TAttribute>()
+        where TAttribute : Attribute
+      => this.GetAttributeData_<TAttribute>()
+             .Select(attributeData => {
+               var attribute =
+                   attributeData.Instantiate<TAttribute>(this.Symbol);
+               if (attribute is BMemberAttribute memberAttribute) {
+                 memberAttribute.Init(this,
+                                      this.Symbol.ContainingType,
+                                      this.Symbol.Name);
+               }
+
+               return attribute;
+             });
 
 
-      private IEnumerable<AttributeData> GetAttributeData_<TAttribute>()
-          where TAttribute : Attribute {
+    private IEnumerable<AttributeData> GetAttributeData_<TAttribute>()
+        where TAttribute : Attribute {
         var attributeType = typeof(TAttribute);
         return this.GetAttributeData_()
                    .Where(attributeData
@@ -50,13 +51,12 @@ namespace schema.util.symbols {
                                   attributeType) ?? false);
       }
 
-      private ImmutableArray<AttributeData> GetAttributeData_() {
+    private ImmutableArray<AttributeData> GetAttributeData_() {
         if (attributeData_ != null) {
           return this.attributeData_;
         }
 
         return this.attributeData_ = this.Symbol.GetAttributes();
       }
-    }
   }
 }

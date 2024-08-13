@@ -2,9 +2,10 @@
 using System.Text;
 
 
-namespace schema.text.reader {
-  public sealed partial class SchemaTextReader {
-    public bool Matches(out string text, ReadOnlySpan<string> matches) {
+namespace schema.text.reader;
+
+public sealed partial class SchemaTextReader {
+  public bool Matches(out string text, ReadOnlySpan<string> matches) {
       var originalLineNumber = this.LineNumber;
       var originalIndexInLine = this.IndexInLine;
       var originalPosition = this.PositionInternal_;
@@ -42,7 +43,7 @@ namespace schema.text.reader {
       return false;
     }
 
-    public string ReadUpToStartOfTerminator(ReadOnlySpan<string> terminators) {
+  public string ReadUpToStartOfTerminator(ReadOnlySpan<string> terminators) {
       var sb = new StringBuilder();
 
       while (!this.Eof) {
@@ -63,7 +64,7 @@ namespace schema.text.reader {
       return sb.ToString();
     }
 
-    public string ReadUpToAndPastTerminator(ReadOnlySpan<string> terminators) {
+  public string ReadUpToAndPastTerminator(ReadOnlySpan<string> terminators) {
       var sb = new StringBuilder();
 
       while (!this.Eof) {
@@ -77,7 +78,7 @@ namespace schema.text.reader {
       return sb.ToString();
     }
 
-    public string ReadWhile(ReadOnlySpan<char> matches) {
+  public string ReadWhile(ReadOnlySpan<char> matches) {
       var sb = new StringBuilder();
 
       while (!this.Eof && this.Matches(out var c, matches)) {
@@ -87,7 +88,7 @@ namespace schema.text.reader {
       return sb.ToString();
     }
 
-    public string ReadWhile(ReadOnlySpan<string> matches) {
+  public string ReadWhile(ReadOnlySpan<string> matches) {
       var sb = new StringBuilder();
 
       while (!this.Eof && this.Matches(out var text, matches)) {
@@ -97,11 +98,10 @@ namespace schema.text.reader {
       return sb.ToString();
     }
 
-    public void SkipManyIfPresent(ReadOnlySpan<string> matches) {
+  public void SkipManyIfPresent(ReadOnlySpan<string> matches) {
       while (!this.Eof && this.Matches(out _, matches)) { }
     }
 
-    public void SkipOnceIfPresent(ReadOnlySpan<string> matches)
-      => this.Matches(out _, matches);
-  }
+  public void SkipOnceIfPresent(ReadOnlySpan<string> matches)
+    => this.Matches(out _, matches);
 }

@@ -1,11 +1,12 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.attributes {
-  internal class RSequenceLengthSourceAttributeTests {
-    [Test]
-    public void TestReadonlyPrimitiveList() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+namespace schema.binary.attributes;
+
+internal class RSequenceLengthSourceAttributeTests {
+  [Test]
+  public void TestReadonlyPrimitiveList() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using System.Collections.Generic;
 using schema.binary;
 using schema.binary.attributes;
@@ -20,7 +21,7 @@ namespace foo.bar {
     public readonly List<int> Values = new();
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 using schema.util.sequences;
 
@@ -36,7 +37,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -50,11 +51,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestReadonlyClassList() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestReadonlyClassList() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using System.Collections.Generic;
 using schema.binary;
 using schema.binary.attributes;
@@ -71,7 +72,7 @@ namespace foo.bar {
     public readonly List<A> Values = new();
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 using schema.util.sequences;
 
@@ -87,7 +88,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -101,11 +102,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestReadonlyStructList() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestReadonlyStructList() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using System.Collections.Generic;
 using schema.binary;
 using schema.binary.attributes;
@@ -122,7 +123,7 @@ namespace foo.bar {
     public readonly List<A> Values = new();
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 using schema.util.sequences;
 
@@ -140,7 +141,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -154,6 +155,5 @@ namespace foo.bar {
   }
 }
 ");
-    }
   }
 }

@@ -8,38 +8,39 @@ using schema.binary;
 using schema.binary.attributes;
 
 
-namespace build {
-  public partial class StructSequenceTests {
-    [BinarySchema]
-    public partial struct SchemaStruct : IBinaryConvertible {
-      public int Value { get; set; }
+namespace build;
 
-      public override bool Equals(object other) {
+public partial class StructSequenceTests {
+  [BinarySchema]
+  public partial struct SchemaStruct : IBinaryConvertible {
+    public int Value { get; set; }
+
+    public override bool Equals(object other) {
         if (other is SchemaStruct otherStruct) {
           return this.Value.Equals(otherStruct.Value);
         }
 
         return false;
       }
-    }
+  }
 
 
-    [BinarySchema]
-    public partial class StructArraySequenceWrapper : IBinaryConvertible {
-      [SequenceLengthSource(SchemaIntegerType.BYTE)]
-      public SchemaStruct[] Values { get; set; }
+  [BinarySchema]
+  public partial class StructArraySequenceWrapper : IBinaryConvertible {
+    [SequenceLengthSource(SchemaIntegerType.BYTE)]
+    public SchemaStruct[] Values { get; set; }
 
-      public override bool Equals(object other) {
+    public override bool Equals(object other) {
         if (other is StructArraySequenceWrapper otherSequenceWrapper) {
           return this.Values.SequenceEqual(otherSequenceWrapper.Values);
         }
 
         return false;
       }
-    }
+  }
 
-    [Test]
-    public void TestWriteAndReadArrayObject() {
+  [Test]
+  public void TestWriteAndReadArrayObject() {
       var expectedSw = new StructArraySequenceWrapper {
           Values = new[] {
               new SchemaStruct {Value = 1},
@@ -62,8 +63,8 @@ namespace build {
       Assert.AreEqual(expectedSw, actualSws);
     }
 
-    [Test]
-    public void TestWriteAndReadArrayValues() {
+  [Test]
+  public void TestWriteAndReadArrayValues() {
       var expectedSw = new StructArraySequenceWrapper {
           Values = new[] {
               new SchemaStruct {Value = 1},
@@ -87,22 +88,22 @@ namespace build {
     }
 
 
-    [BinarySchema]
-    public partial class StructListSequenceWrapper : IBinaryConvertible {
-      [SequenceLengthSource(SchemaIntegerType.BYTE)]
-      public List<SchemaStruct> Values { get; set; } = new();
+  [BinarySchema]
+  public partial class StructListSequenceWrapper : IBinaryConvertible {
+    [SequenceLengthSource(SchemaIntegerType.BYTE)]
+    public List<SchemaStruct> Values { get; set; } = new();
 
-      public override bool Equals(object other) {
+    public override bool Equals(object other) {
         if (other is StructListSequenceWrapper otherSequenceWrapper) {
           return this.Values.SequenceEqual(otherSequenceWrapper.Values);
         }
 
         return false;
       }
-    }
+  }
 
-    [Test]
-    public void TestWriteAndReadListObject() {
+  [Test]
+  public void TestWriteAndReadListObject() {
       var expectedSw = new StructListSequenceWrapper {
           Values = new List<SchemaStruct> {
               new() {Value = 1}, new() {Value = 2}, new() {Value = 3}
@@ -122,5 +123,4 @@ namespace build {
       var actualSw = er.ReadNew<StructListSequenceWrapper>();
       Assert.AreEqual(expectedSw, actualSw);
     }
-  }
 }

@@ -3,13 +3,14 @@
 using schema.binary;
 
 
-namespace schema.readOnly {
-  internal class DefaultValueTests {
-    [Test]
-    [TestCase("null")]
-    [TestCase("false")]
-    [TestCase("true")]
-    public void TestSupportsDefaultBools(string boolValue) {
+namespace schema.readOnly;
+
+internal class DefaultValueTests {
+  [Test]
+  [TestCase("null")]
+  [TestCase("false")]
+  [TestCase("true")]
+  public void TestSupportsDefaultBools(string boolValue) {
       ReadOnlyGeneratorTestUtil.AssertGenerated(
           $$"""
             using schema.readOnly;
@@ -37,12 +38,12 @@ namespace schema.readOnly {
             """);
     }
 
-    [Test]
-    [TestCase("null")]
-    [TestCase("0")]
-    [TestCase("-123")]
-    [TestCase("123")]
-    public void TestSupportsDefaultInts(string intValue) {
+  [Test]
+  [TestCase("null")]
+  [TestCase("0")]
+  [TestCase("-123")]
+  [TestCase("123")]
+  public void TestSupportsDefaultInts(string intValue) {
       ReadOnlyGeneratorTestUtil.AssertGenerated(
           $$"""
             using schema.readOnly;
@@ -70,11 +71,11 @@ namespace schema.readOnly {
             """);
     }
 
-    [Test]
-    [TestCase("null", "null")]
-    [TestCase("SomeType.FOO", "(other.SomeType) 123")]
-    public void
-        TestSupportsDefaultEnums(string enumValue, string readonlyValue) {
+  [Test]
+  [TestCase("null", "null")]
+  [TestCase("SomeType.FOO", "(other.SomeType) 123")]
+  public void
+      TestSupportsDefaultEnums(string enumValue, string readonlyValue) {
       ReadOnlyGeneratorTestUtil.AssertGenerated(
           $$"""
             using schema.readOnly;
@@ -108,5 +109,4 @@ namespace schema.readOnly {
 
             """);
     }
-  }
 }

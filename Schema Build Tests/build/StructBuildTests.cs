@@ -6,40 +6,41 @@ using NUnit.Framework;
 using schema.binary;
 
 
-namespace build {
-  public partial class StructBuildTests {
-    [BinarySchema]
-    public partial struct SchemaStruct : IBinaryConvertible {
-      public int Value { get; set; }
+namespace build;
 
-      public override String ToString() => this.Value.ToString();
+public partial class StructBuildTests {
+  [BinarySchema]
+  public partial struct SchemaStruct : IBinaryConvertible {
+    public int Value { get; set; }
 
-      public override bool Equals(object other) {
+    public override String ToString() => this.Value.ToString();
+
+    public override bool Equals(object other) {
         if (other is SchemaStruct otherStruct) {
           return this.Value.Equals(otherStruct.Value);
         }
 
         return false;
       }
-    }
+  }
 
-    [BinarySchema]
-    public partial class StructWrapper : IBinaryConvertible {
-      public SchemaStruct Value { get; set; }
+  [BinarySchema]
+  public partial class StructWrapper : IBinaryConvertible {
+    public SchemaStruct Value { get; set; }
 
-      public override String ToString() => this.Value.ToString();
+    public override String ToString() => this.Value.ToString();
 
-      public override bool Equals(object other) {
+    public override bool Equals(object other) {
         if (other is StructWrapper otherWrapper) {
           return this.Value.Equals(otherWrapper.Value);
         }
 
         return false;
       }
-    }
+  }
 
-    [Test]
-    public void TestWriteAndRead() {
+  [Test]
+  public void TestWriteAndRead() {
       var expectedSw =
           new StructWrapper {Value = new SchemaStruct {Value = 1}};
 
@@ -57,5 +58,4 @@ namespace build {
 
       Assert.AreEqual(expectedSw, actualSw);
     }
-  }
 }

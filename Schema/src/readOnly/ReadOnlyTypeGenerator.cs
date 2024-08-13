@@ -14,34 +14,35 @@ using schema.util.text;
 using schema.util.types;
 
 
-namespace schema.readOnly {
-  [AttributeUsage(AttributeTargets.Class |
-                  AttributeTargets.Interface |
-                  AttributeTargets.Struct)]
-  public class GenerateReadOnlyAttribute : Attribute;
+namespace schema.readOnly;
 
-  [AttributeUsage(AttributeTargets.Method)]
-  public class ConstAttribute : Attribute;
+[AttributeUsage(AttributeTargets.Class |
+                AttributeTargets.Interface |
+                AttributeTargets.Struct)]
+public class GenerateReadOnlyAttribute : Attribute;
 
-  [AttributeUsage(AttributeTargets.GenericParameter |
-                  AttributeTargets.Parameter |
-                  AttributeTargets.Property |
-                  AttributeTargets.Method)]
-  public class KeepMutableTypeAttribute : Attribute;
+[AttributeUsage(AttributeTargets.Method)]
+public class ConstAttribute : Attribute;
 
-  [Generator(LanguageNames.CSharp)]
-  public class ReadOnlyTypeGenerator
-      : BNamedTypesWithAttributeGenerator<GenerateReadOnlyAttribute> {
-    private static readonly TypeInfoParser parser_ = new();
+[AttributeUsage(AttributeTargets.GenericParameter |
+                AttributeTargets.Parameter |
+                AttributeTargets.Property |
+                AttributeTargets.Method)]
+public class KeepMutableTypeAttribute : Attribute;
 
-    internal override bool FilterNamedTypesBeforeGenerating(
-        TypeDeclarationSyntax syntax,
-        INamedTypeSymbol symbol) => true;
+[Generator(LanguageNames.CSharp)]
+public class ReadOnlyTypeGenerator
+    : BNamedTypesWithAttributeGenerator<GenerateReadOnlyAttribute> {
+  private static readonly TypeInfoParser parser_ = new();
 
-    internal override IEnumerable<(string fileName, string source)>
-        GenerateSourcesForNamedType(INamedTypeSymbol symbol,
-                                    SemanticModel semanticModel,
-                                    TypeDeclarationSyntax syntax) {
+  internal override bool FilterNamedTypesBeforeGenerating(
+      TypeDeclarationSyntax syntax,
+      INamedTypeSymbol symbol) => true;
+
+  internal override IEnumerable<(string fileName, string source)>
+      GenerateSourcesForNamedType(INamedTypeSymbol symbol,
+                                  SemanticModel semanticModel,
+                                  TypeDeclarationSyntax syntax) {
       yield return ($"{symbol.GetUniqueNameForGenerator()}_readOnly.g",
                     this.GenerateSourceForNamedType(
                         symbol,
@@ -49,9 +50,9 @@ namespace schema.readOnly {
                         syntax));
     }
 
-    public string GenerateSourceForNamedType(INamedTypeSymbol typeSymbol,
-                                             SemanticModel semanticModel,
-                                             TypeDeclarationSyntax syntax) {
+  public string GenerateSourceForNamedType(INamedTypeSymbol typeSymbol,
+                                           SemanticModel semanticModel,
+                                           TypeDeclarationSyntax syntax) {
       var sb = new StringBuilder();
       using var sw = new SourceWriter(new StringWriter(sb));
 
@@ -167,7 +168,7 @@ namespace schema.readOnly {
       return sb.ToString();
     }
 
-    private static bool IsTypeAlreadyConst_(INamedTypeSymbol typeSymbol) {
+  private static bool IsTypeAlreadyConst_(INamedTypeSymbol typeSymbol) {
       if (typeSymbol.IsType(typeof(IEnumerable<>))) {
         return true;
       }
@@ -207,13 +208,13 @@ namespace schema.readOnly {
           .All(IsTypeAlreadyConst_);
     }
 
-    private static void WriteMembers_(
-        ISourceWriter sw,
-        INamedTypeSymbol typeSymbol,
-        IReadOnlyList<IMethodSymbol> constMembers,
-        SemanticModel semanticModel,
-        TypeDeclarationSyntax syntax,
-        string? interfaceName = null) {
+  private static void WriteMembers_(
+      ISourceWriter sw,
+      INamedTypeSymbol typeSymbol,
+      IReadOnlyList<IMethodSymbol> constMembers,
+      SemanticModel semanticModel,
+      TypeDeclarationSyntax syntax,
+      string? interfaceName = null) {
       foreach (var memberSymbol in constMembers) {
         var memberTypeSymbol = memberSymbol.ReturnType;
 
@@ -406,9 +407,9 @@ namespace schema.readOnly {
       }
     }
 
-    private static IEnumerable<INamedTypeSymbol>
-        GetDirectBaseTypeAndInterfaces_(
-            INamedTypeSymbol symbol) {
+  private static IEnumerable<INamedTypeSymbol>
+      GetDirectBaseTypeAndInterfaces_(
+          INamedTypeSymbol symbol) {
       var baseType = symbol.BaseType;
       if (baseType != null &&
           !baseType.IsType<object>() &&
@@ -428,41 +429,41 @@ namespace schema.readOnly {
         yield return iface;
       }
     }
-  }
+}
 
-  internal static class ReadOnlyTypeGeneratorUtil {
-    public const string PREFIX = "IReadOnly";
+internal static class ReadOnlyTypeGeneratorUtil {
+  public const string PREFIX = "IReadOnly";
 
-    public static string
-        GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
-            this ITypeSymbol sourceSymbol,
-            ITypeSymbol referencedSymbol,
-            SemanticModel semanticModel,
-            TypeDeclarationSyntax sourceDeclarationSyntax,
-            ISymbol? memberSymbol = null)
-      => sourceSymbol.GetQualifiedNameFromCurrentSymbol(
-          referencedSymbol,
-          memberSymbol,
-          ConvertName_,
-          r => GetNamespaceOfType(r, semanticModel, sourceDeclarationSyntax));
+  public static string
+      GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
+          this ITypeSymbol sourceSymbol,
+          ITypeSymbol referencedSymbol,
+          SemanticModel semanticModel,
+          TypeDeclarationSyntax sourceDeclarationSyntax,
+          ISymbol? memberSymbol = null)
+    => sourceSymbol.GetQualifiedNameFromCurrentSymbol(
+        referencedSymbol,
+        memberSymbol,
+        ConvertName_,
+        r => GetNamespaceOfType(r, semanticModel, sourceDeclarationSyntax));
 
-    public static string GetQualifiedNameAndGenericsFromCurrentSymbol(
-        this ITypeSymbol sourceSymbol,
-        ITypeSymbol referencedSymbol,
-        SemanticModel semanticModel,
-        TypeDeclarationSyntax sourceDeclarationSyntax,
-        ISymbol? memberSymbol = null)
-      => sourceSymbol.GetQualifiedNameFromCurrentSymbol(
-          referencedSymbol,
-          memberSymbol,
-          null,
-          r => GetNamespaceOfType(r, semanticModel, sourceDeclarationSyntax));
+  public static string GetQualifiedNameAndGenericsFromCurrentSymbol(
+      this ITypeSymbol sourceSymbol,
+      ITypeSymbol referencedSymbol,
+      SemanticModel semanticModel,
+      TypeDeclarationSyntax sourceDeclarationSyntax,
+      ISymbol? memberSymbol = null)
+    => sourceSymbol.GetQualifiedNameFromCurrentSymbol(
+        referencedSymbol,
+        memberSymbol,
+        null,
+        r => GetNamespaceOfType(r, semanticModel, sourceDeclarationSyntax));
 
-    public static string GetTypeConstraintsOrReadonly(
-        this ITypeSymbol sourceSymbol,
-        IReadOnlyList<ITypeParameterSymbol> typeParameters,
-        SemanticModel semanticModel,
-        TypeDeclarationSyntax syntax) {
+  public static string GetTypeConstraintsOrReadonly(
+      this ITypeSymbol sourceSymbol,
+      IReadOnlyList<ITypeParameterSymbol> typeParameters,
+      SemanticModel semanticModel,
+      TypeDeclarationSyntax syntax) {
       var sb = new StringBuilder();
 
       foreach (var typeParameter in typeParameters) {
@@ -490,11 +491,11 @@ namespace schema.readOnly {
       return sb.ToString();
     }
 
-    private static IEnumerable<string> GetTypeConstraintNames_(
-        this ITypeSymbol sourceSymbol,
-        ITypeParameterSymbol typeParameter,
-        SemanticModel semanticModel,
-        TypeDeclarationSyntax sourceDeclarationSyntax) {
+  private static IEnumerable<string> GetTypeConstraintNames_(
+      this ITypeSymbol sourceSymbol,
+      ITypeParameterSymbol typeParameter,
+      SemanticModel semanticModel,
+      TypeDeclarationSyntax sourceDeclarationSyntax) {
       if (typeParameter.HasNotNullConstraint) {
         yield return "notnull";
       }
@@ -538,8 +539,8 @@ namespace schema.readOnly {
       }
     }
 
-    private static string ConvertName_(ITypeSymbol typeSymbol,
-                                       ISymbol? symbolForAttributeChecks) {
+  private static string ConvertName_(ITypeSymbol typeSymbol,
+                                     ISymbol? symbolForAttributeChecks) {
       var defaultName = typeSymbol.Name.EscapeKeyword();
       if ((symbolForAttributeChecks ?? typeSymbol)
           .HasAttribute<KeepMutableTypeAttribute>()) {
@@ -556,10 +557,10 @@ namespace schema.readOnly {
           : defaultName;
     }
 
-    private static bool HasBuiltInReadOnlyType_(
-        this ITypeSymbol symbol,
-        out string readOnlyName,
-        out bool canImplicitlyConvert) {
+  private static bool HasBuiltInReadOnlyType_(
+      this ITypeSymbol symbol,
+      out string readOnlyName,
+      out bool canImplicitlyConvert) {
       if (symbol.IsType(typeof(Span<>))) {
         readOnlyName = typeof(ReadOnlySpan<>).GetCorrectName();
         canImplicitlyConvert = true;
@@ -583,8 +584,8 @@ namespace schema.readOnly {
       return false;
     }
 
-    public static string GetConstInterfaceName(
-        this ITypeSymbol typeSymbol) {
+  public static string GetConstInterfaceName(
+      this ITypeSymbol typeSymbol) {
       var baseName = typeSymbol.Name;
       if (baseName.Length >= 2) {
         if (baseName[1] is < 'a' or > 'z') {
@@ -599,22 +600,22 @@ namespace schema.readOnly {
       return $"{PREFIX}{baseName}";
     }
 
-    public static IEnumerable<INamedTypeSymbol> LookupTypesWithNameAndArity(
-        SemanticModel semanticModel,
-        TypeDeclarationSyntax syntax,
-        string searchString,
-        int arity)
-      => semanticModel
-         .LookupNamespacesAndTypes(syntax.SpanStart, null, searchString)
-         .Where(symbol => symbol.HasAttribute<GenerateReadOnlyAttribute>())
-         .Where(symbol => symbol is INamedTypeSymbol)
-         .Select(symbol => symbol as INamedTypeSymbol)
-         .Where(symbol => symbol.Arity == arity);
+  public static IEnumerable<INamedTypeSymbol> LookupTypesWithNameAndArity(
+      SemanticModel semanticModel,
+      TypeDeclarationSyntax syntax,
+      string searchString,
+      int arity)
+    => semanticModel
+       .LookupNamespacesAndTypes(syntax.SpanStart, null, searchString)
+       .Where(symbol => symbol.HasAttribute<GenerateReadOnlyAttribute>())
+       .Where(symbol => symbol is INamedTypeSymbol)
+       .Select(symbol => symbol as INamedTypeSymbol)
+       .Where(symbol => symbol.Arity == arity);
 
-    public static IEnumerable<string> GetNamespaceOfType(
-        this ITypeSymbol typeSymbol,
-        SemanticModel semanticModel,
-        TypeDeclarationSyntax syntax) {
+  public static IEnumerable<string> GetNamespaceOfType(
+      this ITypeSymbol typeSymbol,
+      SemanticModel semanticModel,
+      TypeDeclarationSyntax syntax) {
       if (!typeSymbol.Exists()) {
         var typeName = typeSymbol.Name;
         if (typeName.StartsWith(
@@ -656,9 +657,9 @@ namespace schema.readOnly {
       return typeSymbol.GetContainingNamespaces();
     }
 
-    public static string GetGenericParametersWithVarianceForReadOnlyVersion(
-        this INamedTypeSymbol symbol,
-        IReadOnlyList<IMethodSymbol> constMembers) {
+  public static string GetGenericParametersWithVarianceForReadOnlyVersion(
+      this INamedTypeSymbol symbol,
+      IReadOnlyList<IMethodSymbol> constMembers) {
       var typeParameters = symbol.TypeParameters;
       if (typeParameters.Length == 0) {
         return "";
@@ -698,12 +699,12 @@ namespace schema.readOnly {
       return sb.ToString();
     }
 
-    public static string GetCStyleCastToReadOnlyIfNeeded(
-        this ITypeSymbol sourceSymbol,
-        ISymbol? symbolForAttributeChecks,
-        ITypeSymbol symbol,
-        SemanticModel semanticModel,
-        TypeDeclarationSyntax syntax) {
+  public static string GetCStyleCastToReadOnlyIfNeeded(
+      this ITypeSymbol sourceSymbol,
+      ISymbol? symbolForAttributeChecks,
+      ITypeSymbol symbol,
+      SemanticModel semanticModel,
+      TypeDeclarationSyntax syntax) {
       // TODO: Only allow casts if generics are covariant, otherwise report
       // diagnostic error
       var sb = new StringBuilder();
@@ -721,8 +722,8 @@ namespace schema.readOnly {
       return sb.ToString();
     }
 
-    public static bool IsCastNeeded(this ITypeSymbol symbol,
-                                    ISymbol? symbolForAttributeChecks) {
+  public static bool IsCastNeeded(this ITypeSymbol symbol,
+                                  ISymbol? symbolForAttributeChecks) {
       if ((symbolForAttributeChecks ?? symbol)
           .HasAttribute<KeepMutableTypeAttribute>()) {
         return false;
@@ -738,5 +739,4 @@ namespace schema.readOnly {
                                             out var canImplicitlyConvert) &&
              !canImplicitlyConvert;
     }
-  }
 }

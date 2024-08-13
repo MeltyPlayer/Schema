@@ -5,10 +5,11 @@ using System.Linq;
 using NUnit.Framework;
 
 
-namespace schema.util.streams {
-  public class WritableStreamTests {
-    [Test]
-    public void TestPosition() {
+namespace schema.util.streams;
+
+public class WritableStreamTests {
+  [Test]
+  public void TestPosition() {
       var ms = new MemoryStream(new byte[] {1, 2, 3});
       var ws = new WritableStream(ms);
 
@@ -20,8 +21,8 @@ namespace schema.util.streams {
       Assert.AreEqual(2, ws.Position);
     }
 
-    [Test]
-    public void TestLength() {
+  [Test]
+  public void TestLength() {
       var ms = new MemoryStream(new byte[] {1, 2, 3});
       var ws = new WritableStream(ms);
 
@@ -29,8 +30,8 @@ namespace schema.util.streams {
       Assert.AreEqual(3, ws.Length);
     }
 
-    [Test]
-    public void TestWriteByte() {
+  [Test]
+  public void TestWriteByte() {
       var data = new byte[] {1, 2, 3};
       var ms = new MemoryStream(data);
       var ws = new WritableStream(ms);
@@ -49,8 +50,8 @@ namespace schema.util.streams {
       Assert.AreEqual(2, ws.Position);
     }
 
-    [Test]
-    public void TestWriteSpan() {
+  [Test]
+  public void TestWriteSpan() {
       var ms = new MemoryStream();
       var ws = new WritableStream(ms);
 
@@ -66,8 +67,8 @@ namespace schema.util.streams {
       CollectionAssert.AreEqual(new[] {5, 6, 7, 8, 9}, ms.ToArray());
     }
 
-    [Test]
-    public void TestWriteReadableStream() {
+  [Test]
+  public void TestWriteReadableStream() {
       var ms = new MemoryStream();
       var ws = new WritableStream(ms);
       var rs = new ReadableStream(new byte[] {5, 6, 7, 8, 9});
@@ -84,8 +85,8 @@ namespace schema.util.streams {
       CollectionAssert.AreEqual(new[] {5, 6, 7, 8, 9}, ms.ToArray());
     }
 
-    [Test]
-    public void TestWriteLongReadableStream() {
+  [Test]
+  public void TestWriteLongReadableStream() {
       var readData =
           Enumerable.Range(0, 300_000).Select(i => (byte) i).ToArray();
 
@@ -105,8 +106,8 @@ namespace schema.util.streams {
       CollectionAssert.AreEqual(readData, ms.ToArray());
     }
 
-    [Test]
-    public void TestWriteRangedReadableStream() {
+  [Test]
+  public void TestWriteRangedReadableStream() {
       var ms = new MemoryStream();
       var ws = new WritableStream(ms);
 
@@ -124,5 +125,4 @@ namespace schema.util.streams {
 
       CollectionAssert.AreEqual(new[] {6, 7, 8}, ms.ToArray());
     }
-  }
 }

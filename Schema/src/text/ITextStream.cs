@@ -1,8 +1,8 @@
-﻿namespace schema.text {
-  public interface ITextStream {
-    int TabWidth { get; }
+﻿namespace schema.text;
 
-    int LineNumber { get; }
-    int IndexInLine { get; }
-  }
+public interface ITextStream {
+  int TabWidth { get; }
+
+  int LineNumber { get; }
+  int IndexInLine { get; }
 }

@@ -4,20 +4,21 @@ using System.Threading.Tasks;
 using schema.util.asserts;
 
 
-namespace schema.binary.testing {
-  public static class BinarySchemaAssert {
-    public static async Task<byte[]> GetEndianBinaryWriterBytes(
-        SchemaBinaryWriter bw) {
+namespace schema.binary.testing;
+
+public static class BinarySchemaAssert {
+  public static async Task<byte[]> GetEndianBinaryWriterBytes(
+      SchemaBinaryWriter bw) {
       var outputStream = new MemoryStream();
       await bw.CompleteAndCopyToAsync(outputStream);
       return outputStream.ToArray();
     }
 
-    public static async Task WritesAndReadsIdentically<T>(
-        T value,
-        Endianness endianess = Endianness.LittleEndian,
-        bool assertExactLength = true)
-        where T : IBinaryConvertible, new() {
+  public static async Task WritesAndReadsIdentically<T>(
+      T value,
+      Endianness endianess = Endianness.LittleEndian,
+      bool assertExactLength = true)
+      where T : IBinaryConvertible, new() {
       var bw = new SchemaBinaryWriter(endianess);
       value.Write(bw);
 
@@ -27,10 +28,10 @@ namespace schema.binary.testing {
       await ReadsAndWritesIdentically<T>(br, assertExactLength);
     }
 
-    public static async Task ReadsAndWritesIdentically<T>(
-        IBinaryReader br,
-        bool assertExactLength = true)
-        where T : IBinaryConvertible, new() {
+  public static async Task ReadsAndWritesIdentically<T>(
+      IBinaryReader br,
+      bool assertExactLength = true)
+      where T : IBinaryConvertible, new() {
       var readerStartPos = br.Position;
       var instance = br.ReadNew<T>();
 
@@ -50,5 +51,4 @@ namespace schema.binary.testing {
 
       Asserts.Equal(expectedBytes, actualBytes);
     }
-  }
 }

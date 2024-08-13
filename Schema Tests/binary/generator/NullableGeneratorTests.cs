@@ -1,10 +1,11 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.text {
-  internal class NullableGeneratorTests {
-    [Test]
-    public void TestNullable() {
+namespace schema.binary.text;
+
+internal class NullableGeneratorTests {
+  [Test]
+  public void TestNullable() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -46,5 +47,4 @@ namespace foo.bar {
 }
 ");
     }
-  }
 }

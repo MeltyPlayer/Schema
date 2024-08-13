@@ -1,14 +1,14 @@
-﻿namespace schema.binary {
-  public interface IBinary { }
+﻿namespace schema.binary;
 
-  public interface IBinarySerializable : IBinary {
-    void Write(IBinaryWriter ew);
-  }
+public interface IBinary { }
 
-  public interface IBinaryDeserializable : IBinary {
-    void Read(IBinaryReader br);
-  }
-
-  public interface IBinaryConvertible : IBinarySerializable,
-                                        IBinaryDeserializable { }
+public interface IBinarySerializable : IBinary {
+  void Write(IBinaryWriter ew);
 }
+
+public interface IBinaryDeserializable : IBinary {
+  void Read(IBinaryReader br);
+}
+
+public interface IBinaryConvertible : IBinarySerializable,
+                                      IBinaryDeserializable { }

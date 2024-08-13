@@ -8,27 +8,28 @@ using schema.binary.attributes;
 using schema.binary.testing;
 
 
-namespace build {
-  internal partial class PointerToOrNullPrimitiveTests {
-    [BinarySchema]
-    public partial class ParentImpl : IBinaryConvertible {
-      public Child Child { get; } = new();
+namespace build;
 
-      [RAtPositionOrNull(nameof(Child.FieldPointer), 123)]
-      public int? Field { get; set; }
-    }
+internal partial class PointerToOrNullPrimitiveTests {
+  [BinarySchema]
+  public partial class ParentImpl : IBinaryConvertible {
+    public Child Child { get; } = new();
 
-    [BinarySchema]
-    public partial class Child : IChildOf<ParentImpl>, IBinaryConvertible {
-      public ParentImpl Parent { get; set; }
+    [RAtPositionOrNull(nameof(Child.FieldPointer), 123)]
+    public int? Field { get; set; }
+  }
 
-      [WPointerToOrNull(nameof(Parent.Field), 123)]
-      public byte FieldPointer { get; set; }
-    }
+  [BinarySchema]
+  public partial class Child : IChildOf<ParentImpl>, IBinaryConvertible {
+    public ParentImpl Parent { get; set; }
+
+    [WPointerToOrNull(nameof(Parent.Field), 123)]
+    public byte FieldPointer { get; set; }
+  }
 
 
-    [Test]
-    public async Task TestReadNonnull() {
+  [Test]
+  public async Task TestReadNonnull() {
       var ms = new MemoryStream(new byte[] {1, 12, 0, 0, 0});
       using var br = new SchemaBinaryReader(ms);
 
@@ -37,8 +38,8 @@ namespace build {
       Assert.AreEqual(12, parent.Field.Value);
     }
 
-    [Test]
-    public async Task TestReadNull() {
+  [Test]
+  public async Task TestReadNull() {
       var ms = new MemoryStream(new byte[] {123});
       using var br = new SchemaBinaryReader(ms);
 
@@ -48,8 +49,8 @@ namespace build {
     }
 
 
-    [Test]
-    public async Task TestWriteNonnull() {
+  [Test]
+  public async Task TestWriteNonnull() {
       var parent = new ParentImpl();
       parent.Field = 12;
 
@@ -60,8 +61,8 @@ namespace build {
       CollectionAssert.AreEqual(new byte[] {1, 12, 0, 0, 0}, bytes);
     }
 
-    [Test]
-    public async Task TestWriteNull() {
+  [Test]
+  public async Task TestWriteNull() {
       var parent = new ParentImpl();
       parent.Field = null;
 
@@ -71,5 +72,4 @@ namespace build {
       var bytes = await BinarySchemaAssert.GetEndianBinaryWriterBytes(bw);
       CollectionAssert.AreEqual(new byte[] {123}, bytes);
     }
-  }
 }

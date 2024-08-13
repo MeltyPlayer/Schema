@@ -1,10 +1,11 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.attributes {
-  internal class WPointerToGeneratorOrNullTests {
-    [Test]
-    public void TestPointerToInStructure() {
+namespace schema.binary.attributes;
+
+internal class WPointerToGeneratorOrNullTests {
+  [Test]
+  public void TestPointerToInStructure() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -49,8 +50,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestPointerToThroughChild() {
+  [Test]
+  public void TestPointerToThroughChild() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -98,8 +99,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestPointerToThroughParent() {
+  [Test]
+  public void TestPointerToThroughParent() {
       BinarySchemaTestUtil.AssertGeneratedForAll(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -120,8 +121,7 @@ namespace foo.bar {
     public byte? Foo;
   }
 }",
-// Size Wrapper                                           
-                                                 (@"using System;
+// Size Wrapper                                              (@"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -176,5 +176,4 @@ namespace foo.bar {
 }
 "));
     }
-  }
 }

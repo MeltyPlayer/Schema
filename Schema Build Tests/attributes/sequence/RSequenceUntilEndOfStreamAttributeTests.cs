@@ -7,14 +7,15 @@ using schema.binary;
 using schema.binary.attributes;
 
 
-namespace build {
-  public partial class RSequenceUntilEndOfStreamAttributeTests {
-    [BinarySchema]
-    public partial class ByteSequenceWrapper : IBinaryConvertible {
-      [RSequenceUntilEndOfStream]
-      public byte[] Values { get; set; }
+namespace build;
 
-      public override bool Equals(object other) {
+public partial class RSequenceUntilEndOfStreamAttributeTests {
+  [BinarySchema]
+  public partial class ByteSequenceWrapper : IBinaryConvertible {
+    [RSequenceUntilEndOfStream]
+    public byte[] Values { get; set; }
+
+    public override bool Equals(object other) {
         if (other is ByteSequenceWrapper otherSequenceWrapper) {
           return this.Values.SequenceEqual(otherSequenceWrapper.Values);
         }
@@ -22,11 +23,11 @@ namespace build {
         return false;
       }
 
-      public override string ToString() => string.Join(", ", Values);
-    }
+    public override string ToString() => string.Join(", ", Values);
+  }
 
-    [Test]
-    public void TestWriteAndReadBytes() {
+  [Test]
+  public void TestWriteAndReadBytes() {
       var expectedSw = new ByteSequenceWrapper {
           Values = new byte[] {1, 2, 3, 4, 5, 9, 8, 7, 6}
       };
@@ -45,8 +46,8 @@ namespace build {
       Assert.AreEqual(expectedSw, actualSw);
     }
 
-    [Test]
-    public void TestWriteAndReadBytesInSubstream() {
+  [Test]
+  public void TestWriteAndReadBytesInSubstream() {
       var bytes = new byte[] {0, 0, 0, 1, 2, 3, 4, 5, 6, 0, 0, 0,};
       var expectedSw = new ByteSequenceWrapper {
           Values = new byte[] {1, 2, 3, 4, 5, 6}
@@ -70,8 +71,8 @@ namespace build {
       Assert.AreEqual(expectedSw, actualSw);
     }
 
-    [Test]
-    public void TestWriteAndReadBytesInLocalSubstream() {
+  [Test]
+  public void TestWriteAndReadBytesInLocalSubstream() {
       var bytes = new byte[] {0, 0, 0, 1, 2, 3, 4, 5, 6, 0, 0, 0,};
       var expectedSw = new ByteSequenceWrapper {
           Values = new byte[] {1, 2, 3, 4, 5, 6}
@@ -99,12 +100,12 @@ namespace build {
       Assert.AreEqual(expectedSw, actualSw);
     }
 
-    [BinarySchema]
-    public partial class IntSequenceWrapper : IBinaryConvertible {
-      [RSequenceUntilEndOfStream]
-      public int[] Values { get; set; }
+  [BinarySchema]
+  public partial class IntSequenceWrapper : IBinaryConvertible {
+    [RSequenceUntilEndOfStream]
+    public int[] Values { get; set; }
 
-      public override bool Equals(object other) {
+    public override bool Equals(object other) {
         if (other is IntSequenceWrapper otherSequenceWrapper) {
           return this.Values.SequenceEqual(otherSequenceWrapper.Values);
         }
@@ -112,11 +113,11 @@ namespace build {
         return false;
       }
 
-      public override string ToString() => string.Join(", ", Values);
-    }
+    public override string ToString() => string.Join(", ", Values);
+  }
 
-    [Test]
-    public void TestWriteAndReadInts() {
+  [Test]
+  public void TestWriteAndReadInts() {
       var expectedSw = new IntSequenceWrapper {
           Values = new[] {1, 2, 3, 4, 5, 9, 8, 7, 6}
       };
@@ -136,13 +137,13 @@ namespace build {
     }
 
 
-    [BinarySchema]
-    public partial class Vector3f : IBinaryConvertible {
-      public float X { get; set; }
-      public float Y { get; set; }
-      public float Z { get; set; }
+  [BinarySchema]
+  public partial class Vector3f : IBinaryConvertible {
+    public float X { get; set; }
+    public float Y { get; set; }
+    public float Z { get; set; }
 
-      public override bool Equals(object other) {
+    public override bool Equals(object other) {
         if (other is Vector3f otherVector) {
           return X == otherVector.X &&
                  Y == otherVector.Y &&
@@ -152,15 +153,15 @@ namespace build {
         return false;
       }
 
-      public override string ToString() => $"({X}, {Y}, {Z})";
-    }
+    public override string ToString() => $"({X}, {Y}, {Z})";
+  }
 
-    [BinarySchema]
-    public partial class FloatClassSequenceWrapper : IBinaryConvertible {
-      [RSequenceUntilEndOfStream]
-      public Vector3f[] Values { get; set; }
+  [BinarySchema]
+  public partial class FloatClassSequenceWrapper : IBinaryConvertible {
+    [RSequenceUntilEndOfStream]
+    public Vector3f[] Values { get; set; }
 
-      public override bool Equals(object other) {
+    public override bool Equals(object other) {
         if (other is FloatClassSequenceWrapper otherSequenceWrapper) {
           return this.Values.SequenceEqual(otherSequenceWrapper.Values);
         }
@@ -168,12 +169,12 @@ namespace build {
         return false;
       }
 
-      public override string ToString()
-        => string.Join(", ", Values.Select(value => value.ToString()));
-    }
+    public override string ToString()
+      => string.Join(", ", Values.Select(value => value.ToString()));
+  }
 
-    [Test]
-    public void TestWriteAndReadClasses() {
+  [Test]
+  public void TestWriteAndReadClasses() {
       var expectedSw = new FloatClassSequenceWrapper {
           Values = new Vector3f[] {
               new() {X = 1, Y = 2, Z = 3},
@@ -197,13 +198,13 @@ namespace build {
     }
 
 
-    [BinarySchema]
-    public partial class Vector3b : IBinaryConvertible {
-      public byte X { get; set; }
-      public byte Y { get; set; }
-      public byte Z { get; set; }
+  [BinarySchema]
+  public partial class Vector3b : IBinaryConvertible {
+    public byte X { get; set; }
+    public byte Y { get; set; }
+    public byte Z { get; set; }
 
-      public override bool Equals(object other) {
+    public override bool Equals(object other) {
         if (other is Vector3b otherVector) {
           return X == otherVector.X &&
                  Y == otherVector.Y &&
@@ -213,15 +214,15 @@ namespace build {
         return false;
       }
 
-      public override string ToString() => $"({X}, {Y}, {Z})";
-    }
+    public override string ToString() => $"({X}, {Y}, {Z})";
+  }
 
-    [BinarySchema]
-    public partial class ByteClassSequenceWrapper : IBinaryConvertible {
-      [RSequenceUntilEndOfStream]
-      public Vector3b[] Values { get; set; }
+  [BinarySchema]
+  public partial class ByteClassSequenceWrapper : IBinaryConvertible {
+    [RSequenceUntilEndOfStream]
+    public Vector3b[] Values { get; set; }
 
-      public override bool Equals(object other) {
+    public override bool Equals(object other) {
         if (other is ByteClassSequenceWrapper otherSequenceWrapper) {
           return this.Values.SequenceEqual(otherSequenceWrapper.Values);
         }
@@ -229,12 +230,12 @@ namespace build {
         return false;
       }
 
-      public override string ToString()
-        => string.Join(", ", Values.Select(value => value.ToString()));
-    }
+    public override string ToString()
+      => string.Join(", ", Values.Select(value => value.ToString()));
+  }
 
-    [Test]
-    public void TestWriteAndReadClassesInLocalSubstream() {
+  [Test]
+  public void TestWriteAndReadClassesInLocalSubstream() {
       var bytes = new byte[] {0, 0, 0, 1, 2, 3, 2, 3, 4, 3, 4, 5, 0, 0, 0,};
       var expectedSw = new ByteClassSequenceWrapper {
           Values = new Vector3b[] {
@@ -265,5 +266,4 @@ namespace build {
 
       Assert.AreEqual(expectedSw, actualSw);
     }
-  }
 }

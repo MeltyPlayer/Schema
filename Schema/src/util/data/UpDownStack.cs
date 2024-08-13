@@ -2,103 +2,103 @@
 using System.Collections.Generic;
 
 
-namespace schema.util.data {
-  public enum UpDownDirection {
-    UPWARD,
-    DOWNWARD
-  }
+namespace schema.util.data;
 
-  public interface IUpDownStackNode<T> {
-    UpDownDirection Direction { get; }
-  }
+public enum UpDownDirection {
+  UPWARD,
+  DOWNWARD
+}
 
-  public interface IUpStackNode<T> : IUpDownStackNode<T> {
-    T FromValue { get; }
-  }
+public interface IUpDownStackNode<T> {
+  UpDownDirection Direction { get; }
+}
 
-  public interface IDownStackNode<T> : IUpDownStackNode<T> {
-    T ToValue { get; }
-  }
+public interface IUpStackNode<T> : IUpDownStackNode<T> {
+  T FromValue { get; }
+}
 
-  public interface IUpDownStack<T> : IEnumerable<IUpDownStackNode<T>> {
-    int Count { get; }
+public interface IDownStackNode<T> : IUpDownStackNode<T> {
+  T ToValue { get; }
+}
 
-    bool TryPeek(out T value);
-    void PushUpFrom(T value);
-    void PushDownTo(T value);
-  }
+public interface IUpDownStack<T> : IEnumerable<IUpDownStackNode<T>> {
+  int Count { get; }
 
-  public class UpDownStack<T> : IUpDownStack<T> where T : notnull {
-    private readonly Stack<IUpDownStackNode<T>> impl_ = new();
+  bool TryPeek(out T value);
+  void PushUpFrom(T value);
+  void PushDownTo(T value);
+}
 
-    public int Count => this.impl_.Count;
+public class UpDownStack<T> : IUpDownStack<T> where T : notnull {
+  private readonly Stack<IUpDownStackNode<T>> impl_ = new();
 
-    public bool TryPeek(out T value) {
-      if (this.Count == 0) {
-        value = default;
-        return false;
-      }
+  public int Count => this.impl_.Count;
 
-      value = this.impl_.Peek() switch {
-          IDownStackNode<T> downStackNode => downStackNode.ToValue,
-          IUpStackNode<T> upStackNode     => upStackNode.FromValue,
-      };
-      return true;
+  public bool TryPeek(out T value) {
+    if (this.Count == 0) {
+      value = default;
+      return false;
     }
 
-    public void PushUpFrom(T value)
-      => this.PushOrPopInDirection_(UpDownDirection.UPWARD, value);
+    value = this.impl_.Peek() switch {
+        IDownStackNode<T> downStackNode => downStackNode.ToValue,
+        IUpStackNode<T> upStackNode     => upStackNode.FromValue,
+    };
+    return true;
+  }
 
-    public void PushDownTo(T value)
-      => this.PushOrPopInDirection_(UpDownDirection.DOWNWARD, value);
+  public void PushUpFrom(T value)
+    => this.PushOrPopInDirection_(UpDownDirection.UPWARD, value);
 
-    private void PushOrPopInDirection_(
-        UpDownDirection direction,
-        T value) {
-      if (this.CanReturnBackToPreviousValue_(direction, value)) {
-        this.impl_.Pop();
-        return;
-      }
+  public void PushDownTo(T value)
+    => this.PushOrPopInDirection_(UpDownDirection.DOWNWARD, value);
 
-      this.impl_.Push(direction switch {
-          UpDownDirection.UPWARD   => new UpStackNode {FromValue = value},
-          UpDownDirection.DOWNWARD => new DownStackNode {ToValue = value},
-      });
+  private void PushOrPopInDirection_(
+      UpDownDirection direction,
+      T value) {
+    if (this.CanReturnBackToPreviousValue_(direction, value)) {
+      this.impl_.Pop();
+      return;
     }
 
-    private bool CanReturnBackToPreviousValue_(
-        UpDownDirection direction,
-        T value) {
-      if (this.Count == 0) {
-        return false;
-      }
+    this.impl_.Push(direction switch {
+        UpDownDirection.UPWARD   => new UpStackNode {FromValue = value},
+        UpDownDirection.DOWNWARD => new DownStackNode {ToValue = value},
+    });
+  }
 
-      var last = this.impl_.Peek();
-      if (last.Direction == direction) {
-        return false;
-      }
-
-      return value.Equals(last switch {
-          IDownStackNode<T> downStackNode => downStackNode.ToValue,
-          IUpStackNode<T> upStackNode     => upStackNode.FromValue,
-      });
+  private bool CanReturnBackToPreviousValue_(
+      UpDownDirection direction,
+      T value) {
+    if (this.Count == 0) {
+      return false;
     }
 
-
-    IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-
-    public IEnumerator<IUpDownStackNode<T>> GetEnumerator()
-      => this.impl_.GetEnumerator();
-
-
-    private class UpStackNode : IUpStackNode<T> {
-      public UpDownDirection Direction => UpDownDirection.UPWARD;
-      public T FromValue { get; set; }
+    var last = this.impl_.Peek();
+    if (last.Direction == direction) {
+      return false;
     }
 
-    private class DownStackNode : IDownStackNode<T> {
-      public UpDownDirection Direction => UpDownDirection.DOWNWARD;
-      public T ToValue { get; set; }
-    }
+    return value.Equals(last switch {
+        IDownStackNode<T> downStackNode => downStackNode.ToValue,
+        IUpStackNode<T> upStackNode     => upStackNode.FromValue,
+    });
+  }
+
+
+  IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+
+  public IEnumerator<IUpDownStackNode<T>> GetEnumerator()
+    => this.impl_.GetEnumerator();
+
+
+  private class UpStackNode : IUpStackNode<T> {
+    public UpDownDirection Direction => UpDownDirection.UPWARD;
+    public T FromValue { get; set; }
+  }
+
+  private class DownStackNode : IDownStackNode<T> {
+    public UpDownDirection Direction => UpDownDirection.DOWNWARD;
+    public T ToValue { get; set; }
   }
 }

@@ -6,19 +6,20 @@ using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 
 
-namespace schema.util.symbols {
-  public static class NamespaceExtensions {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool IsInSameNamespaceAs<T>(this ISymbol symbol)
-      => symbol.IsInSameNamespaceAs(typeof(T));
+namespace schema.util.symbols;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool IsInSameNamespaceAs(this ISymbol symbol, Type other)
-      => symbol.IsInNamespace(other.Namespace);
+public static class NamespaceExtensions {
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  internal static bool IsInSameNamespaceAs<T>(this ISymbol symbol)
+    => symbol.IsInSameNamespaceAs(typeof(T));
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool IsInNamespace(this ISymbol symbol,
-                                       string fullNamespacePath) {
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  internal static bool IsInSameNamespaceAs(this ISymbol symbol, Type other)
+    => symbol.IsInNamespace(other.Namespace);
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  internal static bool IsInNamespace(this ISymbol symbol,
+                                     string fullNamespacePath) {
       var fullNamespacePathLength = fullNamespacePath.Length;
 
       var currentNamespace = symbol.ContainingNamespace;
@@ -60,7 +61,7 @@ namespace schema.util.symbols {
              currentNamespace.ContainingNamespace.Name.Length == 0;
     }
 
-    public static string? GetFullyQualifiedNamespace(this ISymbol symbol) {
+  public static string? GetFullyQualifiedNamespace(this ISymbol symbol) {
       var containingNamespaces = symbol.GetContainingNamespaces().ToArray();
       if (containingNamespaces.Length == 0) {
         return null;
@@ -69,12 +70,12 @@ namespace schema.util.symbols {
       return string.Join(".", containingNamespaces);
     }
 
-    public static IEnumerable<string> GetContainingNamespaces(
-        this ISymbol symbol)
-      => symbol.GetContainingNamespacesReversed_().Reverse();
+  public static IEnumerable<string> GetContainingNamespaces(
+      this ISymbol symbol)
+    => symbol.GetContainingNamespacesReversed_().Reverse();
 
-    private static IEnumerable<string> GetContainingNamespacesReversed_(
-        this ISymbol symbol) {
+  private static IEnumerable<string> GetContainingNamespacesReversed_(
+      this ISymbol symbol) {
       var namespaceSymbol = symbol.ContainingNamespace;
       if (namespaceSymbol?.IsGlobalNamespace ?? true) {
         yield break;
@@ -88,5 +89,4 @@ namespace schema.util.symbols {
         namespaceSymbol = namespaceSymbol.ContainingNamespace;
       }
     }
-  }
 }

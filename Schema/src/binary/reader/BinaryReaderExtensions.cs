@@ -1,6 +1,7 @@
-﻿namespace schema.binary {
-  public static class BinaryReaderExtensions {
-    public static byte SubreadByteAt(this IBinaryReader br, long position) {
+﻿namespace schema.binary;
+
+public static class BinaryReaderExtensions {
+  public static byte SubreadByteAt(this IBinaryReader br, long position) {
       var tmp = br.Position;
       br.Position = position;
 
@@ -11,7 +12,7 @@
       return value;
     }
 
-    public static short SubreadInt16At(this IBinaryReader br, long position) {
+  public static short SubreadInt16At(this IBinaryReader br, long position) {
       var tmp = br.Position;
       br.Position = position;
 
@@ -22,7 +23,7 @@
       return value;
     }
 
-    public static ushort SubreadUInt16At(this IBinaryReader br, long position) {
+  public static ushort SubreadUInt16At(this IBinaryReader br, long position) {
       var tmp = br.Position;
       br.Position = position;
 
@@ -33,7 +34,7 @@
       return value;
     }
 
-    public static int SubreadInt32At(this IBinaryReader br, long position) {
+  public static int SubreadInt32At(this IBinaryReader br, long position) {
       var tmp = br.Position;
       br.Position = position;
 
@@ -44,7 +45,7 @@
       return value;
     }
 
-    public static uint SubreadUInt32At(this IBinaryReader br, long position) {
+  public static uint SubreadUInt32At(this IBinaryReader br, long position) {
       var tmp = br.Position;
       br.Position = position;
 
@@ -55,8 +56,8 @@
       return value;
     }
 
-    public static string
-        SubreadStringNTAt(this IBinaryReader br, long position) {
+  public static string
+      SubreadStringNTAt(this IBinaryReader br, long position) {
       var tmp = br.Position;
       br.Position = position;
 
@@ -66,5 +67,4 @@
 
       return value;
     }
-  }
 }

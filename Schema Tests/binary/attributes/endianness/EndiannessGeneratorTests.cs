@@ -1,10 +1,11 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.attributes {
-  internal class EndiannessGeneratorTests {
-    [Test]
-    public void TestNoEndianness() {
+namespace schema.binary.attributes;
+
+internal class EndiannessGeneratorTests {
+  [Test]
+  public void TestNoEndianness() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 
@@ -38,8 +39,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestEndiannessOnField() {
+  [Test]
+  public void TestEndiannessOnField() {
       BinarySchemaTestUtil.AssertGenerated(@"using schema.binary;
 using schema.binary.attributes;
 
@@ -87,8 +88,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestEndiannessOnClass() {
+  [Test]
+  public void TestEndiannessOnClass() {
       BinarySchemaTestUtil.AssertGenerated(@"using schema.binary;
 using schema.binary.attributes;
 
@@ -132,5 +133,4 @@ namespace foo.bar {
 }
 ");
     }
-  }
 }

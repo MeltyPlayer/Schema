@@ -5,12 +5,13 @@ using Microsoft.CodeAnalysis;
 using schema.util.symbols;
 
 
-namespace schema.util.text {
-  public static class SourceWriterSymbolExtensions {
-    public static void WriteNamespaceAndParentTypeBlocks(
-        this ISourceWriter sw,
-        INamedTypeSymbol symbol,
-        Action insideBlockHandler) {
+namespace schema.util.text;
+
+public static class SourceWriterSymbolExtensions {
+  public static void WriteNamespaceAndParentTypeBlocks(
+      this ISourceWriter sw,
+      INamedTypeSymbol symbol,
+      Action insideBlockHandler) {
       var fullyQualifiedNamespace = symbol.GetFullyQualifiedNamespace();
       if (fullyQualifiedNamespace != null) {
         sw.EnterBlock($"namespace {fullyQualifiedNamespace}");
@@ -34,5 +35,4 @@ namespace schema.util.text {
         sw.ExitBlock();
       }
     }
-  }
 }

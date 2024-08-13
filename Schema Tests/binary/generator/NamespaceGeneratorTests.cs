@@ -1,10 +1,11 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.text {
-  internal class NamespaceGeneratorTests {
-    [Test]
-    public void TestFromSameNamespace() {
+namespace schema.binary.text;
+
+internal class NamespaceGeneratorTests {
+  [Test]
+  public void TestFromSameNamespace() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 
@@ -41,8 +42,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestFromHigherNamespace() {
+  [Test]
+  public void TestFromHigherNamespace() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 
@@ -81,8 +82,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestFromLowerNamespace() {
+  [Test]
+  public void TestFromLowerNamespace() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 
@@ -121,8 +122,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestFromSimilarNamespace() {
+  [Test]
+  public void TestFromSimilarNamespace() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 
@@ -162,5 +163,4 @@ namespace foo.bar.gar {
 }
 ");
     }
-  }
 }

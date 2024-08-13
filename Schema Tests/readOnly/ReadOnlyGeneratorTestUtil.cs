@@ -14,17 +14,18 @@ using schema.util.asserts;
 #pragma warning disable CS8604
 
 
-namespace schema.binary {
-  internal static class ReadOnlyGeneratorTestUtil {
-    public static CSharpCompilation Compilation =
-        CSharpCompilation
-            .Create("test")
-            .AddReferences(
-                ((string) AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES"))
-                .Split(Path.PathSeparator)
-                .Select(path => MetadataReference.CreateFromFile(path)));
+namespace schema.binary;
 
-    public static void AssertGenerated(string src, params string[] expected) {
+internal static class ReadOnlyGeneratorTestUtil {
+  public static CSharpCompilation Compilation =
+      CSharpCompilation
+          .Create("test")
+          .AddReferences(
+              ((string) AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES"))
+              .Split(Path.PathSeparator)
+              .Select(path => MetadataReference.CreateFromFile(path)));
+
+  public static void AssertGenerated(string src, params string[] expected) {
       var syntaxTree = CSharpSyntaxTree.ParseText(src);
       var compilation = BinarySchemaTestUtil.Compilation.Clone()
                                             .AddSyntaxTrees(syntaxTree);
@@ -65,5 +66,4 @@ namespace schema.binary {
 
       CollectionAssert.AreEqual(expected, actual);
     }
-  }
 }

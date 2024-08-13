@@ -1,8 +1,8 @@
-﻿namespace schema.binary.attributes {
-  public interface IIfBooleanAttribute {
-    IfBooleanSourceType SourceType { get; }
+﻿namespace schema.binary.attributes;
 
-    SchemaIntegerType ImmediateBooleanType { get; }
-    IMemberReference? OtherMember { get; }
-  }
+public interface IIfBooleanAttribute {
+  IfBooleanSourceType SourceType { get; }
+
+  SchemaIntegerType ImmediateBooleanType { get; }
+  IMemberReference? OtherMember { get; }
 }

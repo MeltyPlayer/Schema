@@ -3,9 +3,10 @@
 using schema.util.streams;
 
 
-namespace schema.binary {
-  public partial class SchemaBinaryReader {
-    public void Subread(int len, Action<IBinaryReader> subread) {
+namespace schema.binary;
+
+public partial class SchemaBinaryReader {
+  public void Subread(int len, Action<IBinaryReader> subread) {
       var startingPosition = this.Position;
 
       var baseOffset = this.Position;
@@ -20,15 +21,15 @@ namespace schema.binary {
       this.Position = startingPosition + len;
     }
 
-    public T Subread<T>(int len, Func<IBinaryReader, T> subread) {
+  public T Subread<T>(int len, Func<IBinaryReader, T> subread) {
       T value = default;
       this.Subread(len, sbr => { value = subread(sbr); });
       return value!;
     }
 
-    public void SubreadAt(long position,
-                          int len,
-                          Action<IBinaryReader> subread) {
+  public void SubreadAt(long position,
+                        int len,
+                        Action<IBinaryReader> subread) {
       var tempPos = this.Position;
 
       {
@@ -48,7 +49,7 @@ namespace schema.binary {
       this.Position = tempPos;
     }
 
-    public void SubreadAt(long position, Action<IBinaryReader> subread) {
+  public void SubreadAt(long position, Action<IBinaryReader> subread) {
       var tempPos = this.Position;
       {
         this.Position = position;
@@ -58,9 +59,9 @@ namespace schema.binary {
     }
 
 
-    public T SubreadAt<T>(long position,
-                          int len,
-                          Func<IBinaryReader, T> subread) {
+  public T SubreadAt<T>(long position,
+                        int len,
+                        Func<IBinaryReader, T> subread) {
       T value = default;
 
       this.SubreadAt(
@@ -71,7 +72,7 @@ namespace schema.binary {
       return value!;
     }
 
-    public T SubreadAt<T>(long position, Func<IBinaryReader, T> subread) {
+  public T SubreadAt<T>(long position, Func<IBinaryReader, T> subread) {
       T value = default;
 
       this.SubreadAt(
@@ -80,5 +81,4 @@ namespace schema.binary {
 
       return value!;
     }
-  }
 }

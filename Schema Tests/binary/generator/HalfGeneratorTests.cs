@@ -1,10 +1,11 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.text {
-  internal class HalfGeneratorTests {
-    [Test]
-    public void TestHalf() {
+namespace schema.binary.text;
+
+internal class HalfGeneratorTests {
+  [Test]
+  public void TestHalf() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -53,5 +54,4 @@ namespace foo.bar {
 }
 ");
     }
-  }
 }

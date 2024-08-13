@@ -1,11 +1,12 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.text {
-  internal class SequenceDiagnosticsTests {
-    [Test]
-    public void TestFailsIfOutOfOrder() {
-      var structure = BinarySchemaTestUtil.ParseFirst(@"
+namespace schema.binary.text;
+
+internal class SequenceDiagnosticsTests {
+  [Test]
+  public void TestFailsIfOutOfOrder() {
+    var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -18,15 +19,15 @@ namespace foo.bar {
     public int Count { get; set; }
   }
 }");
-      BinarySchemaTestUtil.AssertDiagnostics(
-          structure.Diagnostics,
-          Rules.DependentMustComeAfterSource,
-          Rules.SourceMustBePrivate);
-    }
+    BinarySchemaTestUtil.AssertDiagnostics(
+        structure.Diagnostics,
+        Rules.DependentMustComeAfterSource,
+        Rules.SourceMustBePrivate);
+  }
 
-    [Test]
-    public void TestAllowsSkippedOutOfOrder() {
-      var structure = BinarySchemaTestUtil.ParseFirst(@"
+  [Test]
+  public void TestAllowsSkippedOutOfOrder() {
+    var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -40,13 +41,13 @@ namespace foo.bar {
     public int Count { get; set; }
   }
 }");
-      BinarySchemaTestUtil.AssertDiagnostics(
-          structure.Diagnostics);
-    }
+    BinarySchemaTestUtil.AssertDiagnostics(
+        structure.Diagnostics);
+  }
 
-    [Test]
-    public void TestAllowsSequenceAttributesOnISequence() {
-      var structure = BinarySchemaTestUtil.ParseFirst(@"
+  [Test]
+  public void TestAllowsSequenceAttributesOnISequence() {
+    var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
 using schema.binary.attributes;
 using schema.util.sequences;
@@ -67,13 +68,13 @@ namespace foo.bar {
   public class SequenceImpl<T> : ISequence<SequenceImpl<T>, T> { 
   }
 }");
-      BinarySchemaTestUtil.AssertDiagnostics(
-          structure.Diagnostics);
-    }
+    BinarySchemaTestUtil.AssertDiagnostics(
+        structure.Diagnostics);
+  }
 
-    [Test]
-    public void TestAllowsSequenceAttributesOnTupledISequence() {
-      var structure = BinarySchemaTestUtil.ParseFirst(@"
+  [Test]
+  public void TestAllowsSequenceAttributesOnTupledISequence() {
+    var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
 using schema.binary.attributes;
 using schema.util.sequences;
@@ -94,8 +95,7 @@ namespace foo.bar {
   public class SequenceImpl<T1, T2> : ISequence<SequenceImpl<(T1 First, T2 Second)>, (T1 First, T2 Second)> { 
   }
 }");
-      BinarySchemaTestUtil.AssertDiagnostics(
-          structure.Diagnostics);
-    }
+    BinarySchemaTestUtil.AssertDiagnostics(
+        structure.Diagnostics);
   }
 }

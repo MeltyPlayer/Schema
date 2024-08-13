@@ -1,11 +1,12 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.text {
-  internal class RAtPositionOrNullGeneratorTests {
-    [Test]
-    public void TestOffsetOfPrimitive() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+namespace schema.binary.text;
+
+internal class RAtPositionOrNullGeneratorTests {
+  [Test]
+  public void TestOffsetOfPrimitive() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -18,7 +19,7 @@ namespace foo.bar {
     public byte? Field { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -38,7 +39,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -52,11 +53,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestOffsetOfClass() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestOffsetOfClass() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -71,7 +72,7 @@ namespace foo.bar {
     public A? Field { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -91,7 +92,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -103,11 +104,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestOffsetOfStruct() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestOffsetOfStruct() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -122,7 +123,7 @@ namespace foo.bar {
     public A? Field { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -142,7 +143,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -154,11 +155,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
-    [Test]
-    public void TestOffsetFromParent() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+  [Test]
+  public void TestOffsetFromParent() {
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -177,7 +178,7 @@ namespace foo.bar {
     public OffsetWrapper Child { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -196,7 +197,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -209,6 +210,5 @@ namespace foo.bar {
   }
 }
 ");
-    }
   }
 }

@@ -1,7 +1,7 @@
-﻿namespace readOnly {
-  public class Something {
-    public IReadOnlyValueType Field { get; set; }
+﻿namespace readOnly;
 
-    public IReadOnlyFooBar Value { get; set; }
-  }
+public class Something {
+  public IReadOnlyValueType Field { get; set; }
+
+  public IReadOnlyFooBar Value { get; set; }
 }

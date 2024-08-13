@@ -1,31 +1,32 @@
 ﻿using schema.binary.attributes;
 
 
-namespace schema.binary.types.data {
-  [BinarySchema]
-  public partial class PassThruUInt32SizedSection<T> : ISizedSection<T>
-      where T : IBinaryConvertible {
-    [Skip]
-    private readonly int tweakSize_;
+namespace schema.binary.types.data;
 
-    [WSizeOfMemberInBytes(nameof(Data))]
-    private uint size_;
+[BinarySchema]
+public partial class PassThruUInt32SizedSection<T> : ISizedSection<T>
+    where T : IBinaryConvertible {
+  [Skip]
+  private readonly int tweakSize_;
 
-    [Skip]
-    public uint Size => this.size_;
+  [WSizeOfMemberInBytes(nameof(Data))]
+  private uint size_;
 
-    public T Data { get; }
+  [Skip]
+  public uint Size => this.size_;
 
-    public PassThruUInt32SizedSection(T data) {
+  public T Data { get; }
+
+  public PassThruUInt32SizedSection(T data) {
       this.Data = data;
     }
 
-    public PassThruUInt32SizedSection(T data, int tweakSize) {
+  public PassThruUInt32SizedSection(T data, int tweakSize) {
       this.Data = data;
       this.tweakSize_ = tweakSize;
     }
 
-    public void Read(IBinaryReader br) {
+  public void Read(IBinaryReader br) {
       this.size_ = br.ReadUInt32();
 
       var useSize = this.size_ + this.tweakSize_;
@@ -33,5 +34,4 @@ namespace schema.binary.types.data {
       br.SubreadAt(br.Position, (int) useSize, this.Data.Read);
       br.Position = basePosition + useSize;
     }
-  }
 }

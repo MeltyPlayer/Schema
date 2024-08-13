@@ -3,21 +3,22 @@
 using schema.binary;
 
 
-namespace schema.readOnly {
-  internal class BuiltInTypeTests {
-    [Test]
-    [TestCase("System.Span<int>",
-              "System.ReadOnlySpan<int>",
-              false)]
-    [TestCase("System.Collections.Generic.ICollection<int>",
-              "System.Collections.Generic.IReadOnlyCollection<int>",
-              true)]
-    [TestCase("System.Collections.Generic.IList<int>",
-              "System.Collections.Generic.IReadOnlyList<int>",
-              true)]
-    public void TestSupportsEachBuiltInType(string mutable,
-                                            string readOnly,
-                                            bool needsToCast) {
+namespace schema.readOnly;
+
+internal class BuiltInTypeTests {
+  [Test]
+  [TestCase("System.Span<int>",
+            "System.ReadOnlySpan<int>",
+            false)]
+  [TestCase("System.Collections.Generic.ICollection<int>",
+            "System.Collections.Generic.IReadOnlyCollection<int>",
+            true)]
+  [TestCase("System.Collections.Generic.IList<int>",
+            "System.Collections.Generic.IReadOnlyList<int>",
+            true)]
+  public void TestSupportsEachBuiltInType(string mutable,
+                                          string readOnly,
+                                          bool needsToCast) {
       ReadOnlyGeneratorTestUtil.AssertGenerated(
           $$"""
             using schema.readOnly;
@@ -49,11 +50,11 @@ namespace schema.readOnly {
             """);
     }
 
-    [Test]
-    [TestCase("System.Span<int>")]
-    [TestCase("System.Collections.Generic.ICollection<int>")]
-    [TestCase("System.Collections.Generic.IList<int>")]
-    public void TestDoesNotConvertBuiltInsForMutableProperties(string mutable) {
+  [Test]
+  [TestCase("System.Span<int>")]
+  [TestCase("System.Collections.Generic.ICollection<int>")]
+  [TestCase("System.Collections.Generic.IList<int>")]
+  public void TestDoesNotConvertBuiltInsForMutableProperties(string mutable) {
       ReadOnlyGeneratorTestUtil.AssertGenerated(
           $$"""
             using schema.readOnly;
@@ -81,11 +82,11 @@ namespace schema.readOnly {
             """);
     }
 
-    [Test]
-    [TestCase("System.Span<int>")]
-    [TestCase("System.Collections.Generic.ICollection<int>")]
-    [TestCase("System.Collections.Generic.IList<int>")]
-    public void TestDoesNotConvertBuiltInsForMutableMethods(string mutable) {
+  [Test]
+  [TestCase("System.Span<int>")]
+  [TestCase("System.Collections.Generic.ICollection<int>")]
+  [TestCase("System.Collections.Generic.IList<int>")]
+  public void TestDoesNotConvertBuiltInsForMutableMethods(string mutable) {
       ReadOnlyGeneratorTestUtil.AssertGenerated(
           $$"""
             using schema.readOnly;
@@ -113,5 +114,4 @@ namespace schema.readOnly {
 
             """);
     }
-  }
 }

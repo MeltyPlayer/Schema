@@ -1,10 +1,11 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.attributes {
-  internal class WLengthOfSequenceAttributeTests {
-    [Test]
-    public void TestAttribute() {
+namespace schema.binary.attributes;
+
+internal class WLengthOfSequenceAttributeTests {
+  [Test]
+  public void TestAttribute() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -47,8 +48,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestAttributeWithSmallerThanInt() {
+  [Test]
+  public void TestAttributeWithSmallerThanInt() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -91,8 +92,8 @@ namespace foo.bar {
 ");
     }
 
-    [Test]
-    public void TestMultiple() {
+  [Test]
+  public void TestMultiple() {
       BinarySchemaTestUtil.AssertGenerated(@"
 using System.Collections.Generic;
 using schema.binary;
@@ -148,5 +149,4 @@ namespace foo.bar {
 }
 ");
     }
-  }
 }

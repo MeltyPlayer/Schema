@@ -3,17 +3,18 @@
 using NUnit.Framework;
 
 
-namespace schema.binary {
-  internal class ChildOfDiagnosticsTests {
-    [Test]
-    [TestCase(typeof(IBinaryDeserializable), typeof(IBinaryDeserializable))]
-    [TestCase(typeof(IBinarySerializable), typeof(IBinarySerializable))]
-    [TestCase(typeof(IBinaryDeserializable), typeof(IBinaryConvertible))]
-    [TestCase(typeof(IBinarySerializable), typeof(IBinaryConvertible))]
-    public void TestSatisfyingBinaryConvertibility(
-        Type childInterface,
-        Type parentInterface) {
-      var structure = BinarySchemaTestUtil.ParseFirst(@$"
+namespace schema.binary;
+
+internal class ChildOfDiagnosticsTests {
+  [Test]
+  [TestCase(typeof(IBinaryDeserializable), typeof(IBinaryDeserializable))]
+  [TestCase(typeof(IBinarySerializable), typeof(IBinarySerializable))]
+  [TestCase(typeof(IBinaryDeserializable), typeof(IBinaryConvertible))]
+  [TestCase(typeof(IBinarySerializable), typeof(IBinaryConvertible))]
+  public void TestSatisfyingBinaryConvertibility(
+      Type childInterface,
+      Type parentInterface) {
+    var structure = BinarySchemaTestUtil.ParseFirst(@$"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -29,18 +30,18 @@ namespace foo.bar {{
   }}
 }}");
 
-      BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics);
-    }
+    BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics);
+  }
 
-    [Test]
-    [TestCase(typeof(IBinarySerializable), typeof(IBinaryDeserializable))]
-    [TestCase(typeof(IBinaryDeserializable), typeof(IBinarySerializable))]
-    [TestCase(typeof(IBinaryConvertible), typeof(IBinarySerializable))]
-    [TestCase(typeof(IBinaryConvertible), typeof(IBinaryDeserializable))]
-    public void TestNonSatisfyingBinaryConvertibility(
-        Type childInterface,
-        Type parentInterface) {
-      var structure = BinarySchemaTestUtil.ParseFirst(@$"
+  [Test]
+  [TestCase(typeof(IBinarySerializable), typeof(IBinaryDeserializable))]
+  [TestCase(typeof(IBinaryDeserializable), typeof(IBinarySerializable))]
+  [TestCase(typeof(IBinaryConvertible), typeof(IBinarySerializable))]
+  [TestCase(typeof(IBinaryConvertible), typeof(IBinaryDeserializable))]
+  public void TestNonSatisfyingBinaryConvertibility(
+      Type childInterface,
+      Type parentInterface) {
+    var structure = BinarySchemaTestUtil.ParseFirst(@$"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -56,9 +57,8 @@ namespace foo.bar {{
   }}
 }}");
 
-      BinarySchemaTestUtil.AssertDiagnostics(
-          structure.Diagnostics,
-          Rules.ParentBinaryConvertabilityMustSatisfyChild);
-    }
+    BinarySchemaTestUtil.AssertDiagnostics(
+        structure.Diagnostics,
+        Rules.ParentBinaryConvertabilityMustSatisfyChild);
   }
 }

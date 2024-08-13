@@ -7,11 +7,12 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 
-namespace schema.util {
-  public static class AttributeUtil {
-    public static TAttribute Instantiate<TAttribute>(
-        this AttributeData attributeData,
-        ISymbol attachedSymbol) where TAttribute : Attribute {
+namespace schema.util;
+
+public static class AttributeUtil {
+  public static TAttribute Instantiate<TAttribute>(
+      this AttributeData attributeData,
+      ISymbol attachedSymbol) where TAttribute : Attribute {
       var parameters = attributeData.AttributeConstructor.Parameters;
 
       // TODO: Does this still work w/ optional arguments?
@@ -84,5 +85,4 @@ namespace schema.util {
 
       return attribute;
     }
-  }
 }

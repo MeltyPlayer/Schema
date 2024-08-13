@@ -6,21 +6,22 @@ using schema.binary;
 using schema.binary.attributes;
 
 
-namespace build {
-  public partial class StringLengthSourceTests {
-    [BinarySchema]
-    public partial class MultipleStringWrapper : IBinaryConvertible {
-      [WLengthOfString(nameof(String1))]
-      [WLengthOfString(nameof(String2))]
-      private uint length_;
+namespace build;
 
-      [RStringLengthSource(nameof(length_))]
-      public string String1 { get; set; }
+public partial class StringLengthSourceTests {
+  [BinarySchema]
+  public partial class MultipleStringWrapper : IBinaryConvertible {
+    [WLengthOfString(nameof(String1))]
+    [WLengthOfString(nameof(String2))]
+    private uint length_;
 
-      [RStringLengthSource(nameof(length_))]
-      public string String2 { get; set; }
+    [RStringLengthSource(nameof(length_))]
+    public string String1 { get; set; }
 
-      public override bool Equals(object other) {
+    [RStringLengthSource(nameof(length_))]
+    public string String2 { get; set; }
+
+    public override bool Equals(object other) {
         if (other is MultipleStringWrapper otherStringWrapper) {
           return this.String1.Equals(
                      otherStringWrapper.String1) &&
@@ -31,12 +32,12 @@ namespace build {
         return false;
       }
 
-      public override string ToString()
-        => $"{this.String1}, {this.String2}";
-    }
+    public override string ToString()
+      => $"{this.String1}, {this.String2}";
+  }
 
-    [Test]
-    public void TestWriteAndReadMultiple() {
+  [Test]
+  public void TestWriteAndReadMultiple() {
       var expectedSw = new MultipleStringWrapper {
           String1 = "holy", String2 = "moly",
       };
@@ -55,5 +56,4 @@ namespace build {
 
       Assert.AreEqual(expectedSw, actualSw);
     }
-  }
 }

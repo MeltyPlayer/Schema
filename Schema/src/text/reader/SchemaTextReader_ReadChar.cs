@@ -1,31 +1,31 @@
-﻿namespace schema.text.reader {
-  public sealed partial class SchemaTextReader {
-    private char? peekedChar_;
+﻿namespace schema.text.reader;
 
-    private char PeekChar_() {
-      if (this.peekedChar_ != null) {
-        return this.peekedChar_.Value;
-      }
+public sealed partial class SchemaTextReader {
+  private char? peekedChar_;
 
-      var originalLineNumber = this.LineNumber;
-      var originalIndexInLine = this.IndexInLine;
-      var originalPosition = this.PositionInternal_;
-
-      this.peekedChar_ = this.ReadChar();
-
-      this.LineNumber = originalLineNumber;
-      this.IndexInLine = originalIndexInLine;
-      this.PositionInternal_ = originalPosition;
-
+  private char PeekChar_() {
+    if (this.peekedChar_ != null) {
       return this.peekedChar_.Value;
     }
 
-    // TODO: Handle other encodings besides ASCII
-    public char ReadChar() {
-      this.peekedChar_ = null;
-      var c = (char) this.baseStream_.ReadByte();
-      this.IncrementLineIndicesForChar_(c);
-      return c;
-    }
+    var originalLineNumber = this.LineNumber;
+    var originalIndexInLine = this.IndexInLine;
+    var originalPosition = this.PositionInternal_;
+
+    this.peekedChar_ = this.ReadChar();
+
+    this.LineNumber = originalLineNumber;
+    this.IndexInLine = originalIndexInLine;
+    this.PositionInternal_ = originalPosition;
+
+    return this.peekedChar_.Value;
+  }
+
+  // TODO: Handle other encodings besides ASCII
+  public char ReadChar() {
+    this.peekedChar_ = null;
+    var c = (char) this.baseStream_.ReadByte();
+    this.IncrementLineIndicesForChar_(c);
+    return c;
   }
 }

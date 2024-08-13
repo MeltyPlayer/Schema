@@ -7,24 +7,25 @@ using schema.binary;
 using schema.binary.attributes;
 
 
-namespace build {
-  public partial class SequenceTests {
-    [BinarySchema]
-    public partial class SequenceWrapper : IBinaryConvertible {
-      [SequenceLengthSource(SchemaIntegerType.BYTE)]
-      public int[] Values { get; set; }
+namespace build;
 
-      public override bool Equals(object other) {
+public partial class SequenceTests {
+  [BinarySchema]
+  public partial class SequenceWrapper : IBinaryConvertible {
+    [SequenceLengthSource(SchemaIntegerType.BYTE)]
+    public int[] Values { get; set; }
+
+    public override bool Equals(object other) {
         if (other is SequenceWrapper otherSequenceWrapper) {
           return this.Values.SequenceEqual(otherSequenceWrapper.Values);
         }
 
         return false;
       }
-    }
+  }
 
-    [Test]
-    public void TestWriteAndRead() {
+  [Test]
+  public void TestWriteAndRead() {
       var expectedSw = new SequenceWrapper {
           Values = new[] {1, 2, 3, 4, 5, 9, 8, 7, 6}
       };
@@ -44,22 +45,22 @@ namespace build {
     }
 
 
-    [BinarySchema]
-    public partial class Uint32LengthSequenceWrapper : IBinaryConvertible {
-      [SequenceLengthSource(SchemaIntegerType.UINT32)]
-      public int[] Values { get; set; }
+  [BinarySchema]
+  public partial class Uint32LengthSequenceWrapper : IBinaryConvertible {
+    [SequenceLengthSource(SchemaIntegerType.UINT32)]
+    public int[] Values { get; set; }
 
-      public override bool Equals(object other) {
+    public override bool Equals(object other) {
         if (other is Uint32LengthSequenceWrapper otherSequenceWrapper) {
           return this.Values.SequenceEqual(otherSequenceWrapper.Values);
         }
 
         return false;
       }
-    }
+  }
 
-    [Test]
-    public void TestWriteAndReadWithUint32Length() {
+  [Test]
+  public void TestWriteAndReadWithUint32Length() {
       var expectedSw = new Uint32LengthSequenceWrapper {
           Values = new[] {1, 2, 3, 4, 5, 9, 8, 7, 6}
       };
@@ -79,25 +80,25 @@ namespace build {
     }
 
 
-    [BinarySchema]
-    public partial class Uint16LengthSequenceWrapper : IBinaryConvertible {
-      [WLengthOfSequence(nameof(Values))]
-      private ushort length;
+  [BinarySchema]
+  public partial class Uint16LengthSequenceWrapper : IBinaryConvertible {
+    [WLengthOfSequence(nameof(Values))]
+    private ushort length;
 
-      [RSequenceLengthSource(nameof(length))]
-      public int[] Values { get; set; }
+    [RSequenceLengthSource(nameof(length))]
+    public int[] Values { get; set; }
 
-      public override bool Equals(object other) {
+    public override bool Equals(object other) {
         if (other is Uint16LengthSequenceWrapper otherSequenceWrapper) {
           return this.Values.SequenceEqual(otherSequenceWrapper.Values);
         }
 
         return false;
       }
-    }
+  }
 
-    [Test]
-    public void TestWriteAndReadWithUint16Length() {
+  [Test]
+  public void TestWriteAndReadWithUint16Length() {
       var expectedSw = new Uint16LengthSequenceWrapper {
           Values = new[] {1, 2, 3, 4, 5, 9, 8, 7, 6}
       };
@@ -117,25 +118,25 @@ namespace build {
     }
 
 
-    [BinarySchema]
-    public partial class Uint64LengthSequenceWrapper : IBinaryConvertible {
-      [WLengthOfSequence(nameof(Values))]
-      private ulong length;
+  [BinarySchema]
+  public partial class Uint64LengthSequenceWrapper : IBinaryConvertible {
+    [WLengthOfSequence(nameof(Values))]
+    private ulong length;
 
-      [RSequenceLengthSource(nameof(length))]
-      public int[] Values { get; set; }
+    [RSequenceLengthSource(nameof(length))]
+    public int[] Values { get; set; }
 
-      public override bool Equals(object other) {
+    public override bool Equals(object other) {
         if (other is Uint64LengthSequenceWrapper otherSequenceWrapper) {
           return this.Values.SequenceEqual(otherSequenceWrapper.Values);
         }
 
         return false;
       }
-    }
+  }
 
-    [Test]
-    public void TestWriteAndReadWithUint64Length() {
+  [Test]
+  public void TestWriteAndReadWithUint64Length() {
       var expectedSw = new Uint64LengthSequenceWrapper {
           Values = new[] {1, 2, 3, 4, 5, 9, 8, 7, 6}
       };
@@ -153,5 +154,4 @@ namespace build {
       var actualSw = er.ReadNew<Uint64LengthSequenceWrapper>();
       Assert.AreEqual(expectedSw, actualSw);
     }
-  }
 }

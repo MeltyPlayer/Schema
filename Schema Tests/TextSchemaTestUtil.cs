@@ -3,9 +3,10 @@
 using schema.text.reader;
 
 
-namespace schema.text {
-  internal static class TextSchemaTestUtil {
-    public static SchemaTextReader CreateTextReader(string text) {
+namespace schema.text;
+
+internal static class TextSchemaTestUtil {
+  public static SchemaTextReader CreateTextReader(string text) {
       var ms = new MemoryStream();
 
       var sw = new StreamWriter(ms);
@@ -15,5 +16,4 @@ namespace schema.text {
 
       return new SchemaTextReader(ms);
     }
-  }
 }

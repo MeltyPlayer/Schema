@@ -3,32 +3,33 @@
 using NUnit.Framework;
 
 
-namespace schema.util.streams {
-  public class RangedReadableSubstreamTests {
-    [Test]
-    public void TestThrowsErrorIfInputStreamIsNull() {
+namespace schema.util.streams;
+
+public class RangedReadableSubstreamTests {
+  [Test]
+  public void TestThrowsErrorIfInputStreamIsNull() {
       Assert.That(() => new RangedReadableSubstream(null, 0, 0),
                   Throws.Exception);
     }
 
-    [Test]
-    public void TestThrowsErrorIfOffsetIsNegative() {
+  [Test]
+  public void TestThrowsErrorIfOffsetIsNegative() {
       var data = new byte[] {1, 2, 3, 4, 5, 6, 7};
       var rs = new ReadableStream(data);
       Assert.That(() => new RangedReadableSubstream(rs, -1, 0),
                   Throws.Exception);
     }
 
-    [Test]
-    public void TestThrowsErrorIfLengthIsNegative() {
+  [Test]
+  public void TestThrowsErrorIfLengthIsNegative() {
       var data = new byte[] {1, 2, 3, 4, 5, 6, 7};
       var rs = new ReadableStream(data);
       Assert.That(() => new RangedReadableSubstream(rs, 0, -1),
                   Throws.Exception);
     }
 
-    [Test]
-    public void TestFullSubstream() {
+  [Test]
+  public void TestFullSubstream() {
       var data = new byte[] {1, 2, 3, 4, 5, 6, 7};
       var rs = new ReadableStream(data);
       var rrs = new RangedReadableSubstream(rs, 0, rs.Length);
@@ -43,8 +44,8 @@ namespace schema.util.streams {
       Assert.AreEqual(7, rrs.Position);
     }
 
-    [Test]
-    public void TestPartialSubstream() {
+  [Test]
+  public void TestPartialSubstream() {
       var data = new byte[] {1, 2, 3, 4, 5, 6, 7};
       var rs = new ReadableStream(data);
 
@@ -62,13 +63,12 @@ namespace schema.util.streams {
       Assert.AreEqual(6, rrs.Position);
     }
 
-    [Test]
-    public void TestReadBytePastEnd() {
+  [Test]
+  public void TestReadBytePastEnd() {
       var data = new byte[] { };
       var rs = new ReadableStream(data);
       var rrs = new RangedReadableSubstream(rs, 0, rs.Length);
 
       Assert.AreEqual(byte.MaxValue, rrs.ReadByte());
     }
-  }
 }

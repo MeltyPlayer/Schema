@@ -1,10 +1,11 @@
 ﻿using NUnit.Framework;
 
 
-namespace schema.binary.text {
-  internal class IfBooleanDiagnosticsTests {
-    [Test]
-    public void TestIfBooleanNonReference() {
+namespace schema.binary.text;
+
+internal class IfBooleanDiagnosticsTests {
+  [Test]
+  public void TestIfBooleanNonReference() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -20,8 +21,8 @@ namespace foo.bar {
                                              Rules.IfBooleanNeedsNullable);
     }
 
-    [Test]
-    public void TestIfBooleanNonNullable() {
+  [Test]
+  public void TestIfBooleanNonNullable() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -41,8 +42,8 @@ namespace foo.bar {
                                              Rules.IfBooleanNeedsNullable);
     }
 
-    [Test]
-    public void TestOutOfOrder() {
+  [Test]
+  public void TestOutOfOrder() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -64,8 +65,8 @@ namespace foo.bar {
                                                  .DependentMustComeAfterSource);
     }
 
-    [Test]
-    public void TestPublicPropertySource() {
+  [Test]
+  public void TestPublicPropertySource() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -86,8 +87,8 @@ namespace foo.bar {
                                              Rules.SourceMustBePrivate);
     }
 
-    [Test]
-    public void TestProtectedPropertySource() {
+  [Test]
+  public void TestProtectedPropertySource() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -108,8 +109,8 @@ namespace foo.bar {
                                              Rules.SourceMustBePrivate);
     }
 
-    [Test]
-    public void TestInternalPropertySource() {
+  [Test]
+  public void TestInternalPropertySource() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -130,8 +131,8 @@ namespace foo.bar {
                                              Rules.SourceMustBePrivate);
     }
 
-    [Test]
-    public void TestPublicFieldSource() {
+  [Test]
+  public void TestPublicFieldSource() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -152,8 +153,8 @@ namespace foo.bar {
                                              Rules.SourceMustBePrivate);
     }
 
-    [Test]
-    public void TestProtectedFieldSource() {
+  [Test]
+  public void TestProtectedFieldSource() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -174,8 +175,8 @@ namespace foo.bar {
                                              Rules.SourceMustBePrivate);
     }
 
-    [Test]
-    public void TestInternalFieldSource() {
+  [Test]
+  public void TestInternalFieldSource() {
       var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -195,5 +196,4 @@ namespace foo.bar {
       BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
                                              Rules.SourceMustBePrivate);
     }
-  }
 }
