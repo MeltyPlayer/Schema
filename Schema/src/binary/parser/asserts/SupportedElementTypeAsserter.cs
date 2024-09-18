@@ -16,7 +16,8 @@ internal class SupportedElementTypeAsserter {
 
     // Allow any type in sequence, assume it will be handled by the implementation.
     if (sequenceMemberType.SequenceTypeInfo.SequenceType is SequenceType
-            .MUTABLE_SEQUENCE or SequenceType.READ_ONLY_SEQUENCE) {
+            .MUTABLE_SEQUENCE
+        or SequenceType.READ_ONLY_SEQUENCE) {
       return;
     }
 

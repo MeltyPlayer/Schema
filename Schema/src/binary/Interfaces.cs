@@ -10,5 +10,6 @@ public interface IBinaryDeserializable : IBinary {
   void Read(IBinaryReader br);
 }
 
-public interface IBinaryConvertible : IBinarySerializable,
-                                      IBinaryDeserializable { }
+public interface IBinaryConvertible
+    : IBinarySerializable,
+      IBinaryDeserializable { }

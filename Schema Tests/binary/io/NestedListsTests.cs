@@ -32,7 +32,7 @@ public class NestedListsTests {
     impl.Add("second");
     impl.Add("third");
 
-    AssertSequence_(new[] {"first", "second", "third"}, impl);
+    AssertSequence_(new[] { "first", "second", "third" }, impl);
   }
 
   [Test]
@@ -85,6 +85,7 @@ public class NestedListsTests {
         Asserts.Fail(
             $"Expected {currentA} to equal {currentB} at index ${index}.");
       }
+
       index++;
 
       hasA = enumeratorA.MoveNext();
@@ -103,8 +104,10 @@ public class NestedListsTests {
       if (str.Length > 0) {
         str.Append(", ");
       }
+
       str.Append(value);
     }
+
     return str.ToString();
   }
 }

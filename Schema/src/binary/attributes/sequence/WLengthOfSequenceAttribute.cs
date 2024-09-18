@@ -31,14 +31,14 @@ public class WLengthOfSequenceAttribute : BMemberAttribute {
   private string otherMemberName_;
 
   public WLengthOfSequenceAttribute(string otherMemberName) {
-      this.otherMemberName_ = otherMemberName;
-    }
+    this.otherMemberName_ = otherMemberName;
+  }
 
   protected override void InitFields() {
-      this.OtherMember =
-          this.GetMemberRelativeToContainer(this.otherMemberName_)
-              .AssertIsSequence();
-    }
+    this.OtherMember =
+        this.GetMemberRelativeToContainer(this.otherMemberName_)
+            .AssertIsSequence();
+  }
 
   public IMemberReference? OtherMember { get; private set; }
 }

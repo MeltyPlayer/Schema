@@ -17,7 +17,6 @@ public partial interface IOkayToAddVariance<T> {
   public void PassGetSet(ISet<T> list);
 }
 
-
 [GenerateReadOnly]
 public partial interface IFinCollection<out T>;
 

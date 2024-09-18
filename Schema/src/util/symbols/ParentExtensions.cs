@@ -12,14 +12,14 @@ public static class ParentExtensions {
                                             ISymbol other)
     => symbol.GetMembers()
              .Select(member => {
-               switch (member) {
-                 case IFieldSymbol fieldSymbol:
-                   return fieldSymbol.Type;
-                 case IPropertySymbol propertySymbol:
-                   return propertySymbol.Type;
-                 default: return null;
-               }
-             })
+                       switch (member) {
+                         case IFieldSymbol fieldSymbol:
+                           return fieldSymbol.Type;
+                         case IPropertySymbol propertySymbol:
+                           return propertySymbol.Type;
+                         default: return null;
+                       }
+                     })
              .Distinct(SymbolEqualityComparer.Default)
              .WhereNonnull()
              .Select(

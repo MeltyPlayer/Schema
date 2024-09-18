@@ -20,24 +20,24 @@ public class OutOfOrderDictionary<TKey, TValue>
     => this.GetOrCreateTaskCompletionSource_(key).Task;
 
   public void Set(TKey key, TValue value) {
-      this.GetOrCreateTaskCompletionSource_(key).SetResult(value);
-    }
+    this.GetOrCreateTaskCompletionSource_(key).SetResult(value);
+  }
 
   public void Set(TKey key, Task<TValue> valueTask) {
-      var taskCompletionSource = this.GetOrCreateTaskCompletionSource_(key);
-      Task.Run(async () => {
-        var value = await valueTask;
-        taskCompletionSource.SetResult(value);
-      });
-    }
+    var taskCompletionSource = this.GetOrCreateTaskCompletionSource_(key);
+    Task.Run(async () => {
+               var value = await valueTask;
+               taskCompletionSource.SetResult(value);
+             });
+  }
 
   private TaskCompletionSource<TValue> GetOrCreateTaskCompletionSource_(
       TKey key) {
-      if (!this.impl_.TryGetValue(key, out var taskCompletionSource)) {
-        taskCompletionSource = new TaskCompletionSource<TValue>();
-        this.impl_[key] = taskCompletionSource;
-      }
-
-      return taskCompletionSource;
+    if (!this.impl_.TryGetValue(key, out var taskCompletionSource)) {
+      taskCompletionSource = new TaskCompletionSource<TValue>();
+      this.impl_[key] = taskCompletionSource;
     }
+
+    return taskCompletionSource;
+  }
 }

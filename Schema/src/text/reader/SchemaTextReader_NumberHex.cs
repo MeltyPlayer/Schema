@@ -55,18 +55,18 @@ public sealed partial class SchemaTextReader {
     => this.ConvertHexUInt64_(this.ReadHexChars_());
 
 
-  private static readonly string[] hexSpecifierMatches_ = {"0x", "0X"};
+  private static readonly string[] hexSpecifierMatches_ = { "0x", "0X" };
 
   private static readonly char[] hexMatches =
       digitMatches_
           .Concat(
-              new[] {'a', 'b', 'c', 'd', 'e', 'f'}.SelectMany(
-                  c => new[] {char.ToLower(c), char.ToUpper(c)}))
+              new[] { 'a', 'b', 'c', 'd', 'e', 'f' }.SelectMany(
+                  c => new[] { char.ToLower(c), char.ToUpper(c) }))
           .ToArray();
 
   private string ReadHexChars_() {
-      this.SkipManyIfPresent(TextReaderConstants.WHITESPACE_STRINGS);
-      this.SkipOnceIfPresent(hexSpecifierMatches_);
-      return this.ReadWhile(SchemaTextReader.hexMatches);
-    }
+    this.SkipManyIfPresent(TextReaderConstants.WHITESPACE_STRINGS);
+    this.SkipOnceIfPresent(hexSpecifierMatches_);
+    return this.ReadWhile(SchemaTextReader.hexMatches);
+  }
 }

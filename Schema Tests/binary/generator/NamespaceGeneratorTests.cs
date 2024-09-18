@@ -6,7 +6,7 @@ namespace schema.binary.text;
 internal class NamespaceGeneratorTests {
   [Test]
   public void TestFromSameNamespace() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -18,7 +18,7 @@ namespace foo.bar {
     public A Field { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -29,7 +29,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -40,11 +40,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   [Test]
   public void TestFromHigherNamespace() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 
 namespace foo {
@@ -58,7 +58,7 @@ namespace foo {
     }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -69,7 +69,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -80,11 +80,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   [Test]
   public void TestFromLowerNamespace() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -98,7 +98,7 @@ namespace foo.bar {
     public goo.A Field { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -109,7 +109,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -120,11 +120,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   [Test]
   public void TestFromSimilarNamespace() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -140,7 +140,7 @@ namespace foo.bar {
     }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar.gar {
@@ -151,7 +151,7 @@ namespace foo.bar.gar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar.gar {
@@ -162,5 +162,5 @@ namespace foo.bar.gar {
   }
 }
 ");
-    }
+  }
 }

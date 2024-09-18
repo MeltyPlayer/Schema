@@ -21,18 +21,15 @@ public class WSizeOfMemberInBytesAttribute : BMemberAttribute {
   private string otherMemberName_;
 
   public WSizeOfMemberInBytesAttribute(string otherMemberName) {
-      this.otherMemberName_ = otherMemberName;
-    }
+    this.otherMemberName_ = otherMemberName;
+  }
 
   protected override void InitFields() {
-      this.AccessChainToOtherMember =
-          this.GetAccessChainRelativeToContainer(
-              this.otherMemberName_,
-              false);
-    }
-
-  public IChain<IAccessChainNode> AccessChainToOtherMember {
-    get;
-    private set;
+    this.AccessChainToOtherMember =
+        this.GetAccessChainRelativeToContainer(
+            this.otherMemberName_,
+            false);
   }
+
+  public IChain<IAccessChainNode> AccessChainToOtherMember { get; private set; }
 }

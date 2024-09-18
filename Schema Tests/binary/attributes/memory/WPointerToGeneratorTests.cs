@@ -6,7 +6,7 @@ namespace schema.binary.attributes;
 internal class WPointerToGeneratorTests {
   [Test]
   public void TestPointerToInStructure() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -19,7 +19,7 @@ namespace foo.bar {
     public byte Foo;
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -31,7 +31,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -45,11 +45,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   [Test]
   public void TestPointerToThroughChild() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -67,7 +67,7 @@ namespace foo.bar {
     public byte Bar;
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -79,7 +79,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -93,11 +93,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   [Test]
   public void TestPointerToThroughParent() {
-      BinarySchemaTestUtil.AssertGeneratedForAll(@"
+    BinarySchemaTestUtil.AssertGeneratedForAll(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -117,7 +117,8 @@ namespace foo.bar {
     public byte Foo;
   }
 }",
-// Size Wrapper                                              (@"using System;
+                                               // Size Wrapper                                           
+                                               (@"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -128,7 +129,7 @@ namespace foo.bar {
   }
 }
 ",
-                                                  @"using System;
+                                                @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -139,8 +140,8 @@ namespace foo.bar {
   }
 }
 "),
-// Parent Impl
-                                                 (@"using System;
+                                               // Parent Impl
+                                               (@"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -153,7 +154,7 @@ namespace foo.bar {
   }
 }
 ",
-                                                  @"using System;
+                                                @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -168,5 +169,5 @@ namespace foo.bar {
   }
 }
 "));
-    }
+  }
 }

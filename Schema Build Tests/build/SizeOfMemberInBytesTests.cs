@@ -35,6 +35,6 @@ internal partial class SizeOfMemberInBytesTests {
     parent.Write(bw);
 
     var bytes = await BinarySchemaAssert.GetEndianBinaryWriterBytes(bw);
-    CollectionAssert.AreEqual(new byte[] {4, 12, 0, 0, 0}, bytes);
+    CollectionAssert.AreEqual(new byte[] { 4, 12, 0, 0, 0 }, bytes);
   }
 }

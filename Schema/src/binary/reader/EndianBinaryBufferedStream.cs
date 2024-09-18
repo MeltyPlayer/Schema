@@ -20,34 +20,37 @@ public class SpanElementReverser : ISpanElementReverser {
   public void Reverse(Span<byte> span) => span.Reverse();
 
   public void ReverseElements(Span<byte> bytes, int stride) {
-      if (stride == 2) {
-        var shorts = bytes.Cast<byte, short>();
-        for (var i = 0; i < shorts.Length; ++i) {
-          shorts[i].ReverseEndianness();
-        }
-        return;
+    if (stride == 2) {
+      var shorts = bytes.Cast<byte, short>();
+      for (var i = 0; i < shorts.Length; ++i) {
+        shorts[i].ReverseEndianness();
       }
 
-      if (stride == 4) {
-        var ints = bytes.Cast<byte, int>();
-        for (var i = 0; i < ints.Length; ++i) {
-          ints[i].ReverseEndianness();
-        }
-        return;
-      }
-
-      if (stride == 8) {
-        var longs = bytes.Cast<byte, long>();
-        for (var i = 0; i < longs.Length; ++i) {
-          longs[i].ReverseEndianness();
-        }
-        return;
-      }
-
-      for (var i = 0; i < bytes.Length; i += stride) {
-        bytes.Slice(i, stride).Reverse();
-      }
+      return;
     }
+
+    if (stride == 4) {
+      var ints = bytes.Cast<byte, int>();
+      for (var i = 0; i < ints.Length; ++i) {
+        ints[i].ReverseEndianness();
+      }
+
+      return;
+    }
+
+    if (stride == 8) {
+      var longs = bytes.Cast<byte, long>();
+      for (var i = 0; i < longs.Length; ++i) {
+        longs[i].ReverseEndianness();
+      }
+
+      return;
+    }
+
+    for (var i = 0; i < bytes.Length; i += stride) {
+      bytes.Slice(i, stride).Reverse();
+    }
+  }
 }
 
 public class NoopSpanElementReverser : ISpanElementReverser {
@@ -62,9 +65,9 @@ public class EndianBinaryBufferedStream : IEndiannessStack {
   private ISpanElementReverser reverserImpl_;
 
   public EndianBinaryBufferedStream(Endianness? endianness) {
-      this.endiannessImpl_ = new EndiannessStackImpl(endianness);
-      this.UpdateSpanElementReverser_();
-    }
+    this.endiannessImpl_ = new EndiannessStackImpl(endianness);
+    this.UpdateSpanElementReverser_();
+  }
 
   public ISeekableReadableStream BaseStream {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -76,12 +79,12 @@ public class EndianBinaryBufferedStream : IEndiannessStack {
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public void FillBuffer(long count, int? optStride = null) {
-      if (this.Buffer == null || this.Buffer.Length < count) {
-        this.Buffer = new byte[count];
-      }
-
-      FillBuffer(new Span<byte>(this.Buffer, 0, (int) count), optStride);
+    if (this.Buffer == null || this.Buffer.Length < count) {
+      this.Buffer = new byte[count];
     }
+
+    FillBuffer(new Span<byte>(this.Buffer, 0, (int) count), optStride);
+  }
 
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -92,35 +95,35 @@ public class EndianBinaryBufferedStream : IEndiannessStack {
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public unsafe void FillBufferAndReverse<T>(Span<T> buffer)
       where T : unmanaged {
-      var bSpan = buffer.AsBytes();
-      this.BaseStream.TryToReadIntoBuffer(bSpan);
+    var bSpan = buffer.AsBytes();
+    this.BaseStream.TryToReadIntoBuffer(bSpan);
 
-      var sizeOf = sizeof(T);
-      this.reverserImpl_.ReverseElements(bSpan, sizeOf);
-    }
+    var sizeOf = sizeof(T);
+    this.reverserImpl_.ReverseElements(bSpan, sizeOf);
+  }
 
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public void FillBuffer(Span<byte> buffer, int? optStride = null) {
-      var stride = optStride ?? buffer.Length;
-      this.BaseStream.TryToReadIntoBuffer(buffer);
-      this.reverserImpl_.ReverseElements(buffer, stride);
-    }
+    var stride = optStride ?? buffer.Length;
+    this.BaseStream.TryToReadIntoBuffer(buffer);
+    this.reverserImpl_.ReverseElements(buffer, stride);
+  }
 
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Read<T>() where T : unmanaged {
-      this.Read(out T val);
-      return val;
-    }
+    this.Read(out T val);
+    return val;
+  }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public void Read<T>(out T val) where T : unmanaged {
-      val = default;
-      var bSpan = UnsafeUtil.AsSpan(ref val).AsBytes();
-      this.BaseStream.TryToReadIntoBuffer(bSpan);
-      this.reverserImpl_.Reverse(bSpan);
-    }
+    val = default;
+    var bSpan = UnsafeUtil.AsSpan(ref val).AsBytes();
+    this.BaseStream.TryToReadIntoBuffer(bSpan);
+    this.reverserImpl_.Reverse(bSpan);
+  }
 
 
   public Endianness Endianness {
@@ -135,33 +138,34 @@ public class EndianBinaryBufferedStream : IEndiannessStack {
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public void PushContainerEndianness(Endianness endianness) {
-      this.endiannessImpl_.PushContainerEndianness(endianness);
-      this.UpdateSpanElementReverser_();
-    }
+    this.endiannessImpl_.PushContainerEndianness(endianness);
+    this.UpdateSpanElementReverser_();
+  }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public void PushMemberEndianness(Endianness endianness) {
-      this.endiannessImpl_.PushMemberEndianness(endianness);
-      this.UpdateSpanElementReverser_();
-    }
+    this.endiannessImpl_.PushMemberEndianness(endianness);
+    this.UpdateSpanElementReverser_();
+  }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public void PopEndianness() {
-      this.endiannessImpl_.PopEndianness();
-      this.UpdateSpanElementReverser_();
-    }
+    this.endiannessImpl_.PopEndianness();
+    this.UpdateSpanElementReverser_();
+  }
 
   private void UpdateSpanElementReverser_() {
-      var newOppositeEndiannessOfSystem =
-          this.endiannessImpl_.IsOppositeEndiannessOfSystem;
-      if (this.isCurrentlyOppositeEndianness_ ==
-          newOppositeEndiannessOfSystem && this.reverserImpl_ != null) {
-        return;
-      }
-
-      this.isCurrentlyOppositeEndianness_ = newOppositeEndiannessOfSystem;
-      this.reverserImpl_ = newOppositeEndiannessOfSystem
-          ? new SpanElementReverser()
-          : new NoopSpanElementReverser();
+    var newOppositeEndiannessOfSystem =
+        this.endiannessImpl_.IsOppositeEndiannessOfSystem;
+    if (this.isCurrentlyOppositeEndianness_ ==
+        newOppositeEndiannessOfSystem &&
+        this.reverserImpl_ != null) {
+      return;
     }
+
+    this.isCurrentlyOppositeEndianness_ = newOppositeEndiannessOfSystem;
+    this.reverserImpl_ = newOppositeEndiannessOfSystem
+        ? new SpanElementReverser()
+        : new NoopSpanElementReverser();
+  }
 }

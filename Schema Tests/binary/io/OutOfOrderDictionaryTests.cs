@@ -8,35 +8,35 @@ namespace schema.util.data;
 public class OutOfOrderDictionaryTests {
   [Test]
   public async Task TestSetValueThenGet() {
-      var impl = new OutOfOrderDictionary<string, string>();
-      impl.Set("foo", "bar");
-      Assert.AreEqual("bar", await impl.Get("foo"));
-    }
+    var impl = new OutOfOrderDictionary<string, string>();
+    impl.Set("foo", "bar");
+    Assert.AreEqual("bar", await impl.Get("foo"));
+  }
 
   [Test]
   public async Task TestSetTaskThenGet() {
-      var impl = new OutOfOrderDictionary<string, string>();
-      impl.Set("foo", Task.FromResult("bar"));
-      Assert.AreEqual("bar", await impl.Get("foo"));
-    }
+    var impl = new OutOfOrderDictionary<string, string>();
+    impl.Set("foo", Task.FromResult("bar"));
+    Assert.AreEqual("bar", await impl.Get("foo"));
+  }
 
   [Test]
   public async Task TestGetThenSetValue() {
-      var impl = new OutOfOrderDictionary<string, string>();
+    var impl = new OutOfOrderDictionary<string, string>();
 
-      var getTask = impl.Get("foo");
-      impl.Set("foo", "bar");
+    var getTask = impl.Get("foo");
+    impl.Set("foo", "bar");
 
-      Assert.AreEqual("bar", await getTask);
-    }
+    Assert.AreEqual("bar", await getTask);
+  }
 
   [Test]
   public async Task TestGetThenSetTask() {
-      var impl = new OutOfOrderDictionary<string, string>();
+    var impl = new OutOfOrderDictionary<string, string>();
 
-      var getTask = impl.Get("foo");
-      impl.Set("foo", Task.FromResult("bar"));
+    var getTask = impl.Get("foo");
+    impl.Set("foo", Task.FromResult("bar"));
 
-      Assert.AreEqual("bar", await getTask);
-    }
+    Assert.AreEqual("bar", await getTask);
+  }
 }

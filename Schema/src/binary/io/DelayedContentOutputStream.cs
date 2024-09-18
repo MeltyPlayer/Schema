@@ -13,8 +13,7 @@ using schema.util.streams;
 
 namespace schema.binary.io;
 
-public interface IDelayedContentOutputStream :
-    ISubDelayedContentOutputStream {
+public interface IDelayedContentOutputStream : ISubDelayedContentOutputStream {
   Task CompleteAndCopyToDelayed(ISizedWritableStream stream);
 }
 

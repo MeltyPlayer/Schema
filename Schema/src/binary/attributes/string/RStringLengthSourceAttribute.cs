@@ -4,8 +4,9 @@
 namespace schema.binary.attributes;
 
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-public class RStringLengthSourceAttribute : BMemberAttribute<string>,
-                                            IStringLengthSourceAttribute {
+public class RStringLengthSourceAttribute
+    : BMemberAttribute<string>,
+      IStringLengthSourceAttribute {
   private string? otherMemberName_;
 
   /// <summary>

@@ -24,7 +24,7 @@ internal class ReadOnlyReferenceTests {
             IReadOnlyOther Field { get; set; }
           }
         }
-        
+
         """,
         """
         namespace foo.bar.other {
@@ -46,7 +46,7 @@ internal class ReadOnlyReferenceTests {
             public other.IReadOnlyOther Field { get; }
           }
         }
-        
+
         """);
   }
 
@@ -68,7 +68,7 @@ internal class ReadOnlyReferenceTests {
             IReadOnlyOther? Field { get; set; }
           }
         }
-        
+
         """,
         """
         namespace foo.bar.other {
@@ -90,7 +90,7 @@ internal class ReadOnlyReferenceTests {
             public other.IReadOnlyOther? Field { get; }
           }
         }
-        
+
         """);
   }
 
@@ -113,7 +113,7 @@ internal class ReadOnlyReferenceTests {
             IEnumerable<IReadOnlyOther> Field { get; set; }
           }
         }
-        
+
         """,
         """
         namespace foo.bar.other {
@@ -135,7 +135,7 @@ internal class ReadOnlyReferenceTests {
             public System.Collections.Generic.IEnumerable<other.IReadOnlyOther> Field { get; }
           }
         }
-        
+
         """);
   }
 
@@ -157,7 +157,7 @@ internal class ReadOnlyReferenceTests {
             (IReadOnlyOther, int) Field { get; set; }
           }
         }
-        
+
         """,
         """
         namespace foo.bar.other {
@@ -179,7 +179,7 @@ internal class ReadOnlyReferenceTests {
             public (other.IReadOnlyOther, int) Field { get; }
           }
         }
-        
+
         """);
   }
 
@@ -232,7 +232,7 @@ internal class ReadOnlyReferenceTests {
           [GenerateReadOnly]
           public partial interface IOther;
         }
-        
+
         namespace foo.bar {
           [GenerateReadOnly]
           public partial interface IWrapper {
@@ -240,7 +240,7 @@ internal class ReadOnlyReferenceTests {
             public void Foo<T>() where T : IReadOnlyOther;
           }
         }
-        
+
         """,
         """
         namespace foo.bar.other {
@@ -262,7 +262,7 @@ internal class ReadOnlyReferenceTests {
             public void Foo<T>() where T : other.IReadOnlyOther;
           }
         }
-        
+
         """);
   }
 
@@ -336,7 +336,7 @@ internal class ReadOnlyReferenceTests {
             IReadOnlyOther<T> Field { get; set; }
           }
         }
-        
+
         """,
         """
         namespace foo.bar.wrong {
@@ -367,7 +367,7 @@ internal class ReadOnlyReferenceTests {
             public correct.IReadOnlyOther<T> Field { get; }
           }
         }
-        
+
         """);
   }
 
@@ -394,7 +394,7 @@ internal class ReadOnlyReferenceTests {
             IReadOnlyOther Field { get; set; }
           }
         }
-        
+
         """,
         """
         namespace foo.bar.correct {

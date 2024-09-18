@@ -14,7 +14,6 @@ public partial class SomeType<T> : ISomeType<T> {
   public T Data { get; set; }
 }
 
-
 [GenerateReadOnly]
 public partial interface IValueType {
   public string Value { get; set; }
@@ -49,7 +48,7 @@ public partial class GenericParameterCastWrapper<T> where T : IValueType {
 public class CastTests {
   [Test]
   public void TestParameterCasting() {
-    var expectedValue = new SomeType<IValueType> {Data = new ValueType()};
+    var expectedValue = new SomeType<IValueType> { Data = new ValueType() };
 
     IReadOnlyParameterCastWrapper fooBar = new ParameterCastWrapper();
     var returnValue = fooBar.Method(expectedValue);
@@ -59,7 +58,7 @@ public class CastTests {
 
   [Test]
   public void TestGenericReturnValueCasting() {
-    var expectedValue = new SomeType<IValueType> {Data = new ValueType()};
+    var expectedValue = new SomeType<IValueType> { Data = new ValueType() };
 
     IReadOnlyGenericReturnValueCastWrapper<IValueType> fooBar
         = new GenericReturnValueCastWrapper<IValueType> {

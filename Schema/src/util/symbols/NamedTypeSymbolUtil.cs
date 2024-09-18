@@ -31,7 +31,7 @@ public static class NamedTypeSymbolUtil {
         }
 
         // Skips indexers.
-        if (memberSymbol is IPropertySymbol {IsIndexer: true}) {
+        if (memberSymbol is IPropertySymbol { IsIndexer: true }) {
           continue;
         }
 

@@ -100,7 +100,7 @@ internal class ReadOnlySubstitutionTests {
             void Foo<T>() where T : IValue;
           }
         }
-        
+
         """,
         """
         namespace foo.bar {
@@ -113,7 +113,7 @@ internal class ReadOnlySubstitutionTests {
             public void Foo<T>() where T : schema.readOnly.IReadOnlyValue;
           }
         }
-        
+
         """);
   }
 
@@ -160,7 +160,7 @@ internal class ReadOnlySubstitutionTests {
             IValue Foo();
           }
         }
-        
+
         """,
         """
         namespace foo.bar {
@@ -173,7 +173,7 @@ internal class ReadOnlySubstitutionTests {
             public schema.readOnly.IReadOnlyValue Foo();
           }
         }
-        
+
         """);
   }
 
@@ -190,7 +190,7 @@ internal class ReadOnlySubstitutionTests {
             [KeepMutableType] IValue Foo();
           }
         }
-        
+
         """,
         """
         namespace foo.bar {
@@ -203,7 +203,7 @@ internal class ReadOnlySubstitutionTests {
             public schema.readOnly.IValue Foo();
           }
         }
-        
+
         """);
   }
 
@@ -220,7 +220,7 @@ internal class ReadOnlySubstitutionTests {
             void Foo(IValue value);
           }
         }
-        
+
         """,
         """
         namespace foo.bar {
@@ -233,7 +233,7 @@ internal class ReadOnlySubstitutionTests {
             public void Foo(schema.readOnly.IValue value);
           }
         }
-        
+
         """);
   }
 
@@ -280,7 +280,7 @@ internal class ReadOnlySubstitutionTests {
             int this[IValue value] { get; set; }
           }
         }
-        
+
         """,
         """
         namespace foo.bar {
@@ -293,7 +293,7 @@ internal class ReadOnlySubstitutionTests {
             public int this[schema.readOnly.IValue value] { get; }
           }
         }
-        
+
         """);
   }
 
@@ -352,7 +352,7 @@ internal class ReadOnlySubstitutionTests {
             public schema.readOnly.IReadOnlyValue Foo { get; }
           }
         }
-        
+
         """);
   }
 
@@ -368,7 +368,7 @@ internal class ReadOnlySubstitutionTests {
             [KeepMutableType] IValue Foo { get; set; }
           }
         }
-        
+
         """,
         """
         namespace foo.bar {
@@ -381,7 +381,7 @@ internal class ReadOnlySubstitutionTests {
             public schema.readOnly.IValue Foo { get; }
           }
         }
-        
+
         """);
   }
 
@@ -423,7 +423,7 @@ internal class ReadOnlySubstitutionTests {
             IEnumerable<IValue> Foo();
           }
         }
-        
+
         """,
         """
         namespace foo.bar {
@@ -436,7 +436,7 @@ internal class ReadOnlySubstitutionTests {
             public System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue> Foo();
           }
         }
-        
+
         """);
   }
 
@@ -454,7 +454,7 @@ internal class ReadOnlySubstitutionTests {
             IEnumerable<IValue> Foo { get; set; }
           }
         }
-        
+
         """,
         """
         namespace foo.bar {
@@ -467,7 +467,7 @@ internal class ReadOnlySubstitutionTests {
             public System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue> Foo { get; }
           }
         }
-        
+
         """);
   }
 
@@ -485,7 +485,7 @@ internal class ReadOnlySubstitutionTests {
             IEnumerable<IValue> this[int foo] { get; set; }
           }
         }
-        
+
         """,
         """
         namespace foo.bar {
@@ -498,7 +498,7 @@ internal class ReadOnlySubstitutionTests {
             public System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue> this[int foo] { get; }
           }
         }
-        
+
         """);
   }
 

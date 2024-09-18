@@ -6,7 +6,7 @@ namespace schema.binary.attributes;
 internal class WLengthOfSequenceAttributeTests {
   [Test]
   public void TestAttribute() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -20,7 +20,7 @@ namespace foo.bar {
     public byte[] Sequence { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 using schema.util.sequences;
 
@@ -34,7 +34,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -46,11 +46,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   [Test]
   public void TestAttributeWithSmallerThanInt() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -64,7 +64,7 @@ namespace foo.bar {
     public byte[] Sequence { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 using schema.util.sequences;
 
@@ -78,7 +78,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -90,11 +90,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   [Test]
   public void TestMultiple() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+    BinarySchemaTestUtil.AssertGenerated(@"
 using System.Collections.Generic;
 using schema.binary;
 using schema.binary.attributes;
@@ -113,7 +113,7 @@ namespace foo.bar {
     public List<byte> Sequence2 { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 using schema.util.sequences;
 
@@ -131,7 +131,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 using schema.util.asserts;
 
@@ -148,5 +148,5 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 }

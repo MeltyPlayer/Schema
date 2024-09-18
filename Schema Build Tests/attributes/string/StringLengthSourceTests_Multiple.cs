@@ -22,15 +22,15 @@ public partial class StringLengthSourceTests {
     public string String2 { get; set; }
 
     public override bool Equals(object other) {
-        if (other is MultipleStringWrapper otherStringWrapper) {
-          return this.String1.Equals(
-                     otherStringWrapper.String1) &&
-                 this.String2.Equals(
-                     otherStringWrapper.String2);
-        }
-
-        return false;
+      if (other is MultipleStringWrapper otherStringWrapper) {
+        return this.String1.Equals(
+                   otherStringWrapper.String1) &&
+               this.String2.Equals(
+                   otherStringWrapper.String2);
       }
+
+      return false;
+    }
 
     public override string ToString()
       => $"{this.String1}, {this.String2}";
@@ -38,22 +38,22 @@ public partial class StringLengthSourceTests {
 
   [Test]
   public void TestWriteAndReadMultiple() {
-      var expectedSw = new MultipleStringWrapper {
-          String1 = "holy", String2 = "moly",
-      };
+    var expectedSw = new MultipleStringWrapper {
+        String1 = "holy", String2 = "moly",
+    };
 
-      var ms = new MemoryStream();
+    var ms = new MemoryStream();
 
-      var endianness = Endianness.BigEndian;
-      var ew = new SchemaBinaryWriter(endianness);
+    var endianness = Endianness.BigEndian;
+    var ew = new SchemaBinaryWriter(endianness);
 
-      expectedSw.Write(ew);
-      ew.CompleteAndCopyTo(ms);
+    expectedSw.Write(ew);
+    ew.CompleteAndCopyTo(ms);
 
-      ms.Position = 0;
-      var er = new SchemaBinaryReader(ms, endianness);
-      var actualSw = er.ReadNew<MultipleStringWrapper>();
+    ms.Position = 0;
+    var er = new SchemaBinaryReader(ms, endianness);
+    var actualSw = er.ReadNew<MultipleStringWrapper>();
 
-      Assert.AreEqual(expectedSw, actualSw);
-    }
+    Assert.AreEqual(expectedSw, actualSw);
+  }
 }

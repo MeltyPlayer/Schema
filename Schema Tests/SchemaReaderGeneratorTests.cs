@@ -9,7 +9,7 @@ public class SchemaReaderGeneratorTests {
 
   [Test]
   public void TestByte() {
-      this.AssertGenerated_(@"
+    this.AssertGenerated_(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -18,7 +18,7 @@ namespace foo.bar {
     public byte Field { get; }
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -29,11 +29,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   [Test]
   public void TestSByte() {
-      this.AssertGenerated_(@"
+    this.AssertGenerated_(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -42,7 +42,7 @@ namespace foo.bar {
     public sbyte Field { get; }
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -53,11 +53,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   [Test]
   public void TestInt16() {
-      this.AssertGenerated_(@"
+    this.AssertGenerated_(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -66,7 +66,7 @@ namespace foo.bar {
     public short Field { get; }
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -77,11 +77,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   [Test]
   public void TestConstArray() {
-      this.AssertGenerated_(@"
+    this.AssertGenerated_(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -90,7 +90,7 @@ namespace foo.bar {
     public readonly int[] field;
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -101,11 +101,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   [Test]
   public void TestArrayOtherMemberLength() {
-      this.AssertGenerated_(@"
+    this.AssertGenerated_(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -118,7 +118,7 @@ namespace foo.bar {
     public int[] field;
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 using schema.util.sequences;
 
@@ -132,11 +132,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   [Test]
   public void TestNestedClass() {
-      this.AssertGenerated_(@"
+    this.AssertGenerated_(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -155,7 +155,7 @@ namespace foo.bar {
     }
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -171,11 +171,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   [Test]
   public void TestConstCharArray() {
-      this.AssertGenerated_(@"
+    this.AssertGenerated_(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -184,7 +184,7 @@ namespace foo.bar {
     public char[] Array { get; }
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -195,11 +195,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   [Test]
   public void TestField() {
-      this.AssertGenerated_(@"
+    this.AssertGenerated_(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -208,7 +208,7 @@ namespace foo.bar {
     public short Field { get; }
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -219,11 +219,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   [Test]
   public void TestProperty() {
-      this.AssertGenerated_(@"
+    this.AssertGenerated_(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -232,7 +232,7 @@ namespace foo.bar {
     public byte field { get; set; }
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -243,11 +243,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   [Test]
   public void TestReadonlyPrimitiveField() {
-      this.AssertGenerated_(@"
+    this.AssertGenerated_(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -256,7 +256,7 @@ namespace foo.bar {
     public readonly byte field;
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -267,11 +267,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   [Test]
   public void TestReadonlyPrimitiveProperty() {
-      this.AssertGenerated_(@"
+    this.AssertGenerated_(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -280,7 +280,7 @@ namespace foo.bar {
     public byte Field { get; }
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -291,11 +291,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   [Test]
   public void TestEverything() {
-      this.AssertGenerated_(@"
+    this.AssertGenerated_(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -340,33 +340,33 @@ namespace foo {
     }
   }
 }",
-                            @"using System;
+                          @"using System;
 using schema.binary;
 using schema.util.sequences;
 
 namespace foo.bar {
   public partial class EverythingWrapper {
     public void Read(IBinaryReader br) {" +
-                            @"
+                          @"
       br.AssertString(this.magicText);" +
-                            @"
+                          @"
       this.byteField = br.ReadByte();
       this.sbyteProperty = br.ReadSByte();
       br.AssertInt16(this.constShortField);
       br.AssertUInt16(this.constUshortProperty);" +
-                            @"
+                          @"
       this.nakedShortField = (ShortEnum) br.ReadInt16();
       br.AssertInt16((short) this.constNakedShortField);
       this.intField = (ShortEnum) br.ReadInt32();
       br.AssertInt32((int) this.constIntField);" +
-                            @"
+                          @"
       br.ReadInt32s(this.constLengthIntValues);
       {
         var c = br.ReadUInt32();
         this.intValues = SequencesUtil.CloneAndResizeSequence(this.intValues, (int) c);
       }
       br.ReadInt32s(this.intValues);" +
-                            @"
+                          @"
       this.other.Read(br);
       {
         var c = br.ReadInt32();
@@ -381,14 +381,14 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   private void AssertGenerated_(string src, string expectedGenerated) {
-      var structure = BinarySchemaTestUtil.ParseFirst(src);
-      Assert.IsEmpty(structure.Diagnostics);
+    var structure = BinarySchemaTestUtil.ParseFirst(src);
+    Assert.IsEmpty(structure.Diagnostics);
 
-      var actualGenerated =
-          new BinarySchemaReaderGenerator().Generate(structure);
-      Assert.AreEqual(expectedGenerated, actualGenerated.ReplaceLineEndings());
-    }
+    var actualGenerated =
+        new BinarySchemaReaderGenerator().Generate(structure);
+    Assert.AreEqual(expectedGenerated, actualGenerated.ReplaceLineEndings());
+  }
 }

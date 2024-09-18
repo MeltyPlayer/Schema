@@ -35,46 +35,46 @@ internal partial class PointerOrNullStructTests {
 
   [Test]
   public async Task TestReadNonnull() {
-      var ms = new MemoryStream(new byte[] {1, 12, 0, 0, 0});
-      using var br = new SchemaBinaryReader(ms);
+    var ms = new MemoryStream(new byte[] { 1, 12, 0, 0, 0 });
+    using var br = new SchemaBinaryReader(ms);
 
-      var parent = br.ReadNew<ParentImpl>();
+    var parent = br.ReadNew<ParentImpl>();
 
-      Assert.AreEqual(12, parent.Field.Value.Value);
-    }
+    Assert.AreEqual(12, parent.Field.Value.Value);
+  }
 
   [Test]
   public async Task TestReadNull() {
-      var ms = new MemoryStream(new byte[] {123});
-      using var br = new SchemaBinaryReader(ms);
+    var ms = new MemoryStream(new byte[] { 123 });
+    using var br = new SchemaBinaryReader(ms);
 
-      var parent = br.ReadNew<ParentImpl>();
+    var parent = br.ReadNew<ParentImpl>();
 
-      Assert.IsNull(parent.Field);
-    }
+    Assert.IsNull(parent.Field);
+  }
 
 
   [Test]
   public async Task TestWriteNonnull() {
-      var parent = new ParentImpl();
-      parent.Field = new A {Value = 12};
+    var parent = new ParentImpl();
+    parent.Field = new A { Value = 12 };
 
-      var bw = new SchemaBinaryWriter();
-      parent.Write(bw);
+    var bw = new SchemaBinaryWriter();
+    parent.Write(bw);
 
-      var bytes = await BinarySchemaAssert.GetEndianBinaryWriterBytes(bw);
-      CollectionAssert.AreEqual(new byte[] {1, 12, 0, 0, 0}, bytes);
-    }
+    var bytes = await BinarySchemaAssert.GetEndianBinaryWriterBytes(bw);
+    CollectionAssert.AreEqual(new byte[] { 1, 12, 0, 0, 0 }, bytes);
+  }
 
   [Test]
   public async Task TestWriteNull() {
-      var parent = new ParentImpl();
-      parent.Field = null;
+    var parent = new ParentImpl();
+    parent.Field = null;
 
-      var bw = new SchemaBinaryWriter();
-      parent.Write(bw);
+    var bw = new SchemaBinaryWriter();
+    parent.Write(bw);
 
-      var bytes = await BinarySchemaAssert.GetEndianBinaryWriterBytes(bw);
-      CollectionAssert.AreEqual(new byte[] {123}, bytes);
-    }
+    var bytes = await BinarySchemaAssert.GetEndianBinaryWriterBytes(bw);
+    CollectionAssert.AreEqual(new byte[] { 123 }, bytes);
+  }
 }

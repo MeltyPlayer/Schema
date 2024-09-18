@@ -18,10 +18,10 @@ public partial class AutoUInt32SizedSection<T> : ISizedSection<T>
   public T Data => this.impl_.Data;
 
   public AutoUInt32SizedSection() {
-      this.impl_ = new(new T());
-    }
+    this.impl_ = new(new T());
+  }
 
   public AutoUInt32SizedSection(int tweakSize) {
-      this.impl_ = new(new T(), tweakSize);
-    }
+    this.impl_ = new(new T(), tweakSize);
+  }
 }

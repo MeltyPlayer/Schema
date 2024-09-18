@@ -6,7 +6,7 @@ namespace schema.binary.text;
 internal class Int24GeneratorTests {
   [Test]
   public void TestInt24() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -20,7 +20,7 @@ namespace foo.bar {
     public readonly int field2;
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -32,7 +32,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -44,11 +44,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   [Test]
   public void TestUInt24() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -62,7 +62,7 @@ namespace foo.bar {
     public readonly uint field2;
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -74,7 +74,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -86,5 +86,5 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 }

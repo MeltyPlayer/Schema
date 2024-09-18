@@ -6,7 +6,7 @@ namespace schema.binary.text;
 internal class NullableGeneratorTests {
   [Test]
   public void TestNullable() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -18,7 +18,7 @@ namespace foo.bar {
     public int? Field2 { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -30,7 +30,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -46,5 +46,5 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 }

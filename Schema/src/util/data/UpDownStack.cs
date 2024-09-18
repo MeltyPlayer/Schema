@@ -62,8 +62,8 @@ public class UpDownStack<T> : IUpDownStack<T> where T : notnull {
     }
 
     this.impl_.Push(direction switch {
-        UpDownDirection.UPWARD   => new UpStackNode {FromValue = value},
-        UpDownDirection.DOWNWARD => new DownStackNode {ToValue = value},
+        UpDownDirection.UPWARD   => new UpStackNode { FromValue = value },
+        UpDownDirection.DOWNWARD => new DownStackNode { ToValue = value },
     });
   }
 

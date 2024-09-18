@@ -4,8 +4,9 @@
 namespace schema.binary.attributes;
 
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-public class RSequenceLengthSourceAttribute : BMemberAttribute,
-                                              ISequenceLengthSourceAttribute {
+public class RSequenceLengthSourceAttribute
+    : BMemberAttribute,
+      ISequenceLengthSourceAttribute {
   private string? otherMemberName_;
 
   /// <summary>
@@ -13,17 +14,17 @@ public class RSequenceLengthSourceAttribute : BMemberAttribute,
   ///   only be used when reading.
   /// </summary>
   public RSequenceLengthSourceAttribute(string otherMemberName) {
-      this.Method = SequenceLengthSourceType.OTHER_MEMBER;
-      this.otherMemberName_ = otherMemberName;
-    }
+    this.Method = SequenceLengthSourceType.OTHER_MEMBER;
+    this.otherMemberName_ = otherMemberName;
+  }
 
   protected override void InitFields() {
-      if (this.otherMemberName_ != null) {
-        this.OtherMember =
-            this.GetReadTimeOnlySourceRelativeToContainer(this.otherMemberName_)
-                .AssertIsInteger();
-      }
+    if (this.otherMemberName_ != null) {
+      this.OtherMember =
+          this.GetReadTimeOnlySourceRelativeToContainer(this.otherMemberName_)
+              .AssertIsInteger();
     }
+  }
 
   public SequenceLengthSourceType Method { get; }
 

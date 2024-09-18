@@ -8,15 +8,14 @@ public interface IIndexedElement {
   int Index { get; internal set; }
 }
 
-public interface IReadonlySchemaList<TIndexedElement> :
-    IReadOnlyList<TIndexedElement>
+public interface IReadonlySchemaList<TIndexedElement>
+    : IReadOnlyList<TIndexedElement>
     where TIndexedElement : IIndexedElement { }
 
-public interface ISchemaList<TIndexedElement> :
-    IReadonlySchemaList<TIndexedElement>,
-    IList<TIndexedElement>
+public interface ISchemaList<TIndexedElement>
+    : IReadonlySchemaList<TIndexedElement>,
+      IList<TIndexedElement>
     where TIndexedElement : IIndexedElement { }
-
 
 public class SchemaList<TIndexedElement> : ISchemaList<TIndexedElement>
     where TIndexedElement : IIndexedElement {

@@ -33,7 +33,6 @@ public interface IAccessChainNode {
   bool IsOrderValid { get; }
 }
 
-
 internal static class AccessChainUtil {
   public static IChain<IAccessChainNode> GetAccessChainForRelativeMember(
       IDiagnosticReporter? diagnosticReporter,

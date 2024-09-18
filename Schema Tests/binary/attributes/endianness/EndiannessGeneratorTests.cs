@@ -6,7 +6,7 @@ namespace schema.binary.attributes;
 internal class EndiannessGeneratorTests {
   [Test]
   public void TestNoEndianness() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 
 namespace foo.bar {
@@ -15,7 +15,7 @@ namespace foo.bar {
     public uint Field { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -26,7 +26,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -37,11 +37,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   [Test]
   public void TestEndiannessOnField() {
-      BinarySchemaTestUtil.AssertGenerated(@"using schema.binary;
+    BinarySchemaTestUtil.AssertGenerated(@"using schema.binary;
 using schema.binary.attributes;
 
 namespace foo.bar {
@@ -56,7 +56,7 @@ namespace foo.bar {
     public uint Field3 { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -71,7 +71,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -86,11 +86,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   [Test]
   public void TestEndiannessOnClass() {
-      BinarySchemaTestUtil.AssertGenerated(@"using schema.binary;
+    BinarySchemaTestUtil.AssertGenerated(@"using schema.binary;
 using schema.binary.attributes;
 
 namespace foo.bar {
@@ -102,7 +102,7 @@ namespace foo.bar {
     public uint Field3 { get; set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -117,7 +117,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -132,5 +132,5 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 }

@@ -25,9 +25,9 @@ public class IndentedStreamWriter : IIndentedStreamWriter {
   private readonly Stream impl_;
 
   public IndentedStreamWriter(Stream impl, int tabWidth) {
-      this.impl_ = impl;
-      this.TabWidth = tabWidth;
-    }
+    this.impl_ = impl;
+    this.TabWidth = tabWidth;
+  }
 
   public int TabWidth { get; }
   public const bool CONVERT_TABS_TO_SPACES = false;
@@ -37,68 +37,68 @@ public class IndentedStreamWriter : IIndentedStreamWriter {
   public int CurrentIndentAmount { get; private set; } = 0;
 
   public void EnterBlockAndIndent() {
-      this.CurrentIndentAmount++;
-      this.WriteChar('\n');
-    }
+    this.CurrentIndentAmount++;
+    this.WriteChar('\n');
+  }
 
   public void ExitBlockAndOutdent() {
-      this.CurrentIndentAmount--;
-      this.WriteChar('\n');
-    }
+    this.CurrentIndentAmount--;
+    this.WriteChar('\n');
+  }
 
   public void WriteChar(char c) {
-      if (c == '\n') {
-        ++this.LineNumber;
-        this.IndexInLine = this.TabWidth * this.CurrentIndentAmount;
-        if (CONVERT_TABS_TO_SPACES) {
-          for (var i = 0; i < this.IndexInLine; ++i) {
-            this.impl_.WriteByte((byte) ' ');
-          }
-        } else {
-          for (var i = 0; i < this.CurrentIndentAmount; ++i) {
-            this.impl_.WriteByte((byte) '\t');
-          }
-        }
-      } else if (c == '\t') {
-        var remainingTabAmount = this.IndexInLine % this.TabWidth;
-        this.IndexInLine += remainingTabAmount;
-
-        if (CONVERT_TABS_TO_SPACES) {
-          for (var i = 0; i < remainingTabAmount; ++i) {
-            this.impl_.WriteByte((byte) ' ');
-          }
-        } else {
-          this.impl_.WriteByte((byte) '\t');
+    if (c == '\n') {
+      ++this.LineNumber;
+      this.IndexInLine = this.TabWidth * this.CurrentIndentAmount;
+      if (CONVERT_TABS_TO_SPACES) {
+        for (var i = 0; i < this.IndexInLine; ++i) {
+          this.impl_.WriteByte((byte) ' ');
         }
       } else {
-        if (!char.IsControl(c)) {
-          ++this.IndexInLine;
+        for (var i = 0; i < this.CurrentIndentAmount; ++i) {
+          this.impl_.WriteByte((byte) '\t');
         }
-
-        this.impl_.WriteByte((byte) c);
       }
+    } else if (c == '\t') {
+      var remainingTabAmount = this.IndexInLine % this.TabWidth;
+      this.IndexInLine += remainingTabAmount;
+
+      if (CONVERT_TABS_TO_SPACES) {
+        for (var i = 0; i < remainingTabAmount; ++i) {
+          this.impl_.WriteByte((byte) ' ');
+        }
+      } else {
+        this.impl_.WriteByte((byte) '\t');
+      }
+    } else {
+      if (!char.IsControl(c)) {
+        ++this.IndexInLine;
+      }
+
+      this.impl_.WriteByte((byte) c);
     }
+  }
 
   public void WriteChars(ReadOnlySpan<char> chars) {
-      foreach (var c in chars) {
-        this.WriteChar(c);
-      }
+    foreach (var c in chars) {
+      this.WriteChar(c);
     }
+  }
 
   public void WriteChars(ReadOnlySpan<char> chars, string separator) {
-      foreach (var c in chars) {
-        this.WriteChar(c);
-        this.WriteString(separator);
-      }
+    foreach (var c in chars) {
+      this.WriteChar(c);
+      this.WriteString(separator);
     }
+  }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public void WriteString(string s) => this.WriteChars(s.AsSpan());
 
   public void WriteStrings(ReadOnlySpan<string> strings, string separator) {
-      foreach (var s in strings) {
-        this.WriteString(s);
-        this.WriteString(separator);
-      }
+    foreach (var s in strings) {
+      this.WriteString(s);
+      this.WriteString(separator);
     }
+  }
 }

@@ -18,7 +18,7 @@ internal class NullableTests {
             int? NullablePrimitive { get; set; }
           }
         }
-        
+
         """,
         """
         namespace foo.bar {
@@ -31,7 +31,7 @@ internal class NullableTests {
             public int? NullablePrimitive { get; }
           }
         }
-        
+
         """);
   }
 
@@ -47,7 +47,7 @@ internal class NullableTests {
             T? NullableGeneric { get; set; }
           }
         }
-        
+
         """,
         """
         namespace foo.bar {
@@ -60,7 +60,7 @@ internal class NullableTests {
             public T? NullableGeneric { get; }
           }
         }
-        
+
         """);
   }
 
@@ -77,7 +77,7 @@ internal class NullableTests {
             T? Method(T? t);
           }
         }
-        
+
         """,
         """
         namespace foo.bar {
@@ -90,7 +90,7 @@ internal class NullableTests {
             public T? Method(T? t);
           }
         }
-        
+
         """);
   }
 }

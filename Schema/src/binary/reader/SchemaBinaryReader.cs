@@ -39,15 +39,15 @@ public sealed partial class SchemaBinaryReader : IBinaryReader {
 
   private SchemaBinaryReader(ISeekableReadableStream baseStream,
                              Endianness? endianness) {
-      if (baseStream == null) {
-        throw new ArgumentNullException(nameof(baseStream));
-      }
-
-      this.bufferedStream_ = new EndianBinaryBufferedStream(endianness) {
-          BaseStream = baseStream,
-      };
-      this.positionManagerImpl_ = new StreamPositionManager(baseStream);
+    if (baseStream == null) {
+      throw new ArgumentNullException(nameof(baseStream));
     }
+
+    this.bufferedStream_ = new EndianBinaryBufferedStream(endianness) {
+        BaseStream = baseStream,
+    };
+    this.positionManagerImpl_ = new StreamPositionManager(baseStream);
+  }
 
   ~SchemaBinaryReader() => this.Dispose(false);
 
@@ -55,21 +55,21 @@ public sealed partial class SchemaBinaryReader : IBinaryReader {
   public void Close() => Dispose();
 
   public void Dispose() {
-      this.Dispose(true);
-      GC.SuppressFinalize((object) this);
-    }
+    this.Dispose(true);
+    GC.SuppressFinalize((object) this);
+  }
 
   private void Dispose(bool disposing) {
-      if (this.disposed_) {
-        return;
-      }
-
-      if (disposing && this.BaseStream_ != null) {
-        this.BaseStream_.Dispose();
-      }
-
-      this.disposed_ = true;
+    if (this.disposed_) {
+      return;
     }
+
+    if (disposing && this.BaseStream_ != null) {
+      this.BaseStream_.Dispose();
+    }
+
+    this.disposed_ = true;
+  }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   private void FillBuffer_(long count, int? optStride = null)

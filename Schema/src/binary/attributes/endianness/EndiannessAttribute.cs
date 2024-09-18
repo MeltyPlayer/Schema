@@ -16,8 +16,10 @@ namespace schema.binary.attributes;
 ///     field, reader/writer, or class endianness.
 ///   </para>
 /// </summary>
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct |
-                AttributeTargets.Field | AttributeTargets.Property)]
+[AttributeUsage(AttributeTargets.Class |
+                AttributeTargets.Struct |
+                AttributeTargets.Field |
+                AttributeTargets.Property)]
 public class EndiannessAttribute : Attribute {
   public EndiannessAttribute(Endianness endianness) {
     this.Endianness = endianness;

@@ -102,7 +102,7 @@ internal class MemberTests {
             public System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<bool>> Value { get; }
           }
         }
-        
+
         """);
   }
 
@@ -119,7 +119,7 @@ internal class MemberTests {
             public bool this[int index] { get; set; }
           }
         }
-        
+
         """,
         """
         namespace foo.bar {
@@ -132,7 +132,7 @@ internal class MemberTests {
             public bool this[int index] { get; }
           }
         }
-        
+
         """);
   }
 
@@ -259,7 +259,7 @@ internal class MemberTests {
             public int? Bar { get; }
           }
         }
-        
+
         """);
   }
 
@@ -306,7 +306,7 @@ internal class MemberTests {
             public (bool, int) Tuple { get; set; }
           }
         }
-        
+
         """,
         """
         namespace foo.bar {
@@ -319,7 +319,7 @@ internal class MemberTests {
             public (bool, int) Tuple { get; }
           }
         }
-        
+
         """);
   }
 
@@ -336,7 +336,7 @@ internal class MemberTests {
             public (bool a, int b) Tuple { get; set; }
           }
         }
-        
+
         """,
         """
         namespace foo.bar {
@@ -349,7 +349,7 @@ internal class MemberTests {
             public (bool a, int b) Tuple { get; }
           }
         }
-        
+
         """);
   }
 }

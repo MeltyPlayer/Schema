@@ -33,14 +33,18 @@ public interface IWritableStream : IDisposable {
   void Write(IReadableStream readableStream);
 }
 
-public interface ISizedReadableStream : IReadableStream,
-                                        ISizedStream;
+public interface ISizedReadableStream
+    : IReadableStream,
+      ISizedStream;
 
-public interface ISeekableReadableStream : ISizedReadableStream,
-                                           ISeekableStream;
+public interface ISeekableReadableStream
+    : ISizedReadableStream,
+      ISeekableStream;
 
-public interface ISizedWritableStream : IWritableStream,
-                                        ISizedStream;
+public interface ISizedWritableStream
+    : IWritableStream,
+      ISizedStream;
 
-public interface ISeekableWritableStream : ISizedWritableStream,
-                                           ISeekableStream;
+public interface ISeekableWritableStream
+    : ISizedWritableStream,
+      ISeekableStream;

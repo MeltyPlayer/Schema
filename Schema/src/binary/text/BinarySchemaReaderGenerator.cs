@@ -24,7 +24,7 @@ public class BinarySchemaReaderGenerator {
     using var sw = new SourceWriter(new StringWriter(sb));
 
     {
-      var dependencies = new List<string> {"System", "schema.binary"};
+      var dependencies = new List<string> { "System", "schema.binary" };
       if (container.DependsOnSequenceImports()) {
         dependencies.Add("schema.util.sequences");
       }
@@ -631,6 +631,7 @@ public class BinarySchemaReaderGenerator {
               if (isChild) {
                 sw.WriteLine("e.Parent = this;");
               }
+
               if (isIndexed) {
                 sw.WriteLine("e.Index = i;");
               }

@@ -56,7 +56,7 @@ internal class VarianceTests {
             void IgnoredFunction(T field, IEnumerable<T> sequence);
           }
         }
-        
+
         """,
         """
         namespace foo.bar {
@@ -77,7 +77,7 @@ internal class VarianceTests {
             public IBase<T> GetSequence();
           }
         }
-        
+
         """);
   }
 
@@ -131,7 +131,7 @@ internal class VarianceTests {
             public void SetSequence(IBase<T> foo);
           }
         }
-        
+
         """);
   }
 
@@ -148,7 +148,7 @@ internal class VarianceTests {
             public T Method(T value) => value;
           }
         }
-        
+
         """,
         """
         namespace foo.bar {
@@ -161,7 +161,7 @@ internal class VarianceTests {
             public T Method(T value);
           }
         }
-        
+
         """);
   }
 
@@ -195,7 +195,7 @@ internal class VarianceTests {
             public void Method(IValue<T> foo);
           }
         }
-        
+
         """);
   }
 
@@ -228,7 +228,7 @@ internal class VarianceTests {
             public IValue<T> Property { get; }
           }
         }
-        
+
         """);
   }
 
@@ -246,7 +246,7 @@ internal class VarianceTests {
             public void Method(ISet<T> foo);
           }
         }
-        
+
         """,
         """
         namespace foo.bar {
@@ -259,7 +259,7 @@ internal class VarianceTests {
             public void Method(System.Collections.Generic.ISet<T> foo);
           }
         }
-        
+
         """);
   }
 
@@ -305,7 +305,7 @@ internal class VarianceTests {
             TValueSub Get<TValueSub>(TKey key) where TValueSub : TValue;
           }
         }
-        
+
         """,
         """
         namespace foo.bar {
@@ -318,7 +318,7 @@ internal class VarianceTests {
             public TValueSub Get<TValueSub>(TKey key) where TValueSub : TValue;
           }
         }
-        
+
         """);
   }
 }

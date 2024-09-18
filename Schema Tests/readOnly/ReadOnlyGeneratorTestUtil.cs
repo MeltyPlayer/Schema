@@ -26,44 +26,44 @@ internal static class ReadOnlyGeneratorTestUtil {
               .Select(path => MetadataReference.CreateFromFile(path)));
 
   public static void AssertGenerated(string src, params string[] expected) {
-      var syntaxTree = CSharpSyntaxTree.ParseText(src);
-      var compilation = BinarySchemaTestUtil.Compilation.Clone()
-                                            .AddSyntaxTrees(syntaxTree);
+    var syntaxTree = CSharpSyntaxTree.ParseText(src);
+    var compilation = BinarySchemaTestUtil.Compilation.Clone()
+                                          .AddSyntaxTrees(syntaxTree);
 
-      var semanticModel = compilation.GetSemanticModel(syntaxTree);
+    var semanticModel = compilation.GetSemanticModel(syntaxTree);
 
-      var actual = syntaxTree
-                   .GetRoot()
-                   .DescendantTokens()
-                   .Where(t => t is {
-                       Text: "GenerateReadOnly",
-                       Parent.Parent: AttributeSyntax
-                   })
-                   .Select(t => t.Parent?.Parent as AttributeSyntax)
-                   .Select(attributeSyntax => {
-                     var attributeListSyntax
-                         = Asserts.AsA<AttributeListSyntax>(
-                             attributeSyntax.Parent);
-                     var declarationSyntax
-                         = Asserts.AsA<TypeDeclarationSyntax>(
-                             attributeListSyntax.Parent);
+    var actual = syntaxTree
+                 .GetRoot()
+                 .DescendantTokens()
+                 .Where(t => t is {
+                     Text: "GenerateReadOnly",
+                     Parent.Parent: AttributeSyntax
+                 })
+                 .Select(t => t.Parent?.Parent as AttributeSyntax)
+                 .Select(attributeSyntax => {
+                           var attributeListSyntax
+                               = Asserts.AsA<AttributeListSyntax>(
+                                   attributeSyntax.Parent);
+                           var declarationSyntax
+                               = Asserts.AsA<TypeDeclarationSyntax>(
+                                   attributeListSyntax.Parent);
 
-                     var symbol
-                         = semanticModel
-                             .GetDeclaredSymbol(declarationSyntax);
-                     var namedTypeSymbol
-                         = symbol as INamedTypeSymbol;
+                           var symbol
+                               = semanticModel
+                                   .GetDeclaredSymbol(declarationSyntax);
+                           var namedTypeSymbol
+                               = symbol as INamedTypeSymbol;
 
-                     return (namedTypeSymbol, declarationSyntax);
-                   })
-                   .Select(symbolAndSyntax
-                               => new ReadOnlyTypeGenerator()
-                                  .GenerateSourceForNamedType(
-                                      symbolAndSyntax.namedTypeSymbol,
-                                      semanticModel,
-                                      symbolAndSyntax.declarationSyntax)
-                                  .ReplaceLineEndings());
+                           return (namedTypeSymbol, declarationSyntax);
+                         })
+                 .Select(symbolAndSyntax
+                             => new ReadOnlyTypeGenerator()
+                                .GenerateSourceForNamedType(
+                                    symbolAndSyntax.namedTypeSymbol,
+                                    semanticModel,
+                                    symbolAndSyntax.declarationSyntax)
+                                .ReplaceLineEndings());
 
-      CollectionAssert.AreEqual(expected, actual);
-    }
+    CollectionAssert.AreEqual(expected, actual);
+  }
 }

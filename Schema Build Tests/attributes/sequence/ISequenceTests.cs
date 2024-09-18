@@ -20,36 +20,36 @@ public partial class ISequenceTests {
     public MutableSequenceImpl<IntWrapper> Sequence { get; } = new();
 
     public override bool Equals(object? otherObj) {
-        if (otherObj is MutableSequenceWrapper1 other) {
-          return this.Sequence.Equals(other.Sequence);
-        }
-
-        return false;
+      if (otherObj is MutableSequenceWrapper1 other) {
+        return this.Sequence.Equals(other.Sequence);
       }
+
+      return false;
+    }
   }
 
   [Test]
   public void TestWriteAndRead1() {
-      var expectedSw = new MutableSequenceWrapper1();
-      expectedSw.Sequence.AddRange(
-          new[] {1, 2, 3, 4, 5, 9, 8, 7, 6}
-              .Select(value => new IntWrapper {Value = value}));
+    var expectedSw = new MutableSequenceWrapper1();
+    expectedSw.Sequence.AddRange(
+        new[] { 1, 2, 3, 4, 5, 9, 8, 7, 6 }
+            .Select(value => new IntWrapper { Value = value }));
 
-      var ms = new MemoryStream();
+    var ms = new MemoryStream();
 
-      var endianness = Endianness.BigEndian;
-      var ew = new SchemaBinaryWriter(endianness);
+    var endianness = Endianness.BigEndian;
+    var ew = new SchemaBinaryWriter(endianness);
 
-      expectedSw.Write(ew);
-      ew.CompleteAndCopyTo(ms);
-      Assert.AreEqual(4 + 9 * 4, ms.Position);
+    expectedSw.Write(ew);
+    ew.CompleteAndCopyTo(ms);
+    Assert.AreEqual(4 + 9 * 4, ms.Position);
 
-      ms.Position = 0;
-      var er = new SchemaBinaryReader(ms, endianness);
-      var actualSw = er.ReadNew<MutableSequenceWrapper1>();
+    ms.Position = 0;
+    var er = new SchemaBinaryReader(ms, endianness);
+    var actualSw = er.ReadNew<MutableSequenceWrapper1>();
 
-      Assert.AreEqual(expectedSw, actualSw);
-    }
+    Assert.AreEqual(expectedSw, actualSw);
+  }
 
 
   [BinarySchema]
@@ -63,36 +63,36 @@ public partial class ISequenceTests {
     public MutableSequenceImpl<IntWrapper> Sequence { get; } = new();
 
     public override bool Equals(object? otherObj) {
-        if (otherObj is MutableSequenceWrapper2 other) {
-          return this.Sequence.Equals(other.Sequence);
-        }
-
-        return false;
+      if (otherObj is MutableSequenceWrapper2 other) {
+        return this.Sequence.Equals(other.Sequence);
       }
+
+      return false;
+    }
   }
 
   [Test]
   public void TestWriteAndRead2() {
-      var expectedSw = new MutableSequenceWrapper2();
-      expectedSw.Sequence.AddRange(
-          new[] {1, 2, 3, 4, 5, 9, 8, 7, 6}
-              .Select(value => new IntWrapper {Value = value}));
+    var expectedSw = new MutableSequenceWrapper2();
+    expectedSw.Sequence.AddRange(
+        new[] { 1, 2, 3, 4, 5, 9, 8, 7, 6 }
+            .Select(value => new IntWrapper { Value = value }));
 
-      var ms = new MemoryStream();
+    var ms = new MemoryStream();
 
-      var endianness = Endianness.BigEndian;
-      var ew = new SchemaBinaryWriter(endianness);
+    var endianness = Endianness.BigEndian;
+    var ew = new SchemaBinaryWriter(endianness);
 
-      expectedSw.Write(ew);
-      ew.CompleteAndCopyTo(ms);
-      Assert.AreEqual(4 + 9 * 4, ms.Position);
+    expectedSw.Write(ew);
+    ew.CompleteAndCopyTo(ms);
+    Assert.AreEqual(4 + 9 * 4, ms.Position);
 
-      ms.Position = 0;
-      var er = new SchemaBinaryReader(ms, endianness);
-      var actualSw = er.ReadNew<MutableSequenceWrapper2>();
+    ms.Position = 0;
+    var er = new SchemaBinaryReader(ms, endianness);
+    var actualSw = er.ReadNew<MutableSequenceWrapper2>();
 
-      Assert.AreEqual(expectedSw, actualSw);
-    }
+    Assert.AreEqual(expectedSw, actualSw);
+  }
 
 
   [BinarySchema]
@@ -122,28 +122,28 @@ public partial class ISequenceTests {
     public void Clear() => this.impl_.Clear();
 
     public void ResizeInPlace(int newLength) {
-        SequencesUtil.ResizeSequenceInPlace(this.impl_, newLength);
-      }
+      SequencesUtil.ResizeSequenceInPlace(this.impl_, newLength);
+    }
 
     public void AddRange(IEnumerable<T> values)
       => this.impl_.AddRange(values);
 
     public MutableSequenceImpl<T> CloneWithNewLength(int newLength) {
-        var sequence = new MutableSequenceImpl<T>();
-        sequence.AddRange(this.impl_.Resized(newLength));
-        return sequence;
-      }
+      var sequence = new MutableSequenceImpl<T>();
+      sequence.AddRange(this.impl_.Resized(newLength));
+      return sequence;
+    }
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
     public IEnumerator<T> GetEnumerator() => this.impl_.GetEnumerator();
 
     public override bool Equals(object? otherObj) {
-        if (otherObj is MutableSequenceImpl<T> other) {
-          return this.Values.SequenceEqual(other.Values);
-        }
-
-        return false;
+      if (otherObj is MutableSequenceImpl<T> other) {
+        return this.Values.SequenceEqual(other.Values);
       }
+
+      return false;
+    }
   }
 
   [BinarySchema]
@@ -151,11 +151,11 @@ public partial class ISequenceTests {
     public int Value { get; set; }
 
     public override bool Equals(object? otherObj) {
-        if (otherObj is IntWrapper other) {
-          return this.Value == other.Value;
-        }
-
-        return false;
+      if (otherObj is IntWrapper other) {
+        return this.Value == other.Value;
       }
+
+      return false;
+    }
   }
 }

@@ -22,7 +22,7 @@ public class NestedList<T> : INestedList<T> {
     List<T> list;
     if (this.nodes_.Count == 0 || this.nodes_.Last.Value.IsChild) {
       list = new List<T>();
-      this.nodes_.AddLast(new Node {IsChild = false, List = list,});
+      this.nodes_.AddLast(new Node { IsChild = false, List = list, });
     } else {
       list = this.nodes_.Last.Value.List;
     }
@@ -32,7 +32,7 @@ public class NestedList<T> : INestedList<T> {
 
   public INestedList<T> Enter() {
     var child = new NestedList<T>();
-    this.nodes_.AddLast(new Node {IsChild = true, Child = child});
+    this.nodes_.AddLast(new Node { IsChild = true, Child = child });
     return child;
   }
 

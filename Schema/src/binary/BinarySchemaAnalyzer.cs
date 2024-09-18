@@ -99,6 +99,7 @@ public class BinarySchemaAnalyzer : DiagnosticAnalyzer {
       if (Debugger.IsAttached) {
         throw;
       }
+
       Rules.ReportExceptionDiagnostic(context, symbol, exception);
     }
   }

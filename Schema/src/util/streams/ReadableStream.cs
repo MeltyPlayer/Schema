@@ -13,12 +13,12 @@ public class ReadableStream : ISeekableReadableStream {
   public static implicit operator ReadableStream(Stream impl) => new(impl);
 
   public ReadableStream(Stream impl) {
-      if (!impl.CanRead) {
-        throw new ArgumentException(nameof(impl));
-      }
-
-      this.Impl = impl;
+    if (!impl.CanRead) {
+      throw new ArgumentException(nameof(impl));
     }
+
+    this.Impl = impl;
+  }
 
   public ReadableStream(byte[] impl) : this(new MemoryStream(impl)) { }
 

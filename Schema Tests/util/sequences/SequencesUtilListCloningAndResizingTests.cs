@@ -8,48 +8,48 @@ namespace schema.util.sequences;
 public class SequencesUtilListCloningAndResizingTests {
   [Test]
   public void TestResizeListNegativeThrowsError() {
-      Assert.That(
-          () => SequencesUtil.CloneAndResizeSequence((IList<int>?) null, -1),
-          Throws.Exception);
-    }
+    Assert.That(
+        () => SequencesUtil.CloneAndResizeSequence((IList<int>?) null, -1),
+        Throws.Exception);
+  }
 
   [Test]
   public void TestResizeListOriginallyNull() {
-      CollectionAssert.AreEqual(
-          new List<int> {0, 0, 0},
-          SequencesUtil.CloneAndResizeSequence((IList<int>?) null, 3));
-    }
+    CollectionAssert.AreEqual(
+        new List<int> { 0, 0, 0 },
+        SequencesUtil.CloneAndResizeSequence((IList<int>?) null, 3));
+  }
 
   [Test]
   public void TestResizeListGrowing() {
-      var inputList = new List<int> {1, 2, 3};
+    var inputList = new List<int> { 1, 2, 3 };
 
-      var resizedList =
-          SequencesUtil.CloneAndResizeSequence((IList<int>) inputList, 4);
+    var resizedList =
+        SequencesUtil.CloneAndResizeSequence((IList<int>) inputList, 4);
 
-      Assert.AreNotSame(inputList, resizedList);
-      CollectionAssert.AreEqual(new List<int> {1, 2, 3, 0}, resizedList);
-    }
+    Assert.AreNotSame(inputList, resizedList);
+    CollectionAssert.AreEqual(new List<int> { 1, 2, 3, 0 }, resizedList);
+  }
 
   [Test]
   public void TestResizeListShrinking() {
-      var inputList = new List<int> {1, 2, 3};
+    var inputList = new List<int> { 1, 2, 3 };
 
-      var resizedList =
-          SequencesUtil.CloneAndResizeSequence((IList<int>) inputList, 2);
+    var resizedList =
+        SequencesUtil.CloneAndResizeSequence((IList<int>) inputList, 2);
 
-      Assert.AreNotSame(inputList, resizedList);
-      CollectionAssert.AreEqual(new List<int> {1, 2}, resizedList);
-    }
+    Assert.AreNotSame(inputList, resizedList);
+    CollectionAssert.AreEqual(new List<int> { 1, 2 }, resizedList);
+  }
 
   [Test]
   public void TestResizingListLengthIsSame() {
-      var inputList = new List<int> {1, 2, 3};
+    var inputList = new List<int> { 1, 2, 3 };
 
-      var resizedList =
-          SequencesUtil.CloneAndResizeSequence((IList<int>) inputList, 3);
+    var resizedList =
+        SequencesUtil.CloneAndResizeSequence((IList<int>) inputList, 3);
 
-      Assert.AreSame(inputList, resizedList);
-      CollectionAssert.AreEqual(new List<int> {1, 2, 3}, resizedList);
-    }
+    Assert.AreSame(inputList, resizedList);
+    CollectionAssert.AreEqual(new List<int> { 1, 2, 3 }, resizedList);
+  }
 }

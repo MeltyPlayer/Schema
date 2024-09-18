@@ -4,8 +4,9 @@
 namespace schema.binary.attributes;
 
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-public class StringLengthSourceAttribute : Attribute,
-                                           IStringLengthSourceAttribute {
+public class StringLengthSourceAttribute
+    : Attribute,
+      IStringLengthSourceAttribute {
   /// <summary>
   ///   Parses a length with the given format immediately before the string.
   /// </summary>

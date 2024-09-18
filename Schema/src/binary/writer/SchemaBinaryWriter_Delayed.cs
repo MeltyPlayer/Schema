@@ -17,9 +17,9 @@ public sealed partial class SchemaBinaryWriter {
     => Task.WhenAll(this.impl_.GetAbsolutePosition(),
                     this.localPositionStack_.Peek())
            .ContinueWith(task => {
-             var result = task.Result;
-             return result[0] - result[1];
-           });
+                           var result = task.Result;
+                           return result[0] - result[1];
+                         });
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Task<long> GetAbsolutePosition() => this.impl_.GetAbsolutePosition();
@@ -57,45 +57,45 @@ public sealed partial class SchemaBinaryWriter {
     => this.impl_.CompleteAndCopyToDelayed(stream);
 
   private void WriteBufferDelayed_(Task<byte[]> delayedBytes) {
-      var isReversed = this.IsOppositeEndiannessOfSystem;
-      this.impl_.WriteDelayed(
-          delayedBytes.ContinueWith(bytesTask => {
-            var bytes = bytesTask.Result;
-            if (isReversed) {
-              Array.Reverse(bytes, 0, bytes.Length);
-            }
+    var isReversed = this.IsOppositeEndiannessOfSystem;
+    this.impl_.WriteDelayed(
+        delayedBytes.ContinueWith(bytesTask => {
+                                    var bytes = bytesTask.Result;
+                                    if (isReversed) {
+                                      Array.Reverse(bytes, 0, bytes.Length);
+                                    }
 
-            return bytes;
-          }));
-    }
+                                    return bytes;
+                                  }));
+  }
 
   private void WriteBufferDelayed_(Task<byte[]> delayedBytes,
                                    Task<long> delayedBytesLength) {
-      var isReversed = this.IsOppositeEndiannessOfSystem;
-      this.impl_.WriteDelayed(
-          delayedBytes.ContinueWith(bytesTask => {
-            var bytes = bytesTask.Result;
-            if (isReversed) {
-              Array.Reverse(bytes, 0, bytes.Length);
-            }
+    var isReversed = this.IsOppositeEndiannessOfSystem;
+    this.impl_.WriteDelayed(
+        delayedBytes.ContinueWith(bytesTask => {
+                                    var bytes = bytesTask.Result;
+                                    if (isReversed) {
+                                      Array.Reverse(bytes, 0, bytes.Length);
+                                    }
 
-            return bytes;
-          }),
-          delayedBytesLength);
-    }
+                                    return bytes;
+                                  }),
+        delayedBytesLength);
+  }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public void WriteByteDelayed(Task<byte> delayedValue)
     => this.WriteBufferDelayed_(
         delayedValue.ContinueWith(
-            valueTask => new[] {valueTask.Result}),
+            valueTask => new[] { valueTask.Result }),
         Task.FromResult((long) sizeof(byte)));
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public void WriteSByteDelayed(Task<sbyte> delayedValue)
     => this.WriteBufferDelayed_(
         delayedValue.ContinueWith(
-            valueTask => new[] {(byte) valueTask.Result}),
+            valueTask => new[] { (byte) valueTask.Result }),
         Task.FromResult((long) sizeof(sbyte)));
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]

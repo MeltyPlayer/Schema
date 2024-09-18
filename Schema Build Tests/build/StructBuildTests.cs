@@ -42,7 +42,7 @@ public partial class StructBuildTests {
   [Test]
   public void TestWriteAndRead() {
     var expectedSw =
-        new StructWrapper {Value = new SchemaStruct {Value = 1}};
+        new StructWrapper { Value = new SchemaStruct { Value = 1 } };
 
     var ms = new MemoryStream();
 

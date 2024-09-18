@@ -6,7 +6,7 @@ namespace schema.binary.text;
 internal class IfBooleanGeneratorTests {
   [Test]
   public void TestIfBoolean() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -29,7 +29,7 @@ namespace foo.bar {
 
   public class A : IBinaryConvertible { }
 }",
-                                           @"using System;
+                                         @"using System;
 using System.Collections.Generic;
 using schema.binary;
 using schema.util.sequences;
@@ -69,7 +69,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -91,11 +91,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   [Test]
   public void TestIfBooleanWithPrivateSetter() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -111,7 +111,7 @@ namespace foo.bar {
 
   public class A : IBinaryConvertible { }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -128,7 +128,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -142,11 +142,11 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 
   [Test]
   public void TestUsingBoolFromChild() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -163,7 +163,7 @@ namespace foo.bar {
     public bool Bool { get; private set; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -180,7 +180,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -194,5 +194,5 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 }

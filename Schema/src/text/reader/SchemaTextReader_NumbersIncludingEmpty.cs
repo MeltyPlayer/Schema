@@ -133,13 +133,13 @@ public sealed partial class SchemaTextReader {
   private IEnumerable<string> ReadSplitUpToAndPastTerminatorsIncludingEmpty_(
       ReadOnlySpan<string> separators,
       ReadOnlySpan<string> terminators) {
-      var match = this.ReadUpToAndPastTerminator(terminators);
-      if (match.Length == 0) {
-        return Array.Empty<string>();
-      }
-
-      return match.SplitViaString(separators, true);
+    var match = this.ReadUpToAndPastTerminator(terminators);
+    if (match.Length == 0) {
+      return Array.Empty<string>();
     }
+
+    return match.SplitViaString(separators, true);
+  }
 
   private T?[] ConvertSplitUpToAndPastTerminatorsIncludingEmpty_<T>(
       ReadOnlySpan<string> separators,
@@ -149,21 +149,22 @@ public sealed partial class SchemaTextReader {
                separators,
                terminators)
            .Select(t => {
-             var start = 0;
+                     var start = 0;
 
-             int i;
-             for (i = 0; i < t.Length; ++i) {
-               var c = t[i];
-               if (c is '\t' or ' ' or '\r' or '\n') {
-                 start++;
-               }
-             }
-             if (t.Length - start == 0) {
-               return null;
-             }
+                     int i;
+                     for (i = 0; i < t.Length; ++i) {
+                       var c = t[i];
+                       if (c is '\t' or ' ' or '\r' or '\n') {
+                         start++;
+                       }
+                     }
 
-             return start == 0 ? t : t.Substring(start);
-           })
+                     if (t.Length - start == 0) {
+                       return null;
+                     }
+
+                     return start == 0 ? t : t.Substring(start);
+                   })
            .Select(text => text != null ? converter(text) : (T?) null)
            .ToArray();
 
@@ -175,26 +176,27 @@ public sealed partial class SchemaTextReader {
                separators,
                terminators)
            .Select(t => {
-             var start = 0;
+                     var start = 0;
 
-             int i;
-             for (i = 0; i < t.Length; ++i) {
-               var c = t[i];
-               if (c is '\t' or ' ' or '\r' or '\n') {
-                 start++;
-               } else {
-                 break;
-               }
-             }
-             if (t.Length - start == 0) {
-               return (T?) null;
-             }
+                     int i;
+                     for (i = 0; i < t.Length; ++i) {
+                       var c = t[i];
+                       if (c is '\t' or ' ' or '\r' or '\n') {
+                         start++;
+                       } else {
+                         break;
+                       }
+                     }
 
-             if (t[i] == '0' && i < t.Length - 1 && t[i + 1] == 'x') {
-               start += 2;
-             }
+                     if (t.Length - start == 0) {
+                       return (T?) null;
+                     }
 
-             return converter(start == 0 ? t : t.Substring(start));
-           })
+                     if (t[i] == '0' && i < t.Length - 1 && t[i + 1] == 'x') {
+                       start += 2;
+                     }
+
+                     return converter(start == 0 ? t : t.Substring(start));
+                   })
            .ToArray();
 }

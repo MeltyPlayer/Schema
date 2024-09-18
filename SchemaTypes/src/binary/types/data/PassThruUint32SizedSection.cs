@@ -18,20 +18,20 @@ public partial class PassThruUInt32SizedSection<T> : ISizedSection<T>
   public T Data { get; }
 
   public PassThruUInt32SizedSection(T data) {
-      this.Data = data;
-    }
+    this.Data = data;
+  }
 
   public PassThruUInt32SizedSection(T data, int tweakSize) {
-      this.Data = data;
-      this.tweakSize_ = tweakSize;
-    }
+    this.Data = data;
+    this.tweakSize_ = tweakSize;
+  }
 
   public void Read(IBinaryReader br) {
-      this.size_ = br.ReadUInt32();
+    this.size_ = br.ReadUInt32();
 
-      var useSize = this.size_ + this.tweakSize_;
-      var basePosition = br.Position;
-      br.SubreadAt(br.Position, (int) useSize, this.Data.Read);
-      br.Position = basePosition + useSize;
-    }
+    var useSize = this.size_ + this.tweakSize_;
+    var basePosition = br.Position;
+    br.SubreadAt(br.Position, (int) useSize, this.Data.Read);
+    br.Position = basePosition + useSize;
+  }
 }

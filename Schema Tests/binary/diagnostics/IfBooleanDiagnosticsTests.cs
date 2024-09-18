@@ -6,7 +6,7 @@ namespace schema.binary.text;
 internal class IfBooleanDiagnosticsTests {
   [Test]
   public void TestIfBooleanNonReference() {
-      var structure = BinarySchemaTestUtil.ParseFirst(@"
+    var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -17,13 +17,13 @@ namespace foo.bar {
     public int field;
   }
 }");
-      BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
-                                             Rules.IfBooleanNeedsNullable);
-    }
+    BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
+                                           Rules.IfBooleanNeedsNullable);
+  }
 
   [Test]
   public void TestIfBooleanNonNullable() {
-      var structure = BinarySchemaTestUtil.ParseFirst(@"
+    var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -38,13 +38,13 @@ namespace foo.bar {
   public partial class A : IBinaryConvertible {
   }
 }");
-      BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
-                                             Rules.IfBooleanNeedsNullable);
-    }
+    BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
+                                           Rules.IfBooleanNeedsNullable);
+  }
 
   [Test]
   public void TestOutOfOrder() {
-      var structure = BinarySchemaTestUtil.ParseFirst(@"
+    var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -60,14 +60,14 @@ namespace foo.bar {
 
   public class A : IBinaryConvertible { }
 }");
-      BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
-                                             Rules
-                                                 .DependentMustComeAfterSource);
-    }
+    BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
+                                           Rules
+                                               .DependentMustComeAfterSource);
+  }
 
   [Test]
   public void TestPublicPropertySource() {
-      var structure = BinarySchemaTestUtil.ParseFirst(@"
+    var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -83,13 +83,13 @@ namespace foo.bar {
 
   public class A : IBinaryConvertible { }
 }");
-      BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
-                                             Rules.SourceMustBePrivate);
-    }
+    BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
+                                           Rules.SourceMustBePrivate);
+  }
 
   [Test]
   public void TestProtectedPropertySource() {
-      var structure = BinarySchemaTestUtil.ParseFirst(@"
+    var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -105,13 +105,13 @@ namespace foo.bar {
 
   public class A : IBinaryConvertible { }
 }");
-      BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
-                                             Rules.SourceMustBePrivate);
-    }
+    BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
+                                           Rules.SourceMustBePrivate);
+  }
 
   [Test]
   public void TestInternalPropertySource() {
-      var structure = BinarySchemaTestUtil.ParseFirst(@"
+    var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -127,13 +127,13 @@ namespace foo.bar {
 
   public class A : IBinaryConvertible { }
 }");
-      BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
-                                             Rules.SourceMustBePrivate);
-    }
+    BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
+                                           Rules.SourceMustBePrivate);
+  }
 
   [Test]
   public void TestPublicFieldSource() {
-      var structure = BinarySchemaTestUtil.ParseFirst(@"
+    var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -149,13 +149,13 @@ namespace foo.bar {
 
   public class A : IBinaryConvertible { }
 }");
-      BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
-                                             Rules.SourceMustBePrivate);
-    }
+    BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
+                                           Rules.SourceMustBePrivate);
+  }
 
   [Test]
   public void TestProtectedFieldSource() {
-      var structure = BinarySchemaTestUtil.ParseFirst(@"
+    var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -171,13 +171,13 @@ namespace foo.bar {
 
   public class A : IBinaryConvertible { }
 }");
-      BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
-                                             Rules.SourceMustBePrivate);
-    }
+    BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
+                                           Rules.SourceMustBePrivate);
+  }
 
   [Test]
   public void TestInternalFieldSource() {
-      var structure = BinarySchemaTestUtil.ParseFirst(@"
+    var structure = BinarySchemaTestUtil.ParseFirst(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -193,7 +193,7 @@ namespace foo.bar {
 
   public class A : IBinaryConvertible { }
 }");
-      BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
-                                             Rules.SourceMustBePrivate);
-    }
+    BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
+                                           Rules.SourceMustBePrivate);
+  }
 }

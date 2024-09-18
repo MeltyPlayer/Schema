@@ -14,43 +14,43 @@ public sealed partial class SchemaTextReader : ITextReader {
 
   public SchemaTextReader(ISeekableReadableStream baseStream,
                           int tabWidth = 4) {
-      this.baseStream_ = baseStream;
-      this.TabWidth = tabWidth;
-    }
+    this.baseStream_ = baseStream;
+    this.TabWidth = tabWidth;
+  }
 
   ~SchemaTextReader() => this.ReleaseUnmanagedResources_();
 
   public void Dispose() {
-      this.ReleaseUnmanagedResources_();
-      GC.SuppressFinalize(this);
-    }
+    this.ReleaseUnmanagedResources_();
+    GC.SuppressFinalize(this);
+  }
 
   private void ReleaseUnmanagedResources_() => this.baseStream_.Dispose();
 
   public T ReadNew<T>() where T : ITextDeserializable, new() {
-      var value = new T();
-      value.Read(this);
-      return value;
-    }
+    var value = new T();
+    value.Read(this);
+    return value;
+  }
 
   public bool TryReadNew<T>(out T? value)
       where T : ITextDeserializable, new() {
-      T? valueInternal = default;
-      bool success = false;
+    T? valueInternal = default;
+    bool success = false;
 
-      this.AdvanceIfTrue(tr => {
-        try {
-          valueInternal = tr.ReadNew<T>();
-          success = true;
-          return true;
-        } catch {
-          return false;
-        }
-      });
+    this.AdvanceIfTrue(tr => {
+                         try {
+                           valueInternal = tr.ReadNew<T>();
+                           success = true;
+                           return true;
+                         } catch {
+                           return false;
+                         }
+                       });
 
-      value = valueInternal;
-      return success;
-    }
+    value = valueInternal;
+    return success;
+  }
 
   public void ReadNews<T>(out T[] array, int length)
       where T : ITextDeserializable, new()
@@ -58,11 +58,11 @@ public sealed partial class SchemaTextReader : ITextReader {
 
   public T[] ReadNews<T>(int length)
       where T : ITextDeserializable, new() {
-      var array = new T[length];
-      for (var i = 0; i < length; ++i) {
-        array[i] = this.ReadNew<T>();
-      }
-
-      return array;
+    var array = new T[length];
+    for (var i = 0; i < length; ++i) {
+      array[i] = this.ReadNew<T>();
     }
+
+    return array;
+  }
 }

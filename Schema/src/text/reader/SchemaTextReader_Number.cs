@@ -75,18 +75,18 @@ public sealed partial class SchemaTextReader {
   public double ReadDouble() => this.ConvertDouble_(this.ReadFloatChars_());
 
   private static readonly char[] digitMatches_ = {
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
-    };
+      '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+  };
 
   private static readonly char[] positiveIntegerMatches_ =
       digitMatches_;
 
   private static readonly char[] negativeIntegerMatches_ =
-      positiveIntegerMatches_.Concat(new[] {'-'}).ToArray();
+      positiveIntegerMatches_.Concat(new[] { '-' }).ToArray();
 
 
   private static readonly char[] floatMatches_ =
-      negativeIntegerMatches_.Concat(new[] {'.'}).ToArray();
+      negativeIntegerMatches_.Concat(new[] { '.' }).ToArray();
 
   private string ReadPositiveIntegerChars_()
     => this.ReadMatchingNonWhitespaceChars_(
@@ -100,9 +100,9 @@ public sealed partial class SchemaTextReader {
     => this.ReadMatchingNonWhitespaceChars_(SchemaTextReader.floatMatches_);
 
   private string ReadMatchingNonWhitespaceChars_(ReadOnlySpan<char> matches) {
-      this.SkipManyIfPresent(TextReaderConstants.TERMINATORS);
-      var matching = this.ReadWhile(matches);
-      this.SkipManyIfPresent(TextReaderConstants.TERMINATORS);
-      return matching;
-    }
+    this.SkipManyIfPresent(TextReaderConstants.TERMINATORS);
+    var matching = this.ReadWhile(matches);
+    this.SkipManyIfPresent(TextReaderConstants.TERMINATORS);
+    return matching;
+  }
 }

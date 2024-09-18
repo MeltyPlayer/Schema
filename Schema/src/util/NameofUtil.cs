@@ -18,7 +18,7 @@ public static class NameofUtil {
   public static string GetChainedAccessFromCallerArgumentExpression(
       string text)
     => NameofUtil.GetChainedAccessFromCallerArgumentExpression_(
-        new TypeAndNamespace {Defined = false},
+        new TypeAndNamespace { Defined = false },
         text);
 
   public static string GetChainedAccessFromCallerArgumentExpression(
@@ -48,63 +48,63 @@ public static class NameofUtil {
   private static string GetChainedAccessFromCallerArgumentExpression_(
       TypeAndNamespace parent,
       string text) {
-      var textLength = text.Length;
-      var lastChar = text[textLength - 1];
+    var textLength = text.Length;
+    var lastChar = text[textLength - 1];
 
-      if (NameofUtil.GetChainedAccessFromNameof_(
-              parent,
-              text,
-              out var outText)) {
-        return outText;
-      }
-
-      if (text[0] == '"' && lastChar == '"') {
-        return text.Substring(1, textLength - 2);
-      }
-
-      return text;
+    if (NameofUtil.GetChainedAccessFromNameof_(
+            parent,
+            text,
+            out var outText)) {
+      return outText;
     }
+
+    if (text[0] == '"' && lastChar == '"') {
+      return text.Substring(1, textLength - 2);
+    }
+
+    return text;
+  }
 
   private static bool GetChainedAccessFromNameof_(
       TypeAndNamespace parent,
       string text,
       out string outText) {
-      var nameofText = "nameof(";
-      var textLength = text.Length;
-      var lastChar = text[textLength - 1];
+    var nameofText = "nameof(";
+    var textLength = text.Length;
+    var lastChar = text[textLength - 1];
 
-      if (!text.StartsWith(nameofText) || lastChar != ')') {
-        outText = default;
-        return false;
-      }
+    if (!text.StartsWith(nameofText) || lastChar != ')') {
+      outText = default;
+      return false;
+    }
 
-      var nameofLength = nameofText.Length;
-      outText = text.Substring(nameofLength, textLength - 1 - nameofLength);
+    var nameofLength = nameofText.Length;
+    outText = text.Substring(nameofLength, textLength - 1 - nameofLength);
 
-      var thisAccessor = "this.";
-      if (outText.StartsWith(thisAccessor)) {
-        outText = outText.Substring(thisAccessor.Length);
+    var thisAccessor = "this.";
+    if (outText.StartsWith(thisAccessor)) {
+      outText = outText.Substring(thisAccessor.Length);
+      return true;
+    }
+
+    if (parent.Defined) {
+      var nameAccessor = $"{parent.Name}.";
+      if (outText.StartsWith(nameAccessor)) {
+        outText = outText.Substring(nameAccessor.Length);
         return true;
       }
 
-      if (parent.Defined) {
-        var nameAccessor = $"{parent.Name}.";
-        if (outText.StartsWith(nameAccessor)) {
-          outText = outText.Substring(nameAccessor.Length);
+      var namespaceParts = parent.NamespaceParts;
+      for (var i = 0; i < namespaceParts.Length; i++) {
+        var partialNamespace = string.Join(".", namespaceParts.Skip(i));
+        var qualifiedNameAccessor = $"{partialNamespace}.{parent.Name}.";
+        if (outText.StartsWith(qualifiedNameAccessor)) {
+          outText = outText.Substring(qualifiedNameAccessor.Length);
           return true;
         }
-
-        var namespaceParts = parent.NamespaceParts;
-        for (var i = 0; i < namespaceParts.Length; i++) {
-          var partialNamespace = string.Join(".", namespaceParts.Skip(i));
-          var qualifiedNameAccessor = $"{partialNamespace}.{parent.Name}.";
-          if (outText.StartsWith(qualifiedNameAccessor)) {
-            outText = outText.Substring(qualifiedNameAccessor.Length);
-            return true;
-          }
-        }
       }
-
-      return true;
     }
+
+    return true;
+  }
 }

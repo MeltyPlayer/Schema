@@ -10,21 +10,21 @@ internal class WLengthOfStringParser : IAttributeParser {
   public void ParseIntoMemberType(IBetterSymbol memberBetterSymbol,
                                   ITypeInfo memberTypeInfo,
                                   IMemberType memberType) {
-      var lengthOfStringAttributes =
-          memberBetterSymbol.GetAttributes<WLengthOfStringAttribute>()
-                            .ToArray();
-      if (lengthOfStringAttributes.Length == 0) {
-        return;
-      }
-
-      if (memberTypeInfo is IIntegerTypeInfo &&
-          memberType is BinarySchemaContainerParser.PrimitiveMemberType
-              primitiveMemberType) {
-        primitiveMemberType.LengthOfStringMembers =
-            lengthOfStringAttributes.Select(attr => attr.OtherMember)
-                                    .ToArray();
-      } else {
-        memberBetterSymbol.ReportDiagnostic(Rules.NotSupported);
-      }
+    var lengthOfStringAttributes =
+        memberBetterSymbol.GetAttributes<WLengthOfStringAttribute>()
+                          .ToArray();
+    if (lengthOfStringAttributes.Length == 0) {
+      return;
     }
+
+    if (memberTypeInfo is IIntegerTypeInfo &&
+        memberType is BinarySchemaContainerParser.PrimitiveMemberType
+            primitiveMemberType) {
+      primitiveMemberType.LengthOfStringMembers =
+          lengthOfStringAttributes.Select(attr => attr.OtherMember)
+                                  .ToArray();
+    } else {
+      memberBetterSymbol.ReportDiagnostic(Rules.NotSupported);
+    }
+  }
 }

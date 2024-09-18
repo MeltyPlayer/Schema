@@ -22,10 +22,7 @@ public class WPointerToAttribute : BMemberAttribute, IPointerToAttribute {
             false);
   }
 
-  public IChain<IAccessChainNode> AccessChainToOtherMember {
-    get;
-    private set;
-  }
+  public IChain<IAccessChainNode> AccessChainToOtherMember { get; private set; }
 
   public long? NullValue => null;
 }

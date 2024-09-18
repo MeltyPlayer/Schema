@@ -12,9 +12,9 @@ namespace schema.binary.attributes;
 
 public abstract class BMemberAttribute<T> : BMemberAttribute {
   protected override void SetMemberFromName(string memberName) {
-      this.memberThisIsAttachedTo_ =
-          this.GetMemberRelativeToContainer<T>(memberName);
-    }
+    this.memberThisIsAttachedTo_ =
+        this.GetMemberRelativeToContainer<T>(memberName);
+  }
 }
 
 public abstract class BMemberAttribute : Attribute {
@@ -28,107 +28,107 @@ public abstract class BMemberAttribute : Attribute {
   protected abstract void InitFields();
 
   protected virtual void SetMemberFromName(string memberName) {
-      this.memberThisIsAttachedTo_ =
-          this.GetMemberRelativeToContainer(memberName);
-    }
+    this.memberThisIsAttachedTo_ =
+        this.GetMemberRelativeToContainer(memberName);
+  }
 
 
   internal void Init(
       IDiagnosticReporter? diagnosticReporter,
       INamedTypeSymbol containerTypeSymbol,
       string memberName) {
-      this.diagnosticReporter_ = diagnosticReporter;
-      this.containerTypeSymbol_ = containerTypeSymbol;
-      this.containerTypeInfo_ = BMemberAttribute.parser_.AssertParseType(
-          containerTypeSymbol);
-      this.SetMemberFromName(memberName);
-      this.InitFields();
-    }
+    this.diagnosticReporter_ = diagnosticReporter;
+    this.containerTypeSymbol_ = containerTypeSymbol;
+    this.containerTypeInfo_ = BMemberAttribute.parser_.AssertParseType(
+        containerTypeSymbol);
+    this.SetMemberFromName(memberName);
+    this.InitFields();
+  }
 
 
   protected IMemberReference GetMemberRelativeToContainer(
       string memberName) {
-      SymbolTypeUtil.GetMemberInContainer(
-          this.containerTypeSymbol_,
-          memberName,
-          out var memberSymbol,
-          out var memberTypeSymbol,
-          out var memberTypeInfo);
+    SymbolTypeUtil.GetMemberInContainer(
+        this.containerTypeSymbol_,
+        memberName,
+        out var memberSymbol,
+        out var memberTypeSymbol,
+        out var memberTypeInfo);
 
-      return new MemberReference(memberName,
-                                 this.containerTypeInfo_,
-                                 memberSymbol,
-                                 memberTypeSymbol,
-                                 memberTypeInfo);
-    }
+    return new MemberReference(memberName,
+                               this.containerTypeInfo_,
+                               memberSymbol,
+                               memberTypeSymbol,
+                               memberTypeInfo);
+  }
 
 
   protected IMemberReference<T> GetMemberRelativeToContainer<T>(
       string memberName) {
-      SymbolTypeUtil.GetMemberInContainer(
-          this.containerTypeSymbol_,
-          memberName,
-          out var memberSymbol,
-          out var memberTypeSymbol,
-          out var memberTypeInfo);
+    SymbolTypeUtil.GetMemberInContainer(
+        this.containerTypeSymbol_,
+        memberName,
+        out var memberSymbol,
+        out var memberTypeSymbol,
+        out var memberTypeInfo);
 
-      if (!memberTypeInfo.TypeSymbol.Implements<T>()) {
-        Asserts.Fail(
-            $"Type of member, {memberTypeInfo.TypeSymbol}, does not match expected type: {typeof(T)}");
-      }
-
-      return new MemberReference<T>(
-          memberName,
-          this.containerTypeInfo_,
-          memberSymbol,
-          memberTypeSymbol,
-          memberTypeInfo);
+    if (!memberTypeInfo.TypeSymbol.Implements<T>()) {
+      Asserts.Fail(
+          $"Type of member, {memberTypeInfo.TypeSymbol}, does not match expected type: {typeof(T)}");
     }
+
+    return new MemberReference<T>(
+        memberName,
+        this.containerTypeInfo_,
+        memberSymbol,
+        memberTypeSymbol,
+        memberTypeInfo);
+  }
 
   protected IMemberReference GetOtherMemberRelativeToContainer(
       string otherMemberName) {
-      SymbolTypeUtil.GetMemberRelativeToAnother(
-          this.diagnosticReporter_,
-          this.containerTypeSymbol_,
-          otherMemberName,
-          this.memberThisIsAttachedTo_.Name,
-          true,
-          out var memberSymbol,
-          out var memberTypeSymbol,
-          out var memberTypeInfo);
+    SymbolTypeUtil.GetMemberRelativeToAnother(
+        this.diagnosticReporter_,
+        this.containerTypeSymbol_,
+        otherMemberName,
+        this.memberThisIsAttachedTo_.Name,
+        true,
+        out var memberSymbol,
+        out var memberTypeSymbol,
+        out var memberTypeInfo);
 
-      return new MemberReference(
-          otherMemberName,
-          this.containerTypeInfo_,
-          memberSymbol,
-          memberTypeSymbol,
-          memberTypeInfo);
-    }
+    return new MemberReference(
+        otherMemberName,
+        this.containerTypeInfo_,
+        memberSymbol,
+        memberTypeSymbol,
+        memberTypeInfo);
+  }
 
   protected IMemberReference<T> GetOtherMemberRelativeToContainer<T>(
       string otherMemberName) {
-      SymbolTypeUtil.GetMemberRelativeToAnother(
-          this.diagnosticReporter_,
-          this.containerTypeSymbol_,
-          otherMemberName,
-          this.memberThisIsAttachedTo_.Name,
-          true,
-          out var memberSymbol,
-          out var memberTypeSymbol,
-          out var memberTypeInfo);
+    SymbolTypeUtil.GetMemberRelativeToAnother(
+        this.diagnosticReporter_,
+        this.containerTypeSymbol_,
+        otherMemberName,
+        this.memberThisIsAttachedTo_.Name,
+        true,
+        out var memberSymbol,
+        out var memberTypeSymbol,
+        out var memberTypeInfo);
 
-      if (!memberTypeInfo.TypeSymbol.Implements<T>()) {
-        Asserts.Fail(
-            $"Type of other member, {memberTypeInfo.TypeSymbol}, does not match expected type: {typeof(T)}");
-      }
-
-      return new MemberReference<T>(
-          otherMemberName,
-          this.containerTypeInfo_,
-          memberSymbol,
-          memberTypeSymbol,
-          memberTypeInfo);
+    if (!memberTypeInfo.TypeSymbol.Implements<T>()) {
+      Asserts.Fail(
+          $"Type of other member, {memberTypeInfo.TypeSymbol}, does not match expected type: {typeof(T)}");
     }
+
+    return new MemberReference<T>(
+        otherMemberName,
+        this.containerTypeInfo_,
+        memberSymbol,
+        memberTypeSymbol,
+        memberTypeInfo);
+  }
 
 
   protected IChain<IAccessChainNode> GetAccessChainRelativeToContainer(
@@ -144,48 +144,48 @@ public abstract class BMemberAttribute : Attribute {
   protected IChain<IAccessChainNode> GetAccessChainRelativeToContainer<T>(
       string otherMemberPath,
       bool assertOrder) {
-      var typeChain = AccessChainUtil.GetAccessChainForRelativeMember(
-          this.diagnosticReporter_,
-          this.containerTypeSymbol_,
-          otherMemberPath,
-          this.memberThisIsAttachedTo_.Name,
-          assertOrder);
+    var typeChain = AccessChainUtil.GetAccessChainForRelativeMember(
+        this.diagnosticReporter_,
+        this.containerTypeSymbol_,
+        otherMemberPath,
+        this.memberThisIsAttachedTo_.Name,
+        assertOrder);
 
-      var targetTypeSymbol = typeChain.Target.MemberTypeInfo.TypeSymbol;
-      if (!targetTypeSymbol.Implements<T>()) {
-        Asserts.Fail(
-            $"Type of other member, {targetTypeSymbol}, does not match expected type: {typeof(T)}");
-      }
-
-      return typeChain;
+    var targetTypeSymbol = typeChain.Target.MemberTypeInfo.TypeSymbol;
+    if (!targetTypeSymbol.Implements<T>()) {
+      Asserts.Fail(
+          $"Type of other member, {targetTypeSymbol}, does not match expected type: {typeof(T)}");
     }
+
+    return typeChain;
+  }
 
 
   protected IMemberReference GetReadTimeOnlySourceRelativeToContainer(
       string otherMemberName) {
-      var source = this.GetOtherMemberRelativeToContainer(otherMemberName);
+    var source = this.GetOtherMemberRelativeToContainer(otherMemberName);
 
-      if (!this.IsMemberWritePrivateOrSkipped_(source.MemberSymbol)) {
-        this.diagnosticReporter_.ReportDiagnostic(
-            source.MemberSymbol,
-            Rules.SourceMustBePrivate);
-      }
-
-      return source;
+    if (!this.IsMemberWritePrivateOrSkipped_(source.MemberSymbol)) {
+      this.diagnosticReporter_.ReportDiagnostic(
+          source.MemberSymbol,
+          Rules.SourceMustBePrivate);
     }
+
+    return source;
+  }
 
   protected IMemberReference<T> GetReadTimeOnlySourceRelativeToContainer<T>(
       string otherMemberName) {
-      var source = this.GetOtherMemberRelativeToContainer<T>(otherMemberName);
+    var source = this.GetOtherMemberRelativeToContainer<T>(otherMemberName);
 
-      if (!this.IsMemberWritePrivateOrSkipped_(source.MemberSymbol)) {
-        this.diagnosticReporter_.ReportDiagnostic(
-            source.MemberSymbol,
-            Rules.SourceMustBePrivate);
-      }
-
-      return source;
+    if (!this.IsMemberWritePrivateOrSkipped_(source.MemberSymbol)) {
+      this.diagnosticReporter_.ReportDiagnostic(
+          source.MemberSymbol,
+          Rules.SourceMustBePrivate);
     }
+
+    return source;
+  }
 
   private bool IsMemberWritePrivateOrSkipped_(ISymbol symbol)
     => symbol switch {
@@ -199,7 +199,6 @@ public abstract class BMemberAttribute : Attribute {
        } ||
        symbol.HasAttribute<SkipAttribute>();
 }
-
 
 public interface IMemberReference {
   string Name { get; }
@@ -220,7 +219,6 @@ public interface IMemberReference {
 
 public interface IMemberReference<T> : IMemberReference { }
 
-
 public class MemberReference : IMemberReference {
   public MemberReference(
       string name,
@@ -228,12 +226,12 @@ public class MemberReference : IMemberReference {
       ISymbol memberSymbol,
       ITypeSymbol memberTypeSymbol,
       ITypeInfo memberTypeInfo) {
-      this.Name = name;
-      this.ContainerTypeInfo = containerTypeInfo;
-      this.MemberSymbol = memberSymbol;
-      this.MemberTypeSymbol = memberTypeSymbol;
-      this.MemberTypeInfo = memberTypeInfo;
-    }
+    this.Name = name;
+    this.ContainerTypeInfo = containerTypeInfo;
+    this.MemberSymbol = memberSymbol;
+    this.MemberTypeSymbol = memberTypeSymbol;
+    this.MemberTypeInfo = memberTypeInfo;
+  }
 
   public string Name { get; }
   public ITypeInfo ContainerTypeInfo { get; }
@@ -244,32 +242,32 @@ public class MemberReference : IMemberReference {
   public bool IsInteger => this.MemberTypeInfo is IIntegerTypeInfo;
 
   public IMemberReference AssertIsInteger() {
-      if (!this.IsInteger) {
-        Asserts.Fail($"Expected {this.Name} to refer to an integer!");
-      }
-
-      return this;
+    if (!this.IsInteger) {
+      Asserts.Fail($"Expected {this.Name} to refer to an integer!");
     }
+
+    return this;
+  }
 
   public bool IsBool => this.MemberTypeInfo is IBoolTypeInfo;
 
   public IMemberReference AssertIsBool() {
-      if (!this.IsBool) {
-        Asserts.Fail($"Expected {this.Name} to refer to an bool!");
-      }
-
-      return this;
+    if (!this.IsBool) {
+      Asserts.Fail($"Expected {this.Name} to refer to an bool!");
     }
+
+    return this;
+  }
 
   public bool IsSequence => this.MemberTypeInfo is ISequenceTypeInfo;
 
   public IMemberReference AssertIsSequence() {
-      if (!this.IsSequence) {
-        Asserts.Fail($"Expected {this.Name} to refer to a sequence!");
-      }
-
-      return this;
+    if (!this.IsSequence) {
+      Asserts.Fail($"Expected {this.Name} to refer to a sequence!");
     }
+
+    return this;
+  }
 }
 
 public class MemberReference<T> : MemberReference, IMemberReference<T> {

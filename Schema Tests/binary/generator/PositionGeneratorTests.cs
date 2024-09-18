@@ -6,7 +6,7 @@ namespace schema.binary.text;
 internal class PositionGeneratorTests {
   [Test]
   public void TestPosition() {
-      BinarySchemaTestUtil.AssertGenerated(@"
+    BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
@@ -22,7 +22,7 @@ namespace foo.bar {
     public long ExpectedPosition { get; }
   }
 }",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -35,7 +35,7 @@ namespace foo.bar {
   }
 }
 ",
-                                           @"using System;
+                                         @"using System;
 using schema.binary;
 
 namespace foo.bar {
@@ -46,5 +46,5 @@ namespace foo.bar {
   }
 }
 ");
-    }
+  }
 }

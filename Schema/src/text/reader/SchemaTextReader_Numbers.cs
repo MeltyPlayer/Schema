@@ -128,12 +128,13 @@ public sealed partial class SchemaTextReader {
   private IEnumerable<string> ReadSplitUpToAndPastTerminators_(
       ReadOnlySpan<string> separators,
       ReadOnlySpan<string> terminators) {
-      var match = this.ReadUpToAndPastTerminator(terminators);
-      if (match.Length == 0) {
-        return Enumerable.Empty<string>();
-      }
-      return match.SplitViaString(separators, false);
+    var match = this.ReadUpToAndPastTerminator(terminators);
+    if (match.Length == 0) {
+      return Enumerable.Empty<string>();
     }
+
+    return match.SplitViaString(separators, false);
+  }
 
   private T[] ConvertSplitUpToAndPastTerminators_<T>(
       ReadOnlySpan<string> separators,
@@ -141,22 +142,22 @@ public sealed partial class SchemaTextReader {
       Func<string, T> converter)
     => this.ReadSplitUpToAndPastTerminators_(separators, terminators)
            .Select(t => {
-             var start = 0;
+                     var start = 0;
 
-             int i;
-             for (i = 0; i < t.Length; ++i) {
-               var c = t[i];
-               if (c is '\t' or ' ' or '\r' or '\n') {
-                 start++;
-               }
-             }
+                     int i;
+                     for (i = 0; i < t.Length; ++i) {
+                       var c = t[i];
+                       if (c is '\t' or ' ' or '\r' or '\n') {
+                         start++;
+                       }
+                     }
 
-             if (t.Length - start == 0) {
-               return null;
-             }
+                     if (t.Length - start == 0) {
+                       return null;
+                     }
 
-             return start == 0 ? t : t.Substring(start);
-           })
+                     return start == 0 ? t : t.Substring(start);
+                   })
            .Where(text => text != null)
            .Select(converter)
            .ToArray();
@@ -167,28 +168,28 @@ public sealed partial class SchemaTextReader {
       Func<string, T> converter)
     => this.ReadSplitUpToAndPastTerminators_(separators, terminators)
            .Select(t => {
-             var start = 0;
+                     var start = 0;
 
-             int i;
-             for (i = 0; i < t.Length; ++i) {
-               var c = t[i];
-               if (c is '\t' or ' ' or '\r' or '\n') {
-                 start++;
-               } else {
-                 break;
-               }
-             }
+                     int i;
+                     for (i = 0; i < t.Length; ++i) {
+                       var c = t[i];
+                       if (c is '\t' or ' ' or '\r' or '\n') {
+                         start++;
+                       } else {
+                         break;
+                       }
+                     }
 
-             if (t.Length - start == 0) {
-               return null;
-             }
+                     if (t.Length - start == 0) {
+                       return null;
+                     }
 
-             if (t[i] == '0' && i < t.Length - 1 && t[i + 1] == 'x') {
-               start += 2;
-             }
+                     if (t[i] == '0' && i < t.Length - 1 && t[i + 1] == 'x') {
+                       start += 2;
+                     }
 
-             return start == 0 ? t : t.Substring(start);
-           })
+                     return start == 0 ? t : t.Substring(start);
+                   })
            .Where(text => text != null)
            .Select(converter)
            .ToArray();

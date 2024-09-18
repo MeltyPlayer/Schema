@@ -43,9 +43,9 @@ public partial class ClassSequenceTests {
   public void TestWriteAndReadArrayObject() {
     var expectedSw = new ClassArraySequenceWrapper {
         Values = new[] {
-            new SchemaClass {Value = 1},
-            new SchemaClass {Value = 2},
-            new SchemaClass {Value = 3}
+            new SchemaClass { Value = 1 },
+            new SchemaClass { Value = 2 },
+            new SchemaClass { Value = 3 }
         }
     };
 
@@ -67,9 +67,9 @@ public partial class ClassSequenceTests {
   public void TestWriteAndReadArrayValues() {
     var expectedSw = new ClassArraySequenceWrapper {
         Values = new[] {
-            new SchemaClass {Value = 1},
-            new SchemaClass {Value = 2},
-            new SchemaClass {Value = 3}
+            new SchemaClass { Value = 1 },
+            new SchemaClass { Value = 2 },
+            new SchemaClass { Value = 3 }
         }
     };
 
@@ -106,7 +106,7 @@ public partial class ClassSequenceTests {
   public void TestWriteAndReadListObject() {
     var expectedSw = new ClassListSequenceWrapper {
         Values = new List<SchemaClass> {
-            new() {Value = 1}, new() {Value = 2}, new() {Value = 3}
+            new() { Value = 1 }, new() { Value = 2 }, new() { Value = 3 }
         }
     };
 

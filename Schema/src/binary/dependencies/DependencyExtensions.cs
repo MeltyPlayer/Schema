@@ -15,7 +15,7 @@ public static class DependencyExtensions {
            member => member.MemberType is ISequenceMemberType {
                LengthSourceType: not SequenceLengthSourceType
                    .UNTIL_END_OF_STREAM,
-               SequenceTypeInfo: {IsLengthConst: false},
+               SequenceTypeInfo: { IsLengthConst: false },
            });
 
   public static bool DependsOnSchemaAttributes(
@@ -39,8 +39,8 @@ public static class DependencyExtensions {
                => member.MemberType is
                    IPrimitiveMemberType {
                        LengthOfStringMembers.Length: > 1
-                   } or
-                   IPrimitiveMemberType {
+                   }
+                   or IPrimitiveMemberType {
                        LengthOfSequenceMembers.Length: > 1
                    });
 
@@ -51,7 +51,7 @@ public static class DependencyExtensions {
        .Members
        .OfType<ISchemaValueMember>()
        .Any(member => member.MemberType is IPrimitiveMemberType {
-           PointerToAttribute: {NullValue: { }}
+           PointerToAttribute: { NullValue: { } }
        });
 
   public static bool DependsOnCollectionsImports(
@@ -61,12 +61,14 @@ public static class DependencyExtensions {
        .OfType<ISchemaValueMember>()
        .Any(
            member => member is {
-               MemberType: ISequenceMemberType {
-                   LengthSourceType: SequenceLengthSourceType
-                       .UNTIL_END_OF_STREAM
-               }
-           } or {
-               MemberType: ISequenceMemberType,
-               IfBoolean: { },
-           });
+                                   MemberType: ISequenceMemberType {
+                                       LengthSourceType:
+                                       SequenceLengthSourceType
+                                           .UNTIL_END_OF_STREAM
+                                   }
+                               }
+                               or {
+                                   MemberType: ISequenceMemberType,
+                                   IfBoolean: { },
+                               });
 }

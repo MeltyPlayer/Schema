@@ -206,7 +206,7 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
                                                 .Type,
                                             typeof(IBinaryReader))) {
               members.Add(
-                  new SchemaMethodMember {Name = methodSymbol.Name});
+                  new SchemaMethodMember { Name = methodSymbol.Name });
             } else {
               memberBetterSymbol.ReportDiagnostic(Rules.NotSupported);
             }

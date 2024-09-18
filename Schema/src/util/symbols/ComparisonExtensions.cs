@@ -22,19 +22,19 @@ public static class ComparisonExtensions {
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static bool IsType(this ISymbol symbol, Type expectedType) {
-      var expectedName = expectedType.Name;
+    var expectedName = expectedType.Name;
 
-      int expectedArity = 0;
-      var indexOfBacktick = expectedName.IndexOf('`');
-      if (indexOfBacktick != -1) {
-        expectedArity = int.Parse(expectedName.Substring(indexOfBacktick + 1));
-        expectedName = expectedName.Substring(0, indexOfBacktick);
-      }
-
-      return symbol.Name == expectedName &&
-             symbol.IsInSameNamespaceAs(expectedType) &&
-             ((symbol as INamedTypeSymbol)?.Arity ?? 0) == expectedArity;
+    int expectedArity = 0;
+    var indexOfBacktick = expectedName.IndexOf('`');
+    if (indexOfBacktick != -1) {
+      expectedArity = int.Parse(expectedName.Substring(indexOfBacktick + 1));
+      expectedName = expectedName.Substring(0, indexOfBacktick);
     }
+
+    return symbol.Name == expectedName &&
+           symbol.IsInSameNamespaceAs(expectedType) &&
+           ((symbol as INamedTypeSymbol)?.Arity ?? 0) == expectedArity;
+  }
 
   public static bool Implements<T>(this ISymbol symbol)
     => symbol.Implements<T>(out _);
@@ -49,12 +49,12 @@ public static class ComparisonExtensions {
   public static bool Implements(this ISymbol symbol,
                                 Type type,
                                 out INamedTypeSymbol matchingType) {
-      matchingType = symbol.Yield()
-                           .Concat((symbol as ITypeSymbol)?.AllInterfaces ??
-                                   Enumerable.Empty<ITypeSymbol>())
-                           .Concat(symbol.GetBaseTypes())
-                           .SingleOrDefault(symbol => symbol.IsType(type)) as
-          INamedTypeSymbol;
-      return matchingType != null;
-    }
+    matchingType = symbol.Yield()
+                         .Concat((symbol as ITypeSymbol)?.AllInterfaces ??
+                                 Enumerable.Empty<ITypeSymbol>())
+                         .Concat(symbol.GetBaseTypes())
+                         .SingleOrDefault(symbol => symbol.IsType(type)) as
+        INamedTypeSymbol;
+    return matchingType != null;
+  }
 }

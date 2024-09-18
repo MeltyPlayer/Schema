@@ -15,14 +15,14 @@ public static class AttributeExtensions {
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   internal static IEnumerable<AttributeData>
       GetAttributeData<TAttribute>(this ISymbol symbol) {
-      var attributeType = typeof(TAttribute);
-      return symbol
-             .GetAttributes()
-             .Where(attributeData
-                        => attributeData.AttributeClass?.IsType(
-                               attributeType) ??
-                           false);
-    }
+    var attributeType = typeof(TAttribute);
+    return symbol
+           .GetAttributes()
+           .Where(attributeData
+                      => attributeData.AttributeClass?.IsType(
+                             attributeType) ??
+                         false);
+  }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   internal static bool HasAttribute<TAttribute>(this ISymbol symbol)
@@ -45,14 +45,14 @@ public static class AttributeExtensions {
       where TAttribute : Attribute
     => symbol.GetAttributeData<TAttribute>()
              .Select(attributeData => {
-               var attribute
-                   = attributeData.Instantiate<TAttribute>(symbol);
-               if (attribute is BMemberAttribute memberAttribute) {
-                 memberAttribute.Init(diagnosticReporter,
-                                      symbol.ContainingType,
-                                      symbol.Name);
-               }
+                       var attribute
+                           = attributeData.Instantiate<TAttribute>(symbol);
+                       if (attribute is BMemberAttribute memberAttribute) {
+                         memberAttribute.Init(diagnosticReporter,
+                                              symbol.ContainingType,
+                                              symbol.Name);
+                       }
 
-               return attribute;
-             });
+                       return attribute;
+                     });
 }

@@ -23,9 +23,9 @@ public class StreamPositionManager : IPositionManager {
 
   public StreamPositionManager(ISeekableStream impl,
                                long startingPosition = 0) {
-      this.impl_ = impl;
-      this.positionStack_.Push(startingPosition);
-    }
+    this.impl_ = impl;
+    this.positionStack_.Push(startingPosition);
+  }
 
 
   public long Position {
@@ -42,14 +42,14 @@ public class StreamPositionManager : IPositionManager {
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public void PushLocalSpace() {
-      this.positionStack_.Push(this.impl_.Position);
-    }
+    this.positionStack_.Push(this.impl_.Position);
+  }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public void PopLocalSpace() {
-      Asserts.True(this.positionStack_.Count >= 2);
-      this.positionStack_.Pop();
-    }
+    Asserts.True(this.positionStack_.Count >= 2);
+    this.positionStack_.Pop();
+  }
 
   public long BaseOffset {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

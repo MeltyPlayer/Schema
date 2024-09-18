@@ -13,40 +13,40 @@ public class StringBuilderComparison {
 
   [Benchmark]
   public void Stack() {
-      for (var iteration = 0; iteration < w; ++iteration) {
-        var sb = new StringBuilder();
+    for (var iteration = 0; iteration < w; ++iteration) {
+      var sb = new StringBuilder();
 
-        for (var i = 0; i < n; i++) {
-          sb.Append('0');
-        }
-
-        var str = sb.ToString();
+      for (var i = 0; i < n; i++) {
+        sb.Append('0');
       }
+
+      var str = sb.ToString();
     }
+  }
 
   [Benchmark]
   public void Heap16() {
-      for (var iteration = 0; iteration < w; ++iteration) {
-        var sb = ZString.CreateStringBuilder();
+    for (var iteration = 0; iteration < w; ++iteration) {
+      var sb = ZString.CreateStringBuilder();
 
-        for (var i = 0; i < n; i++) {
-          sb.Append('0');
-        }
-
-        var str = sb.ToString();
+      for (var i = 0; i < n; i++) {
+        sb.Append('0');
       }
+
+      var str = sb.ToString();
     }
+  }
 
   [Benchmark]
   public void Heap8() {
-      for (var iteration = 0; iteration < w; ++iteration) {
-        var sb = ZString.CreateUtf8StringBuilder();
+    for (var iteration = 0; iteration < w; ++iteration) {
+      var sb = ZString.CreateUtf8StringBuilder();
 
-        for (var i = 0; i < n; i++) {
-          sb.Append('0');
-        }
-
-        var str = sb.ToString();
+      for (var i = 0; i < n; i++) {
+        sb.Append('0');
       }
+
+      var str = sb.ToString();
     }
+  }
 }
