@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.CompilerServices;
 
 
@@ -7,7 +8,6 @@ namespace schema.binary;
 public sealed partial class SchemaBinaryReader {
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T ReadNew<T>() where T : IBinaryDeserializable, new() {
-    this.AssertNotEof();
     var value = new T();
     value.Read(this);
     return value;
@@ -20,6 +20,10 @@ public sealed partial class SchemaBinaryReader {
       value = this.ReadNew<T>();
       return true;
     } catch (SchemaAssertionException) {
+      this.Position = originalPosition;
+      value = default;
+      return false;
+    } catch (EndOfStreamException) {
       this.Position = originalPosition;
       value = default;
       return false;
@@ -41,7 +45,6 @@ public sealed partial class SchemaBinaryReader {
   public void ReadNews<T>(Span<T> dst)
       where T : IBinaryDeserializable, new() {
     for (var i = 0; i < dst.Length; ++i) {
-      this.AssertNotEof();
       dst[i] = this.ReadNew<T>();
     }
   }

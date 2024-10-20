@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Drawing;
+using System.IO;
 using System.Runtime.CompilerServices;
 
 using CommunityToolkit.HighPerformance;
@@ -75,6 +77,19 @@ public class EndianBinaryBufferedStream : IEndiannessStack {
     set;
   }
 
+  public bool Eof {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get => this.BaseStream.Position >= this.BaseStream.Length;
+  }
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public void AssertNotEof() {
+    if (this.Eof) {
+      throw new EndOfStreamException(
+          $"Attempted to read past the end of the stream: position '{this.BaseStream.Position}' of stream length '{this.BaseStream.Length}'");
+    }
+  }
+
   public byte[] Buffer { get; private set; }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -88,13 +103,26 @@ public class EndianBinaryBufferedStream : IEndiannessStack {
 
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public void FillBuffer<T>(Span<T> buffer) where T : unmanaged
-    => this.BaseStream.TryToReadIntoBuffer(buffer.AsBytes());
+  public void FillBuffer<T>(Span<T> buffer) where T : unmanaged {
+    if (buffer.Length == 0) {
+      return;
+    }
+
+    this.AssertNotEof();
+
+    this.BaseStream.TryToReadIntoBuffer(buffer.AsBytes());
+  }
 
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public unsafe void FillBufferAndReverse<T>(Span<T> buffer)
       where T : unmanaged {
+    if (buffer.Length == 0) {
+      return;
+    }
+
+    this.AssertNotEof();
+
     var bSpan = buffer.AsBytes();
     this.BaseStream.TryToReadIntoBuffer(bSpan);
 
@@ -105,6 +133,12 @@ public class EndianBinaryBufferedStream : IEndiannessStack {
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public void FillBuffer(Span<byte> buffer, int? optStride = null) {
+    if (buffer.Length == 0) {
+      return;
+    }
+
+    this.AssertNotEof();
+
     var stride = optStride ?? buffer.Length;
     this.BaseStream.TryToReadIntoBuffer(buffer);
     this.reverserImpl_.ReverseElements(buffer, stride);
@@ -113,12 +147,16 @@ public class EndianBinaryBufferedStream : IEndiannessStack {
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Read<T>() where T : unmanaged {
+    this.AssertNotEof();
+
     this.Read(out T val);
     return val;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public void Read<T>(out T val) where T : unmanaged {
+    this.AssertNotEof();
+    
     val = default;
     var bSpan = UnsafeUtil.AsSpan(ref val).AsBytes();
     this.BaseStream.TryToReadIntoBuffer(bSpan);

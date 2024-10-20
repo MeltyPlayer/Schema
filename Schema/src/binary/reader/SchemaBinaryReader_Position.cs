@@ -27,18 +27,10 @@ public sealed partial class SchemaBinaryReader {
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public void PopLocalSpace() => this.positionManagerImpl_.PopLocalSpace();
 
-  public bool Eof {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get => this.Position >= this.Length;
-  }
+  public bool Eof => this.bufferedStream_.Eof;
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public void AssertNotEof() {
-    if (this.Eof) {
-      throw new SchemaAssertionException(
-          $"Attempted to read past the end of the stream: position '{this.Position}' of stream length '{this.Length}'");
-    }
-  }
+  public void AssertNotEof() => this.bufferedStream_.AssertNotEof();
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public void Align(uint amt) {
