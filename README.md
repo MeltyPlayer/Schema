@@ -23,9 +23,7 @@ Library for serializing C# types to/from binary. Provides a Roslyn generator tha
 
 ### Implementing binary schema classes
 
-To write a binary schema class, you must first do the following steps:
-1) Mark it as partial.
-1) Have it implement the `IBinaryConvertible` interface (a combination of the `IBinarySerializable` and `IBinaryDeserializable` interfaces).
+To write a binary schema class, you must first have it implement the `IBinarySerializable` or `IBinaryDeserializable` interfaces (or `IBinaryConvertible` if you need both).
 
 Then, based on how complicated your schema class is, you can either choose to automatically or manually implement `Read()`/`Write()` methods.
 
@@ -33,7 +31,7 @@ Then, based on how complicated your schema class is, you can either choose to au
 
 For most schema classes, you should be able to use the automatic code generator.
 
-All you have to do is annotate the schema class with the `[BinarySchema]` attribute; this will flag to the generator that it should implement read/write methods for this class.
+All you have to do is annotate the schema class with the `[BinarySchema]` attribute and mark it as partial; this will flag to the generator that it should implement read/write methods for this class.
 It will then look into all fields/properties in the schema class, and attempt to implement read/write logic in the same order that the fields/properties appear.
 
 Any nested schema classes will be automatically read/written as expected.
@@ -90,14 +88,14 @@ public partial class BigEndianType : IBinaryConvertible {
 }
 ```
 
-#### IfBoolean
+#### IfBoolean/RIfBoolean
 
 Marks that a nullable field or property will only be read/written if some other boolean field or property is true.
 ```cs
 [IntegerFormat(SchemaIntegerType.BYTE)]
 public bool HasValue { get; set; }
 
-[IfBoolean(nameof(this.HasValue))]
+[RIfBoolean(nameof(this.HasValue))]
 public int? Value { get; set; }
 ```
 
@@ -133,7 +131,7 @@ public partial class ChildType : IBinaryConvertible, IChildOf<ParentType> {
   [Skip]
   private bool HasSomeField => Parent.ChildHasSomeField;
 
-  [IfBoolean(nameof(HasSomeField))]
+  [RIfBoolean(nameof(HasSomeField))]
   public int? SomeField { get; set; }
 }
 ```
@@ -181,13 +179,13 @@ private bool IsSound_ => this.Magic == "SOUND";
 [Skip]
 private bool IsText_ => this.Magic == "TEXT";
 
-[IfBoolean(nameof(this.IsImage))]
+[RIfBoolean(nameof(this.IsImage))]
 private ImageSection? imageSection_ { get; set; }
 
-[IfBoolean(nameof(this.IsSound_))]
+[RIfBoolean(nameof(this.IsSound_))]
 private SoundSection? soundSection_ { get; set; }
 
-[IfBoolean(nameof(this.IsText_))]
+[RIfBoolean(nameof(this.IsText_))]
 private TextSection? textSection_ { get; set; }
 ```
 
@@ -234,7 +232,7 @@ If the name of another field or property is passed into `RStringLengthSource`, t
 ```cs
 public byte TextLength { get; set; }
 
-[StringLengthSource(nameof(this.TextLength))]
+[RStringLengthSource(nameof(this.TextLength))]
 public string Text { get; set; }
 ```
 
