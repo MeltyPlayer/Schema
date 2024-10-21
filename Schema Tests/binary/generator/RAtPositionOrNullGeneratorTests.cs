@@ -5,7 +5,7 @@ namespace schema.binary.text;
 
 internal class RAtPositionOrNullGeneratorTests {
   [Test]
-  public void TestOffsetOfPrimitive() {
+  public void TestPrimitiveAtOffset() {
     BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
@@ -15,8 +15,8 @@ namespace foo.bar {
   public partial class OffsetWrapper : IBinaryConvertible {
     public uint Offset { get; set; }
 
-    [RAtPositionOrNull(nameof(Offset), 123)]
-    public byte? Field { get; set; }
+    [RAtPositionOrNull(nameof(Offset))]
+    public byte Primitive { get; set; }
   }
 }",
                                          @"using System;
@@ -26,14 +26,14 @@ namespace foo.bar {
   public partial class OffsetWrapper {
     public void Read(IBinaryReader br) {
       this.Offset = br.ReadUInt32();
-      if (this.Offset == 123) {
-        this.Field = null;
-      }
-      else {
+      if (this.Offset != 0) {
         var tempLocation = br.Position;
         br.Position = this.Offset;
-        this.Field = br.ReadByte();
+        this.Primitive = br.ReadByte();
         br.Position = tempLocation;
+      }
+      else {
+        this.Primitive = default;
       }
     }
   }
@@ -46,9 +46,7 @@ namespace foo.bar {
   public partial class OffsetWrapper {
     public void Write(IBinaryWriter bw) {
       bw.WriteUInt32(this.Offset);
-      if (this.Field != null) {
-        bw.WriteByte(this.Field.Value);
-      }
+      bw.WriteByte(this.Primitive);
     }
   }
 }
@@ -56,20 +54,20 @@ namespace foo.bar {
   }
 
   [Test]
-  public void TestOffsetOfClass() {
+  public void TestClassAtOffset() {
     BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
 namespace foo.bar {
-  public class A : IBinaryConvertible { }
+  public partial class A : IBinaryConvertible;
 
   [BinarySchema]
   public partial class OffsetWrapper : IBinaryConvertible {
     public uint Offset { get; set; }
 
-    [RAtPositionOrNull(nameof(Offset), 123)]
-    public A? Field { get; set; }
+    [RAtPositionOrNull(nameof(Offset))]
+    public A Class { get; set; }
   }
 }",
                                          @"using System;
@@ -79,14 +77,14 @@ namespace foo.bar {
   public partial class OffsetWrapper {
     public void Read(IBinaryReader br) {
       this.Offset = br.ReadUInt32();
-      if (this.Offset == 123) {
-        this.Field = null;
-      }
-      else {
+      if (this.Offset != 0) {
         var tempLocation = br.Position;
         br.Position = this.Offset;
-        this.Field = br.ReadNew<A>();
+        this.Class.Read(br);
         br.Position = tempLocation;
+      }
+      else {
+        this.Class = default;
       }
     }
   }
@@ -99,7 +97,7 @@ namespace foo.bar {
   public partial class OffsetWrapper {
     public void Write(IBinaryWriter bw) {
       bw.WriteUInt32(this.Offset);
-      this.Field?.Write(bw);
+      this.Class.Write(bw);
     }
   }
 }
@@ -107,20 +105,20 @@ namespace foo.bar {
   }
 
   [Test]
-  public void TestOffsetOfStruct() {
+  public void TestStructAtOffset() {
     BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
 using schema.binary.attributes;
 
 namespace foo.bar {
-  public struct A : IBinaryConvertible { }
+  public partial struct A : IBinaryConvertible;
 
   [BinarySchema]
   public partial class OffsetWrapper : IBinaryConvertible {
     public uint Offset { get; set; }
 
-    [RAtPositionOrNull(nameof(Offset), 123)]
-    public A? Field { get; set; }
+    [RAtPositionOrNull(nameof(Offset))]
+    public A Struct { get; set; }
   }
 }",
                                          @"using System;
@@ -130,14 +128,18 @@ namespace foo.bar {
   public partial class OffsetWrapper {
     public void Read(IBinaryReader br) {
       this.Offset = br.ReadUInt32();
-      if (this.Offset == 123) {
-        this.Field = null;
-      }
-      else {
+      if (this.Offset != 0) {
         var tempLocation = br.Position;
         br.Position = this.Offset;
-        this.Field = br.ReadNew<A>();
+        {
+          var value = this.Struct;
+          value.Read(br);
+          this.Struct = value;
+        }
         br.Position = tempLocation;
+      }
+      else {
+        this.Struct = default;
       }
     }
   }
@@ -150,7 +152,115 @@ namespace foo.bar {
   public partial class OffsetWrapper {
     public void Write(IBinaryWriter bw) {
       bw.WriteUInt32(this.Offset);
-      this.Field?.Write(bw);
+      this.Struct.Write(bw);
+    }
+  }
+}
+");
+  }
+
+  [Test]
+  public void TestArrayAtOffset() {
+    BinarySchemaTestUtil.AssertGenerated(@"
+using schema.binary;
+using schema.binary.attributes;
+
+namespace foo.bar {
+  [BinarySchema]
+  public partial class OffsetWrapper : IBinaryConvertible {
+    public uint Offset { get; set; }
+
+    [RAtPositionOrNull(nameof(Offset))]
+    [SequenceLengthSource((uint) 3)]
+    public byte[] Array { get; set; }
+  }
+}",
+                                         @"using System;
+using schema.binary;
+using schema.util.sequences;
+
+namespace foo.bar {
+  public partial class OffsetWrapper {
+    public void Read(IBinaryReader br) {
+      this.Offset = br.ReadUInt32();
+      if (this.Offset != 0) {
+        var tempLocation = br.Position;
+        br.Position = this.Offset;
+        this.Array = SequencesUtil.CloneAndResizeSequence(this.Array, 3);
+        br.ReadBytes(this.Array);
+        br.Position = tempLocation;
+      }
+      else {
+        this.Array = SequencesUtil.CloneAndResizeSequence(this.Array, 0);
+      }
+    }
+  }
+}
+",
+                                         @"using System;
+using schema.binary;
+
+namespace foo.bar {
+  public partial class OffsetWrapper {
+    public void Write(IBinaryWriter bw) {
+      bw.WriteUInt32(this.Offset);
+      bw.WriteBytes(this.Array);
+    }
+  }
+}
+");
+  }
+
+  [Test]
+  public void TestImmediateArrayAtOffset() {
+    BinarySchemaTestUtil.AssertGenerated(@"
+using schema.binary;
+using schema.binary.attributes;
+
+namespace foo.bar {
+  [BinarySchema]
+  public partial class OffsetWrapper : IBinaryConvertible {
+    public uint Offset { get; set; }
+
+    [RAtPositionOrNull(nameof(Offset))]
+    [SequenceLengthSource(SchemaIntegerType.UINT32)]
+    public byte[] ImmediateArray { get; set; }
+  }
+}",
+                                         @"using System;
+using schema.binary;
+using schema.util.sequences;
+
+namespace foo.bar {
+  public partial class OffsetWrapper {
+    public void Read(IBinaryReader br) {
+      this.Offset = br.ReadUInt32();
+      if (this.Offset != 0) {
+        var tempLocation = br.Position;
+        br.Position = this.Offset;
+        {
+          var c = br.ReadUInt32();
+          this.ImmediateArray = SequencesUtil.CloneAndResizeSequence(this.ImmediateArray, (int) c);
+        }
+        br.ReadBytes(this.ImmediateArray);
+        br.Position = tempLocation;
+      }
+      else {
+        this.ImmediateArray = SequencesUtil.CloneAndResizeSequence(this.ImmediateArray, 0);
+      }
+    }
+  }
+}
+",
+                                         @"using System;
+using schema.binary;
+
+namespace foo.bar {
+  public partial class OffsetWrapper {
+    public void Write(IBinaryWriter bw) {
+      bw.WriteUInt32(this.Offset);
+      bw.WriteUInt32((uint) this.ImmediateArray.Length);
+      bw.WriteBytes(this.ImmediateArray);
     }
   }
 }
@@ -184,14 +294,14 @@ using schema.binary;
 namespace foo.bar {
   public partial class OffsetWrapper {
     public void Read(IBinaryReader br) {
-      if (this.Parent.Offset == 0) {
-        this.Field = null;
-      }
-      else {
+      if (this.Parent.Offset != 0) {
         var tempLocation = br.Position;
         br.Position = this.Parent.Offset;
         this.Field = br.ReadByte();
         br.Position = tempLocation;
+      }
+      else {
+        this.Field = default;
       }
     }
   }

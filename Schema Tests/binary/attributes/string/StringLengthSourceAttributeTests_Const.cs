@@ -75,4 +75,41 @@ namespace foo.bar {
 }
 ");
   }
+
+  [Test]
+  public void TestConstLengthString0() {
+    BinarySchemaTestUtil.AssertGenerated(@"
+using schema.binary;
+using schema.binary.attributes;
+
+namespace foo.bar {
+  [BinarySchema]
+  public partial class StringWrapper {
+    [StringLengthSource((int) 0)]
+    public string Field;
+  }
+}",
+                                         @"using System;
+using schema.binary;
+
+namespace foo.bar {
+  public partial class StringWrapper {
+    public void Read(IBinaryReader br) {
+      this.Field = """";
+    }
+  }
+}
+",
+                                         @"using System;
+using schema.binary;
+
+namespace foo.bar {
+  public partial class StringWrapper {
+    public void Write(IBinaryWriter bw) {
+      bw.WriteStringWithExactLength(this.Field, 0);
+    }
+  }
+}
+");
+  }
 }

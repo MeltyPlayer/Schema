@@ -113,26 +113,6 @@ public class BinarySchemaReaderGenerator {
       return;
     }
 
-    // TODO: How to handle both offset & if boolean together?
-
-    var offset = member.Offset;
-    if (offset != null) {
-      var nullValue = offset.NullValue;
-      var readBlockPrefix = "";
-      if (nullValue != null) {
-        sw.EnterBlock($"if (this.{offset.OffsetName.Name} == {nullValue})")
-          .WriteLine($"this.{member.Name} = null;")
-          .ExitBlock();
-
-        readBlockPrefix = "else";
-      }
-
-      sw.EnterBlock(readBlockPrefix)
-        .WriteLine($"var tempLocation = {READER}.Position;")
-        .WriteLine(
-            $"{READER}.Position = this.{offset.OffsetName.Name};");
-    }
-
     var ifBoolean = member.IfBoolean;
     var immediateIfBoolean =
         ifBoolean?.SourceType == IfBooleanSourceType.IMMEDIATE_VALUE;
@@ -207,11 +187,6 @@ public class BinarySchemaReaderGenerator {
         sw.ExitBlock();
       }
     }
-
-    if (offset != null) {
-      sw.WriteLine($"{READER}.Position = tempLocation;")
-        .ExitBlock();
-    }
   }
 
   private static void Align_(
@@ -228,6 +203,19 @@ public class BinarySchemaReaderGenerator {
     };
     sw.WriteLine($"{READER}.Align({valueName});");
   }
+
+  private static void HandleMemberEndiannessAndAtPosition_(
+      ISourceWriter sw,
+      ISchemaValueMember member,
+      Action<bool> trueHandler,
+      Action? falseHandler = null)
+    => HandleMemberEndianness_(
+        sw,
+        member,
+        () => HandleAtPosition_(sw,
+                                member,
+                                trueHandler,
+                                falseHandler));
 
   private static void HandleMemberEndianness_(
       ISourceWriter sw,
@@ -248,6 +236,86 @@ public class BinarySchemaReaderGenerator {
     }
   }
 
+  private static void HandleAtPosition_(
+      ISourceWriter sw,
+      ISchemaValueMember member,
+      Action<bool> trueHandler,
+      Action? falseHandler = null)
+    => HandleAtPosition_(sw, member, null, trueHandler, falseHandler);
+
+  private static void HandleAtPosition_(
+      ISourceWriter sw,
+      ISchemaValueMember member,
+      string? checkText,
+      Action<bool> trueHandler,
+      Action? falseHandler = null) {
+    var offset = member.Offset;
+    var nullValue = offset?.NullValue;
+
+    var conditions = new List<string>();
+    if (nullValue != null) {
+      conditions.Add($"this.{offset.OffsetName.Name} != {nullValue}");
+    }
+
+    if (offset != null && checkText != null) {
+      conditions.Add(checkText);
+    }
+
+    HandleMaybeIfBlock_(
+        sw,
+        conditions,
+        enteredBlock => {
+          if (offset != null) {
+            if (!enteredBlock) {
+              sw.EnterBlock();
+            }
+
+            sw.WriteLine($"var tempLocation = {READER}.Position;")
+              .WriteLine($"{READER}.Position = this.{offset.OffsetName.Name};");
+          }
+
+          trueHandler(enteredBlock || offset != null);
+
+          if (offset != null) {
+            sw.WriteLine($"{READER}.Position = tempLocation;");
+
+            if (!enteredBlock) {
+              sw.ExitBlock();
+            }
+          }
+        },
+        falseHandler);
+  }
+
+  private static void HandleMaybeIfBlock_(ISourceWriter sw,
+                                          IReadOnlyList<string> conditions,
+                                          Action<bool> trueHandler,
+                                          Action? falseHandler = null) {
+    var conditionText
+        = conditions.Count > 0 ? string.Join(" && ", conditions) : null;
+    var enteredBlock = conditionText != null;
+
+    if (enteredBlock) {
+      sw.EnterBlock($"if ({conditionText})");
+    }
+
+    trueHandler(enteredBlock);
+
+    if (!enteredBlock) {
+      return;
+    }
+
+    sw.ExitBlock();
+
+    if (falseHandler == null) {
+      return;
+    }
+
+    sw.EnterBlock("else");
+    falseHandler();
+    sw.ExitBlock();
+  }
+
   private static void ReadPrimitive_(
       ISourceWriter sw,
       ITypeSymbol sourceSymbol,
@@ -255,10 +323,10 @@ public class BinarySchemaReaderGenerator {
     var primitiveType =
         Asserts.CastNonnull(member.MemberType as IPrimitiveMemberType);
 
-    HandleMemberEndianness_(
+    HandleMemberEndiannessAndAtPosition_(
         sw,
         member,
-        () => {
+        _ => {
           if (!primitiveType.IsReadOnly) {
             sw.WriteLine(
                 $"this.{member.Name} = {GetReadPrimitiveText_(sourceSymbol, primitiveType)};");
@@ -267,7 +335,8 @@ public class BinarySchemaReaderGenerator {
                 primitiveType,
                 $"this.{member.Name}")};");
           }
-        });
+        },
+        () => sw.WriteLine($"this.{member.Name} = default;"));
   }
 
   private static void ReadString_(
@@ -278,8 +347,14 @@ public class BinarySchemaReaderGenerator {
         member,
         () => {
           var stringType =
-              Asserts.CastNonnull(
-                  member.MemberType as IStringType);
+              Asserts.CastNonnull(member.MemberType as IStringType);
+
+          var falseHandler
+              = () => {
+                  var defaultValue
+                      = member.MemberType.TypeInfo.IsNullable ? "null" : "\"\"";
+                  sw.WriteLine($"this.{member.Name} = {defaultValue};");
+                };
 
           var encodingType = "";
           if (stringType.EncodingType != StringEncodingType.ASCII) {
@@ -295,22 +370,35 @@ public class BinarySchemaReaderGenerator {
               encodingType.Length > 0 ? $"{encodingType}, " : "";
 
           if (stringType.IsReadOnly) {
-            if (stringType.LengthSourceType ==
-                StringLengthSourceType.NULL_TERMINATED) {
-              sw.WriteLine(
-                  $"{READER}.AssertStringNT({encodingTypeWithComma}this.{member.Name});");
-            } else {
-              sw.WriteLine(
-                  $"{READER}.AssertString({encodingTypeWithComma}this.{member.Name});");
-            }
+            HandleAtPosition_(
+                sw,
+                member,
+                _ => {
+                  if (stringType.LengthSourceType ==
+                      StringLengthSourceType.NULL_TERMINATED) {
+                    sw.WriteLine(
+                        $"{READER}.AssertStringNT({encodingTypeWithComma}this.{member.Name});");
+                  } else {
+                    sw.WriteLine(
+                        $"{READER}.AssertString({encodingTypeWithComma}this.{member.Name});");
+                  }
+                },
+                falseHandler);
 
             return;
           }
 
           if (stringType.LengthSourceType ==
               StringLengthSourceType.NULL_TERMINATED) {
-            sw.WriteLine(
-                $"this.{member.Name} = {READER}.ReadStringNT({encodingType});");
+            HandleAtPosition_(
+                sw,
+                member,
+                _ => {
+                  sw.WriteLine(
+                      $"this.{member.Name} = {READER}.ReadStringNT({encodingType});");
+                },
+                falseHandler);
+
             return;
           }
 
@@ -319,8 +407,20 @@ public class BinarySchemaReaderGenerator {
               : "ReadString";
 
           if (stringType.LengthSourceType == StringLengthSourceType.CONST) {
-            sw.WriteLine(
-                $"this.{member.Name} = {READER}.{readMethod}({encodingTypeWithComma}{stringType.ConstLength});");
+            var constLength = stringType.ConstLength;
+            if (constLength > 0) {
+              HandleAtPosition_(
+                  sw,
+                  member,
+                  _ => {
+                    sw.WriteLine(
+                        $"this.{member.Name} = {READER}.{readMethod}({encodingTypeWithComma}{constLength});");
+                  },
+                  falseHandler);
+            } else {
+              falseHandler();
+            }
+
             return;
           }
 
@@ -329,18 +429,38 @@ public class BinarySchemaReaderGenerator {
             var readType =
                 SchemaGeneratorUtil.GetIntLabel(
                     stringType.ImmediateLengthType);
-            sw.EnterBlock()
-              .WriteLine($"var l = {READER}.Read{readType}();")
-              .WriteLine(
-                  $"this.{member.Name} = {READER}.{readMethod}({encodingTypeWithComma}l);")
-              .ExitBlock();
+            HandleAtPosition_(
+                sw,
+                member,
+                enteredBlock => {
+                  if (!enteredBlock) {
+                    sw.EnterBlock();
+                  }
+
+                  sw.WriteLine($"var l = {READER}.Read{readType}();")
+                    .WriteLine(
+                        $"this.{member.Name} = {READER}.{readMethod}({encodingTypeWithComma}l);");
+
+                  if (!enteredBlock) {
+                    sw.ExitBlock();
+                  }
+                },
+                falseHandler);
             return;
           }
 
           if (stringType.LengthSourceType ==
               StringLengthSourceType.OTHER_MEMBER) {
-            sw.WriteLine(
-                $"this.{member.Name} = {READER}.{readMethod}({encodingTypeWithComma}{stringType.LengthMember.Name});");
+            var lengthName = stringType.LengthMember.Name;
+            HandleAtPosition_(
+                sw,
+                member,
+                $"{lengthName} > 0",
+                _ => {
+                  sw.WriteLine(
+                      $"this.{member.Name} = {READER}.{readMethod}({encodingTypeWithComma}{lengthName});");
+                },
+                falseHandler);
             return;
           }
 
@@ -360,16 +480,15 @@ public class BinarySchemaReaderGenerator {
       sw.WriteLine($"this.{memberName}.Parent = this;");
     }
 
-    HandleMemberEndianness_(
+    HandleMemberEndiannessAndAtPosition_(
         sw,
         member,
-        () => {
+        _ => {
           var isNullable = containerMemberType.TypeInfo.IsNullable;
           var isStruct = containerMemberType.TypeSymbol.IsStruct();
 
-          var qualifiedTypeName =
-              SymbolTypeUtil.GetQualifiedNameFromCurrentSymbol(
-                  sourceSymbol,
+          var qualifiedTypeName
+              = sourceSymbol.GetQualifiedNameFromCurrentSymbol(
                   containerMemberType.TypeSymbol.AsNonNullable());
 
           if (isNullable) {
@@ -386,7 +505,8 @@ public class BinarySchemaReaderGenerator {
                 .ExitBlock();
             }
           }
-        });
+        },
+        () => sw.WriteLine($"this.{member.Name} = default;"));
   }
 
   private static void ReadArray_(
@@ -399,148 +519,176 @@ public class BinarySchemaReaderGenerator {
     // TODO: Not valid for sequences (yet?)
     if (arrayType.LengthSourceType ==
         SequenceLengthSourceType.UNTIL_END_OF_STREAM) {
-      var qualifiedElementName =
-          SymbolTypeUtil.GetQualifiedNameFromCurrentSymbol(
-              sourceSymbol,
-              arrayType.ElementType.TypeSymbol);
+      HandleAtPosition_(
+          sw,
+          member,
+          "null",
+          _ => {
+            var qualifiedElementName
+                = sourceSymbol.GetQualifiedNameFromCurrentSymbol(
+                    arrayType.ElementType.TypeSymbol);
 
-      var memberAccessor = $"this.{member.Name}";
+            var memberAccessor = $"this.{member.Name}";
 
-      var isArray = sequenceType == SequenceType.MUTABLE_ARRAY;
-      {
-        if (isArray &&
-            arrayType.ElementType is IPrimitiveMemberType
-                primitiveElementType &&
-            SizeUtil.TryGetSizeOfType(arrayType.ElementType,
-                                      out var size)) {
-          var remainingLengthAccessor =
-              $"{READER}.Length - {READER}.Position";
-          var readCountAccessor = size == 1
-              ? remainingLengthAccessor
-              : $"({remainingLengthAccessor}) / {size}";
+            var isArray = sequenceType == SequenceType.MUTABLE_ARRAY;
+            {
+              if (isArray &&
+                  arrayType.ElementType is IPrimitiveMemberType
+                      primitiveElementType &&
+                  SizeUtil.TryGetSizeOfType(arrayType.ElementType,
+                                            out var size)) {
+                var remainingLengthAccessor =
+                    $"{READER}.Length - {READER}.Position";
+                var readCountAccessor = size == 1
+                    ? remainingLengthAccessor
+                    : $"({remainingLengthAccessor}) / {size}";
 
-          // Primitives that don't need to be cast are the easiest to read.
-          if (!primitiveElementType.UseAltFormat) {
-            var label =
-                SchemaGeneratorUtil.GetPrimitiveLabel(
-                    primitiveElementType.PrimitiveType);
-            sw.WriteLine(
-                $"{memberAccessor} = {READER}.Read{label}s({readCountAccessor});");
-          } else {
-            sw.WriteLine(
-                  $"{memberAccessor} = new {qualifiedElementName}[{readCountAccessor}];")
-              .EnterBlock(
-                  $"for (var i = 0; i < {memberAccessor}.Length; ++i)")
-              .WriteLine(
-                  $"{memberAccessor}[i] = {GetReadPrimitiveText_(sourceSymbol, primitiveElementType)};")
-              .ExitBlock();
-          }
+                // Primitives that don't need to be cast are the easiest to read.
+                if (!primitiveElementType.UseAltFormat) {
+                  var label =
+                      SchemaGeneratorUtil.GetPrimitiveLabel(
+                          primitiveElementType.PrimitiveType);
+                  sw.WriteLine(
+                      $"{memberAccessor} = {READER}.Read{label}s({readCountAccessor});");
+                } else {
+                  sw.WriteLine(
+                        $"{memberAccessor} = new {qualifiedElementName}[{readCountAccessor}];")
+                    .EnterBlock(
+                        $"for (var i = 0; i < {memberAccessor}.Length; ++i)")
+                    .WriteLine(
+                        $"{memberAccessor}[i] = {GetReadPrimitiveText_(sourceSymbol, primitiveElementType)};")
+                    .ExitBlock();
+                }
 
-          return;
-        }
-      }
-
-      sw.EnterBlock();
-      if (!isArray) {
-        sw.WriteLine($"{memberAccessor}.Clear();");
-      }
-
-      var target = isArray ? "temp" : $"this.{member.Name}";
-
-      if (isArray) {
-        sw.WriteLine(
-            $"var {target} = new List<{qualifiedElementName}>();");
-      }
-
-      {
-        sw.EnterBlock($"while (!{READER}.Eof)");
-        {
-          var elementType = arrayType.ElementType;
-          if (elementType is IGenericMemberType genericElementType) {
-            elementType = genericElementType.ConstraintType;
-          }
-
-          if (elementType is IPrimitiveMemberType primitiveElementType) {
-            sw.WriteLine(
-                $"{target}.Add({GetReadPrimitiveText_(sourceSymbol, primitiveElementType)});");
-          } else if
-              (elementType is IContainerMemberType containerElementType) {
-            sw.WriteLine(
-                $"var e = new {SymbolTypeUtil.GetQualifiedNameFromCurrentSymbol(
-                    sourceSymbol,
-                    arrayType.ElementType.TypeSymbol.AsNonNullable())}();");
-
-            if (containerElementType.IsChild) {
-              sw.WriteLine("e.Parent = this;");
+                return;
+              }
             }
 
-            sw.WriteLine($"e.Read({READER});");
-            sw.WriteLine($"{target}.Add(e);");
-          }
-        }
-        sw.ExitBlock();
-      }
+            sw.EnterBlock();
+            if (!isArray) {
+              sw.WriteLine($"{memberAccessor}.Clear();");
+            }
 
-      if (isArray) {
-        sw.WriteLine($"this.{member.Name} = {target}.ToArray();");
-      }
+            var target = isArray ? "temp" : $"this.{member.Name}";
 
-      sw.ExitBlock();
+            if (isArray) {
+              sw.WriteLine(
+                  $"var {target} = new List<{qualifiedElementName}>();");
+            }
+
+            {
+              sw.EnterBlock($"while (!{READER}.Eof)");
+              {
+                var elementType = arrayType.ElementType;
+                if (elementType is IGenericMemberType genericElementType) {
+                  elementType = genericElementType.ConstraintType;
+                }
+
+                if (elementType is IPrimitiveMemberType primitiveElementType) {
+                  sw.WriteLine(
+                      $"{target}.Add({GetReadPrimitiveText_(sourceSymbol, primitiveElementType)});");
+                } else if
+                    (elementType is IContainerMemberType containerElementType) {
+                  sw.WriteLine(
+                      $"var e = new {sourceSymbol.GetQualifiedNameFromCurrentSymbol(
+                          arrayType.ElementType.TypeSymbol.AsNonNullable())}();");
+
+                  if (containerElementType.IsChild) {
+                    sw.WriteLine("e.Parent = this;");
+                  }
+
+                  sw.WriteLine($"e.Read({READER});");
+                  sw.WriteLine($"{target}.Add(e);");
+                }
+              }
+              sw.ExitBlock();
+            }
+
+            if (isArray) {
+              sw.WriteLine($"this.{member.Name} = {target}.ToArray();");
+            }
+
+            sw.ExitBlock();
+          });
 
       return;
-    } else if (arrayType.LengthSourceType !=
-               SequenceLengthSourceType.READ_ONLY) {
+    }
+
+    var falseHandler = () => ResizeArray_(sw, member, "0");
+
+    var hasConstLength = arrayType.LengthSourceType ==
+                         SequenceLengthSourceType.CONST_LENGTH;
+    if (hasConstLength && arrayType.ConstLength == 0) {
+      falseHandler();
+    } else {
       var isImmediate =
           arrayType.LengthSourceType ==
           SequenceLengthSourceType.IMMEDIATE_VALUE;
-
       var lengthName = arrayType.LengthSourceType switch {
           SequenceLengthSourceType.IMMEDIATE_VALUE => "c",
           SequenceLengthSourceType.OTHER_MEMBER =>
               $"this.{arrayType.LengthMember!.Name}",
           SequenceLengthSourceType.CONST_LENGTH =>
               $"{arrayType.ConstLength}",
+          SequenceLengthSourceType.READ_ONLY =>
+              $"this.{member.Name}.{arrayType.SequenceTypeInfo.LengthName}"
       };
 
-      var castText = "";
-      if ((isImmediate &&
-           !arrayType.ImmediateLengthType.CanBeStoredInAnInt32()) ||
-          (arrayType.LengthSourceType ==
-           SequenceLengthSourceType.OTHER_MEMBER &&
-           !(arrayType.LengthMember.MemberType as IPrimitiveMemberType)!
-            .PrimitiveType.AsIntegerType()
-            .CanBeStoredInAnInt32())) {
-        castText = "(int) ";
-      }
+      HandleAtPosition_(
+          sw,
+          member,
+          !hasConstLength && !isImmediate ? $"{lengthName} > 0" : null,
+          _ => {
+            if (arrayType.LengthSourceType !=
+                SequenceLengthSourceType.READ_ONLY) {
+              var castText = "";
+              if ((isImmediate &&
+                   !arrayType.ImmediateLengthType.CanBeStoredInAnInt32()) ||
+                  (arrayType.LengthSourceType ==
+                   SequenceLengthSourceType.OTHER_MEMBER &&
+                   !(arrayType.LengthMember.MemberType as IPrimitiveMemberType)!
+                    .PrimitiveType.AsIntegerType()
+                    .CanBeStoredInAnInt32())) {
+                castText = "(int) ";
+              }
 
-      if (isImmediate) {
-        var readType = SchemaGeneratorUtil.GetIntLabel(
-            arrayType.ImmediateLengthType);
-        sw.EnterBlock()
-          .WriteLine($"var {lengthName} = {READER}.Read{readType}();");
-      }
+              if (isImmediate) {
+                var readType = SchemaGeneratorUtil.GetIntLabel(
+                    arrayType.ImmediateLengthType);
+                sw.EnterBlock()
+                  .WriteLine($"var {lengthName} = {READER}.Read{readType}();");
+              }
 
-      var inPlace =
-          arrayType.SequenceTypeInfo.SequenceType ==
-          SequenceType.MUTABLE_LIST ||
-          arrayType.SequenceTypeInfo is {
-              SequenceType: SequenceType.MUTABLE_SEQUENCE,
-              IsLengthConst: false
-          };
-      if (inPlace) {
-        sw.WriteLine(
-            $"SequencesUtil.ResizeSequenceInPlace(this.{member.Name}, {castText}{lengthName});");
-      } else {
-        sw.WriteLine(
-            $"this.{member.Name} = SequencesUtil.CloneAndResizeSequence(this.{member.Name}, {castText}{lengthName});");
-      }
+              ResizeArray_(sw, member, $"{castText}{lengthName}");
 
-      if (isImmediate) {
-        sw.ExitBlock();
-      }
+              if (isImmediate) {
+                sw.ExitBlock();
+              }
+            }
+
+            BinarySchemaReaderGenerator.ReadIntoArray_(sw, sourceSymbol, member);
+          },
+          falseHandler);
     }
+  }
 
-    BinarySchemaReaderGenerator.ReadIntoArray_(sw, sourceSymbol, member);
+  private static void ResizeArray_(
+      ISourceWriter sw,
+      ISchemaValueMember member,
+      string lengthText) {
+    var sequenceType =
+        Asserts.CastNonnull(member.MemberType as ISequenceMemberType);
+    var inPlace =
+        sequenceType.SequenceTypeInfo.SequenceType ==
+        SequenceType.MUTABLE_LIST ||
+        sequenceType.SequenceTypeInfo is {
+            SequenceType: SequenceType.MUTABLE_SEQUENCE,
+            IsLengthConst: false
+        };
+    sw.WriteLine(
+        inPlace
+            ? $"SequencesUtil.ResizeSequenceInPlace(this.{member.Name}, {lengthText});"
+            : $"this.{member.Name} = SequencesUtil.CloneAndResizeSequence(this.{member.Name}, {lengthText});");
   }
 
   private static void ReadIntoArray_(
