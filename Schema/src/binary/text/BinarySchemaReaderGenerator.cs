@@ -522,7 +522,6 @@ public class BinarySchemaReaderGenerator {
       HandleAtPosition_(
           sw,
           member,
-          "null",
           _ => {
             var qualifiedElementName
                 = sourceSymbol.GetQualifiedNameFromCurrentSymbol(

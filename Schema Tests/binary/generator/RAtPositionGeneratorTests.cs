@@ -255,6 +255,54 @@ namespace foo.bar {
   }
 
   [Test]
+  public void TestArrayUntilEndOfStreamAtOffset() {
+    BinarySchemaTestUtil.AssertGenerated(@"
+using schema.binary;
+using schema.binary.attributes;
+
+namespace foo.bar {
+  [BinarySchema]
+  public partial class OffsetWrapper : IBinaryConvertible {
+    public uint Offset { get; set; }
+
+    [RAtPosition(nameof(Offset))]
+    [RSequenceUntilEndOfStream]
+    public byte[] EndOfStreamArray { get; set; }
+  }
+}",
+                                         @"using System;
+using System.Collections.Generic;
+using schema.binary;
+
+namespace foo.bar {
+  public partial class OffsetWrapper {
+    public void Read(IBinaryReader br) {
+      this.Offset = br.ReadUInt32();
+      {
+        var tempLocation = br.Position;
+        br.Position = this.Offset;
+        this.EndOfStreamArray = br.ReadBytes(br.Length - br.Position);
+        br.Position = tempLocation;
+      }
+    }
+  }
+}
+",
+                                         @"using System;
+using schema.binary;
+
+namespace foo.bar {
+  public partial class OffsetWrapper {
+    public void Write(IBinaryWriter bw) {
+      bw.WriteUInt32(this.Offset);
+      bw.WriteBytes(this.EndOfStreamArray);
+    }
+  }
+}
+");
+  }
+
+  [Test]
   public void TestOffsetFromParent() {
     BinarySchemaTestUtil.AssertGenerated(@"
 using schema.binary;
