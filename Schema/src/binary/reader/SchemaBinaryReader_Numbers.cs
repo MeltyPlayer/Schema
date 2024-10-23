@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
+using CommunityToolkit.HighPerformance;
+
 using schema.util.streams;
 
 
@@ -48,8 +50,7 @@ public sealed partial class SchemaBinaryReader {
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public void ReadSBytes(Span<sbyte> dst)
-    => this.bufferedStream_.FillBuffer(dst);
+  public void ReadSBytes(Span<sbyte> dst) => this.ReadBytes(dst.AsBytes());
 
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
