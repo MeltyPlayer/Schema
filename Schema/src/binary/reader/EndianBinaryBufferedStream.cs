@@ -144,6 +144,11 @@ public class EndianBinaryBufferedStream : IEndiannessStack {
     this.reverserImpl_.ReverseElements(buffer, stride);
   }
 
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public byte ReadByte() {
+    this.AssertNotEof();
+    return this.BaseStream.ReadByte();
+  }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Read<T>() where T : unmanaged {

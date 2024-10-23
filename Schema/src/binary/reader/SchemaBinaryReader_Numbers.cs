@@ -19,7 +19,7 @@ public sealed partial class SchemaBinaryReader {
   byte IReadableStream.ReadByte() => this.ReadByte();
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public byte ReadByte() => this.bufferedStream_.Read<byte>();
+  public byte ReadByte() => this.bufferedStream_.ReadByte();
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public byte[] ReadBytes(long count) {
@@ -38,7 +38,7 @@ public sealed partial class SchemaBinaryReader {
     => SchemaBinaryReader.Assert_(expectedValue, this.ReadSByte());
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public sbyte ReadSByte() => this.bufferedStream_.Read<sbyte>();
+  public sbyte ReadSByte() => (sbyte) this.ReadByte();
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public sbyte[] ReadSBytes(long count) {
