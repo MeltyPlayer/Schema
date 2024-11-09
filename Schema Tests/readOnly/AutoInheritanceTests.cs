@@ -23,7 +23,7 @@ internal class AutoInheritanceTests {
             public partial interface IGenericWrapper<T> : IReadOnlyGenericWrapper<T>;
             
             #nullable enable
-            public interface IReadOnlyGenericWrapper<out T> : {{knownBase}};
+            public partial interface IReadOnlyGenericWrapper<out T> : {{knownBase}};
           }
 
           """);
@@ -50,7 +50,7 @@ internal class AutoInheritanceTests {
           public partial class AlreadyConstWrapper<T> : IReadOnlyAlreadyConstWrapper<T>;
           
           #nullable enable
-          public interface IReadOnlyAlreadyConstWrapper<out T> : IAlreadyConst where T : notnull;
+          public partial interface IReadOnlyAlreadyConstWrapper<out T> : IAlreadyConst where T : notnull;
         }
 
         """);
@@ -77,7 +77,7 @@ internal class AutoInheritanceTests {
           public partial class AlreadyConstWrapper : IReadOnlyAlreadyConstWrapper;
           
           #nullable enable
-          public interface IReadOnlyAlreadyConstWrapper : IAlreadyConst;
+          public partial interface IReadOnlyAlreadyConstWrapper : IAlreadyConst;
         }
 
         """);
@@ -111,7 +111,7 @@ internal class AutoInheritanceTests {
             public partial class AlreadyConstWrapper : IReadOnlyAlreadyConstWrapper;
             
             #nullable enable
-            public interface IReadOnlyAlreadyConstWrapper : foo.bar.place1.OtherParent.IAlreadyConst;
+            public partial interface IReadOnlyAlreadyConstWrapper : foo.bar.place1.OtherParent.IAlreadyConst;
           }
         }
 
@@ -138,7 +138,7 @@ internal class AutoInheritanceTests {
           public partial interface IBase : IReadOnlyBase;
           
           #nullable enable
-          public interface IReadOnlyBase;
+          public partial interface IReadOnlyBase;
         }
 
         """,
@@ -147,7 +147,7 @@ internal class AutoInheritanceTests {
           public partial interface IChild : IReadOnlyChild;
           
           #nullable enable
-          public interface IReadOnlyChild : IReadOnlyBase;
+          public partial interface IReadOnlyChild : IReadOnlyBase;
         }
 
         """);
@@ -186,7 +186,7 @@ internal class AutoInheritanceTests {
             }
             
             #nullable enable
-            public interface IReadOnlyBase {
+            public partial interface IReadOnlyBase {
               public bool Foo { get; }
             }
           }
@@ -201,7 +201,7 @@ internal class AutoInheritanceTests {
             }
             
             #nullable enable
-            public interface IReadOnlyChild : other.OtherParent.IReadOnlyBase {
+            public partial interface IReadOnlyChild : other.OtherParent.IReadOnlyBase {
               public bool Value { get; }
             }
           }
@@ -233,7 +233,7 @@ internal class AutoInheritanceTests {
           public partial interface IBase1<T> : IReadOnlyBase1<T>;
           
           #nullable enable
-          public interface IReadOnlyBase1<out T>;
+          public partial interface IReadOnlyBase1<out T>;
         }
 
         """,
@@ -242,7 +242,7 @@ internal class AutoInheritanceTests {
           public partial interface IBase2<T> : IReadOnlyBase2<T>;
           
           #nullable enable
-          public interface IReadOnlyBase2<out T>;
+          public partial interface IReadOnlyBase2<out T>;
         }
 
         """,
@@ -251,7 +251,7 @@ internal class AutoInheritanceTests {
           public partial interface IChild<T1, T2> : IReadOnlyChild<T1, T2>;
           
           #nullable enable
-          public interface IReadOnlyChild<T1, T2> : IReadOnlyBase1<T1>, IReadOnlyBase2<T2>;
+          public partial interface IReadOnlyChild<T1, T2> : IReadOnlyBase1<T1>, IReadOnlyBase2<T2>;
         }
 
         """);

@@ -27,7 +27,7 @@ internal class NullableTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public int? NullablePrimitive { get; }
           }
         }
@@ -56,7 +56,7 @@ internal class NullableTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper<out T> {
+          public partial interface IReadOnlyWrapper<out T> {
             public T? NullableGeneric { get; }
           }
         }
@@ -86,7 +86,7 @@ internal class NullableTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper<T> {
+          public partial interface IReadOnlyWrapper<T> {
             public T? Method(T? t);
           }
         }

@@ -41,7 +41,7 @@ internal class BuiltInTypeTests {
             }
             
             #nullable enable
-            public interface IReadOnlyWrapper {
+            public partial interface IReadOnlyWrapper {
               public {{readOnly}} Property { get; }
               public {{readOnly}} Convert({{mutable}} value);
             }
@@ -74,7 +74,7 @@ internal class BuiltInTypeTests {
             }
             
             #nullable enable
-            public interface IReadOnlyWrapper {
+            public partial interface IReadOnlyWrapper {
               public {{mutable}} Property { get; }
             }
           }
@@ -107,7 +107,7 @@ internal class BuiltInTypeTests {
             }
             
             #nullable enable
-            public interface IReadOnlyWrapper {
+            public partial interface IReadOnlyWrapper {
               public {{mutable}} Convert({{mutable}} value);
             }
           }

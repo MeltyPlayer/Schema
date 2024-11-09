@@ -30,7 +30,7 @@ internal class DefaultValueTests {
             }
             
             #nullable enable
-            public interface IReadOnlyWrapper {
+            public partial interface IReadOnlyWrapper {
               public void Foo(bool? value = {{boolValue}});
             }
           }
@@ -63,7 +63,7 @@ internal class DefaultValueTests {
             }
             
             #nullable enable
-            public interface IReadOnlyWrapper {
+            public partial interface IReadOnlyWrapper {
               public void Foo(int? value = {{intValue}});
             }
           }
@@ -102,7 +102,7 @@ internal class DefaultValueTests {
             }
             
             #nullable enable
-            public interface IReadOnlyWrapper {
+            public partial interface IReadOnlyWrapper {
               public void Foo(other.SomeType? value = {{readonlyValue}});
             }
           }

@@ -32,7 +32,7 @@ internal class BasicReadOnlyGeneratorTests {
           public partial class Empty : IReadOnlyEmpty;
           
           #nullable enable
-          public interface IReadOnlyEmpty;
+          public partial interface IReadOnlyEmpty;
         }
 
         """);
@@ -71,7 +71,7 @@ internal class BasicReadOnlyGeneratorTests {
             public {{containerPrefix}}partial {{containerSuffix}} {{containerName}} : {{readOnlyName}};
             
             #nullable enable
-            public interface {{readOnlyName}};
+            public partial interface {{readOnlyName}};
           }
 
           """);
@@ -98,7 +98,7 @@ internal class BasicReadOnlyGeneratorTests {
           }
           
           #nullable enable
-          public interface IReadOnlySimpleGenerics<T1, in T2> {
+          public partial interface IReadOnlySimpleGenerics<T1, in T2> {
             public T1 Foo<T3, T4>(T1 t1, T2 t2, T3 t3, T4 t4);
           }
         }
@@ -130,7 +130,7 @@ internal class BasicReadOnlyGeneratorTests {
           }
           
           #nullable enable
-          public interface IReadOnlyvoid<out @double> where @double : struct {
+          public partial interface IReadOnlyvoid<out @double> where @double : struct {
             public @void @int<@short>(@void @bool) where @short : @void;
             public @void @float { get; }
           }

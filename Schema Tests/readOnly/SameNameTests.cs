@@ -25,7 +25,7 @@ internal class SameNameTests {
           public partial interface ISameName : IReadOnlySameName;
           
           #nullable enable
-          public interface IReadOnlySameName;
+          public partial interface IReadOnlySameName;
         }
 
         """,
@@ -34,7 +34,7 @@ internal class SameNameTests {
           public partial interface ISameName<T> : IReadOnlySameName<T>;
           
           #nullable enable
-          public interface IReadOnlySameName<out T> : IReadOnlySameName;
+          public partial interface IReadOnlySameName<out T> : IReadOnlySameName;
         }
 
         """);

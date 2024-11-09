@@ -125,7 +125,7 @@ public class ReadOnlyTypeGenerator
             sw.Write(
                 SymbolTypeUtil.AccessibilityToModifier(
                     typeSymbol.DeclaredAccessibility));
-            sw.Write(" interface ");
+            sw.Write(" partial interface ");
 
             var blockPrefix = interfaceName;
             blockPrefix

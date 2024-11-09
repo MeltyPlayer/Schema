@@ -38,7 +38,7 @@ internal class MemberTests {
             }
             
             #nullable enable
-            public interface IReadOnlyWrapper {
+            public partial interface IReadOnlyWrapper {
               public {{primitiveType}} Value { get; }
             }
           }
@@ -68,7 +68,7 @@ internal class MemberTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public System.Collections.Generic.IEnumerable<bool> Value { get; }
           }
         }
@@ -98,7 +98,7 @@ internal class MemberTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<bool>> Value { get; }
           }
         }
@@ -128,7 +128,7 @@ internal class MemberTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public bool this[int index] { get; }
           }
         }
@@ -158,7 +158,7 @@ internal class MemberTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public bool this[int x, int y] { get; }
           }
         }
@@ -191,7 +191,7 @@ internal class MemberTests {
             }
             
             #nullable enable
-            public interface IReadOnlyWrapper {
+            public partial interface IReadOnlyWrapper {
               public void Foo({{paramType}} int bar);
             }
           }
@@ -221,7 +221,7 @@ internal class MemberTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public void Foo(params int[] bar);
           }
         }
@@ -254,7 +254,7 @@ internal class MemberTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public int? Foo(int? bar);
             public int? Bar { get; }
           }
@@ -285,7 +285,7 @@ internal class MemberTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public int Foo(int a = 123, char b = '0', string c = "hello", int? d = null);
           }
         }
@@ -315,7 +315,7 @@ internal class MemberTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public (bool, int) Tuple { get; }
           }
         }
@@ -345,7 +345,7 @@ internal class MemberTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public (bool a, int b) Tuple { get; }
           }
         }

@@ -31,7 +31,7 @@ internal class ReadOnlyReferenceTests {
           public partial interface IOther : IReadOnlyOther;
           
           #nullable enable
-          public interface IReadOnlyOther;
+          public partial interface IReadOnlyOther;
         }
 
         """,
@@ -42,7 +42,7 @@ internal class ReadOnlyReferenceTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public other.IReadOnlyOther Field { get; }
           }
         }
@@ -75,7 +75,7 @@ internal class ReadOnlyReferenceTests {
           public partial interface IOther : IReadOnlyOther;
           
           #nullable enable
-          public interface IReadOnlyOther;
+          public partial interface IReadOnlyOther;
         }
 
         """,
@@ -86,7 +86,7 @@ internal class ReadOnlyReferenceTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public other.IReadOnlyOther? Field { get; }
           }
         }
@@ -120,7 +120,7 @@ internal class ReadOnlyReferenceTests {
           public partial interface IOther : IReadOnlyOther;
           
           #nullable enable
-          public interface IReadOnlyOther;
+          public partial interface IReadOnlyOther;
         }
 
         """,
@@ -131,7 +131,7 @@ internal class ReadOnlyReferenceTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public System.Collections.Generic.IEnumerable<other.IReadOnlyOther> Field { get; }
           }
         }
@@ -164,7 +164,7 @@ internal class ReadOnlyReferenceTests {
           public partial interface IOther : IReadOnlyOther;
           
           #nullable enable
-          public interface IReadOnlyOther;
+          public partial interface IReadOnlyOther;
         }
 
         """,
@@ -175,7 +175,7 @@ internal class ReadOnlyReferenceTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public (other.IReadOnlyOther, int) Field { get; }
           }
         }
@@ -206,7 +206,7 @@ internal class ReadOnlyReferenceTests {
           public partial interface IOther : IReadOnlyOther;
           
           #nullable enable
-          public interface IReadOnlyOther;
+          public partial interface IReadOnlyOther;
         }
 
         """,
@@ -215,7 +215,7 @@ internal class ReadOnlyReferenceTests {
           public partial interface IWrapper<T> : IReadOnlyWrapper<T>;
           
           #nullable enable
-          public interface IReadOnlyWrapper<out T> where T : other.IReadOnlyOther;
+          public partial interface IReadOnlyWrapper<out T> where T : other.IReadOnlyOther;
         }
 
         """);
@@ -247,7 +247,7 @@ internal class ReadOnlyReferenceTests {
           public partial interface IOther : IReadOnlyOther;
           
           #nullable enable
-          public interface IReadOnlyOther;
+          public partial interface IReadOnlyOther;
         }
 
         """,
@@ -258,7 +258,7 @@ internal class ReadOnlyReferenceTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public void Foo<T>() where T : other.IReadOnlyOther;
           }
         }
@@ -292,7 +292,7 @@ internal class ReadOnlyReferenceTests {
             public partial interface IOther : IReadOnlyOther;
             
             #nullable enable
-            public interface IReadOnlyOther;
+            public partial interface IReadOnlyOther;
           }
         }
 
@@ -304,7 +304,7 @@ internal class ReadOnlyReferenceTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public Parent.IReadOnlyOther Field { get; }
           }
         }
@@ -343,7 +343,7 @@ internal class ReadOnlyReferenceTests {
           public partial interface IOther : IReadOnlyOther;
           
           #nullable enable
-          public interface IReadOnlyOther;
+          public partial interface IReadOnlyOther;
         }
 
         """,
@@ -352,7 +352,7 @@ internal class ReadOnlyReferenceTests {
           public partial interface IOther<T> : IReadOnlyOther<T>;
           
           #nullable enable
-          public interface IReadOnlyOther<out T> : foo.bar.wrong.IReadOnlyOther;
+          public partial interface IReadOnlyOther<out T> : foo.bar.wrong.IReadOnlyOther;
         }
 
         """,
@@ -363,7 +363,7 @@ internal class ReadOnlyReferenceTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper<T> {
+          public partial interface IReadOnlyWrapper<T> {
             public correct.IReadOnlyOther<T> Field { get; }
           }
         }
@@ -401,7 +401,7 @@ internal class ReadOnlyReferenceTests {
           public partial interface IOther : IReadOnlyOther;
           
           #nullable enable
-          public interface IReadOnlyOther;
+          public partial interface IReadOnlyOther;
         }
 
         """,
@@ -412,7 +412,7 @@ internal class ReadOnlyReferenceTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public correct.IReadOnlyOther Field { get; }
           }
         }

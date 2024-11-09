@@ -23,7 +23,7 @@ internal class ReadOnlySubstitutionTests {
           public partial interface IWrapper<T> : IReadOnlyWrapper<T>;
           
           #nullable enable
-          public interface IReadOnlyWrapper<out T> where T : schema.readOnly.IReadOnlyValue;
+          public partial interface IReadOnlyWrapper<out T> where T : schema.readOnly.IReadOnlyValue;
         }
 
         """);
@@ -46,7 +46,7 @@ internal class ReadOnlySubstitutionTests {
           public partial interface IWrapper<T> : IReadOnlyWrapper<T>;
           
           #nullable enable
-          public interface IReadOnlyWrapper<out T> where T : schema.readOnly.IValue;
+          public partial interface IReadOnlyWrapper<out T> where T : schema.readOnly.IValue;
         }
 
         """);
@@ -72,7 +72,7 @@ internal class ReadOnlySubstitutionTests {
           public partial interface IBase<T1, T2> : IReadOnlyBase<T1, T2>;
           
           #nullable enable
-          public interface IReadOnlyBase<out T1, out T2> where T1 : schema.readOnly.IValue where T2 : schema.readOnly.IReadOnlyValue;
+          public partial interface IReadOnlyBase<out T1, out T2> where T1 : schema.readOnly.IValue where T2 : schema.readOnly.IReadOnlyValue;
         }
 
         """,
@@ -81,7 +81,7 @@ internal class ReadOnlySubstitutionTests {
           public partial interface IChild : IReadOnlyChild;
           
           #nullable enable
-          public interface IReadOnlyChild : IReadOnlyBase<schema.readOnly.IValue, schema.readOnly.IReadOnlyValue>;
+          public partial interface IReadOnlyChild : IReadOnlyBase<schema.readOnly.IValue, schema.readOnly.IReadOnlyValue>;
         }
 
         """);
@@ -109,7 +109,7 @@ internal class ReadOnlySubstitutionTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public void Foo<T>() where T : schema.readOnly.IReadOnlyValue;
           }
         }
@@ -139,7 +139,7 @@ internal class ReadOnlySubstitutionTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public void Foo<T>() where T : schema.readOnly.IValue;
           }
         }
@@ -169,7 +169,7 @@ internal class ReadOnlySubstitutionTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public schema.readOnly.IReadOnlyValue Foo();
           }
         }
@@ -199,7 +199,7 @@ internal class ReadOnlySubstitutionTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public schema.readOnly.IValue Foo();
           }
         }
@@ -229,7 +229,7 @@ internal class ReadOnlySubstitutionTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public void Foo(schema.readOnly.IValue value);
           }
         }
@@ -259,7 +259,7 @@ internal class ReadOnlySubstitutionTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public void Foo(schema.readOnly.IValue value);
           }
         }
@@ -289,7 +289,7 @@ internal class ReadOnlySubstitutionTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public int this[schema.readOnly.IValue value] { get; }
           }
         }
@@ -319,7 +319,7 @@ internal class ReadOnlySubstitutionTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public int this[schema.readOnly.IValue value] { get; }
           }
         }
@@ -348,7 +348,7 @@ internal class ReadOnlySubstitutionTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public schema.readOnly.IReadOnlyValue Foo { get; }
           }
         }
@@ -377,7 +377,7 @@ internal class ReadOnlySubstitutionTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public schema.readOnly.IValue Foo { get; }
           }
         }
@@ -403,7 +403,7 @@ internal class ReadOnlySubstitutionTests {
           public partial interface IWrapper : IReadOnlyWrapper;
           
           #nullable enable
-          public interface IReadOnlyWrapper : System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue>;
+          public partial interface IReadOnlyWrapper : System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue>;
         }
 
         """);
@@ -432,7 +432,7 @@ internal class ReadOnlySubstitutionTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue> Foo();
           }
         }
@@ -463,7 +463,7 @@ internal class ReadOnlySubstitutionTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue> Foo { get; }
           }
         }
@@ -494,7 +494,7 @@ internal class ReadOnlySubstitutionTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public System.Collections.Generic.IEnumerable<schema.readOnly.IReadOnlyValue> this[int foo] { get; }
           }
         }
@@ -525,7 +525,7 @@ internal class ReadOnlySubstitutionTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public void this[System.Collections.Generic.IEnumerable<schema.readOnly.IValue> foo] { get; }
           }
         }
@@ -556,7 +556,7 @@ internal class ReadOnlySubstitutionTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper {
+          public partial interface IReadOnlyWrapper {
             public void Foo(System.Collections.Generic.IEnumerable<schema.readOnly.IValue> foo);
           }
         }

@@ -24,7 +24,7 @@ internal class VarianceTests {
             public partial interface IWrapper<{{variance}} T> : IReadOnlyWrapper<T>;
             
             #nullable enable
-            public interface IReadOnlyWrapper<{{variance}} T>;
+            public partial interface IReadOnlyWrapper<{{variance}} T>;
           }
 
           """);
@@ -69,7 +69,7 @@ internal class VarianceTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper<out T> : IBase<T> {
+          public partial interface IReadOnlyWrapper<out T> : IBase<T> {
             public T Field { get; }
             public System.Collections.Generic.IEnumerable<T> Sequence { get; }
             public System.Collections.Generic.IEnumerable<T> this[int foo] { get; }
@@ -126,7 +126,7 @@ internal class VarianceTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper<in T> : IBase<T> {
+          public partial interface IReadOnlyWrapper<in T> : IBase<T> {
             public void SetField(T foo);
             public void SetSequence(IBase<T> foo);
           }
@@ -157,7 +157,7 @@ internal class VarianceTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper<T> {
+          public partial interface IReadOnlyWrapper<T> {
             public T Method(T value);
           }
         }
@@ -191,7 +191,7 @@ internal class VarianceTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper<T> {
+          public partial interface IReadOnlyWrapper<T> {
             public void Method(IValue<T> foo);
           }
         }
@@ -224,7 +224,7 @@ internal class VarianceTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper<T> {
+          public partial interface IReadOnlyWrapper<T> {
             public IValue<T> Property { get; }
           }
         }
@@ -255,7 +255,7 @@ internal class VarianceTests {
           }
           
           #nullable enable
-          public interface IReadOnlyWrapper<T> {
+          public partial interface IReadOnlyWrapper<T> {
             public void Method(System.Collections.Generic.ISet<T> foo);
           }
         }
@@ -283,7 +283,7 @@ internal class VarianceTests {
           public partial interface ISubTypeDictionary<T1, T2> : IReadOnlySubTypeDictionary<T1, T2>;
           
           #nullable enable
-          public interface IReadOnlySubTypeDictionary<T1, in T2> : IFinCollection<T2> where T2 : T1;
+          public partial interface IReadOnlySubTypeDictionary<T1, in T2> : IFinCollection<T2> where T2 : T1;
         }
 
         """);
@@ -314,7 +314,7 @@ internal class VarianceTests {
           }
           
           #nullable enable
-          public interface IReadOnlySubTypeDictionary<TKey, TValue> : IFinCollection<(TKey Key, TValue Value)> {
+          public partial interface IReadOnlySubTypeDictionary<TKey, TValue> : IFinCollection<(TKey Key, TValue Value)> {
             public TValueSub Get<TValueSub>(TKey key) where TValueSub : TValue;
           }
         }

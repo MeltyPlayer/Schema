@@ -34,7 +34,7 @@ internal class ConstraintTests {
             }
             
             #nullable enable
-            public interface IReadOnlyEachConstraint<T> where T : {{constraint}} {
+            public partial interface IReadOnlyEachConstraint<T> where T : {{constraint}} {
               public T Foo<S>(T t, S s) where S : {{constraint}};
             }
           }
@@ -69,7 +69,7 @@ internal class ConstraintTests {
           }
           
           #nullable enable
-          public interface IReadOnlyCircular<TMutable, TReadOnly, TImpl> where TMutable : ICircular<TMutable, TReadOnly, TImpl>, TReadOnly where TReadOnly : IReadOnlyCircular<TMutable, TReadOnly, TImpl> {
+          public partial interface IReadOnlyCircular<TMutable, TReadOnly, TImpl> where TMutable : ICircular<TMutable, TReadOnly, TImpl>, TReadOnly where TReadOnly : IReadOnlyCircular<TMutable, TReadOnly, TImpl> {
             public TMutable Foo(TReadOnly other);
             public TMutable Foo(in TImpl other);
           }
@@ -102,7 +102,7 @@ internal class ConstraintTests {
           }
           
           #nullable enable
-          public interface IReadOnlySubConstraint<T1, out T2> where T2 : T1 {
+          public partial interface IReadOnlySubConstraint<T1, out T2> where T2 : T1 {
             public T1 Foo<S>(S s) where S : T1;
             public T2 Bar { get; }
           }
@@ -135,7 +135,7 @@ internal class ConstraintTests {
           }
           
           #nullable enable
-          public interface IReadOnlySimpleAttributes<T1, T2> where T1 : notnull, struct where T2 : unmanaged {
+          public partial interface IReadOnlySimpleAttributes<T1, T2> where T1 : notnull, struct where T2 : unmanaged {
             public T1 Foo<T3, T4>(T1 t1, T2 t2, T3 t3, T4 t4) where T3 : class where T4 : class?;
             public T2 Bar { get; }
           }
