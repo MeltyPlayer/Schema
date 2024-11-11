@@ -9,14 +9,15 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 
 using schema.binary;
+using schema.readOnly;
 using schema.util.asserts;
 
 #pragma warning disable CS8604
 
 
-namespace schema.readOnly;
+namespace schema.autoInterface;
 
-internal static class ReadOnlyGeneratorTestUtil {
+internal static class InterfaceGeneratorTestUtil {
   public static void AssertGenerated(string src, params string[] expected) {
     var syntaxTree = CSharpSyntaxTree.ParseText(src);
     var compilation = BinarySchemaTestUtil.Compilation.Clone()
@@ -28,7 +29,7 @@ internal static class ReadOnlyGeneratorTestUtil {
                  .GetRoot()
                  .DescendantTokens()
                  .Where(t => t is {
-                     Text: "GenerateReadOnly",
+                     Text: "GenerateInterface",
                      Parent.Parent: AttributeSyntax
                  })
                  .Select(t => t.Parent?.Parent as AttributeSyntax)
@@ -49,7 +50,7 @@ internal static class ReadOnlyGeneratorTestUtil {
                    return (namedTypeSymbol, declarationSyntax);
                  })
                  .Select(symbolAndSyntax
-                             => new ReadOnlyTypeGenerator()
+                             => new AutoInterfaceTypeGenerator()
                                 .GenerateSourceForNamedType(
                                     symbolAndSyntax.namedTypeSymbol,
                                     semanticModel,
