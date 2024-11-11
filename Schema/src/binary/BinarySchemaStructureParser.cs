@@ -191,6 +191,10 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
         continue;
       }
 
+      if (memberSymbol is IPropertySymbol {IsIndexer: true}) {
+        continue;
+      }
+
       var memberBetterSymbol = containerBetterSymbol.GetChild(memberSymbol);
 
       {
