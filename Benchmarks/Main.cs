@@ -7,7 +7,7 @@ namespace benchmarks;
 
 public class Program {
   public static void Main(string[] args) {
-    var summary = BenchmarkRunner.Run<ReadingValues>(
+    var summary = BenchmarkRunner.Run<EndiannessComparison>(
         ManualConfig
             .Create(DefaultConfig.Instance)
             .AddDiagnoser(
