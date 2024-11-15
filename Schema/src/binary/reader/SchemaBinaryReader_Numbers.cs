@@ -32,7 +32,7 @@ public sealed partial class SchemaBinaryReader {
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public void ReadBytes(Span<byte> dst)
-    => this.bufferedStream_.BaseStream.TryToReadIntoBuffer(dst);
+    => this.bufferedStream_.BaseStream.ReadIntoBuffer(dst);
 
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -24,6 +24,7 @@ public interface ISeekableStream : ISizedStream {
 
 public interface IReadableStream : IDisposable {
   byte ReadByte();
+  void ReadIntoBuffer(Span<byte> dst);
   int TryToReadIntoBuffer(Span<byte> dst);
 }
 

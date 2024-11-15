@@ -11,7 +11,7 @@ public static class StreamExtensions {
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static byte[] ReadAllBytes(this ISizedReadableStream stream) {
     var bytes = new byte[stream.Length - stream.Position];
-    stream.TryToReadIntoBuffer(bytes);
+    stream.ReadIntoBuffer(bytes);
     return bytes;
   }
 

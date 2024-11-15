@@ -75,6 +75,11 @@ public sealed partial class SchemaBinaryReader : IBinaryReader {
   private void FillBuffer_(long count, int? optStride = null)
     => this.bufferedStream_.FillBuffer(count, optStride);
 
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public void ReadIntoBuffer(Span<byte> dst)
+    => this.BaseStream_.ReadIntoBuffer(dst);
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public int TryToReadIntoBuffer(Span<byte> dst)
     => this.BaseStream_.TryToReadIntoBuffer(dst);
 }

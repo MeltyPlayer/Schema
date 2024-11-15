@@ -4,6 +4,8 @@ using System.Runtime.CompilerServices;
 
 using CommunityToolkit.HighPerformance;
 
+using schema.util.asserts;
+
 
 namespace schema.util.streams;
 
@@ -37,7 +39,15 @@ public class ReadableStream : ISeekableReadableStream {
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public byte ReadByte() => (byte) this.Impl.ReadByte();
+  public byte ReadByte() {
+    var value = this.Impl.ReadByte();
+    Asserts.False(value == -1);
+    return (byte) value;
+  }
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public void ReadIntoBuffer(Span<byte> dst)
+    => Asserts.Equal(dst.Length, this.TryToReadIntoBuffer(dst));
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public int TryToReadIntoBuffer(Span<byte> dst) => this.Impl.Read(dst);

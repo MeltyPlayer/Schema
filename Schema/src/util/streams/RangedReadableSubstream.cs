@@ -53,6 +53,10 @@ public class RangedReadableSubstream : ISeekableReadableStream {
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public void ReadIntoBuffer(Span<byte> dst)
+    => Asserts.Equal(dst.Length, this.TryToReadIntoBuffer(dst));
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public int TryToReadIntoBuffer(Span<byte> dst) {
     var startOffset = this.Position;
     Asserts.True(this.offset_ <= startOffset,

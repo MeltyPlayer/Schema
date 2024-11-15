@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 using CommunityToolkit.HighPerformance;
 
 using schema.binary;
+using schema.util.asserts;
 using schema.util.streams;
 
 
@@ -38,7 +40,18 @@ public class SchemaMemoryStream(MemoryStream impl)
 
   public void Dispose() => impl.Dispose();
 
-  public byte ReadByte() => (byte) impl.ReadByte();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public byte ReadByte() {
+    var value = impl.ReadByte();
+    Asserts.False(value == -1);
+    return (byte) value;
+  }
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public void ReadIntoBuffer(Span<byte> dst)
+    => Asserts.Equal(dst.Length, this.TryToReadIntoBuffer(dst));
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public int TryToReadIntoBuffer(Span<byte> dst) => impl.Read(dst);
 
   public long Position {
