@@ -34,6 +34,8 @@ public interface IBinaryReader
                  int len,
                  Func<IBinaryReader, T> subread);
 
+  void FillBuffer(Span<byte> data, int stride);
+
   new byte ReadByte();
 
   byte[] ReadBytes(long count);
