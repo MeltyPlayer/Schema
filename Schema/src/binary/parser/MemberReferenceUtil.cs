@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Numerics;
 
 using Microsoft.CodeAnalysis;
 
@@ -60,6 +61,12 @@ internal static class MemberReferenceUtil {
         };
       }
       case IContainerTypeInfo containerTypeInfo: {
+        if (IsKnownStruct(containerTypeInfo.TypeSymbol, out var knownStruct)) {
+          return new BinarySchemaContainerParser.KnownStructMemberType {
+              ContainerTypeInfo = containerTypeInfo, KnownStruct = knownStruct
+          };
+        }
+
         return new BinarySchemaContainerParser.ContainerMemberType {
             ContainerTypeInfo = containerTypeInfo,
         };
@@ -128,4 +135,36 @@ internal static class MemberReferenceUtil {
         MemberType = MemberReferenceUtil.WrapTypeInfoWithMemberType(
             memberReference.MemberTypeInfo),
     };
+
+  public static bool IsKnownStruct(ITypeSymbol typeSymbol,
+                                   out KnownStruct knownStruct) {
+    if (typeSymbol.IsType<Vector2>()) {
+      knownStruct = KnownStruct.VECTOR2;
+      return true;
+    }
+
+    if (typeSymbol.IsType<Vector3>()) {
+      knownStruct = KnownStruct.VECTOR3;
+      return true;
+    }
+
+    if (typeSymbol.IsType<Vector4>()) {
+      knownStruct = KnownStruct.VECTOR4;
+      return true;
+    }
+
+    if (typeSymbol.IsType<Matrix3x2>()) {
+      knownStruct = KnownStruct.MATRIX3X2;
+      return true;
+    }
+
+
+    if (typeSymbol.IsType<Matrix4x4>()) {
+      knownStruct = KnownStruct.MATRIX4X4;
+      return true;
+    }
+
+    knownStruct = default;
+    return false;
+  }
 }

@@ -64,4 +64,17 @@ public static class SchemaGeneratorUtil {
         Endianness.LittleEndian => "Endianness.LittleEndian",
         _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
     };
+
+  public static string GetKnownStructName(KnownStruct knownStruct)
+    => knownStruct switch {
+        KnownStruct.VECTOR2   => "Vector2",
+        KnownStruct.VECTOR3   => "Vector3",
+        KnownStruct.VECTOR4   => "Vector4",
+        KnownStruct.MATRIX4X4 => "Matrix4x4",
+        KnownStruct.MATRIX3X2 => "Matrix3x2",
+        _ => throw new ArgumentOutOfRangeException(
+            nameof(knownStruct),
+            knownStruct,
+            null)
+    };
 }

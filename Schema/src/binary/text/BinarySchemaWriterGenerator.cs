@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using System.Text;
 
 using Microsoft.CodeAnalysis;
@@ -137,6 +138,13 @@ public class BinarySchemaWriterGenerator {
         BinarySchemaWriterGenerator.WriteContainer_(
             sw,
             containerMemberType,
+            member);
+        break;
+      }
+      case IKnownStructMemberType knownStructMemberType: {
+        BinarySchemaWriterGenerator.WriteKnownStruct_(
+            sw,
+            knownStructMemberType,
             member);
         break;
       }
@@ -385,6 +393,22 @@ public class BinarySchemaWriterGenerator {
           } else {
             sw.WriteLine($"this.{memberName}.Write({WRITER});");
           }
+        });
+  }
+
+  private static void WriteKnownStruct_(
+      ISourceWriter sw,
+      IKnownStructMemberType knownStructMemberType,
+      ISchemaValueMember member) {
+    HandleMemberEndiannessAndTracking_(
+        sw,
+        member,
+        () => {
+          var memberName = member.Name;
+          var knownStructName
+              = SchemaGeneratorUtil.GetKnownStructName(
+                  knownStructMemberType.KnownStruct);
+          sw.WriteLine($"{WRITER}.Write{knownStructName}(this.{memberName});");
         });
   }
 

@@ -17,8 +17,9 @@ public static class ComparisonExtensions {
        symbol.GetArity() == other.GetArity();
 
   public static bool IsType<T>(this ISymbol symbol)
-    => symbol.IsInSameNamespaceAs(typeof(T)) &&
-       symbol.Name == typeof(T).Name;
+    => symbol.IsInSameNamespaceAs<T>() &&
+       symbol.Name == typeof(T).Name &&
+       symbol.GetArity() == typeof(T).GenericTypeArguments.Length;
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static bool IsType(this ISymbol symbol, Type expectedType) {
@@ -33,7 +34,7 @@ public static class ComparisonExtensions {
 
     return symbol.Name == expectedName &&
            symbol.IsInSameNamespaceAs(expectedType) &&
-           ((symbol as INamedTypeSymbol)?.Arity ?? 0) == expectedArity;
+           symbol.GetArity() == expectedArity;
   }
 
   public static bool Implements<T>(this ISymbol symbol)

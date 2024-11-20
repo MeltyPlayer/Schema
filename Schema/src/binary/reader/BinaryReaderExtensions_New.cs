@@ -1,6 +1,6 @@
 ﻿namespace schema.binary;
 
-public static class BinaryReaderExtensions {
+public static partial class BinaryReaderExtensions {
   public static byte SubreadByteAt(this IBinaryReader br, long position) {
     var tmp = br.Position;
     br.Position = position;

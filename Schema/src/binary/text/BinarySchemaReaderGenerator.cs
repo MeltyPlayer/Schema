@@ -168,6 +168,12 @@ public class BinarySchemaReaderGenerator {
                                                    member);
         break;
       }
+      case IKnownStructMemberType knownStructMemberType: {
+        BinarySchemaReaderGenerator.ReadKnownStruct_(sw,
+          knownStructMemberType,
+          member);
+        break;
+      }
       case ISequenceMemberType: {
         BinarySchemaReaderGenerator.ReadArray_(sw, sourceSymbol, member);
         break;
@@ -509,6 +515,29 @@ public class BinarySchemaReaderGenerator {
         () => sw.WriteLine($"this.{member.Name} = default;"));
   }
 
+  private static void ReadKnownStruct_(
+      ISourceWriter sw,
+      IKnownStructMemberType knownStructMemberType,
+      ISchemaValueMember member) {
+    HandleMemberEndiannessAndAtPosition_(
+        sw,
+        member,
+        _ => {
+          var memberName = member.Name;
+          var knownStructName
+              = SchemaGeneratorUtil.GetKnownStructName(
+                  knownStructMemberType.KnownStruct);
+          sw.WriteLine(
+              $"this.{memberName} = {READER}.Read{knownStructName}();");
+
+          // TODO: Handle assertions
+          if (knownStructMemberType.IsReadOnly) {
+            throw new NotImplementedException();
+          }
+        },
+        () => sw.WriteLine($"this.{member.Name} = default;"));
+  }
+
   private static void ReadArray_(
       ISourceWriter sw,
       ITypeSymbol sourceSymbol,
@@ -665,7 +694,10 @@ public class BinarySchemaReaderGenerator {
               }
             }
 
-            BinarySchemaReaderGenerator.ReadIntoArray_(sw, sourceSymbol, member);
+            BinarySchemaReaderGenerator.ReadIntoArray_(
+                sw,
+                sourceSymbol,
+                member);
           },
           falseHandler);
     }

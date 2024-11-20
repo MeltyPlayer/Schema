@@ -62,6 +62,18 @@ public interface IContainerMemberType : IMemberType {
   bool IsChild { get; }
 }
 
+public enum KnownStruct {
+  VECTOR2,
+  VECTOR3,
+  VECTOR4,
+  MATRIX4X4,
+  MATRIX3X2
+}
+
+public interface IKnownStructMemberType : IMemberType {
+  KnownStruct KnownStruct { get; }
+}
+
 public interface IGenericMemberType : IMemberType {
   IMemberType? ConstraintType { get; }
 }
@@ -191,7 +203,7 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
         continue;
       }
 
-      if (memberSymbol is IPropertySymbol {IsIndexer: true}) {
+      if (memberSymbol is IPropertySymbol { IsIndexer: true }) {
         continue;
       }
 
@@ -298,7 +310,9 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
     }
 
     // Makes sure the member is serializable
-    if (memberTypeInfo is IContainerTypeInfo) {
+    if (memberTypeInfo is IContainerTypeInfo containerTypeInfo &&
+        !MemberReferenceUtil.IsKnownStruct(containerTypeInfo.TypeSymbol,
+                                           out _)) {
       if (!memberTypeInfo.TypeSymbol.IsAtLeastAsBinaryConvertibleAs(
               containerTypeSymbol)) {
         memberBetterSymbol.ReportDiagnostic(
@@ -627,6 +641,15 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
     public bool IsReadOnly => this.TypeInfo.IsReadOnly;
 
     public bool IsChild { get; set; }
+  }
+
+  public class KnownStructMemberType : IKnownStructMemberType {
+    public IContainerTypeInfo ContainerTypeInfo { get; set; }
+    public ITypeInfo TypeInfo => this.ContainerTypeInfo;
+    public ITypeSymbol TypeSymbol => TypeInfo.TypeSymbol;
+    public bool IsReadOnly => this.TypeInfo.IsReadOnly;
+
+    public KnownStruct KnownStruct { get; set; }
   }
 
   public class GenericMemberType : IGenericMemberType {
