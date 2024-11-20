@@ -37,4 +37,8 @@ public static partial class BinaryWriterExtensions {
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static void WriteMatrix4x4(this IBinaryWriter bw, in Matrix4x4 value)
     => bw.WriteFloatArrayStruct_(value);
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public static void WriteQuaternion(this IBinaryWriter bw, in Quaternion value)
+    => bw.WriteFloatArrayStruct_(value);
 }

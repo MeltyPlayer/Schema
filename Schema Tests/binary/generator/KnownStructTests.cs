@@ -10,6 +10,7 @@ internal class KnownStructTests {
   [TestCase("Vector4")]
   [TestCase("Matrix3x2")]
   [TestCase("Matrix4x4")]
+  [TestCase("Quaternion")]
   public void TestSystemNumerics(string knownStructName) {
     BinarySchemaTestUtil.AssertGenerated(
         $$"""

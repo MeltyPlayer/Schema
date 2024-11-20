@@ -164,6 +164,11 @@ internal static class MemberReferenceUtil {
       return true;
     }
 
+    if (typeSymbol.IsType<Quaternion>()) {
+      knownStruct = KnownStruct.QUATERNION;
+      return true;
+    }
+
     knownStruct = default;
     return false;
   }

@@ -67,7 +67,8 @@ public enum KnownStruct {
   VECTOR3,
   VECTOR4,
   MATRIX4X4,
-  MATRIX3X2
+  MATRIX3X2,
+  QUATERNION,
 }
 
 public interface IKnownStructMemberType : IMemberType {

@@ -38,4 +38,8 @@ public static partial class BinaryReaderExtensions {
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static Matrix4x4 ReadMatrix4x4(this IBinaryReader br)
     => br.ReadFloatArrayStruct_<Matrix4x4>();
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public static Quaternion ReadQuaternion(this IBinaryReader br)
+    => br.ReadFloatArrayStruct_<Quaternion>();
 }

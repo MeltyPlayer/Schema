@@ -67,11 +67,12 @@ public static class SchemaGeneratorUtil {
 
   public static string GetKnownStructName(KnownStruct knownStruct)
     => knownStruct switch {
-        KnownStruct.VECTOR2   => "Vector2",
-        KnownStruct.VECTOR3   => "Vector3",
-        KnownStruct.VECTOR4   => "Vector4",
-        KnownStruct.MATRIX4X4 => "Matrix4x4",
-        KnownStruct.MATRIX3X2 => "Matrix3x2",
+        KnownStruct.VECTOR2    => "Vector2",
+        KnownStruct.VECTOR3    => "Vector3",
+        KnownStruct.VECTOR4    => "Vector4",
+        KnownStruct.MATRIX4X4  => "Matrix4x4",
+        KnownStruct.MATRIX3X2  => "Matrix3x2",
+        KnownStruct.QUATERNION => "Quaternion",
         _ => throw new ArgumentOutOfRangeException(
             nameof(knownStruct),
             knownStruct,

@@ -64,4 +64,34 @@ public partial class KnownStructTests {
     Assert.AreEqual(34f, br.ReadSingle());
     Assert.AreEqual(45f, br.ReadSingle());
   }
+
+
+  [BinarySchema]
+  private partial class QuaternionWrapper : IBinaryConvertible {
+    public Quaternion Value { get; private set; }
+  }
+
+  [Test]
+  public void TestReadingQuaternion() {
+    using var br = SchemaMemoryStream.From([12f, 23f, 34f, 45f])
+                                     .GetBinaryReader();
+    Assert.AreEqual(new Quaternion(12, 23, 34, 45), br.ReadNew<QuaternionWrapper>().Value);
+  }
+
+  [Test]
+  public void TestWritingQuaternion() {
+    var bw = new SchemaBinaryWriter();
+    bw.WriteQuaternion(new Quaternion(12, 23, 34, 45));
+
+    using var ms = new MemoryStream(); 
+    bw.CompleteAndCopyTo(ms);
+    ms.Position = 0;
+    Assert.AreEqual(4 * 4, ms.Length);
+
+    var br = new SchemaBinaryReader(ms);
+    Assert.AreEqual(12f, br.ReadSingle());
+    Assert.AreEqual(23f, br.ReadSingle());
+    Assert.AreEqual(34f, br.ReadSingle());
+    Assert.AreEqual(45f, br.ReadSingle());
+  }
 }
