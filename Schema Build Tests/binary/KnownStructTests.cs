@@ -28,6 +28,7 @@ public partial class KnownStructTests {
     using var ms = new MemoryStream(); 
     bw.CompleteAndCopyTo(ms);
     ms.Position = 0;
+    Assert.AreEqual(2 * 4, ms.Length);
 
     var br = new SchemaBinaryReader(ms);
     Assert.AreEqual(123f, br.ReadSingle());
@@ -55,6 +56,7 @@ public partial class KnownStructTests {
     using var ms = new MemoryStream(); 
     bw.CompleteAndCopyTo(ms);
     ms.Position = 0;
+    Assert.AreEqual(4 * 4, ms.Length);
 
     var br = new SchemaBinaryReader(ms);
     Assert.AreEqual(12f, br.ReadSingle());

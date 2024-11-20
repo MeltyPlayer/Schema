@@ -13,7 +13,7 @@ public static partial class BinaryWriterExtensions {
       in T value)
       where T : unmanaged {
     fixed (T* ptr = &value) {
-      var span = new Span<T>(ptr, sizeof(T));
+      var span = new Span<T>(ptr, 1);
       bw.WriteSingles(span.Cast<T, float>());
     }
   }
