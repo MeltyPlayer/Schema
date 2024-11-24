@@ -4,12 +4,7 @@
 namespace schema.binary.attributes;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
-public class AlignEndAttribute : Attribute {
-  public AlignEndAttribute(uint align) {
-    this.Method = AlignSourceType.CONST;
-    this.ConstAlign = align;
-  }
-
-  public AlignSourceType Method { get; }
-  public uint ConstAlign { get; }
+public class AlignEndAttribute(uint align) : Attribute {
+  public AlignSourceType Method => AlignSourceType.CONST;
+  public uint ConstAlign { get; } = align;
 }
