@@ -21,6 +21,7 @@ public interface IBinarySchemaContainer {
   IReadOnlyList<ISchemaMember> Members { get; }
   bool LocalPositions { get; }
   Endianness? Endianness { get; }
+  AlignEndAttribute? AlignEnd { get; }
 }
 
 public interface ISchemaMember {
@@ -32,7 +33,7 @@ public interface ISchemaMethodMember : ISchemaMember { }
 public interface ISchemaValueMember : ISchemaMember {
   IMemberType MemberType { get; }
   bool IsSkipped { get; }
-  AlignAttribute? Align { get; }
+  AlignStartAttribute? AlignStart { get; }
   IIfBooleanAttribute? IfBoolean { get; }
   IOffset? Offset { get; }
   bool IsPosition { get; }
@@ -190,6 +191,7 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
         containerSymbol.HasAttribute<LocalPositionsAttribute>();
     var containerEndianness =
         new EndiannessParser().GetEndianness(containerBetterSymbol);
+    var alignEnd = containerBetterSymbol.GetAttribute<AlignEndAttribute>();
 
     var typeInfoParser = new TypeInfoParser();
     var parsedMembers =
@@ -265,6 +267,7 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
         Members = members,
         LocalPositions = localPositions,
         Endianness = containerEndianness,
+        AlignEnd = alignEnd,
     };
 
     // Hooks up size of dependencies.
@@ -344,7 +347,7 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
     }
 
     // Get attributes
-    var align = memberBetterSymbol.GetAttribute<AlignAttribute>();
+    var alignStart = memberBetterSymbol.GetAttribute<AlignStartAttribute>();
 
     {
       var sizeOfStreamAttribute =
@@ -565,7 +568,7 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
         Name = memberSymbol.Name,
         MemberType = memberType,
         IsSkipped = false,
-        Align = align,
+        AlignStart = alignStart,
         IfBoolean = ifBooleanAttribute,
         Offset = offset,
         IsPosition = isPosition,
@@ -598,6 +601,7 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
     public IReadOnlyList<ISchemaMember> Members { get; set; }
     public bool LocalPositions { get; set; }
     public Endianness? Endianness { get; set; }
+    public AlignEndAttribute? AlignEnd { get; set; }
   }
 
   public class SchemaMethodMember : ISchemaMethodMember {
@@ -608,7 +612,7 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
     public string Name { get; set; }
     public IMemberType MemberType { get; set; }
     public bool IsSkipped { get; set; }
-    public AlignAttribute? Align { get; set; }
+    public AlignStartAttribute? AlignStart { get; set; }
     public IIfBooleanAttribute? IfBoolean { get; set; }
     public IOffset Offset { get; set; }
     public bool IsPosition { get; set; }

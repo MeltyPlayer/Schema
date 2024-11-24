@@ -83,6 +83,8 @@ public class BinarySchemaWriterGenerator {
             if (hasLocalPositions) {
               sw.WriteLine($"{WRITER}.PopLocalSpace();");
             }
+
+            AlignEndOfContainer_(sw, container);
           }
           sw.ExitBlock();
 
@@ -162,17 +164,31 @@ public class BinarySchemaWriterGenerator {
     }
   }
 
-  private static void Align_(
+  private static void AlignStartOfMember_(
       ISourceWriter sw,
       ISchemaValueMember member) {
-    var align = member.Align;
-    if (align == null) {
+    var alignStart = member.AlignStart;
+    if (alignStart == null) {
       return;
     }
 
-    var valueName = align.Method switch {
-        AlignSourceType.CONST        => $"{align.ConstAlign}",
-        AlignSourceType.OTHER_MEMBER => $"{align.OtherMember.Name}"
+    var valueName = alignStart.Method switch {
+        AlignSourceType.CONST        => $"{alignStart.ConstAlign}",
+        AlignSourceType.OTHER_MEMBER => $"{alignStart.OtherMember.Name}"
+    };
+    sw.WriteLine($"{WRITER}.Align({valueName});");
+  }
+
+  private static void AlignEndOfContainer_(
+      ISourceWriter sw,
+      IBinarySchemaContainer container) {
+    var alignEnd = container.AlignEnd;
+    if (alignEnd == null) {
+      return;
+    }
+
+    var valueName = alignEnd.Method switch {
+        AlignSourceType.CONST => $"{alignEnd.ConstAlign}",
     };
     sw.WriteLine($"{WRITER}.Align({valueName});");
   }
@@ -181,7 +197,7 @@ public class BinarySchemaWriterGenerator {
       ISourceWriter sw,
       ISchemaValueMember member,
       Action handler) {
-    BinarySchemaWriterGenerator.Align_(sw, member);
+    BinarySchemaWriterGenerator.AlignStartOfMember_(sw, member);
 
     var hasEndianness = member.Endianness != null;
     if (hasEndianness) {

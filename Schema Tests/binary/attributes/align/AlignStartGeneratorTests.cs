@@ -3,7 +3,7 @@
 
 namespace schema.binary.attributes;
 
-internal class AlignGeneratorTests {
+internal class AlignStartGeneratorTests {
   [Test]
   public void TestConstAlign() {
     BinarySchemaTestUtil.AssertGenerated(@"
@@ -13,7 +13,7 @@ using schema.binary.attributes;
 namespace foo.bar {
   [BinarySchema]
   public partial class AlignWrapper : IBinaryConvertible {
-    [Align(0x2)]
+    [AlignStart(0x2)]
     public byte Field { get; set; }
   }
 }",
@@ -54,7 +54,7 @@ namespace foo.bar {
   public partial class AlignWrapper : IBinaryConvertible {
     public uint Value { get; set; }
 
-    [Align(nameof(Value))]
+    [AlignStart(nameof(Value))]
     public byte Field { get; set; }
   }
 }",
@@ -97,7 +97,7 @@ namespace foo.bar {
   public partial class AlignWrapper : IBinaryConvertible {
     public Wrapper Wrapper { get; set; }
 
-    [Align(nameof(Wrapper.Value))]
+    [AlignStart(nameof(Wrapper.Value))]
     public byte Field { get; set; }
   }
 
@@ -142,7 +142,7 @@ using schema.binary.attributes;
 namespace foo.bar {
   [BinarySchema]
   public partial class AlignWrapper : IBinaryConvertible {
-    [Align(0x2)]
+    [AlignStart(0x2)]
     [SequenceLengthSource(SchemaIntegerType.UINT32)]
     public int[] Field { get; set; }
   }

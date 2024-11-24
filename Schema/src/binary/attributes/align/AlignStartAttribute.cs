@@ -4,15 +4,15 @@
 namespace schema.binary.attributes;
 
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-public class AlignAttribute : BMemberAttribute {
+public class AlignStartAttribute : BMemberAttribute {
   private string? otherMemberName_;
 
-  public AlignAttribute(uint align) {
+  public AlignStartAttribute(uint align) {
     this.Method = AlignSourceType.CONST;
     this.ConstAlign = align;
   }
 
-  public AlignAttribute(string otherMemberName) {
+  public AlignStartAttribute(string otherMemberName) {
     this.Method = AlignSourceType.OTHER_MEMBER;
     this.otherMemberName_ = otherMemberName;
   }

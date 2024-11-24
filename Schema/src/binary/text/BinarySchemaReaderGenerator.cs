@@ -82,6 +82,8 @@ public class BinarySchemaReaderGenerator {
             if (hasLocalPositions) {
               sw.WriteLine($"{READER}.PopLocalSpace();");
             }
+
+            AlignEndOfContainer_(sw, container);
           }
           sw.ExitBlock();
 
@@ -195,17 +197,31 @@ public class BinarySchemaReaderGenerator {
     }
   }
 
-  private static void Align_(
+  private static void AlignStartOfMember_(
       ISourceWriter sw,
       ISchemaValueMember member) {
-    var align = member.Align;
-    if (align == null) {
+    var alignStart = member.AlignStart;
+    if (alignStart == null) {
       return;
     }
 
-    var valueName = align.Method switch {
-        AlignSourceType.CONST        => $"{align.ConstAlign}",
-        AlignSourceType.OTHER_MEMBER => $"{align.OtherMember.Name}"
+    var valueName = alignStart.Method switch {
+        AlignSourceType.CONST        => $"{alignStart.ConstAlign}",
+        AlignSourceType.OTHER_MEMBER => $"{alignStart.OtherMember.Name}"
+    };
+    sw.WriteLine($"{READER}.Align({valueName});");
+  }
+
+  private static void AlignEndOfContainer_(
+      ISourceWriter sw,
+      IBinarySchemaContainer container) {
+    var alignEnd = container.AlignEnd;
+    if (alignEnd == null) {
+      return;
+    }
+
+    var valueName = alignEnd.Method switch {
+        AlignSourceType.CONST => $"{alignEnd.ConstAlign}",
     };
     sw.WriteLine($"{READER}.Align({valueName});");
   }
@@ -233,7 +249,7 @@ public class BinarySchemaReaderGenerator {
           $"{READER}.PushMemberEndianness({SchemaGeneratorUtil.GetEndiannessName(member.Endianness.Value)});");
     }
 
-    BinarySchemaReaderGenerator.Align_(sw, member);
+    BinarySchemaReaderGenerator.AlignStartOfMember_(sw, member);
 
     handler();
 
