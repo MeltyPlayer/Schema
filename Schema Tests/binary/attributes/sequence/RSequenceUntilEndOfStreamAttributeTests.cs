@@ -102,7 +102,58 @@ internal class RSequenceUntilEndOfStreamAttributeTests {
   }
 
   [Test]
-  public void TestIntArrayUntilEndOfStream() {
+  public void TestInt24ArrayUntilEndOfStream() {
+    BinarySchemaTestUtil.AssertGenerated(
+        """
+
+        using schema.binary;
+        using schema.binary.attributes;
+
+        namespace foo.bar;
+
+        [BinarySchema]
+        public partial class Wrapper : IBinaryConvertible {
+          [RSequenceUntilEndOfStream]
+          [NumberFormat(SchemaNumberType.INT24)]
+          public int[] Field { get; set; }
+        }
+        """,
+        """
+        using System;
+        using System.Collections.Generic;
+        using schema.binary;
+
+        namespace foo.bar;
+
+        public partial class Wrapper {
+          public void Read(IBinaryReader br) {
+            this.Field = new int[(br.Length - br.Position) / 3];
+            for (var i = 0; i < this.Field.Length; ++i) {
+              this.Field[i] = br.ReadInt24();
+            }
+          }
+        }
+
+        """,
+        """
+        using System;
+        using schema.binary;
+
+        namespace foo.bar;
+
+        public partial class Wrapper {
+          public void Write(IBinaryWriter bw) {
+            for (var i = 0; i < this.Field.Length; ++i) {
+              bw.WriteInt24(this.Field[i]);
+            }
+          }
+        }
+
+        """);
+  }
+
+  [Test]
+  public void TestInt32ArrayUntilEndOfStream() {
     BinarySchemaTestUtil.AssertGenerated(
         """
 
@@ -126,7 +177,7 @@ internal class RSequenceUntilEndOfStreamAttributeTests {
 
         public partial class Wrapper {
           public void Read(IBinaryReader br) {
-            this.Field = br.ReadInt32s((br.Length - br.Position) / 4);
+            this.Field = br.ReadInt32s((br.Length - br.Position) >> 2);
           }
         }
 

@@ -579,11 +579,19 @@ public class BinarySchemaReaderGenerator {
                                             out var size)) {
                 var remainingLengthAccessor =
                     $"{READER}.Length - {READER}.Position";
-                var readCountAccessor = size == 1
-                    ? remainingLengthAccessor
-                    : $"({remainingLengthAccessor}) / {size}";
 
-                // Members that don't need to be cast are the easiest to read.
+                var sizeLog2 = Math.Log(size, 2);
+
+                string readCountAccessor;
+                if (size == 1) {
+                  readCountAccessor = remainingLengthAccessor;
+                } else if (sizeLog2 % 1 == 0) {
+                  readCountAccessor
+                      = $"({remainingLengthAccessor}) >> {sizeLog2}";
+                } else {
+                  readCountAccessor = $"({remainingLengthAccessor}) / {size}";
+                }
+
                 var elementType = arrayType.ElementType;
                 if (SchemaGeneratorUtil.TryToGetLabelForMethodWithoutCast(
                         elementType,
