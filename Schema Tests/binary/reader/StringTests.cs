@@ -7,7 +7,7 @@ using schema.testing;
 
 namespace schema.binary;
 
-public class SchemaBinaryReaderStringTests {
+public class StringTests {
   [Test]
   public void TestAssertChar() {
     var br = new SchemaBinaryReader(SchemaMemoryStream.From(['c']));

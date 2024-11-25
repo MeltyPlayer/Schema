@@ -42,7 +42,7 @@ public partial class KnownStructTests {
   [BinarySchema]
   private partial class Vector2ListWrapper : IBinaryConvertible {
     [SequenceLengthSource(2)]
-    public List<Vector2> Values { get; } = new();
+    public List<Vector2> Values { get; } = [];
   }
 
   [Test]

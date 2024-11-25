@@ -130,7 +130,7 @@ public sealed partial class SchemaTextReader {
       ReadOnlySpan<string> terminators) {
     var match = this.ReadUpToAndPastTerminator(terminators);
     if (match.Length == 0) {
-      return Enumerable.Empty<string>();
+      return [];
     }
 
     return match.SplitViaString(separators, false);

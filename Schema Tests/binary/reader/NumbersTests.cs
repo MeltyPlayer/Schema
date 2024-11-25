@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace schema.binary;
 
-public class SchemaBinaryReaderNumbersTests {
+public class NumbersTests {
   delegate void ReadSpan<T>(Span<T> span);
 
   private void AssertEquals_<T>(ReadOnlySpan<T> expectedValues,

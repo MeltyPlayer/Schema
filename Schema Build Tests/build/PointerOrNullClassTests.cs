@@ -35,7 +35,7 @@ internal partial class PointerToOrNullClassTests {
 
   [Test]
   public async Task TestReadNonnull() {
-    var ms = new MemoryStream(new byte[] { 1, 12, 0, 0, 0 });
+    var ms = new MemoryStream([1, 12, 0, 0, 0]);
     using var br = new SchemaBinaryReader(ms);
 
     var parent = br.ReadNew<ParentImpl>();
@@ -45,7 +45,7 @@ internal partial class PointerToOrNullClassTests {
 
   [Test]
   public async Task TestReadNull() {
-    var ms = new MemoryStream(new byte[] { 123 });
+    var ms = new MemoryStream([123]);
     using var br = new SchemaBinaryReader(ms);
 
     var parent = br.ReadNew<ParentImpl>();

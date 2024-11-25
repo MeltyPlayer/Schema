@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace schema.binary;
 
-public class SchemaBinaryReaderNumberTests {
+public class NumberTests {
   private void ReadAndAssert_<T>(
       IBinaryReader br,
       T expectedValue,

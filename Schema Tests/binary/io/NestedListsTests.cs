@@ -14,14 +14,14 @@ public class NestedListsTests {
   [Test]
   public void TestEmptyList() {
     var impl = new NestedList<string>();
-    AssertSequence_(new string[] { }, impl);
+    AssertSequence_([], impl);
   }
 
   [Test]
   public void TestEmptyNestedLists() {
     var impl = new NestedList<string>();
     impl.Enter().Enter().Enter();
-    AssertSequence_(new string[] { }, impl);
+    AssertSequence_([], impl);
   }
 
   [Test]
@@ -32,7 +32,7 @@ public class NestedListsTests {
     impl.Add("second");
     impl.Add("third");
 
-    AssertSequence_(new[] { "first", "second", "third" }, impl);
+    AssertSequence_(["first", "second", "third"], impl);
   }
 
   [Test]
@@ -55,7 +55,7 @@ public class NestedListsTests {
     grandchild1A.Add("in grandchild 1A");
 
     AssertSequence_(
-        new[] {
+        [
             "before children",
             "in child 1",
             "in grandchild 1A",
@@ -63,7 +63,7 @@ public class NestedListsTests {
             "in twin 2i",
             "in twin 2ii",
             "after children"
-        },
+        ],
         impl);
   }
 

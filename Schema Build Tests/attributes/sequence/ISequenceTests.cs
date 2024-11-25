@@ -100,7 +100,7 @@ public partial class ISequenceTests {
       : ISequence<MutableSequenceImpl<T>, T>
       where T : IBinaryConvertible, new() {
     [RSequenceLengthSource(nameof(Count))]
-    private readonly List<T> impl_ = new();
+    private readonly List<T> impl_ = [];
 
     public T GetDefault() => new();
 

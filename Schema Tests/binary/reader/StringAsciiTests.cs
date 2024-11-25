@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace schema.binary;
 
-public class SchemaBinaryReaderStringAsciiTests {
+public class StringAsciiTests {
   [Test]
   [TestCase("foobar")]
   public void TestReadChars(string str) {

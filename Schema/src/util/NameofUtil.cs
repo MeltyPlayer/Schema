@@ -29,7 +29,7 @@ public static class NameofUtil {
             Defined = true,
             Name = parent.Name,
             NamespaceParts =
-                parent.Namespace?.Split('.') ?? Array.Empty<string>(),
+                parent.Namespace?.Split('.') ?? [],
         },
         text);
 

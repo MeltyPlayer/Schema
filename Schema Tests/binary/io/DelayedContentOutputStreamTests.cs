@@ -53,19 +53,19 @@ public class DelayedContentOutputStreamTests {
     impl.WriteByte(3);
 
     var actualBytes = await ToBytes_(impl);
-    AssertSequence_(new byte[] { 1, 2, 3 }, actualBytes);
+    AssertSequence_([1, 2, 3], actualBytes);
   }
 
   [Test]
   public async Task TestWriteArrays() {
     var impl = new DelayedContentOutputStream(null);
 
-    impl.WriteBytes(new byte[] { 1, 2 });
-    impl.WriteBytes(new byte[] { 3, 4 });
-    impl.WriteBytes(new byte[] { 5, 6 });
+    impl.WriteBytes([1, 2]);
+    impl.WriteBytes([3, 4]);
+    impl.WriteBytes([5, 6]);
 
     var actualBytes = await ToBytes_(impl);
-    AssertSequence_(new byte[] { 1, 2, 3, 4, 5, 6 }, actualBytes);
+    AssertSequence_([1, 2, 3, 4, 5, 6], actualBytes);
   }
 
   [Test]
@@ -77,7 +77,7 @@ public class DelayedContentOutputStreamTests {
     impl.WriteDelayed(Task.FromResult(new byte[] { 5, 6 }));
 
     var actualBytes = await ToBytes_(impl);
-    AssertSequence_(new byte[] { 1, 2, 3, 4, 5, 6 }, actualBytes);
+    AssertSequence_([1, 2, 3, 4, 5, 6], actualBytes);
   }
 
   [Test]
@@ -85,14 +85,14 @@ public class DelayedContentOutputStreamTests {
     var impl = new DelayedContentOutputStream(null);
 
     impl.WriteByte(1);
-    impl.WriteBytes(new byte[] { 2, 3 });
+    impl.WriteBytes([2, 3]);
     impl.WriteDelayed(Task.FromResult(new byte[] { 4, 5 }));
-    impl.WriteBytes(new byte[] { 6, 7 });
+    impl.WriteBytes([6, 7]);
     impl.WriteByte(8);
     impl.WriteDelayed(Task.FromResult(new byte[] { 9, 10 }));
 
     var actualBytes = await ToBytes_(impl);
-    AssertSequence_(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
+    AssertSequence_([1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                     actualBytes);
   }
 
@@ -107,7 +107,7 @@ public class DelayedContentOutputStreamTests {
         Task.FromResult(1L));
 
     impl.WriteByte(1);
-    impl.WriteBytes(new byte[] { 2, 3 });
+    impl.WriteBytes([2, 3]);
 
     var positionTask2 = impl.GetAbsolutePosition();
     impl.WriteDelayed(
@@ -115,7 +115,7 @@ public class DelayedContentOutputStreamTests {
         Task.FromResult(1L));
 
     impl.WriteDelayed(Task.FromResult(new byte[] { 4, 5 }));
-    impl.WriteBytes(new byte[] { 6, 7 });
+    impl.WriteBytes([6, 7]);
 
     var positionTask3 = impl.GetAbsolutePosition();
     impl.WriteDelayed(
@@ -132,7 +132,7 @@ public class DelayedContentOutputStreamTests {
 
 
     var actualBytes = await ToBytes_(impl);
-    AssertSequence_(new byte[] { 0, 1, 2, 3, 4, 4, 5, 6, 7, 9, 8, 9, 10, 13 },
+    AssertSequence_([0, 1, 2, 3, 4, 4, 5, 6, 7, 9, 8, 9, 10, 13],
                     actualBytes);
   }
 
@@ -146,14 +146,14 @@ public class DelayedContentOutputStreamTests {
         Task.FromResult(1L));
 
     impl.WriteByte(1);
-    impl.WriteBytes(new byte[] { 2, 3 });
+    impl.WriteBytes([2, 3]);
     impl.WriteDelayed(Task.FromResult(new byte[] { 4, 5 }));
-    impl.WriteBytes(new byte[] { 6, 7 });
+    impl.WriteBytes([6, 7]);
     impl.WriteByte(8);
     impl.WriteDelayed(Task.FromResult(new byte[] { 9, 10 }));
 
     var actualBytes = await ToBytes_(impl);
-    AssertSequence_(new byte[] { 11, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
+    AssertSequence_([11, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                     actualBytes);
   }
 
@@ -247,7 +247,7 @@ public class DelayedContentOutputStreamTests {
         Task.FromResult(3L));
 
     var actualBytes = await ToBytes_(impl);
-    AssertSequence_(new byte[] { 4, 0, 1, 2, }, actualBytes);
+    AssertSequence_([4, 0, 1, 2], actualBytes);
   }
 
 

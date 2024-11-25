@@ -74,19 +74,19 @@ public sealed partial class SchemaTextReader {
 
   public double ReadDouble() => this.ConvertDouble_(this.ReadFloatChars_());
 
-  private static readonly char[] digitMatches_ = {
+  private static readonly char[] digitMatches_ = [
       '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
-  };
+  ];
 
   private static readonly char[] positiveIntegerMatches_ =
       digitMatches_;
 
   private static readonly char[] negativeIntegerMatches_ =
-      positiveIntegerMatches_.Concat(new[] { '-' }).ToArray();
+      positiveIntegerMatches_.Concat(['-']).ToArray();
 
 
   private static readonly char[] floatMatches_ =
-      negativeIntegerMatches_.Concat(new[] { '.' }).ToArray();
+      negativeIntegerMatches_.Concat(['.']).ToArray();
 
   private string ReadPositiveIntegerChars_()
     => this.ReadMatchingNonWhitespaceChars_(

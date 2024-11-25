@@ -27,7 +27,7 @@ public partial class SequenceTests {
   [Test]
   public void TestWriteAndRead() {
     var expectedSw = new SequenceWrapper {
-        Values = new[] { 1, 2, 3, 4, 5, 9, 8, 7, 6 }
+        Values = [1, 2, 3, 4, 5, 9, 8, 7, 6]
     };
 
     var ms = new MemoryStream();
@@ -62,7 +62,7 @@ public partial class SequenceTests {
   [Test]
   public void TestWriteAndReadWithUint32Length() {
     var expectedSw = new Uint32LengthSequenceWrapper {
-        Values = new[] { 1, 2, 3, 4, 5, 9, 8, 7, 6 }
+        Values = [1, 2, 3, 4, 5, 9, 8, 7, 6]
     };
 
     var ms = new MemoryStream();
@@ -100,7 +100,7 @@ public partial class SequenceTests {
   [Test]
   public void TestWriteAndReadWithUint16Length() {
     var expectedSw = new Uint16LengthSequenceWrapper {
-        Values = new[] { 1, 2, 3, 4, 5, 9, 8, 7, 6 }
+        Values = [1, 2, 3, 4, 5, 9, 8, 7, 6]
     };
 
     var ms = new MemoryStream();
@@ -138,7 +138,7 @@ public partial class SequenceTests {
   [Test]
   public void TestWriteAndReadWithUint64Length() {
     var expectedSw = new Uint64LengthSequenceWrapper {
-        Values = new[] { 1, 2, 3, 4, 5, 9, 8, 7, 6 }
+        Values = [1, 2, 3, 4, 5, 9, 8, 7, 6]
     };
 
     var ms = new MemoryStream();

@@ -17,9 +17,9 @@ public sealed class Asserts {
 
     public override string StackTrace {
       get {
-        List<string> stackTrace = new List<string>();
+        List<string> stackTrace = [];
         stackTrace.AddRange(base.StackTrace!.Split(
-                                new string[] { Environment.NewLine },
+                                [Environment.NewLine],
                                 StringSplitOptions.None));
 
         var assertLine = new Regex("\\s*Asserts\\.");

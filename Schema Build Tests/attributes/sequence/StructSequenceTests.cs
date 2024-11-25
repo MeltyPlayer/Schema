@@ -42,11 +42,11 @@ public partial class StructSequenceTests {
   [Test]
   public void TestWriteAndReadArrayObject() {
     var expectedSw = new StructArraySequenceWrapper {
-        Values = new[] {
+        Values = [
             new SchemaStruct { Value = 1 },
             new SchemaStruct { Value = 2 },
             new SchemaStruct { Value = 3 }
-        }
+        ]
     };
 
     var ms = new MemoryStream();
@@ -66,11 +66,11 @@ public partial class StructSequenceTests {
   [Test]
   public void TestWriteAndReadArrayValues() {
     var expectedSw = new StructArraySequenceWrapper {
-        Values = new[] {
+        Values = [
             new SchemaStruct { Value = 1 },
             new SchemaStruct { Value = 2 },
             new SchemaStruct { Value = 3 }
-        }
+        ]
     };
 
     var ms = new MemoryStream();
@@ -91,7 +91,7 @@ public partial class StructSequenceTests {
   [BinarySchema]
   public partial class StructListSequenceWrapper : IBinaryConvertible {
     [SequenceLengthSource(SchemaIntegerType.BYTE)]
-    public List<SchemaStruct> Values { get; set; } = new();
+    public List<SchemaStruct> Values { get; set; } = [];
 
     public override bool Equals(object other) {
       if (other is StructListSequenceWrapper otherSequenceWrapper) {
@@ -105,9 +105,7 @@ public partial class StructSequenceTests {
   [Test]
   public void TestWriteAndReadListObject() {
     var expectedSw = new StructListSequenceWrapper {
-        Values = new List<SchemaStruct> {
-            new() { Value = 1 }, new() { Value = 2 }, new() { Value = 3 }
-        }
+        Values = [new() { Value = 1 }, new() { Value = 2 }, new() { Value = 3 }]
     };
 
     var ms = new MemoryStream();

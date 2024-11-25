@@ -16,12 +16,12 @@ public class NestedList<T> : INestedList<T> {
     public List<T> List { get; set; }
   }
 
-  private readonly LinkedList<Node> nodes_ = new();
+  private readonly LinkedList<Node> nodes_ = [];
 
   public void Add(T value) {
     List<T> list;
     if (this.nodes_.Count == 0 || this.nodes_.Last.Value.IsChild) {
-      list = new List<T>();
+      list = [];
       this.nodes_.AddLast(new Node { IsChild = false, List = list, });
     } else {
       list = this.nodes_.Last.Value.List;

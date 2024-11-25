@@ -9,7 +9,7 @@ internal class SchemaTextReaderNumbersTests {
   [Test]
   public void TestReadBytesNull() {
     using var tr = TextSchemaTestUtil.CreateTextReader("0,, ,255");
-    Asserts.Equal(new byte?[] { 0, null, null, 255 },
+    Asserts.Equal([0, null, null, 255],
                   tr.ReadBytesIncludingEmpty(new[] { "," },
                                              TextReaderConstants
                                                  .NEWLINE_STRINGS));
@@ -18,7 +18,7 @@ internal class SchemaTextReaderNumbersTests {
   [Test]
   public void TestReadHexBytesNull() {
     using var tr = TextSchemaTestUtil.CreateTextReader("0x00,, ,0xff");
-    Asserts.Equal(new byte?[] { 0, null, null, 255 },
+    Asserts.Equal([0, null, null, 255],
                   tr.ReadHexBytesIncludingEmpty(
                       new[] { "," },
                       TextReaderConstants.NEWLINE_STRINGS));

@@ -47,7 +47,7 @@ public class DelayedContentOutputStream : IDelayedContentOutputStream {
   private readonly INestedList<Task<IDataChunk>> dataChunks_;
   private readonly INestedList<Task<ISizeChunk>> sizeChunks_;
 
-  private List<DelayedContentOutputStream> children_ = new();
+  private List<DelayedContentOutputStream> children_ = [];
 
   private LinkedList<byte>? currentBytes_ = null;
   private readonly Task<long> startPositionTask_;
@@ -300,7 +300,7 @@ public class DelayedContentOutputStream : IDelayedContentOutputStream {
       return;
     }
 
-    this.currentBytes_ = new LinkedList<byte>();
+    this.currentBytes_ = [];
   }
 
   private void PushCurrentBytes_() {

@@ -10,7 +10,7 @@ namespace schema.util.streams;
 public class WritableStreamTests {
   [Test]
   public void TestPosition() {
-    var ms = new MemoryStream(new byte[] { 1, 2, 3 });
+    var ms = new MemoryStream([1, 2, 3]);
     var ws = new WritableStream(ms);
 
     Assert.AreEqual(0, ms.Position);
@@ -23,7 +23,7 @@ public class WritableStreamTests {
 
   [Test]
   public void TestLength() {
-    var ms = new MemoryStream(new byte[] { 1, 2, 3 });
+    var ms = new MemoryStream([1, 2, 3]);
     var ws = new WritableStream(ms);
 
     Assert.AreEqual(3, ms.Length);
@@ -58,7 +58,7 @@ public class WritableStreamTests {
     Assert.AreEqual(0, ms.Position);
     Assert.AreEqual(0, ws.Position);
 
-    ReadOnlySpan<byte> span = stackalloc byte[5] { 5, 6, 7, 8, 9 };
+    ReadOnlySpan<byte> span = [5, 6, 7, 8, 9];
 
     ws.Write(span);
     Assert.AreEqual(5, ms.Position);
@@ -71,7 +71,7 @@ public class WritableStreamTests {
   public void TestWriteReadableStream() {
     var ms = new MemoryStream();
     var ws = new WritableStream(ms);
-    var rs = new ReadableStream(new byte[] { 5, 6, 7, 8, 9 });
+    var rs = new ReadableStream([5, 6, 7, 8, 9]);
 
     Assert.AreEqual(0, ms.Position);
     Assert.AreEqual(0, ws.Position);
@@ -111,7 +111,7 @@ public class WritableStreamTests {
     var ms = new MemoryStream();
     var ws = new WritableStream(ms);
 
-    var rs = new ReadableStream(new byte[] { 5, 6, 7, 8, 9 });
+    var rs = new ReadableStream([5, 6, 7, 8, 9]);
 
     var rrs = new RangedReadableSubstream(rs, 1, 3);
     rrs.Position = 1;

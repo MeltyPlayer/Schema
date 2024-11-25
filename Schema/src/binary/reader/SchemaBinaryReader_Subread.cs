@@ -1,5 +1,6 @@
 ﻿using System;
 
+using schema.util.asserts;
 using schema.util.streams;
 
 
@@ -13,7 +14,9 @@ public partial class SchemaBinaryReader {
     var substream = new RangedReadableSubstream(this.BaseStream_,
                                                 baseOffset,
                                                 baseOffset + len);
-    using var sbr = new SchemaBinaryReader(substream, this.Endianness);
+    using var sbr = new SchemaBinaryReader(substream, this.Endianness) {
+        AssertAlreadyAtOffset = this.AssertAlreadyAtOffset,
+    };
     sbr.positionManagerImpl_ =
         new StreamPositionManager(substream, baseOffset);
     subread(sbr);
@@ -33,6 +36,7 @@ public partial class SchemaBinaryReader {
     var tempPos = this.Position;
 
     {
+      this.MaybeAssertAlreadyAtPosition_(position);
       this.Position = position;
 
       var baseOffset = this.positionManagerImpl_.BaseOffset;
@@ -40,7 +44,9 @@ public partial class SchemaBinaryReader {
           new RangedReadableSubstream(this.BaseStream_,
                                       position,
                                       baseOffset + len);
-      using var sbr = new SchemaBinaryReader(substream, this.Endianness);
+      using var sbr = new SchemaBinaryReader(substream, this.Endianness) {
+          AssertAlreadyAtOffset = this.AssertAlreadyAtOffset,
+      };
       sbr.positionManagerImpl_ =
           new StreamPositionManager(substream, baseOffset);
       subread(sbr);
@@ -80,5 +86,14 @@ public partial class SchemaBinaryReader {
         sbr => { value = subread(sbr); });
 
     return value!;
+  }
+
+  private void MaybeAssertAlreadyAtPosition_(long position) {
+    if (this.AssertAlreadyAtOffset) {
+      if (this.Position != position) {
+        Asserts.Fail(
+            $"Expected position to already be {position}, but was {this.Position}");
+      }
+    }
   }
 }

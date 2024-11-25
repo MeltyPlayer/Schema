@@ -29,7 +29,7 @@ public partial class RSequenceUntilEndOfStreamAttributeTests {
   [Test]
   public void TestWriteAndReadBytes() {
     var expectedSw = new ByteSequenceWrapper {
-        Values = new byte[] { 1, 2, 3, 4, 5, 9, 8, 7, 6 }
+        Values = [1, 2, 3, 4, 5, 9, 8, 7, 6]
     };
 
     var ms = new MemoryStream();
@@ -50,7 +50,7 @@ public partial class RSequenceUntilEndOfStreamAttributeTests {
   public void TestWriteAndReadBytesInSubstream() {
     var bytes = new byte[] { 0, 0, 0, 1, 2, 3, 4, 5, 6, 0, 0, 0, };
     var expectedSw = new ByteSequenceWrapper {
-        Values = new byte[] { 1, 2, 3, 4, 5, 6 }
+        Values = [1, 2, 3, 4, 5, 6]
     };
 
     var ms = new MemoryStream(bytes);
@@ -75,7 +75,7 @@ public partial class RSequenceUntilEndOfStreamAttributeTests {
   public void TestWriteAndReadBytesInLocalSubstream() {
     var bytes = new byte[] { 0, 0, 0, 1, 2, 3, 4, 5, 6, 0, 0, 0, };
     var expectedSw = new ByteSequenceWrapper {
-        Values = new byte[] { 1, 2, 3, 4, 5, 6 }
+        Values = [1, 2, 3, 4, 5, 6]
     };
 
     var ms = new MemoryStream(bytes);
@@ -119,7 +119,7 @@ public partial class RSequenceUntilEndOfStreamAttributeTests {
   [Test]
   public void TestWriteAndReadInts() {
     var expectedSw = new IntSequenceWrapper {
-        Values = new[] { 1, 2, 3, 4, 5, 9, 8, 7, 6 }
+        Values = [1, 2, 3, 4, 5, 9, 8, 7, 6]
     };
 
     var ms = new MemoryStream();
@@ -176,11 +176,11 @@ public partial class RSequenceUntilEndOfStreamAttributeTests {
   [Test]
   public void TestWriteAndReadClasses() {
     var expectedSw = new FloatClassSequenceWrapper {
-        Values = new Vector3f[] {
+        Values = [
             new() { X = 1, Y = 2, Z = 3 },
             new() { X = 2, Y = 3, Z = 4 },
-            new() { X = 3, Y = 4, Z = 5 },
-        },
+            new() { X = 3, Y = 4, Z = 5 }
+        ],
     };
 
     var ms = new MemoryStream();
@@ -238,11 +238,11 @@ public partial class RSequenceUntilEndOfStreamAttributeTests {
   public void TestWriteAndReadClassesInLocalSubstream() {
     var bytes = new byte[] { 0, 0, 0, 1, 2, 3, 2, 3, 4, 3, 4, 5, 0, 0, 0, };
     var expectedSw = new ByteClassSequenceWrapper {
-        Values = new Vector3b[] {
+        Values = [
             new() { X = 1, Y = 2, Z = 3 },
             new() { X = 2, Y = 3, Z = 4 },
-            new() { X = 3, Y = 4, Z = 5 },
-        },
+            new() { X = 3, Y = 4, Z = 5 }
+        ],
     };
 
     var ms = new MemoryStream(bytes);

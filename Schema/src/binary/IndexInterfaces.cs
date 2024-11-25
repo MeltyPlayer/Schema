@@ -19,7 +19,7 @@ public interface ISchemaList<TIndexedElement>
 
 public class SchemaList<TIndexedElement> : ISchemaList<TIndexedElement>
     where TIndexedElement : IIndexedElement {
-  private readonly List<TIndexedElement> impl_ = new();
+  private readonly List<TIndexedElement> impl_ = [];
 
   int ICollection<TIndexedElement>.Count => this.Length;
   int IReadOnlyCollection<TIndexedElement>.Count => this.Length;

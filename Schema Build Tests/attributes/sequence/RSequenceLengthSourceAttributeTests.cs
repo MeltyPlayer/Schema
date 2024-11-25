@@ -13,6 +13,6 @@ public partial class RSequenceLengthSourceAttributeTests {
     private uint count_;
 
     [RSequenceLengthSource(nameof(count_))]
-    public readonly List<int> Values = new();
+    public readonly List<int> Values = [];
   }
 }

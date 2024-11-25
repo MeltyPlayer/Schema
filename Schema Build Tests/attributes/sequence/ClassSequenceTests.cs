@@ -42,11 +42,11 @@ public partial class ClassSequenceTests {
   [Test]
   public void TestWriteAndReadArrayObject() {
     var expectedSw = new ClassArraySequenceWrapper {
-        Values = new[] {
+        Values = [
             new SchemaClass { Value = 1 },
             new SchemaClass { Value = 2 },
             new SchemaClass { Value = 3 }
-        }
+        ]
     };
 
     var ms = new MemoryStream();
@@ -66,11 +66,11 @@ public partial class ClassSequenceTests {
   [Test]
   public void TestWriteAndReadArrayValues() {
     var expectedSw = new ClassArraySequenceWrapper {
-        Values = new[] {
+        Values = [
             new SchemaClass { Value = 1 },
             new SchemaClass { Value = 2 },
             new SchemaClass { Value = 3 }
-        }
+        ]
     };
 
     var ms = new MemoryStream();
@@ -91,7 +91,7 @@ public partial class ClassSequenceTests {
   [BinarySchema]
   public partial class ClassListSequenceWrapper : IBinaryConvertible {
     [SequenceLengthSource(SchemaIntegerType.BYTE)]
-    public List<SchemaClass> Values { get; set; } = new();
+    public List<SchemaClass> Values { get; set; } = [];
 
     public override bool Equals(object other) {
       if (other is ClassListSequenceWrapper otherSequenceWrapper) {
@@ -105,9 +105,7 @@ public partial class ClassSequenceTests {
   [Test]
   public void TestWriteAndReadListObject() {
     var expectedSw = new ClassListSequenceWrapper {
-        Values = new List<SchemaClass> {
-            new() { Value = 1 }, new() { Value = 2 }, new() { Value = 3 }
-        }
+        Values = [new() { Value = 1 }, new() { Value = 2 }, new() { Value = 3 }]
     };
 
     var ms = new MemoryStream();

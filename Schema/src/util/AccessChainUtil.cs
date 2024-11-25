@@ -225,7 +225,7 @@ internal static class AccessChainUtil {
   }
 
   private class AccessChain : IChain<IAccessChainNode> {
-    private readonly List<IAccessChainNode> rootToTarget_ = new();
+    private readonly List<IAccessChainNode> rootToTarget_ = [];
 
     public AccessChain(IAccessChainNode root, string rawPath) {
       this.AddLinkInChain(root);

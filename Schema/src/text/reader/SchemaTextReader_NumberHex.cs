@@ -55,7 +55,7 @@ public sealed partial class SchemaTextReader {
     => this.ConvertHexUInt64_(this.ReadHexChars_());
 
 
-  private static readonly string[] hexSpecifierMatches_ = { "0x", "0X" };
+  private static readonly string[] hexSpecifierMatches_ = ["0x", "0X"];
 
   private static readonly char[] hexMatches =
       digitMatches_

@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace schema.binary;
 
-public class SchemaBinaryReaderPositionTests {
+public class PositionTests {
   [Test]
   public void TestNestedSpaces() {
     var data = new byte[100];

@@ -4,12 +4,12 @@
 namespace schema.text.reader;
 
 public sealed class TextReaderConstants {
-  public static readonly string[] COMMA_STRINGS = { "," };
+  public static readonly string[] COMMA_STRINGS = [","];
 
-  public static readonly string[] NEWLINE_STRINGS = { "\n", "\r\n" };
+  public static readonly string[] NEWLINE_STRINGS = ["\n", "\r\n"];
 
   public static readonly string[] WHITESPACE_STRINGS =
-      TextReaderConstants.NEWLINE_STRINGS.Concat(new[] { " ", "\t" })
+      TextReaderConstants.NEWLINE_STRINGS.Concat([" ", "\t"])
                          .ToArray();
 
   public static readonly string[] TERMINATORS =

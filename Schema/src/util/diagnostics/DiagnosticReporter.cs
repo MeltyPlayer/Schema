@@ -18,7 +18,7 @@ internal class DiagnosticReporter : IDiagnosticReporter {
 
   public DiagnosticReporter(ISymbol symbol,
                             SyntaxNodeAnalysisContext? context = null)
-      : this(symbol, context, new()) { }
+      : this(symbol, context, []) { }
 
   private DiagnosticReporter(ISymbol symbol,
                              SyntaxNodeAnalysisContext? context,
@@ -27,7 +27,7 @@ internal class DiagnosticReporter : IDiagnosticReporter {
     this.context_ = context;
     this.diagnostics_ = diagnostics;
     this.unreportedDiagnostics_ =
-        context == null ? new List<Diagnostic>() : null;
+        context == null ? [] : null;
   }
 
   public void WithContext(SyntaxNodeAnalysisContext context) {
