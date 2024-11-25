@@ -1,7 +1,5 @@
 ﻿using NUnit.Framework;
 
-using schema.binary;
-
 
 namespace schema.readOnly;
 
@@ -15,24 +13,24 @@ internal class DefaultValueTests {
         $$"""
           using schema.readOnly;
 
-          namespace foo.bar {
-            [GenerateReadOnly]
-            public partial interface IWrapper {
-              [Const]
-              public void Foo(bool? value = {{boolValue}});
-            }
+          namespace foo.bar;
+          
+          [GenerateReadOnly]
+          public partial interface IWrapper {
+            [Const]
+            public void Foo(bool? value = {{boolValue}});
           }
           """,
         $$"""
-          namespace foo.bar {
-            public partial interface IWrapper : IReadOnlyWrapper {
-              void IReadOnlyWrapper.Foo(bool? value) => Foo(value);
-            }
-            
-            #nullable enable
-            public partial interface IReadOnlyWrapper {
-              public void Foo(bool? value = {{boolValue}});
-            }
+          namespace foo.bar;
+          
+          public partial interface IWrapper : IReadOnlyWrapper {
+            void IReadOnlyWrapper.Foo(bool? value) => Foo(value);
+          }
+          
+          #nullable enable
+          public partial interface IReadOnlyWrapper {
+            public void Foo(bool? value = {{boolValue}});
           }
 
           """);
@@ -48,24 +46,24 @@ internal class DefaultValueTests {
         $$"""
           using schema.readOnly;
 
-          namespace foo.bar {
-            [GenerateReadOnly]
-            public partial interface IWrapper {
-              [Const]
-              public void Foo(int? value = {{intValue}});
-            }
+          namespace foo.bar;
+          
+          [GenerateReadOnly]
+          public partial interface IWrapper {
+            [Const]
+            public void Foo(int? value = {{intValue}});
           }
           """,
         $$"""
-          namespace foo.bar {
-            public partial interface IWrapper : IReadOnlyWrapper {
-              void IReadOnlyWrapper.Foo(int? value) => Foo(value);
-            }
-            
-            #nullable enable
-            public partial interface IReadOnlyWrapper {
-              public void Foo(int? value = {{intValue}});
-            }
+          namespace foo.bar;
+          
+          public partial interface IWrapper : IReadOnlyWrapper {
+            void IReadOnlyWrapper.Foo(int? value) => Foo(value);
+          }
+          
+          #nullable enable
+          public partial interface IReadOnlyWrapper {
+            public void Foo(int? value = {{intValue}});
           }
 
           """);
@@ -96,15 +94,15 @@ internal class DefaultValueTests {
           }
           """,
         $$"""
-          namespace foo.bar {
-            public partial interface IWrapper : IReadOnlyWrapper {
-              void IReadOnlyWrapper.Foo(other.SomeType? value) => Foo(value);
-            }
-            
-            #nullable enable
-            public partial interface IReadOnlyWrapper {
-              public void Foo(other.SomeType? value = {{readonlyValue}});
-            }
+          namespace foo.bar;
+          
+          public partial interface IWrapper : IReadOnlyWrapper {
+            void IReadOnlyWrapper.Foo(other.SomeType? value) => Foo(value);
+          }
+          
+          #nullable enable
+          public partial interface IReadOnlyWrapper {
+            public void Foo(other.SomeType? value = {{readonlyValue}});
           }
 
           """);

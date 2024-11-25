@@ -1,7 +1,5 @@
 ﻿using NUnit.Framework;
 
-using schema.binary;
-
 
 namespace schema.readOnly;
 
@@ -20,20 +18,20 @@ internal class BasicReadOnlyGeneratorTests {
         $$"""
           using schema.readOnly;
 
-          namespace foo.bar {
-            [GenerateReadOnly]
-            public partial class Empty {
-              {{emptySrc}}
-            }
+          namespace foo.bar;
+
+          [GenerateReadOnly]
+          public partial class Empty {
+            {{emptySrc}}
           }
           """,
         """
-        namespace foo.bar {
-          public partial class Empty : IReadOnlyEmpty;
-          
-          #nullable enable
-          public partial interface IReadOnlyEmpty;
-        }
+        namespace foo.bar;
+
+        public partial class Empty : IReadOnlyEmpty;
+
+        #nullable enable
+        public partial interface IReadOnlyEmpty;
 
         """);
   }
@@ -57,22 +55,21 @@ internal class BasicReadOnlyGeneratorTests {
                              string containerName,
                              string readOnlyName) {
     ReadOnlyGeneratorTestUtil.AssertGenerated(
-        $$"""
-          using schema.readOnly;
+        $"""
+         using schema.readOnly;
 
-          namespace foo.bar {
-            [GenerateReadOnly]
-            public {{containerPrefix}}partial {{containerSuffix}} {{containerName}} {
-            }
-          }
-          """,
+         namespace foo.bar;
+
+         [GenerateReadOnly]
+         public {containerPrefix}partial {containerSuffix} {containerName};
+         """,
         $$"""
-          namespace foo.bar {
-            public {{containerPrefix}}partial {{containerSuffix}} {{containerName}} : {{readOnlyName}};
-            
-            #nullable enable
-            public partial interface {{readOnlyName}};
-          }
+          namespace foo.bar;
+          
+          public {{containerPrefix}}partial {{containerSuffix}} {{containerName}} : {{readOnlyName}};
+          
+          #nullable enable
+          public partial interface {{readOnlyName}};
 
           """);
   }
@@ -83,24 +80,24 @@ internal class BasicReadOnlyGeneratorTests {
         """
         using schema.readOnly;
 
-        namespace foo.bar {
-          [GenerateReadOnly]
-          public partial class SimpleGenerics<T1, T2> {
-            [Const]
-            public T1 Foo<T3, T4>(T1 t1, T2 t2, T3 t3, T4 t4) { }
-          }
+        namespace foo.bar;
+
+        [GenerateReadOnly]
+        public partial class SimpleGenerics<T1, T2> {
+          [Const]
+          public T1 Foo<T3, T4>(T1 t1, T2 t2, T3 t3, T4 t4) { }
         }
         """,
         """
-        namespace foo.bar {
-          public partial class SimpleGenerics<T1, T2> : IReadOnlySimpleGenerics<T1, T2> {
-            T1 IReadOnlySimpleGenerics<T1, T2>.Foo<T3, T4>(T1 t1, T2 t2, T3 t3, T4 t4) => Foo<T3, T4>(t1, t2, t3, t4);
-          }
-          
-          #nullable enable
-          public partial interface IReadOnlySimpleGenerics<T1, in T2> {
-            public T1 Foo<T3, T4>(T1 t1, T2 t2, T3 t3, T4 t4);
-          }
+        namespace foo.bar;
+
+        public partial class SimpleGenerics<T1, T2> : IReadOnlySimpleGenerics<T1, T2> {
+          T1 IReadOnlySimpleGenerics<T1, T2>.Foo<T3, T4>(T1 t1, T2 t2, T3 t3, T4 t4) => Foo<T3, T4>(t1, t2, t3, t4);
+        }
+
+        #nullable enable
+        public partial interface IReadOnlySimpleGenerics<T1, in T2> {
+          public T1 Foo<T3, T4>(T1 t1, T2 t2, T3 t3, T4 t4);
         }
 
         """);
@@ -112,28 +109,28 @@ internal class BasicReadOnlyGeneratorTests {
         """
         using schema.readOnly;
 
-        namespace @const {
-          [GenerateReadOnly]
-          public partial class @void<@double> where @double : struct {
-            [Const]
-            public @void @int<@short>(@void @bool) where @short : @void { }
-            
-            public @void @float { get; }
-          }
+        namespace @const;
+
+        [GenerateReadOnly]
+        public partial class @void<@double> where @double : struct {
+          [Const]
+          public @void @int<@short>(@void @bool) where @short : @void { }
+          
+          public @void @float { get; }
         }
         """,
         """
-        namespace @const {
-          public partial class @void<@double> : IReadOnlyvoid<@double> {
-            @void IReadOnlyvoid<@double>.@int<@short>(@void @bool) => @int<@short>(@bool);
-            @void IReadOnlyvoid<@double>.@float => @float;
-          }
-          
-          #nullable enable
-          public partial interface IReadOnlyvoid<out @double> where @double : struct {
-            public @void @int<@short>(@void @bool) where @short : @void;
-            public @void @float { get; }
-          }
+        namespace @const;
+
+        public partial class @void<@double> : IReadOnlyvoid<@double> {
+          @void IReadOnlyvoid<@double>.@int<@short>(@void @bool) => @int<@short>(@bool);
+          @void IReadOnlyvoid<@double>.@float => @float;
+        }
+
+        #nullable enable
+        public partial interface IReadOnlyvoid<out @double> where @double : struct {
+          public @void @int<@short>(@void @bool) where @short : @void;
+          public @void @float { get; }
         }
 
         """);

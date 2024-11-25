@@ -17,24 +17,24 @@ internal class KnownStructTests {
           using System.Numerics;
           using schema.binary;
 
-          namespace foo.bar {
-            [BinarySchema]
-            public partial class Wrapper {
-              public {{knownStructName}} Field { get; set; }
-              public {{knownStructName}} PrivateField { get; private set; }
-            }
+          namespace foo.bar;
+
+          [BinarySchema]
+          public partial class Wrapper {
+            public {{knownStructName}} Field { get; set; }
+            public {{knownStructName}} PrivateField { get; private set; }
           }
           """,
         $$"""
           using System;
           using schema.binary;
 
-          namespace foo.bar {
-            public partial class Wrapper {
-              public void Read(IBinaryReader br) {
-                this.Field = br.Read{{knownStructName}}();
-                this.PrivateField = br.Read{{knownStructName}}();
-              }
+          namespace foo.bar;
+
+          public partial class Wrapper {
+            public void Read(IBinaryReader br) {
+              this.Field = br.Read{{knownStructName}}();
+              this.PrivateField = br.Read{{knownStructName}}();
             }
           }
 
@@ -43,12 +43,12 @@ internal class KnownStructTests {
           using System;
           using schema.binary;
 
-          namespace foo.bar {
-            public partial class Wrapper {
-              public void Write(IBinaryWriter bw) {
-                bw.Write{{knownStructName}}(this.Field);
-                bw.Write{{knownStructName}}(this.PrivateField);
-              }
+          namespace foo.bar;
+
+          public partial class Wrapper {
+            public void Write(IBinaryWriter bw) {
+              bw.Write{{knownStructName}}(this.Field);
+              bw.Write{{knownStructName}}(this.PrivateField);
             }
           }
 

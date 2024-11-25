@@ -1,7 +1,5 @@
 ﻿using NUnit.Framework;
 
-using schema.binary;
-
 
 namespace schema.readOnly;
 
@@ -24,23 +22,23 @@ internal class MemberTests {
         $$"""
           using schema.readOnly;
 
-          namespace foo.bar {
-            [GenerateReadOnly]
-            public partial interface IWrapper {
-              public {{primitiveType}} Value { get; set; }
-            }
+          namespace foo.bar;
+          
+          [GenerateReadOnly]
+          public partial interface IWrapper {
+            public {{primitiveType}} Value { get; set; }
           }
           """,
         $$"""
-          namespace foo.bar {
-            public partial interface IWrapper : IReadOnlyWrapper {
-              {{primitiveType}} IReadOnlyWrapper.Value => Value;
-            }
-            
-            #nullable enable
-            public partial interface IReadOnlyWrapper {
-              public {{primitiveType}} Value { get; }
-            }
+          namespace foo.bar;
+          
+          public partial interface IWrapper : IReadOnlyWrapper {
+            {{primitiveType}} IReadOnlyWrapper.Value => Value;
+          }
+          
+          #nullable enable
+          public partial interface IReadOnlyWrapper {
+            public {{primitiveType}} Value { get; }
           }
 
           """);
@@ -53,24 +51,24 @@ internal class MemberTests {
         using schema.readOnly;
         using System.Collections.Generic;
 
-        namespace foo.bar {
-          [GenerateReadOnly]
-          public partial interface IWrapper {
-            public IEnumerable<bool> Value { get; set; }
-          }
+        namespace foo.bar;
+        
+        [GenerateReadOnly]
+        public partial interface IWrapper {
+          public IEnumerable<bool> Value { get; set; }
         }
 
         """,
         """
-        namespace foo.bar {
-          public partial interface IWrapper : IReadOnlyWrapper {
-            System.Collections.Generic.IEnumerable<bool> IReadOnlyWrapper.Value => Value;
-          }
-          
-          #nullable enable
-          public partial interface IReadOnlyWrapper {
-            public System.Collections.Generic.IEnumerable<bool> Value { get; }
-          }
+        namespace foo.bar;
+        
+        public partial interface IWrapper : IReadOnlyWrapper {
+          System.Collections.Generic.IEnumerable<bool> IReadOnlyWrapper.Value => Value;
+        }
+        
+        #nullable enable
+        public partial interface IReadOnlyWrapper {
+          public System.Collections.Generic.IEnumerable<bool> Value { get; }
         }
 
         """);
@@ -83,24 +81,24 @@ internal class MemberTests {
         using schema.readOnly;
         using System.Collections.Generic;
 
-        namespace foo.bar {
-          [GenerateReadOnly]
-          public partial interface IWrapper {
-            public IEnumerable<IEnumerable<bool>> Value { get; set; }
-          }
+        namespace foo.bar;
+        
+        [GenerateReadOnly]
+        public partial interface IWrapper {
+          public IEnumerable<IEnumerable<bool>> Value { get; set; }
         }
 
         """,
         """
-        namespace foo.bar {
-          public partial interface IWrapper : IReadOnlyWrapper {
-            System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<bool>> IReadOnlyWrapper.Value => Value;
-          }
-          
-          #nullable enable
-          public partial interface IReadOnlyWrapper {
-            public System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<bool>> Value { get; }
-          }
+        namespace foo.bar;
+        
+        public partial interface IWrapper : IReadOnlyWrapper {
+          System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<bool>> IReadOnlyWrapper.Value => Value;
+        }
+        
+        #nullable enable
+        public partial interface IReadOnlyWrapper {
+          public System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<bool>> Value { get; }
         }
 
         """);
@@ -113,24 +111,24 @@ internal class MemberTests {
         using schema.readOnly;
         using System.Collections.Generic;
 
-        namespace foo.bar {
-          [GenerateReadOnly]
-          public partial interface IWrapper {
-            public bool this[int index] { get; set; }
-          }
+        namespace foo.bar;
+        
+        [GenerateReadOnly]
+        public partial interface IWrapper {
+          public bool this[int index] { get; set; }
         }
 
         """,
         """
-        namespace foo.bar {
-          public partial interface IWrapper : IReadOnlyWrapper {
-            bool IReadOnlyWrapper.this[int index] => this[index];
-          }
-          
-          #nullable enable
-          public partial interface IReadOnlyWrapper {
-            public bool this[int index] { get; }
-          }
+        namespace foo.bar;
+        
+        public partial interface IWrapper : IReadOnlyWrapper {
+          bool IReadOnlyWrapper.this[int index] => this[index];
+        }
+        
+        #nullable enable
+        public partial interface IReadOnlyWrapper {
+          public bool this[int index] { get; }
         }
 
         """);
@@ -143,24 +141,24 @@ internal class MemberTests {
         using schema.readOnly;
         using System.Collections.Generic;
 
-        namespace foo.bar {
-          [GenerateReadOnly]
-          public partial interface IWrapper {
-            public bool this[int x, int y] { get; set; }
-          }
+        namespace foo.bar;
+        
+        [GenerateReadOnly]
+        public partial interface IWrapper {
+          public bool this[int x, int y] { get; set; }
         }
 
         """,
         """
-        namespace foo.bar {
-          public partial interface IWrapper : IReadOnlyWrapper {
-            bool IReadOnlyWrapper.this[int x, int y] => this[x, y];
-          }
-          
-          #nullable enable
-          public partial interface IReadOnlyWrapper {
-            public bool this[int x, int y] { get; }
-          }
+        namespace foo.bar;
+        
+        public partial interface IWrapper : IReadOnlyWrapper {
+          bool IReadOnlyWrapper.this[int x, int y] => this[x, y];
+        }
+        
+        #nullable enable
+        public partial interface IReadOnlyWrapper {
+          public bool this[int x, int y] { get; }
         }
 
         """);
@@ -176,24 +174,24 @@ internal class MemberTests {
           using schema.readOnly;
           using System.Collections.Generic;
 
-          namespace foo.bar {
-            [GenerateReadOnly]
-            public partial interface IWrapper {
-              [Const]
-              public void Foo({{paramType}} int bar) {}
-            }
+          namespace foo.bar;
+          
+          [GenerateReadOnly]
+          public partial interface IWrapper {
+            [Const]
+            public void Foo({{paramType}} int bar) {}
           }
           """,
         $$"""
-          namespace foo.bar {
-            public partial interface IWrapper : IReadOnlyWrapper {
-              void IReadOnlyWrapper.Foo({{paramType}} int bar) => Foo({{paramType}} bar);
-            }
-            
-            #nullable enable
-            public partial interface IReadOnlyWrapper {
-              public void Foo({{paramType}} int bar);
-            }
+          namespace foo.bar;
+          
+          public partial interface IWrapper : IReadOnlyWrapper {
+            void IReadOnlyWrapper.Foo({{paramType}} int bar) => Foo({{paramType}} bar);
+          }
+          
+          #nullable enable
+          public partial interface IReadOnlyWrapper {
+            public void Foo({{paramType}} int bar);
           }
 
           """);
@@ -206,24 +204,24 @@ internal class MemberTests {
         using schema.readOnly;
         using System.Collections.Generic;
 
-        namespace foo.bar {
-          [GenerateReadOnly]
-          public partial interface IWrapper {
-            [Const]
-            public void Foo(params int[] bar) {}
-          }
+        namespace foo.bar;
+
+        [GenerateReadOnly]
+        public partial interface IWrapper {
+          [Const]
+          public void Foo(params int[] bar) {}
         }
         """,
         """
-        namespace foo.bar {
-          public partial interface IWrapper : IReadOnlyWrapper {
-            void IReadOnlyWrapper.Foo(params int[] bar) => Foo(bar);
-          }
-          
-          #nullable enable
-          public partial interface IReadOnlyWrapper {
-            public void Foo(params int[] bar);
-          }
+        namespace foo.bar;
+        
+        public partial interface IWrapper : IReadOnlyWrapper {
+          void IReadOnlyWrapper.Foo(params int[] bar) => Foo(bar);
+        }
+        
+        #nullable enable
+        public partial interface IReadOnlyWrapper {
+          public void Foo(params int[] bar);
         }
 
         """);
@@ -236,28 +234,28 @@ internal class MemberTests {
         using schema.readOnly;
         using System.Collections.Generic;
 
-        namespace foo.bar {
-          [GenerateReadOnly]
-          public partial interface IWrapper {
-            [Const]
-            public int? Foo(int? bar) {}
+        namespace foo.bar;
         
-            public int? Bar { get; }
-          }
+        [GenerateReadOnly]
+        public partial interface IWrapper {
+          [Const]
+          public int? Foo(int? bar) {}
+      
+          public int? Bar { get; }
         }
         """,
         """
-        namespace foo.bar {
-          public partial interface IWrapper : IReadOnlyWrapper {
-            int? IReadOnlyWrapper.Foo(int? bar) => Foo(bar);
-            int? IReadOnlyWrapper.Bar => Bar;
-          }
-          
-          #nullable enable
-          public partial interface IReadOnlyWrapper {
-            public int? Foo(int? bar);
-            public int? Bar { get; }
-          }
+        namespace foo.bar;
+        
+        public partial interface IWrapper : IReadOnlyWrapper {
+          int? IReadOnlyWrapper.Foo(int? bar) => Foo(bar);
+          int? IReadOnlyWrapper.Bar => Bar;
+        }
+        
+        #nullable enable
+        public partial interface IReadOnlyWrapper {
+          public int? Foo(int? bar);
+          public int? Bar { get; }
         }
 
         """);
@@ -270,24 +268,24 @@ internal class MemberTests {
         using schema.readOnly;
         using System.Collections.Generic;
 
-        namespace foo.bar {
-          [GenerateReadOnly]
-          public partial interface IWrapper {
-            [Const]
-            public int Foo(int a = 123, char b = '0', string c = "hello", int? d = null) {}
-          }
+        namespace foo.bar;
+        
+        [GenerateReadOnly]
+        public partial interface IWrapper {
+          [Const]
+          public int Foo(int a = 123, char b = '0', string c = "hello", int? d = null) {}
         }
         """,
         """
-        namespace foo.bar {
-          public partial interface IWrapper : IReadOnlyWrapper {
-            int IReadOnlyWrapper.Foo(int a, char b, string c, int? d) => Foo(a, b, c, d);
-          }
-          
-          #nullable enable
-          public partial interface IReadOnlyWrapper {
-            public int Foo(int a = 123, char b = '0', string c = "hello", int? d = null);
-          }
+        namespace foo.bar;
+        
+        public partial interface IWrapper : IReadOnlyWrapper {
+          int IReadOnlyWrapper.Foo(int a, char b, string c, int? d) => Foo(a, b, c, d);
+        }
+        
+        #nullable enable
+        public partial interface IReadOnlyWrapper {
+          public int Foo(int a = 123, char b = '0', string c = "hello", int? d = null);
         }
 
         """);
@@ -300,24 +298,24 @@ internal class MemberTests {
         using schema.readOnly;
         using System.Collections.Generic;
 
-        namespace foo.bar {
-          [GenerateReadOnly]
-          public partial interface IWrapper {
-            public (bool, int) Tuple { get; set; }
-          }
+        namespace foo.bar;
+        
+        [GenerateReadOnly]
+        public partial interface IWrapper {
+          public (bool, int) Tuple { get; set; }
         }
 
         """,
         """
-        namespace foo.bar {
-          public partial interface IWrapper : IReadOnlyWrapper {
-            (bool, int) IReadOnlyWrapper.Tuple => Tuple;
-          }
-          
-          #nullable enable
-          public partial interface IReadOnlyWrapper {
-            public (bool, int) Tuple { get; }
-          }
+        namespace foo.bar;
+        
+        public partial interface IWrapper : IReadOnlyWrapper {
+          (bool, int) IReadOnlyWrapper.Tuple => Tuple;
+        }
+        
+        #nullable enable
+        public partial interface IReadOnlyWrapper {
+          public (bool, int) Tuple { get; }
         }
 
         """);
@@ -330,24 +328,24 @@ internal class MemberTests {
         using schema.readOnly;
         using System.Collections.Generic;
 
-        namespace foo.bar {
-          [GenerateReadOnly]
-          public partial interface IWrapper {
-            public (bool a, int b) Tuple { get; set; }
-          }
+        namespace foo.bar;
+        
+        [GenerateReadOnly]
+        public partial interface IWrapper {
+          public (bool a, int b) Tuple { get; set; }
         }
 
         """,
         """
-        namespace foo.bar {
-          public partial interface IWrapper : IReadOnlyWrapper {
-            (bool a, int b) IReadOnlyWrapper.Tuple => Tuple;
-          }
-          
-          #nullable enable
-          public partial interface IReadOnlyWrapper {
-            public (bool a, int b) Tuple { get; }
-          }
+        namespace foo.bar;
+        
+        public partial interface IWrapper : IReadOnlyWrapper {
+          (bool a, int b) IReadOnlyWrapper.Tuple => Tuple;
+        }
+        
+        #nullable enable
+        public partial interface IReadOnlyWrapper {
+          public (bool a, int b) Tuple { get; }
         }
 
         """);

@@ -1,7 +1,5 @@
 ﻿using NUnit.Framework;
 
-using schema.binary;
-
 
 namespace schema.readOnly;
 
@@ -23,28 +21,28 @@ internal class BuiltInTypeTests {
         $$"""
           using schema.readOnly;
 
-          namespace foo.bar {
-            [GenerateReadOnly]
-            public partial interface IWrapper {
-              {{mutable}} Property { get; set; }
+          namespace foo.bar;
+
+          [GenerateReadOnly]
+          public partial interface IWrapper {
+            {{mutable}} Property { get; set; }
           
-              [Const]
-              {{mutable}} Convert({{mutable}} value);
-            }
+            [Const]
+            {{mutable}} Convert({{mutable}} value);
           }
           """,
         $$"""
-          namespace foo.bar {
-            public partial interface IWrapper : IReadOnlyWrapper {
-              {{readOnly}} IReadOnlyWrapper.Property => {{(needsToCast ? $"({readOnly})(object) " : "")}}Property;
-              {{readOnly}} IReadOnlyWrapper.Convert({{mutable}} value) => {{(needsToCast ? $"({readOnly})(object) " : "")}}Convert(value);
-            }
-            
-            #nullable enable
-            public partial interface IReadOnlyWrapper {
-              public {{readOnly}} Property { get; }
-              public {{readOnly}} Convert({{mutable}} value);
-            }
+          namespace foo.bar;
+
+          public partial interface IWrapper : IReadOnlyWrapper {
+            {{readOnly}} IReadOnlyWrapper.Property => {{(needsToCast ? $"({readOnly})(object) " : "")}}Property;
+            {{readOnly}} IReadOnlyWrapper.Convert({{mutable}} value) => {{(needsToCast ? $"({readOnly})(object) " : "")}}Convert(value);
+          }
+
+          #nullable enable
+          public partial interface IReadOnlyWrapper {
+            public {{readOnly}} Property { get; }
+            public {{readOnly}} Convert({{mutable}} value);
           }
 
           """);
@@ -59,24 +57,24 @@ internal class BuiltInTypeTests {
         $$"""
           using schema.readOnly;
 
-          namespace foo.bar {
-            [GenerateReadOnly]
-            public partial interface IWrapper {
-              [KeepMutableType]
-              {{mutable}} Property { get; set; }
-            }
+          namespace foo.bar;
+
+          [GenerateReadOnly]
+          public partial interface IWrapper {
+            [KeepMutableType]
+            {{mutable}} Property { get; set; }
           }
           """,
         $$"""
-          namespace foo.bar {
-            public partial interface IWrapper : IReadOnlyWrapper {
-              {{mutable}} IReadOnlyWrapper.Property => Property;
-            }
-            
-            #nullable enable
-            public partial interface IReadOnlyWrapper {
-              public {{mutable}} Property { get; }
-            }
+          namespace foo.bar;
+
+          public partial interface IWrapper : IReadOnlyWrapper {
+            {{mutable}} IReadOnlyWrapper.Property => Property;
+          }
+
+          #nullable enable
+          public partial interface IReadOnlyWrapper {
+            public {{mutable}} Property { get; }
           }
 
           """);
@@ -91,25 +89,25 @@ internal class BuiltInTypeTests {
         $$"""
           using schema.readOnly;
 
-          namespace foo.bar {
-            [GenerateReadOnly]
-            public partial interface IWrapper {
-              [Const]
-              [KeepMutableType]
-              {{mutable}} Convert({{mutable}} value);
-            }
+          namespace foo.bar;
+
+          [GenerateReadOnly]
+          public partial interface IWrapper {
+            [Const]
+            [KeepMutableType]
+            {{mutable}} Convert({{mutable}} value);
           }
           """,
         $$"""
-          namespace foo.bar {
-            public partial interface IWrapper : IReadOnlyWrapper {
-              {{mutable}} IReadOnlyWrapper.Convert({{mutable}} value) => Convert(value);
-            }
-            
-            #nullable enable
-            public partial interface IReadOnlyWrapper {
-              public {{mutable}} Convert({{mutable}} value);
-            }
+          namespace foo.bar;
+
+          public partial interface IWrapper : IReadOnlyWrapper {
+            {{mutable}} IReadOnlyWrapper.Convert({{mutable}} value) => Convert(value);
+          }
+
+          #nullable enable
+          public partial interface IReadOnlyWrapper {
+            public {{mutable}} Convert({{mutable}} value);
           }
 
           """);

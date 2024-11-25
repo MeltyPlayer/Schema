@@ -1,7 +1,5 @@
 ﻿using NUnit.Framework;
 
-using schema.binary;
-
 
 namespace schema.autoInterface;
 
@@ -12,22 +10,22 @@ internal class NullableTests {
         """
         using schema.autoInterface;
 
-        namespace foo.bar {
-          [GenerateInterface]
-          public partial class Wrapper {
-            public int? NullablePrimitive { get; set; }
-          }
+        namespace foo.bar;
+
+        [GenerateInterface]
+        public partial class Wrapper {
+          public int? NullablePrimitive { get; set; }
         }
 
         """,
         """
-        namespace foo.bar {
-          public partial class Wrapper : IWrapper;
-          
-          #nullable enable
-          public interface IWrapper {
-            public int? NullablePrimitive { get; set; }
-          }
+        namespace foo.bar;
+
+        public partial class Wrapper : IWrapper;
+        
+        #nullable enable
+        public interface IWrapper {
+          public int? NullablePrimitive { get; set; }
         }
 
         """);
@@ -39,22 +37,22 @@ internal class NullableTests {
         """
         using schema.autoInterface;
 
-        namespace foo.bar {
-          [GenerateInterface]
-          public partial class Wrapper<T> {
-            public T? NullableGeneric { get; set; }
-          }
+        namespace foo.bar;
+
+        [GenerateInterface]
+        public partial class Wrapper<T> {
+          public T? NullableGeneric { get; set; }
         }
 
         """,
         """
-        namespace foo.bar {
-          public partial class Wrapper<T> : IWrapper<T>;
-          
-          #nullable enable
-          public interface IWrapper<T> {
-            public T? NullableGeneric { get; set; }
-          }
+        namespace foo.bar;
+
+        public partial class Wrapper<T> : IWrapper<T>;
+        
+        #nullable enable
+        public interface IWrapper<T> {
+          public T? NullableGeneric { get; set; }
         }
 
         """);
@@ -66,22 +64,22 @@ internal class NullableTests {
         """
         using schema.autoInterface;
 
-        namespace foo.bar {
-          [GenerateInterface]
-          public partial class Wrapper<T> {
-            public T? Method(T? t);
-          }
+        namespace foo.bar;
+
+        [GenerateInterface]
+        public partial class Wrapper<T> {
+          public T? Method(T? t);
         }
 
         """,
         """
-        namespace foo.bar {
-          public partial class Wrapper<T> : IWrapper<T>;
-          
-          #nullable enable
-          public interface IWrapper<T> {
-            public T? Method(T? t);
-          }
+        namespace foo.bar;
+
+        public partial class Wrapper<T> : IWrapper<T>;
+        
+        #nullable enable
+        public interface IWrapper<T> {
+          public T? Method(T? t);
         }
 
         """);

@@ -14,5 +14,8 @@ public static class SourceWriterExtensions {
     => sw.WriteLine("}");
 
   public static ISourceWriter WriteLine(this ISourceWriter sw, string text)
-    => sw.Write(text + '\n');
+    => sw.Write($"{text}\n");
+
+  public static ISourceWriter WriteLine(this ISourceWriter sw)
+    => sw.Write("\n");
 }

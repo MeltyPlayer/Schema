@@ -13,19 +13,19 @@ internal class VarianceGeneratorTests {
 
           using schema.binary;
 
-          namespace foo.bar {
-            [BinarySchema]
-            public partial class Wrapper<{{variance}} T>;
-          }
+          namespace foo.bar;
+          
+          [BinarySchema]
+          public partial class Wrapper<{{variance}} T>;
           """,
         $$"""
           using System;
           using schema.binary;
 
-          namespace foo.bar {
-            public partial class Wrapper<{{variance}} T> {
-              public void Read(IBinaryReader br) {
-              }
+          namespace foo.bar;
+          
+          public partial class Wrapper<{{variance}} T> {
+            public void Read(IBinaryReader br) {
             }
           }
 
@@ -34,10 +34,10 @@ internal class VarianceGeneratorTests {
           using System;
           using schema.binary;
 
-          namespace foo.bar {
-            public partial class Wrapper<{{variance}} T> {
-              public void Write(IBinaryWriter bw) {
-              }
+          namespace foo.bar;
+          
+          public partial class Wrapper<{{variance}} T> {
+            public void Write(IBinaryWriter bw) {
             }
           }
 

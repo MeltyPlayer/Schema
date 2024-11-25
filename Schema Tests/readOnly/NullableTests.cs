@@ -1,7 +1,5 @@
 ﻿using NUnit.Framework;
 
-using schema.binary;
-
 
 namespace schema.readOnly;
 
@@ -11,25 +9,25 @@ internal class NullableTests {
     ReadOnlyGeneratorTestUtil.AssertGenerated(
         """
         using schema.readOnly;
+        
+        namespace foo.bar;
 
-        namespace foo.bar {
-          [GenerateReadOnly]
-          public partial interface IWrapper {
-            int? NullablePrimitive { get; set; }
-          }
+        [GenerateReadOnly]
+        public partial interface IWrapper {
+          int? NullablePrimitive { get; set; }
         }
 
         """,
         """
-        namespace foo.bar {
-          public partial interface IWrapper : IReadOnlyWrapper {
-            int? IReadOnlyWrapper.NullablePrimitive => NullablePrimitive;
-          }
-          
-          #nullable enable
-          public partial interface IReadOnlyWrapper {
-            public int? NullablePrimitive { get; }
-          }
+        namespace foo.bar;
+        
+        public partial interface IWrapper : IReadOnlyWrapper {
+          int? IReadOnlyWrapper.NullablePrimitive => NullablePrimitive;
+        }
+        
+        #nullable enable
+        public partial interface IReadOnlyWrapper {
+          public int? NullablePrimitive { get; }
         }
 
         """);
@@ -41,24 +39,24 @@ internal class NullableTests {
         """
         using schema.readOnly;
 
-        namespace foo.bar {
-          [GenerateReadOnly]
-          public partial interface IWrapper<T> {
-            T? NullableGeneric { get; set; }
-          }
+        namespace foo.bar;
+        
+        [GenerateReadOnly]
+        public partial interface IWrapper<T> {
+          T? NullableGeneric { get; set; }
         }
 
         """,
         """
-        namespace foo.bar {
-          public partial interface IWrapper<T> : IReadOnlyWrapper<T> {
-            T? IReadOnlyWrapper<T>.NullableGeneric => NullableGeneric;
-          }
-          
-          #nullable enable
-          public partial interface IReadOnlyWrapper<out T> {
-            public T? NullableGeneric { get; }
-          }
+        namespace foo.bar;
+        
+        public partial interface IWrapper<T> : IReadOnlyWrapper<T> {
+          T? IReadOnlyWrapper<T>.NullableGeneric => NullableGeneric;
+        }
+        
+        #nullable enable
+        public partial interface IReadOnlyWrapper<out T> {
+          public T? NullableGeneric { get; }
         }
 
         """);
@@ -70,25 +68,25 @@ internal class NullableTests {
         """
         using schema.readOnly;
 
-        namespace foo.bar {
-          [GenerateReadOnly]
-          public partial interface IWrapper<T> {
-            [Const]
-            T? Method(T? t);
-          }
+        namespace foo.bar;
+
+        [GenerateReadOnly]
+        public partial interface IWrapper<T> {
+          [Const]
+          T? Method(T? t);
         }
 
         """,
         """
-        namespace foo.bar {
-          public partial interface IWrapper<T> : IReadOnlyWrapper<T> {
-            T? IReadOnlyWrapper<T>.Method(T? t) => Method(t);
-          }
-          
-          #nullable enable
-          public partial interface IReadOnlyWrapper<T> {
-            public T? Method(T? t);
-          }
+        namespace foo.bar;
+
+        public partial interface IWrapper<T> : IReadOnlyWrapper<T> {
+          T? IReadOnlyWrapper<T>.Method(T? t) => Method(t);
+        }
+        
+        #nullable enable
+        public partial interface IReadOnlyWrapper<T> {
+          public T? Method(T? t);
         }
 
         """);

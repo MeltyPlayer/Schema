@@ -1,7 +1,5 @@
 ﻿using NUnit.Framework;
 
-using schema.binary;
-
 
 namespace schema.autoInterface;
 
@@ -15,22 +13,22 @@ internal class DefaultValueTests {
         $$"""
           using schema.autoInterface;
 
-          namespace foo.bar {
-            [GenerateInterface]
-            public partial class Wrapper {
-              [Const]
-              public void Foo(bool? value = {{boolValue}});
-            }
+          namespace foo.bar;
+          
+          [GenerateInterface]
+          public partial class Wrapper {
+            [Const]
+            public void Foo(bool? value = {{boolValue}});
           }
           """,
         $$"""
-          namespace foo.bar {
-            public partial class Wrapper : IWrapper;
-            
-            #nullable enable
-            public interface IWrapper {
-              public void Foo(bool? value = {{boolValue}});
-            }
+          namespace foo.bar;
+          
+          public partial class Wrapper : IWrapper;
+          
+          #nullable enable
+          public interface IWrapper {
+            public void Foo(bool? value = {{boolValue}});
           }
 
           """);
@@ -46,22 +44,22 @@ internal class DefaultValueTests {
         $$"""
           using schema.autoInterface;
 
-          namespace foo.bar {
-            [GenerateInterface]
-            public partial class Wrapper {
-              [Const]
-              public void Foo(int? value = {{intValue}});
-            }
+          namespace foo.bar;
+          
+          [GenerateInterface]
+          public partial class Wrapper {
+            [Const]
+            public void Foo(int? value = {{intValue}});
           }
           """,
         $$"""
-          namespace foo.bar {
-            public partial class Wrapper : IWrapper;
-            
-            #nullable enable
-            public interface IWrapper {
-              public void Foo(int? value = {{intValue}});
-            }
+          namespace foo.bar;
+        
+          public partial class Wrapper : IWrapper;
+          
+          #nullable enable
+          public interface IWrapper {
+            public void Foo(int? value = {{intValue}});
           }
 
           """);
@@ -92,13 +90,13 @@ internal class DefaultValueTests {
           }
           """,
         $$"""
-          namespace foo.bar {
-            public partial class Wrapper : IWrapper;
-            
-            #nullable enable
-            public interface IWrapper {
-              public void Foo(other.SomeType? value = {{readonlyValue}});
-            }
+          namespace foo.bar;
+          
+          public partial class Wrapper : IWrapper;
+          
+          #nullable enable
+          public interface IWrapper {
+            public void Foo(other.SomeType? value = {{readonlyValue}});
           }
 
           """);

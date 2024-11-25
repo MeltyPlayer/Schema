@@ -6,15 +6,17 @@ namespace schema.binary;
 public partial class SchemaStructureParserTests {
   [Test]
   public void TestByte() {
-    var structure = BinarySchemaTestUtil.ParseFirst(@"
-using schema.binary;
+    var structure = BinarySchemaTestUtil.ParseFirst("""
 
-namespace foo.bar {
-  [BinarySchema]
-  public class ByteWrapper {
-    public byte field;
-  }
-}");
+                                                    using schema.binary;
+
+                                                    namespace foo.bar {
+                                                      [BinarySchema]
+                                                      public class ByteWrapper {
+                                                        public byte field;
+                                                      }
+                                                    }
+                                                    """);
 
     Assert.IsEmpty(structure.Diagnostics);
 
@@ -36,15 +38,17 @@ namespace foo.bar {
 
   [Test]
   public void TestSByte() {
-    var structure = BinarySchemaTestUtil.ParseFirst(@"
-using schema.binary;
+    var structure = BinarySchemaTestUtil.ParseFirst("""
 
-namespace foo.bar {
-  [BinarySchema]
-  public class SByteWrapper {
-    public sbyte field;
-  }
-}");
+                                                    using schema.binary;
+
+                                                    namespace foo.bar {
+                                                      [BinarySchema]
+                                                      public class SByteWrapper {
+                                                        public sbyte field;
+                                                      }
+                                                    }
+                                                    """);
 
     Assert.IsEmpty(structure.Diagnostics);
 
@@ -66,15 +70,17 @@ namespace foo.bar {
 
   [Test]
   public void TestInt16() {
-    var structure = BinarySchemaTestUtil.ParseFirst(@"
-using schema.binary;
+    var structure = BinarySchemaTestUtil.ParseFirst("""
 
-namespace foo.bar {
-  [BinarySchema]
-  public class Int16Wrapper {
-    public short field;
-  }
-}");
+                                                    using schema.binary;
+
+                                                    namespace foo.bar {
+                                                      [BinarySchema]
+                                                      public class Int16Wrapper {
+                                                        public short field;
+                                                      }
+                                                    }
+                                                    """);
 
     Assert.IsEmpty(structure.Diagnostics);
 
@@ -96,23 +102,25 @@ namespace foo.bar {
 
   [Test]
   public void TestEnum() {
-    var structure = BinarySchemaTestUtil.ParseFirst(@"
-using schema.binary;
-using schema.binary.attributes;
+    var structure = BinarySchemaTestUtil.ParseFirst("""
 
-namespace foo.bar {
-  public enum ValueType {
-    A,
-    B,
-    C
-  }
+                                                    using schema.binary;
+                                                    using schema.binary.attributes;
 
-  [BinarySchema]
-  public class EnumWrapper {
-    [IntegerFormat(SchemaIntegerType.UINT16)]
-    public ValueType field;
-  }
-}");
+                                                    namespace foo.bar {
+                                                      public enum ValueType {
+                                                        A,
+                                                        B,
+                                                        C
+                                                      }
+                                                    
+                                                      [BinarySchema]
+                                                      public class EnumWrapper {
+                                                        [IntegerFormat(SchemaIntegerType.UINT16)]
+                                                        public ValueType field;
+                                                      }
+                                                    }
+                                                    """);
 
     Assert.IsEmpty(structure.Diagnostics);
 
@@ -134,13 +142,15 @@ namespace foo.bar {
 
   [Test]
   public void TestConstArray() {
-    var structure = BinarySchemaTestUtil.ParseFirst(@"
-namespace foo.bar {
-  [BinarySchema]
-  public class ArrayWrapper {
-    public readonly int[] field;
-  }
-}");
+    var structure = BinarySchemaTestUtil.ParseFirst("""
+
+                                                    namespace foo.bar {
+                                                      [BinarySchema]
+                                                      public class ArrayWrapper {
+                                                        public readonly int[] field;
+                                                      }
+                                                    }
+                                                    """);
 
     Assert.IsEmpty(structure.Diagnostics);
 
@@ -163,13 +173,15 @@ namespace foo.bar {
 
   [Test]
   public void TestConstCharArray() {
-    var structure = BinarySchemaTestUtil.ParseFirst(@"
-namespace foo.bar {
-  [BinarySchema]
-  public class CharWrapper {
-    public readonly char[] field;
-  }
-}");
+    var structure = BinarySchemaTestUtil.ParseFirst("""
+
+                                                    namespace foo.bar {
+                                                      [BinarySchema]
+                                                      public class CharWrapper {
+                                                        public readonly char[] field;
+                                                      }
+                                                    }
+                                                    """);
 
     Assert.IsEmpty(structure.Diagnostics);
 
@@ -192,15 +204,17 @@ namespace foo.bar {
 
   [Test]
   public void TestField() {
-    var structure = BinarySchemaTestUtil.ParseFirst(@"
-using schema.binary;
+    var structure = BinarySchemaTestUtil.ParseFirst("""
 
-namespace foo.bar {
-  [BinarySchema]
-  public class ByteWrapper {
-    public byte field;
-  }
-}");
+                                                    using schema.binary;
+
+                                                    namespace foo.bar {
+                                                      [BinarySchema]
+                                                      public class ByteWrapper {
+                                                        public byte field;
+                                                      }
+                                                    }
+                                                    """);
 
     Assert.IsEmpty(structure.Diagnostics);
 
@@ -222,15 +236,17 @@ namespace foo.bar {
 
   [Test]
   public void TestProperty() {
-    var structure = BinarySchemaTestUtil.ParseFirst(@"
-using schema.binary;
+    var structure = BinarySchemaTestUtil.ParseFirst("""
 
-namespace foo.bar {
-  [BinarySchema]
-  public class ByteWrapper {
-    public byte Field { get; set; }
-  }
-}");
+                                                    using schema.binary;
+
+                                                    namespace foo.bar {
+                                                      [BinarySchema]
+                                                      public class ByteWrapper {
+                                                        public byte Field { get; set; }
+                                                      }
+                                                    }
+                                                    """);
 
     Assert.IsEmpty(structure.Diagnostics);
 
@@ -252,15 +268,17 @@ namespace foo.bar {
 
   [Test]
   public void TestReadonlyPrimitiveField() {
-    var structure = BinarySchemaTestUtil.ParseFirst(@"
-using schema.binary;
+    var structure = BinarySchemaTestUtil.ParseFirst("""
 
-namespace foo.bar {
-  [BinarySchema]
-  public class ByteWrapper {
-    public readonly byte field;
-  }
-}");
+                                                    using schema.binary;
+
+                                                    namespace foo.bar {
+                                                      [BinarySchema]
+                                                      public class ByteWrapper {
+                                                        public readonly byte field;
+                                                      }
+                                                    }
+                                                    """);
 
     Assert.IsEmpty(structure.Diagnostics);
 
@@ -282,15 +300,17 @@ namespace foo.bar {
 
   [Test]
   public void TestReadonlyPrimitiveProperty() {
-    var structure = BinarySchemaTestUtil.ParseFirst(@"
-using schema.binary;
+    var structure = BinarySchemaTestUtil.ParseFirst("""
 
-namespace foo.bar {
-  [BinarySchema]
-  public class ByteWrapper {
-    public byte Field { get; }
-  }
-}");
+                                                    using schema.binary;
+
+                                                    namespace foo.bar {
+                                                      [BinarySchema]
+                                                      public class ByteWrapper {
+                                                        public byte Field { get; }
+                                                      }
+                                                    }
+                                                    """);
 
     Assert.IsEmpty(structure.Diagnostics);
 

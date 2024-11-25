@@ -1,7 +1,5 @@
 ﻿using NUnit.Framework;
 
-using schema.binary;
-
 
 namespace schema.autoInterface;
 
@@ -15,21 +13,21 @@ internal class MemberTests {
         $$"""
           using schema.autoInterface;
 
-          namespace foo.bar {
-            [GenerateInterface]
-            public partial class Wrapper {
-              public bool Value { {{getterAndOrSetter}} }
-            }
+          namespace foo.bar;
+          
+          [GenerateInterface]
+          public partial class Wrapper {
+            public bool Value { {{getterAndOrSetter}} }
           }
           """,
         $$"""
-          namespace foo.bar {
-            public partial class Wrapper : IWrapper;
-            
-            #nullable enable
-            public interface IWrapper {
-              public bool Value { {{getterAndOrSetter}} }
-            }
+          namespace foo.bar;
+          
+          public partial class Wrapper : IWrapper;
+          
+          #nullable enable
+          public interface IWrapper {
+            public bool Value { {{getterAndOrSetter}} }
           }
 
           """);
@@ -53,21 +51,21 @@ internal class MemberTests {
         $$"""
           using schema.autoInterface;
 
-          namespace foo.bar {
-            [GenerateInterface]
-            public partial class Wrapper {
-              public {{primitiveType}} Value { get; set; }
-            }
+          namespace foo.bar;
+          
+          [GenerateInterface]
+          public partial class Wrapper {
+            public {{primitiveType}} Value { get; set; }
           }
           """,
         $$"""
-          namespace foo.bar {
-            public partial class Wrapper : IWrapper;
-            
-            #nullable enable
-            public interface IWrapper {
-              public {{primitiveType}} Value { get; set; }
-            }
+          namespace foo.bar;
+          
+          public partial class Wrapper : IWrapper;
+          
+          #nullable enable
+          public interface IWrapper {
+            public {{primitiveType}} Value { get; set; }
           }
 
           """);
@@ -80,22 +78,22 @@ internal class MemberTests {
         using schema.autoInterface;
         using System.Collections.Generic;
 
-        namespace foo.bar {
-          [GenerateInterface]
-          public partial class Wrapper {
-            public IEnumerable<bool> Value { get; set; }
-          }
+        namespace foo.bar;
+        
+        [GenerateInterface]
+        public partial class Wrapper {
+          public IEnumerable<bool> Value { get; set; }
         }
 
         """,
         """
-        namespace foo.bar {
-          public partial class Wrapper : IWrapper;
-          
-          #nullable enable
-          public interface IWrapper {
-            public System.Collections.Generic.IEnumerable<bool> Value { get; set; }
-          }
+        namespace foo.bar;
+        
+        public partial class Wrapper : IWrapper;
+        
+        #nullable enable
+        public interface IWrapper {
+          public System.Collections.Generic.IEnumerable<bool> Value { get; set; }
         }
 
         """);
@@ -108,22 +106,22 @@ internal class MemberTests {
         using schema.autoInterface;
         using System.Collections.Generic;
 
-        namespace foo.bar {
-          [GenerateInterface]
-          public partial class Wrapper {
-            public IEnumerable<IEnumerable<bool>> Value { get; set; }
-          }
+        namespace foo.bar;
+        
+        [GenerateInterface]
+        public partial class Wrapper {
+          public IEnumerable<IEnumerable<bool>> Value { get; set; }
         }
 
         """,
         """
-        namespace foo.bar {
-          public partial class Wrapper : IWrapper;
-          
-          #nullable enable
-          public interface IWrapper {
-            public System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<bool>> Value { get; set; }
-          }
+        namespace foo.bar;
+        
+        public partial class Wrapper : IWrapper;
+        
+        #nullable enable
+        public interface IWrapper {
+          public System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<bool>> Value { get; set; }
         }
 
         """);
@@ -135,22 +133,22 @@ internal class MemberTests {
         """
         using schema.autoInterface;
 
-        namespace foo.bar {
-          [GenerateInterface]
-          public partial class Wrapper {
-            public bool this[int index] { get; set; }
-          }
+        namespace foo.bar;
+        
+        [GenerateInterface]
+        public partial class Wrapper {
+          public bool this[int index] { get; set; }
         }
 
         """,
         """
-        namespace foo.bar {
-          public partial class Wrapper : IWrapper;
-          
-          #nullable enable
-          public interface IWrapper {
-            public bool this[int index] { get; set; }
-          }
+        namespace foo.bar;
+        
+        public partial class Wrapper : IWrapper;
+        
+        #nullable enable
+        public interface IWrapper {
+          public bool this[int index] { get; set; }
         }
 
         """);
@@ -163,22 +161,22 @@ internal class MemberTests {
         using schema.autoInterface;
         using System.Collections.Generic;
 
-        namespace foo.bar {
-          [GenerateInterface]
-          public partial class Wrapper {
-            public bool this[int x, int y] { get; set; }
-          }
+        namespace foo.bar;
+        
+        [GenerateInterface]
+        public partial class Wrapper {
+          public bool this[int x, int y] { get; set; }
         }
 
         """,
         """
-        namespace foo.bar {
-          public partial class Wrapper : IWrapper;
-          
-          #nullable enable
-          public interface IWrapper {
-            public bool this[int x, int y] { get; set; }
-          }
+        namespace foo.bar;
+        
+        public partial class Wrapper : IWrapper;
+        
+        #nullable enable
+        public interface IWrapper {
+          public bool this[int x, int y] { get; set; }
         }
 
         """);
@@ -194,21 +192,21 @@ internal class MemberTests {
           using schema.autoInterface;
           using System.Collections.Generic;
 
-          namespace foo.bar {
-            [GenerateInterface]
-            public partial class Wrapper {
-              public void Foo({{paramType}} int bar) {}
-            }
+          namespace foo.bar;
+
+          [GenerateInterface]
+          public partial class Wrapper {
+            public void Foo({{paramType}} int bar) {}
           }
           """,
         $$"""
-          namespace foo.bar {
-            public partial class Wrapper : IWrapper;
-            
-            #nullable enable
-            public interface IWrapper {
-              public void Foo({{paramType}} int bar);
-            }
+          namespace foo.bar;
+
+          public partial class Wrapper : IWrapper;
+
+          #nullable enable
+          public interface IWrapper {
+            public void Foo({{paramType}} int bar);
           }
 
           """);
@@ -221,22 +219,22 @@ internal class MemberTests {
         using schema.autoInterface;
         using System.Collections.Generic;
 
-        namespace foo.bar {
-          [GenerateInterface]
-          public partial class Wrapper {
-            [Const]
-            public void Foo(params int[] bar) {}
-          }
+        namespace foo.bar;
+
+        [GenerateInterface]
+        public partial class Wrapper {
+          [Const]
+          public void Foo(params int[] bar) {}
         }
         """,
         """
-        namespace foo.bar {
-          public partial class Wrapper : IWrapper;
-          
-          #nullable enable
-          public interface IWrapper {
-            public void Foo(params int[] bar);
-          }
+        namespace foo.bar;
+
+        public partial class Wrapper : IWrapper;
+
+        #nullable enable
+        public interface IWrapper {
+          public void Foo(params int[] bar);
         }
 
         """);
@@ -249,25 +247,25 @@ internal class MemberTests {
         using schema.autoInterface;
         using System.Collections.Generic;
 
-        namespace foo.bar {
-          [GenerateInterface]
-          public partial class Wrapper {
-            [Const]
-            public int? Foo(int? bar) {}
+        namespace foo.bar;
+
+        [GenerateInterface]
+        public partial class Wrapper {
+          [Const]
+          public int? Foo(int? bar) {}
         
-            public int? Bar { get; }
-          }
+          public int? Bar { get; }
         }
         """,
         """
-        namespace foo.bar {
-          public partial class Wrapper : IWrapper;
-          
-          #nullable enable
-          public interface IWrapper {
-            public int? Foo(int? bar);
-            public int? Bar { get; }
-          }
+        namespace foo.bar;
+
+        public partial class Wrapper : IWrapper;
+
+        #nullable enable
+        public interface IWrapper {
+          public int? Foo(int? bar);
+          public int? Bar { get; }
         }
 
         """);
@@ -280,22 +278,22 @@ internal class MemberTests {
         using schema.autoInterface;
         using System.Collections.Generic;
 
-        namespace foo.bar {
-          [GenerateInterface]
-          public partial class Wrapper {
-            [Const]
-            public int Foo(int a = 123, char b = '0', string c = "hello", int? d = null) {}
-          }
+        namespace foo.bar;
+
+        [GenerateInterface]
+        public partial class Wrapper {
+          [Const]
+          public int Foo(int a = 123, char b = '0', string c = "hello", int? d = null) {}
         }
         """,
         """
-        namespace foo.bar {
-          public partial class Wrapper : IWrapper;
-          
-          #nullable enable
-          public interface IWrapper {
-            public int Foo(int a = 123, char b = '0', string c = "hello", int? d = null);
-          }
+        namespace foo.bar;
+
+        public partial class Wrapper : IWrapper;
+        
+        #nullable enable
+        public interface IWrapper {
+          public int Foo(int a = 123, char b = '0', string c = "hello", int? d = null);
         }
 
         """);
@@ -308,22 +306,22 @@ internal class MemberTests {
         using schema.autoInterface;
         using System.Collections.Generic;
 
-        namespace foo.bar {
-          [GenerateInterface]
-          public partial class Wrapper {
-            public (bool, int) Tuple { get; set; }
-          }
+        namespace foo.bar;
+        
+        [GenerateInterface]
+        public partial class Wrapper {
+          public (bool, int) Tuple { get; set; }
         }
 
         """,
         """
-        namespace foo.bar {
-          public partial class Wrapper : IWrapper;
-          
-          #nullable enable
-          public interface IWrapper {
-            public (bool, int) Tuple { get; set; }
-          }
+        namespace foo.bar;
+        
+        public partial class Wrapper : IWrapper;
+        
+        #nullable enable
+        public interface IWrapper {
+          public (bool, int) Tuple { get; set; }
         }
 
         """);
@@ -336,22 +334,22 @@ internal class MemberTests {
         using schema.autoInterface;
         using System.Collections.Generic;
 
-        namespace foo.bar {
-          [GenerateInterface]
-          public partial class Wrapper {
-            public (bool a, int b) Tuple { get; set; }
-          }
+        namespace foo.bar;
+        
+        [GenerateInterface]
+        public partial class Wrapper {
+          public (bool a, int b) Tuple { get; set; }
         }
 
         """,
         """
-        namespace foo.bar {
-          public partial class Wrapper : IWrapper;
-          
-          #nullable enable
-          public interface IWrapper {
-            public (bool a, int b) Tuple { get; set; }
-          }
+        namespace foo.bar;
+        
+        public partial class Wrapper : IWrapper;
+        
+        #nullable enable
+        public interface IWrapper {
+          public (bool a, int b) Tuple { get; set; }
         }
 
         """);

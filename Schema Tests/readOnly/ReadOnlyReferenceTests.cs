@@ -1,7 +1,5 @@
 ﻿using NUnit.Framework;
 
-using schema.binary;
-
 
 namespace schema.readOnly;
 
@@ -27,24 +25,24 @@ internal class ReadOnlyReferenceTests {
 
         """,
         """
-        namespace foo.bar.other {
-          public partial interface IOther : IReadOnlyOther;
-          
-          #nullable enable
-          public partial interface IReadOnlyOther;
-        }
+        namespace foo.bar.other;
+
+        public partial interface IOther : IReadOnlyOther;
+
+        #nullable enable
+        public partial interface IReadOnlyOther;
 
         """,
         """
-        namespace foo.bar {
-          public partial interface IWrapper : IReadOnlyWrapper {
-            other.IReadOnlyOther IReadOnlyWrapper.Field => Field;
-          }
-          
-          #nullable enable
-          public partial interface IReadOnlyWrapper {
-            public other.IReadOnlyOther Field { get; }
-          }
+        namespace foo.bar;
+
+        public partial interface IWrapper : IReadOnlyWrapper {
+          other.IReadOnlyOther IReadOnlyWrapper.Field => Field;
+        }
+
+        #nullable enable
+        public partial interface IReadOnlyWrapper {
+          public other.IReadOnlyOther Field { get; }
         }
 
         """);
@@ -71,24 +69,24 @@ internal class ReadOnlyReferenceTests {
 
         """,
         """
-        namespace foo.bar.other {
-          public partial interface IOther : IReadOnlyOther;
-          
-          #nullable enable
-          public partial interface IReadOnlyOther;
-        }
+        namespace foo.bar.other;
+
+        public partial interface IOther : IReadOnlyOther;
+
+        #nullable enable
+        public partial interface IReadOnlyOther;
 
         """,
         """
-        namespace foo.bar {
-          public partial interface IWrapper : IReadOnlyWrapper {
-            other.IReadOnlyOther? IReadOnlyWrapper.Field => Field;
-          }
-          
-          #nullable enable
-          public partial interface IReadOnlyWrapper {
-            public other.IReadOnlyOther? Field { get; }
-          }
+        namespace foo.bar;
+
+        public partial interface IWrapper : IReadOnlyWrapper {
+          other.IReadOnlyOther? IReadOnlyWrapper.Field => Field;
+        }
+
+        #nullable enable
+        public partial interface IReadOnlyWrapper {
+          public other.IReadOnlyOther? Field { get; }
         }
 
         """);
@@ -116,24 +114,24 @@ internal class ReadOnlyReferenceTests {
 
         """,
         """
-        namespace foo.bar.other {
-          public partial interface IOther : IReadOnlyOther;
-          
-          #nullable enable
-          public partial interface IReadOnlyOther;
-        }
+        namespace foo.bar.other;
+
+        public partial interface IOther : IReadOnlyOther;
+
+        #nullable enable
+        public partial interface IReadOnlyOther;
 
         """,
         """
-        namespace foo.bar {
-          public partial interface IWrapper : IReadOnlyWrapper {
-            System.Collections.Generic.IEnumerable<other.IReadOnlyOther> IReadOnlyWrapper.Field => Field;
-          }
-          
-          #nullable enable
-          public partial interface IReadOnlyWrapper {
-            public System.Collections.Generic.IEnumerable<other.IReadOnlyOther> Field { get; }
-          }
+        namespace foo.bar;
+
+        public partial interface IWrapper : IReadOnlyWrapper {
+          System.Collections.Generic.IEnumerable<other.IReadOnlyOther> IReadOnlyWrapper.Field => Field;
+        }
+
+        #nullable enable
+        public partial interface IReadOnlyWrapper {
+          public System.Collections.Generic.IEnumerable<other.IReadOnlyOther> Field { get; }
         }
 
         """);
@@ -160,24 +158,24 @@ internal class ReadOnlyReferenceTests {
 
         """,
         """
-        namespace foo.bar.other {
-          public partial interface IOther : IReadOnlyOther;
-          
-          #nullable enable
-          public partial interface IReadOnlyOther;
-        }
+        namespace foo.bar.other;
+
+        public partial interface IOther : IReadOnlyOther;
+
+        #nullable enable
+        public partial interface IReadOnlyOther;
 
         """,
         """
-        namespace foo.bar {
-          public partial interface IWrapper : IReadOnlyWrapper {
-            (other.IReadOnlyOther, int) IReadOnlyWrapper.Field => Field;
-          }
-          
-          #nullable enable
-          public partial interface IReadOnlyWrapper {
-            public (other.IReadOnlyOther, int) Field { get; }
-          }
+        namespace foo.bar;
+
+        public partial interface IWrapper : IReadOnlyWrapper {
+          (other.IReadOnlyOther, int) IReadOnlyWrapper.Field => Field;
+        }
+
+        #nullable enable
+        public partial interface IReadOnlyWrapper {
+          public (other.IReadOnlyOther, int) Field { get; }
         }
 
         """);
@@ -202,21 +200,21 @@ internal class ReadOnlyReferenceTests {
 
         """,
         """
-        namespace foo.bar.other {
-          public partial interface IOther : IReadOnlyOther;
-          
-          #nullable enable
-          public partial interface IReadOnlyOther;
-        }
+        namespace foo.bar.other;
+
+        public partial interface IOther : IReadOnlyOther;
+
+        #nullable enable
+        public partial interface IReadOnlyOther;
 
         """,
         """
-        namespace foo.bar {
-          public partial interface IWrapper<T> : IReadOnlyWrapper<T>;
-          
-          #nullable enable
-          public partial interface IReadOnlyWrapper<out T> where T : other.IReadOnlyOther;
-        }
+        namespace foo.bar;
+
+        public partial interface IWrapper<T> : IReadOnlyWrapper<T>;
+
+        #nullable enable
+        public partial interface IReadOnlyWrapper<out T> where T : other.IReadOnlyOther;
 
         """);
   }
@@ -243,24 +241,24 @@ internal class ReadOnlyReferenceTests {
 
         """,
         """
-        namespace foo.bar.other {
-          public partial interface IOther : IReadOnlyOther;
-          
-          #nullable enable
-          public partial interface IReadOnlyOther;
-        }
+        namespace foo.bar.other;
+
+        public partial interface IOther : IReadOnlyOther;
+
+        #nullable enable
+        public partial interface IReadOnlyOther;
 
         """,
         """
-        namespace foo.bar {
-          public partial interface IWrapper : IReadOnlyWrapper {
-            void IReadOnlyWrapper.Foo<T>() => Foo<T>();
-          }
-          
-          #nullable enable
-          public partial interface IReadOnlyWrapper {
-            public void Foo<T>() where T : other.IReadOnlyOther;
-          }
+        namespace foo.bar;
+
+        public partial interface IWrapper : IReadOnlyWrapper {
+          void IReadOnlyWrapper.Foo<T>() => Foo<T>();
+        }
+
+        #nullable enable
+        public partial interface IReadOnlyWrapper {
+          public void Foo<T>() where T : other.IReadOnlyOther;
         }
 
         """);
@@ -273,40 +271,40 @@ internal class ReadOnlyReferenceTests {
         using schema.readOnly;
         using foo.bar.other;
 
-        namespace foo.bar {
-          public partial class Parent {
-            [GenerateReadOnly]
-            public partial interface IOther;
-          }
-        
+        namespace foo.bar;
+
+        public partial class Parent {
           [GenerateReadOnly]
-          public partial interface IWrapper {
-            Parent.IReadOnlyOther Field { get; set; }
-          }
+          public partial interface IOther;
+        }
+
+        [GenerateReadOnly]
+        public partial interface IWrapper {
+          Parent.IReadOnlyOther Field { get; set; }
         }
 
         """,
         """
-        namespace foo.bar {
-          public partial class Parent {
-            public partial interface IOther : IReadOnlyOther;
-            
-            #nullable enable
-            public partial interface IReadOnlyOther;
-          }
-        }
+        namespace foo.bar;
 
-        """,
-        """
-        namespace foo.bar {
-          public partial interface IWrapper : IReadOnlyWrapper {
-            Parent.IReadOnlyOther IReadOnlyWrapper.Field => Field;
-          }
+        public partial class Parent {
+          public partial interface IOther : IReadOnlyOther;
           
           #nullable enable
-          public partial interface IReadOnlyWrapper {
-            public Parent.IReadOnlyOther Field { get; }
-          }
+          public partial interface IReadOnlyOther;
+        }
+
+        """,
+        """
+        namespace foo.bar;
+
+        public partial interface IWrapper : IReadOnlyWrapper {
+          Parent.IReadOnlyOther IReadOnlyWrapper.Field => Field;
+        }
+
+        #nullable enable
+        public partial interface IReadOnlyWrapper {
+          public Parent.IReadOnlyOther Field { get; }
         }
 
         """);
@@ -339,33 +337,33 @@ internal class ReadOnlyReferenceTests {
 
         """,
         """
-        namespace foo.bar.wrong {
-          public partial interface IOther : IReadOnlyOther;
-          
-          #nullable enable
-          public partial interface IReadOnlyOther;
-        }
+        namespace foo.bar.wrong;
+
+        public partial interface IOther : IReadOnlyOther;
+
+        #nullable enable
+        public partial interface IReadOnlyOther;
 
         """,
         """
-        namespace foo.bar.correct {
-          public partial interface IOther<T> : IReadOnlyOther<T>;
-          
-          #nullable enable
-          public partial interface IReadOnlyOther<out T> : foo.bar.wrong.IReadOnlyOther;
-        }
+        namespace foo.bar.correct;
+
+        public partial interface IOther<T> : IReadOnlyOther<T>;
+        
+        #nullable enable
+        public partial interface IReadOnlyOther<out T> : foo.bar.wrong.IReadOnlyOther;
 
         """,
         """
-        namespace foo.bar {
-          public partial interface IWrapper<T> : IReadOnlyWrapper<T> {
-            correct.IReadOnlyOther<T> IReadOnlyWrapper<T>.Field => Field;
-          }
-          
-          #nullable enable
-          public partial interface IReadOnlyWrapper<T> {
-            public correct.IReadOnlyOther<T> Field { get; }
-          }
+        namespace foo.bar;
+
+        public partial interface IWrapper<T> : IReadOnlyWrapper<T> {
+          correct.IReadOnlyOther<T> IReadOnlyWrapper<T>.Field => Field;
+        }
+        
+        #nullable enable
+        public partial interface IReadOnlyWrapper<T> {
+          public correct.IReadOnlyOther<T> Field { get; }
         }
 
         """);
@@ -397,24 +395,24 @@ internal class ReadOnlyReferenceTests {
 
         """,
         """
-        namespace foo.bar.correct {
-          public partial interface IOther : IReadOnlyOther;
-          
-          #nullable enable
-          public partial interface IReadOnlyOther;
-        }
+        namespace foo.bar.correct;
+
+        public partial interface IOther : IReadOnlyOther;
+
+        #nullable enable
+        public partial interface IReadOnlyOther;
 
         """,
         """
-        namespace foo.bar {
-          public partial interface IWrapper : IReadOnlyWrapper {
-            correct.IReadOnlyOther IReadOnlyWrapper.Field => Field;
-          }
-          
-          #nullable enable
-          public partial interface IReadOnlyWrapper {
-            public correct.IReadOnlyOther Field { get; }
-          }
+        namespace foo.bar;
+
+        public partial interface IWrapper : IReadOnlyWrapper {
+          correct.IReadOnlyOther IReadOnlyWrapper.Field => Field;
+        }
+
+        #nullable enable
+        public partial interface IReadOnlyWrapper {
+          public correct.IReadOnlyOther Field { get; }
         }
 
         """);

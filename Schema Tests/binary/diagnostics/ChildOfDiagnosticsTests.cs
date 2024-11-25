@@ -14,21 +14,23 @@ internal class ChildOfDiagnosticsTests {
   public void TestSatisfyingBinaryConvertibility(
       Type childInterface,
       Type parentInterface) {
-    var structure = BinarySchemaTestUtil.ParseFirst(@$"
-using schema.binary;
-using schema.binary.attributes;
+    var structure = BinarySchemaTestUtil.ParseFirst($$"""
 
-namespace foo.bar {{
-  [BinarySchema]
-  public partial class Child : IChildOf<Parent>, {childInterface.Name} {{
-    public Parent Parent {{ get; set; }}
-  }}
+                                                      using schema.binary;
+                                                      using schema.binary.attributes;
 
-  [BinarySchema]
-  public partial class Parent : {parentInterface.Name} {{
-    public Child Child {{ get; set; }}
-  }}
-}}");
+                                                      namespace foo.bar {
+                                                        [BinarySchema]
+                                                        public partial class Child : IChildOf<Parent>, {{childInterface.Name}} {
+                                                          public Parent Parent { get; set; }
+                                                        }
+                                                      
+                                                        [BinarySchema]
+                                                        public partial class Parent : {{parentInterface.Name}} {
+                                                          public Child Child { get; set; }
+                                                        }
+                                                      }
+                                                      """);
 
     BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics);
   }
@@ -41,21 +43,23 @@ namespace foo.bar {{
   public void TestNonSatisfyingBinaryConvertibility(
       Type childInterface,
       Type parentInterface) {
-    var structure = BinarySchemaTestUtil.ParseFirst(@$"
-using schema.binary;
-using schema.binary.attributes;
+    var structure = BinarySchemaTestUtil.ParseFirst($$"""
 
-namespace foo.bar {{
-  [BinarySchema]
-  public partial class Child : IChildOf<Parent>, {childInterface.Name} {{
-    public Parent Parent {{ get; set; }}
-  }}
+                                                      using schema.binary;
+                                                      using schema.binary.attributes;
 
-  [BinarySchema]
-  public partial class Parent : {parentInterface.Name} {{
-    public Child Child {{ get; set; }}
-  }}
-}}");
+                                                      namespace foo.bar {
+                                                        [BinarySchema]
+                                                        public partial class Child : IChildOf<Parent>, {{childInterface.Name}} {
+                                                          public Parent Parent { get; set; }
+                                                        }
+                                                      
+                                                        [BinarySchema]
+                                                        public partial class Parent : {{parentInterface.Name}} {
+                                                          public Child Child { get; set; }
+                                                        }
+                                                      }
+                                                      """);
 
     BinarySchemaTestUtil.AssertDiagnostics(
         structure.Diagnostics,

@@ -14,7 +14,8 @@ public static class SourceWriterSymbolExtensions {
       Action insideBlockHandler) {
     var fullyQualifiedNamespace = symbol.GetFullyQualifiedNamespace();
     if (fullyQualifiedNamespace != null) {
-      sw.EnterBlock($"namespace {fullyQualifiedNamespace}");
+      sw.WriteLine($"namespace {fullyQualifiedNamespace};")
+        .WriteLine();
     }
 
     var declaringTypes = symbol.GetDeclaringTypesDownward();
@@ -27,11 +28,6 @@ public static class SourceWriterSymbolExtensions {
 
     // parent types
     foreach (var _ in declaringTypes) {
-      sw.ExitBlock();
-    }
-
-    // namespace
-    if (fullyQualifiedNamespace != null) {
       sw.ExitBlock();
     }
   }

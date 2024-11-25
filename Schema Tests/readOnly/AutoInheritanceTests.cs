@@ -1,7 +1,5 @@
 ﻿using NUnit.Framework;
 
-using schema.binary;
-
 
 namespace schema.readOnly;
 
@@ -13,18 +11,18 @@ internal class AutoInheritanceTests {
         $$"""
           using schema.readOnly;
 
-          namespace foo.bar {
-            [GenerateReadOnly]
-            public partial interface IGenericWrapper<T> : {{knownBase}};
-          }
+          namespace foo.bar;
+
+          [GenerateReadOnly]
+          public partial interface IGenericWrapper<T> : {{knownBase}};
           """,
         $$"""
-          namespace foo.bar {
-            public partial interface IGenericWrapper<T> : IReadOnlyGenericWrapper<T>;
-            
-            #nullable enable
-            public partial interface IReadOnlyGenericWrapper<out T> : {{knownBase}};
-          }
+          namespace foo.bar;
+
+          public partial interface IGenericWrapper<T> : IReadOnlyGenericWrapper<T>;
+
+          #nullable enable
+          public partial interface IReadOnlyGenericWrapper<out T> : {{knownBase}};
 
           """);
   }
@@ -35,23 +33,23 @@ internal class AutoInheritanceTests {
         """
         using schema.readOnly;
 
-        namespace foo.bar {
-          public interface IAlreadyConst {
-            public bool Property { get; }
-          }
-        
-          [GenerateReadOnly]
-          public partial class AlreadyConstWrapper<T> : IAlreadyConst where T : notnull;
+        namespace foo.bar;
+
+        public interface IAlreadyConst {
+          public bool Property { get; }
         }
+
+        [GenerateReadOnly]
+        public partial class AlreadyConstWrapper<T> : IAlreadyConst where T : notnull;
 
         """,
         """
-        namespace foo.bar {
-          public partial class AlreadyConstWrapper<T> : IReadOnlyAlreadyConstWrapper<T>;
-          
-          #nullable enable
-          public partial interface IReadOnlyAlreadyConstWrapper<out T> : IAlreadyConst where T : notnull;
-        }
+        namespace foo.bar;
+
+        public partial class AlreadyConstWrapper<T> : IReadOnlyAlreadyConstWrapper<T>;
+
+        #nullable enable
+        public partial interface IReadOnlyAlreadyConstWrapper<out T> : IAlreadyConst where T : notnull;
 
         """);
   }
@@ -62,23 +60,23 @@ internal class AutoInheritanceTests {
         """
         using schema.readOnly;
 
-        namespace foo.bar {
-          public interface IAlreadyConst {
-            public bool Property { get; }
-          }
+        namespace foo.bar;
         
-          [GenerateReadOnly]
-          public partial class AlreadyConstWrapper : IAlreadyConst;
+        public interface IAlreadyConst {
+          public bool Property { get; }
         }
+      
+        [GenerateReadOnly]
+        public partial class AlreadyConstWrapper : IAlreadyConst;
 
         """,
         """
-        namespace foo.bar {
-          public partial class AlreadyConstWrapper : IReadOnlyAlreadyConstWrapper;
-          
-          #nullable enable
-          public partial interface IReadOnlyAlreadyConstWrapper : IAlreadyConst;
-        }
+        namespace foo.bar;
+        
+        public partial class AlreadyConstWrapper : IReadOnlyAlreadyConstWrapper;
+        
+        #nullable enable
+        public partial interface IReadOnlyAlreadyConstWrapper : IAlreadyConst;
 
         """);
   }
@@ -106,13 +104,13 @@ internal class AutoInheritanceTests {
 
         """,
         """
-        namespace foo.bar.place2 {
-          public partial class Parent {
-            public partial class AlreadyConstWrapper : IReadOnlyAlreadyConstWrapper;
-            
-            #nullable enable
-            public partial interface IReadOnlyAlreadyConstWrapper : foo.bar.place1.OtherParent.IAlreadyConst;
-          }
+        namespace foo.bar.place2;
+
+        public partial class Parent {
+          public partial class AlreadyConstWrapper : IReadOnlyAlreadyConstWrapper;
+          
+          #nullable enable
+          public partial interface IReadOnlyAlreadyConstWrapper : foo.bar.place1.OtherParent.IAlreadyConst;
         }
 
         """);
@@ -124,31 +122,31 @@ internal class AutoInheritanceTests {
         """
         using schema.readOnly;
 
-        namespace foo.bar {
-          [GenerateReadOnly]
-          public partial interface IBase {}
+        namespace foo.bar;
         
-          [GenerateReadOnly]
-          public partial interface IChild : IBase {}
-        }
+        [GenerateReadOnly]
+        public partial interface IBase {}
+      
+        [GenerateReadOnly]
+        public partial interface IChild : IBase {}
 
         """,
         """
-        namespace foo.bar {
-          public partial interface IBase : IReadOnlyBase;
-          
-          #nullable enable
-          public partial interface IReadOnlyBase;
-        }
+        namespace foo.bar;
+        
+        public partial interface IBase : IReadOnlyBase;
+        
+        #nullable enable
+        public partial interface IReadOnlyBase;
 
         """,
         """
-        namespace foo.bar {
-          public partial interface IChild : IReadOnlyChild;
-          
-          #nullable enable
-          public partial interface IReadOnlyChild : IReadOnlyBase;
-        }
+        namespace foo.bar;
+        
+        public partial interface IChild : IReadOnlyChild;
+        
+        #nullable enable
+        public partial interface IReadOnlyChild : IReadOnlyBase;
 
         """);
   }
@@ -179,31 +177,31 @@ internal class AutoInheritanceTests {
 
         """,
         """
-        namespace foo.bar.other {
-          public partial class OtherParent {
-            public partial interface IBase : IReadOnlyBase {
-              bool IReadOnlyBase.Foo => Foo;
-            }
-            
-            #nullable enable
-            public partial interface IReadOnlyBase {
-              public bool Foo { get; }
-            }
+        namespace foo.bar.other;
+
+        public partial class OtherParent {
+          public partial interface IBase : IReadOnlyBase {
+            bool IReadOnlyBase.Foo => Foo;
+          }
+          
+          #nullable enable
+          public partial interface IReadOnlyBase {
+            public bool Foo { get; }
           }
         }
 
         """,
         """
-        namespace foo.bar {
-          public partial class Parent {
-            public partial interface IChild : IReadOnlyChild {
-              bool IReadOnlyChild.Value => Value;
-            }
-            
-            #nullable enable
-            public partial interface IReadOnlyChild : other.OtherParent.IReadOnlyBase {
-              public bool Value { get; }
-            }
+        namespace foo.bar;
+        
+        public partial class Parent {
+          public partial interface IChild : IReadOnlyChild {
+            bool IReadOnlyChild.Value => Value;
+          }
+          
+          #nullable enable
+          public partial interface IReadOnlyChild : other.OtherParent.IReadOnlyBase {
+            public bool Value { get; }
           }
         }
 
@@ -216,43 +214,43 @@ internal class AutoInheritanceTests {
         """
         using schema.readOnly;
 
-        namespace foo.bar {
-          [GenerateReadOnly]
-          public partial interface IBase1<T> {}
+        namespace foo.bar;
         
-          [GenerateReadOnly]
-          public partial interface IBase2<T> {}
+        [GenerateReadOnly]
+        public partial interface IBase1<T> {}
+      
+        [GenerateReadOnly]
+        public partial interface IBase2<T> {}
+      
+        [GenerateReadOnly]
+        public partial interface IChild<T1, T2> : IBase1<T1>, IBase2<T2> {}
+
+        """,
+        """
+        namespace foo.bar;
         
-          [GenerateReadOnly]
-          public partial interface IChild<T1, T2> : IBase1<T1>, IBase2<T2> {}
-        }
+        public partial interface IBase1<T> : IReadOnlyBase1<T>;
+        
+        #nullable enable
+        public partial interface IReadOnlyBase1<out T>;
 
         """,
         """
-        namespace foo.bar {
-          public partial interface IBase1<T> : IReadOnlyBase1<T>;
-          
-          #nullable enable
-          public partial interface IReadOnlyBase1<out T>;
-        }
+        namespace foo.bar;
+        
+        public partial interface IBase2<T> : IReadOnlyBase2<T>;
+        
+        #nullable enable
+        public partial interface IReadOnlyBase2<out T>;
 
         """,
         """
-        namespace foo.bar {
-          public partial interface IBase2<T> : IReadOnlyBase2<T>;
-          
-          #nullable enable
-          public partial interface IReadOnlyBase2<out T>;
-        }
-
-        """,
-        """
-        namespace foo.bar {
-          public partial interface IChild<T1, T2> : IReadOnlyChild<T1, T2>;
-          
-          #nullable enable
-          public partial interface IReadOnlyChild<T1, T2> : IReadOnlyBase1<T1>, IReadOnlyBase2<T2>;
-        }
+        namespace foo.bar;
+        
+        public partial interface IChild<T1, T2> : IReadOnlyChild<T1, T2>;
+        
+        #nullable enable
+        public partial interface IReadOnlyChild<T1, T2> : IReadOnlyBase1<T1>, IReadOnlyBase2<T2>;
 
         """);
   }
