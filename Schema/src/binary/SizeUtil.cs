@@ -1,4 +1,6 @@
-﻿namespace schema.binary;
+﻿using System;
+
+namespace schema.binary;
 
 public static class SizeUtil {
   public static bool TryGetSizeOfType(IMemberType type, out int size) {
@@ -10,6 +12,10 @@ public static class SizeUtil {
         }
 
         return TryGetSize(primitiveMemberType.PrimitiveType, out size);
+      }
+      case IKnownStructMemberType knownStructMemberType: {
+        size = GetSize(knownStructMemberType.KnownStruct);
+        return true;
       }
       default: {
         size = -1;
@@ -49,6 +55,16 @@ public static class SizeUtil {
       SchemaNumberType.UN8    => 1,
       SchemaNumberType.SN16   => 2,
       SchemaNumberType.UN16   => 2,
+  };
+
+  public static int GetSize(KnownStruct type) => type switch {
+      KnownStruct.VECTOR2 => 2 * 4,
+      KnownStruct.VECTOR3 => 3 * 4,
+      KnownStruct.VECTOR4 => 4 * 4,
+      KnownStruct.MATRIX4X4 => 4 * 4 * 4,
+      KnownStruct.MATRIX3X2 => 3 * 2 * 4,
+      KnownStruct.QUATERNION => 4 * 4,
+      _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
   };
 
   public static bool TryGetSize(SchemaPrimitiveType primitiveType,

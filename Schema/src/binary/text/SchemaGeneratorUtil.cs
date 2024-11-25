@@ -4,6 +4,35 @@
 namespace schema.binary.text;
 
 public static class SchemaGeneratorUtil {
+  public static bool TryToGetLabelForMethodWithoutCast(IMemberType memberType,
+    out string label) {
+    if (memberType is IPrimitiveMemberType { UseAltFormat: true }) {
+      label = "";
+      return false;
+    }
+
+    try {
+      label = GetLabelForMethod(memberType);
+      return true;
+    } catch { }
+
+    label = "";
+    return false;
+  }
+
+  public static string GetLabelForMethod(IMemberType memberType)
+    => memberType switch {
+        IPrimitiveMemberType primitiveMemberType
+            => SchemaGeneratorUtil
+                .GetPrimitiveLabel(
+                    primitiveMemberType.UseAltFormat
+                        ? primitiveMemberType.AltFormat.AsPrimitiveType()
+                        : primitiveMemberType.PrimitiveType),
+        IKnownStructMemberType knownStructMemberType
+            => SchemaGeneratorUtil.GetKnownStructName(
+                knownStructMemberType.KnownStruct),
+    };
+
   public static string GetPrimitiveLabel(SchemaPrimitiveType type)
     => type switch {
         SchemaPrimitiveType.CHAR => "Char",
@@ -78,4 +107,24 @@ public static class SchemaGeneratorUtil {
             knownStruct,
             null)
     };
+
+  public static bool TryToGetSequenceAsSpan(
+      ISequenceMemberType sequenceMemberType,
+      ISchemaValueMember member,
+      out string text) {
+    switch (sequenceMemberType.SequenceTypeInfo.SequenceType) {
+      case SequenceType.MUTABLE_ARRAY or SequenceType.IMMUTABLE_ARRAY: {
+        text = $"this.{member.Name}";
+        return true;
+      }
+      case SequenceType.MUTABLE_LIST: {
+        text = $"this.{member.Name}.AsSpan()";
+        return true;
+      }
+      default: {
+        text = "";
+        return false;
+      }
+    }
+  }
 }

@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 using CommunityToolkit.HighPerformance;
 
-using schema.src.util;
+using schema.util;
 using schema.util.streams;
 
 using Tedd;

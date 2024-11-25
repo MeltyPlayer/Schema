@@ -144,9 +144,7 @@ internal class WLengthOfSequenceAttributeTests {
             this.Sequence1 = SequencesUtil.CloneAndResizeSequence(this.Sequence1, this.Length);
             br.ReadBytes(this.Sequence1);
             SequencesUtil.ResizeSequenceInPlace(this.Sequence2, this.Length);
-            for (var i = 0; i < this.Sequence2.Count; ++i) {
-              this.Sequence2[i] = br.ReadByte();
-            }
+            br.ReadBytes(this.Sequence2.AsSpan());
           }
         }
 
@@ -163,9 +161,7 @@ internal class WLengthOfSequenceAttributeTests {
             Asserts.AllEqual(Sequence1.Length, Sequence2.Count);
             bw.WriteInt32(Sequence1.Length);
             bw.WriteBytes(this.Sequence1);
-            for (var i = 0; i < this.Sequence2.Count; ++i) {
-              bw.WriteByte(this.Sequence2[i]);
-            }
+            bw.WriteBytes(this.Sequence2.AsSpan());
           }
         }
 

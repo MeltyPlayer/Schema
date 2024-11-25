@@ -59,9 +59,7 @@ internal class SequenceLengthSourceGeneratorTests {
             if (this.Toggle) {
               this.IfBooleanList = new System.Collections.Generic.List<int>();
               SequencesUtil.ResizeSequenceInPlace(this.IfBooleanList, 3);
-              for (var i = 0; i < this.IfBooleanList.Count; ++i) {
-                this.IfBooleanList[i] = br.ReadInt32();
-              }
+              br.ReadInt32s(this.IfBooleanList.AsSpan());
             }
             else {
               this.IfBooleanList = null;
@@ -86,9 +84,7 @@ internal class SequenceLengthSourceGeneratorTests {
               bw.WriteInt32s(this.IfBooleanArray);
             }
             if (this.IfBooleanList != null) {
-              for (var i = 0; i < this.IfBooleanList.Count; ++i) {
-                bw.WriteInt32(this.IfBooleanList[i]);
-              }
+              bw.WriteInt32s(this.IfBooleanList.AsSpan());
             }
           }
         }
@@ -172,9 +168,7 @@ internal class SequenceLengthSourceGeneratorTests {
               bw.WriteInt32s(this.IfBooleanArray);
             }
             if (this.IfBooleanList != null) {
-              for (var i = 0; i < this.IfBooleanList.Count; ++i) {
-                bw.WriteInt32(this.IfBooleanList[i]);
-              }
+              bw.WriteInt32s(this.IfBooleanList.AsSpan());
             }
           }
         }

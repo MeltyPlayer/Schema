@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using System.Text;
 
 using Microsoft.CodeAnalysis;
@@ -474,18 +475,11 @@ public class BinarySchemaWriterGenerator {
                 .ConstraintType;
           }
 
-          if (elementType is IPrimitiveMemberType primitiveElementType) {
-            // Primitives that don't need to be cast are the easiest to write.
-            if (!primitiveElementType.UseAltFormat &&
-                sequenceType.IsArray()) {
-              var label =
-                  SchemaGeneratorUtil.GetPrimitiveLabel(
-                      primitiveElementType.PrimitiveType);
-              sw.WriteLine(
-                  $"{WRITER}.Write{label}s(this.{member.Name});");
-              return;
-            }
+          if (TryToWriteManyIntoArrayAtOnce_(sw, sequenceMemberType, member)) {
+            return;
+          }
 
+          if (elementType is IPrimitiveMemberType primitiveElementType) {
             // Primitives that *do* need to be cast have to be written individually.
             var arrayLengthName = sequenceTypeInfo.LengthName;
             sw.EnterBlock(
@@ -511,6 +505,33 @@ public class BinarySchemaWriterGenerator {
           // Anything that makes it down here probably isn't meant to be written.
           throw new NotImplementedException();
         });
+  }
+
+  private static bool TryToWriteManyIntoArrayAtOnce_(
+      ISourceWriter sw,
+      ISequenceMemberType sequenceMemberType,
+      ISchemaValueMember member) {
+    if (!SchemaGeneratorUtil.TryToGetSequenceAsSpan(sequenceMemberType,
+                                                    member,
+                                                    out var spanText)) {
+      return false;
+    }
+
+    var elementType = sequenceMemberType.ElementType;
+    if (elementType is IGenericMemberType
+        genericElementType) {
+      elementType =
+          genericElementType.ConstraintType;
+    }
+
+    if (!SchemaGeneratorUtil.TryToGetLabelForMethodWithoutCast(
+            elementType!,
+            out var label)) {
+      return false;
+    }
+
+    sw.WriteLine($"{WRITER}.Write{label}s({spanText});");
+    return true;
   }
 
   private static string GetWritePrimitiveText_(

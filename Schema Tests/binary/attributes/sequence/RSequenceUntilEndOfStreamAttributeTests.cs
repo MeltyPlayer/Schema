@@ -94,9 +94,7 @@ internal class RSequenceUntilEndOfStreamAttributeTests {
 
         public partial class Wrapper {
           public void Write(IBinaryWriter bw) {
-            for (var i = 0; i < this.Field.Count; ++i) {
-              bw.WriteByte(this.Field[i]);
-            }
+            bw.WriteBytes(this.Field.AsSpan());
           }
         }
 
@@ -193,9 +191,7 @@ internal class RSequenceUntilEndOfStreamAttributeTests {
 
         public partial class Wrapper {
           public void Write(IBinaryWriter bw) {
-            for (var i = 0; i < this.Field.Count; ++i) {
-              bw.WriteInt32(this.Field[i]);
-            }
+            bw.WriteInt32s(this.Field.AsSpan());
           }
         }
 

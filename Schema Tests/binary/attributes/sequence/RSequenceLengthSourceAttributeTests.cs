@@ -35,9 +35,7 @@ internal class RSequenceLengthSourceAttributeTests {
           public void Read(IBinaryReader br) {
             this.count_ = br.ReadUInt32();
             SequencesUtil.ResizeSequenceInPlace(this.Values, (int) this.count_);
-            for (var i = 0; i < this.Values.Count; ++i) {
-              this.Values[i] = br.ReadInt32();
-            }
+            br.ReadInt32s(this.Values.AsSpan());
           }
         }
 
@@ -51,9 +49,7 @@ internal class RSequenceLengthSourceAttributeTests {
         public partial class ReadonlyListClass {
           public void Write(IBinaryWriter bw) {
             bw.WriteUInt32((uint) Values.Count);
-            for (var i = 0; i < this.Values.Count; ++i) {
-              bw.WriteInt32(this.Values[i]);
-            }
+            bw.WriteInt32s(this.Values.AsSpan());
           }
         }
 
