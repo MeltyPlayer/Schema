@@ -2,6 +2,8 @@ using System.IO;
 
 using NUnit.Framework;
 
+using schema.util.asserts;
+
 
 namespace schema.binary;
 
@@ -67,12 +69,13 @@ public class PositionTests {
       Assert.AreEqual(95, br.Length);
 
       br.SubreadAt(
-          3,
+          4,
           50,
           sbr => {
-            Assert.AreEqual(3, sbr.Position);
-            Assert.AreEqual(53, sbr.Length);
+            Assert.AreEqual(4, sbr.Position);
+            Assert.AreEqual(54, sbr.Length);
           });
+      Assert.AreEqual(3, br.Position);
     }
     br.PopLocalSpace();
 

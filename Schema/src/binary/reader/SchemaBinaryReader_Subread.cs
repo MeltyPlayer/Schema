@@ -8,20 +8,17 @@ namespace schema.binary;
 
 public partial class SchemaBinaryReader {
   public void Subread(int len, Action<IBinaryReader> subread) {
-    var startingPosition = this.Position;
-
     var baseOffset = this.Position;
     var substream = new RangedReadableSubstream(this.BaseStream_,
                                                 baseOffset,
-                                                baseOffset + len);
+                                                len);
     using var sbr = new SchemaBinaryReader(substream, this.Endianness) {
         AssertAlreadyAtOffset = this.AssertAlreadyAtOffset,
     };
-    sbr.positionManagerImpl_ =
-        new StreamPositionManager(substream, baseOffset);
+    sbr.positionManagerImpl_ = new StreamPositionManager(substream);
     subread(sbr);
 
-    this.Position = startingPosition + len;
+    this.Position = baseOffset + len;
   }
 
   public T Subread<T>(int len, Func<IBinaryReader, T> subread) {

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 using NUnit.Framework;
 
@@ -110,6 +111,12 @@ internal class KnownStructTests {
   public void TestSystemNumericsUntilEndOfStreamArray(
       (string, int) knownStructNameAndLength) {
     var (knownStructName, knownStructLength) = knownStructNameAndLength;
+
+    var sizeLog2 = Math.Log2(knownStructLength);
+    var sizeDivisionText = (sizeLog2 % 1 == 0)
+        ? $" >> {sizeLog2}"
+        : $" / {knownStructLength}";
+
     BinarySchemaTestUtil.AssertGenerated(
         $$"""
           using System.Numerics;
@@ -133,7 +140,7 @@ internal class KnownStructTests {
 
           public partial class Wrapper {
             public void Read(IBinaryReader br) {
-              this.Field = br.Read{{knownStructName}}s((br.Length - br.Position) / {{knownStructLength}});
+              this.Field = br.Read{{knownStructName}}s((br.Length - br.Position){{sizeDivisionText}});
             }
           }
 
