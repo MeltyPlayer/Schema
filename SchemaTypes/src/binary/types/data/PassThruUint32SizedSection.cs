@@ -31,7 +31,7 @@ public partial class PassThruUInt32SizedSection<T> : ISizedSection<T>
 
     var useSize = this.size_ + this.tweakSize_;
     var basePosition = br.Position;
-    br.SubreadAt(br.Position, (int) useSize, this.Data.Read);
+    br.SubreadAt(br.Position, (int) useSize, () => this.Data.Read(br));
     br.Position = basePosition + useSize;
   }
 }

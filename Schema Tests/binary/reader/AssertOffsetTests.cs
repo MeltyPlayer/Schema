@@ -23,7 +23,7 @@ public class AssertOffsetTests {
     br.PushLocalSpace();
     br.Position = 5;
 
-    Assert.DoesNotThrow(() => br.SubreadAt(5, 5, (_) => { }));
+    Assert.DoesNotThrow(() => br.SubreadAt(5, 5, () => { }));
   }
 
   [Test]
@@ -41,7 +41,7 @@ public class AssertOffsetTests {
     br.Position = 5;
 
     Assert.Throws<Asserts.AssertionException>(
-        () => br.SubreadAt(8, 5, (_) => { }));
+        () => br.SubreadAt(8, 5, () => { }));
   }
 
   [Test]
@@ -53,9 +53,9 @@ public class AssertOffsetTests {
     br.Position = 5;
     br.SubreadAt(
         0,
-        sbr => {
-          sbr.Position = 10;
-          Assert.DoesNotThrow(() => sbr.SubreadAt(10, 5, (_) => { }));
+        () => {
+          br.Position = 10;
+          Assert.DoesNotThrow(() => br.SubreadAt(10, 5, () => { }));
         });
   }
 
@@ -68,10 +68,10 @@ public class AssertOffsetTests {
     br.Position = 5;
     br.SubreadAt(
         0,
-        sbr => {
-          sbr.Position = 10;
+        () => {
+          br.Position = 10;
           Assert.Throws<Asserts.AssertionException>(
-              () => sbr.SubreadAt(8, 5, (_) => { }));
+              () => br.SubreadAt(8, 5, () => { }));
         });
   }
 }

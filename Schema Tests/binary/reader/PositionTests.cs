@@ -71,9 +71,9 @@ public class PositionTests {
       br.SubreadAt(
           4,
           50,
-          sbr => {
-            Assert.AreEqual(4, sbr.Position);
-            Assert.AreEqual(54, sbr.Length);
+          () => {
+            Assert.AreEqual(4, br.Position);
+            Assert.AreEqual(54, br.Length);
           });
       Assert.AreEqual(3, br.Position);
     }

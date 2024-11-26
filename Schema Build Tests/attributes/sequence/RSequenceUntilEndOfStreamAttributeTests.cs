@@ -54,18 +54,18 @@ public partial class RSequenceUntilEndOfStreamAttributeTests {
     };
 
     var ms = new MemoryStream(bytes);
-    var er = new SchemaBinaryReader(ms);
+    var br = new SchemaBinaryReader(ms);
 
     ByteSequenceWrapper actualSw = default;
-    er.SubreadAt(3,
+    br.SubreadAt(3,
                  expectedSw.Values.Length,
-                 ser => {
-                   Assert.AreEqual(3, ser.Position);
-                   Assert.AreEqual(9, ser.Length);
+                 () => {
+                   Assert.AreEqual(3, br.Position);
+                   Assert.AreEqual(9, br.Length);
 
-                   actualSw = ser.ReadNew<ByteSequenceWrapper>();
+                   actualSw = br.ReadNew<ByteSequenceWrapper>();
 
-                   Assert.AreEqual(9, ser.Position);
+                   Assert.AreEqual(9, br.Position);
                  });
 
     Assert.AreEqual(expectedSw, actualSw);
@@ -79,22 +79,22 @@ public partial class RSequenceUntilEndOfStreamAttributeTests {
     };
 
     var ms = new MemoryStream(bytes);
-    var er = new SchemaBinaryReader(ms);
+    var br = new SchemaBinaryReader(ms);
 
-    er.Position = 1;
-    er.PushLocalSpace();
-    Assert.AreEqual(0, er.Position);
+    br.Position = 1;
+    br.PushLocalSpace();
+    Assert.AreEqual(0, br.Position);
 
     ByteSequenceWrapper actualSw = default;
-    er.SubreadAt(2,
+    br.SubreadAt(2,
                  expectedSw.Values.Length,
-                 ser => {
-                   Assert.AreEqual(2, ser.Position);
-                   Assert.AreEqual(8, ser.Length);
+                 () => {
+                   Assert.AreEqual(2, br.Position);
+                   Assert.AreEqual(8, br.Length);
 
-                   actualSw = ser.ReadNew<ByteSequenceWrapper>();
+                   actualSw = br.ReadNew<ByteSequenceWrapper>();
 
-                   Assert.AreEqual(8, ser.Position);
+                   Assert.AreEqual(8, br.Position);
                  });
 
     Assert.AreEqual(expectedSw, actualSw);
@@ -246,22 +246,22 @@ public partial class RSequenceUntilEndOfStreamAttributeTests {
     };
 
     var ms = new MemoryStream(bytes);
-    var er = new SchemaBinaryReader(ms);
+    var br = new SchemaBinaryReader(ms);
 
-    er.Position = 1;
-    er.PushLocalSpace();
-    Assert.AreEqual(0, er.Position);
+    br.Position = 1;
+    br.PushLocalSpace();
+    Assert.AreEqual(0, br.Position);
 
     ByteClassSequenceWrapper actualSw = default;
-    er.SubreadAt(2,
+    br.SubreadAt(2,
                  3 * expectedSw.Values.Length,
-                 ser => {
-                   Assert.AreEqual(2, ser.Position);
-                   Assert.AreEqual(11, ser.Length);
+                 () => {
+                   Assert.AreEqual(2, br.Position);
+                   Assert.AreEqual(11, br.Length);
 
-                   actualSw = ser.ReadNew<ByteClassSequenceWrapper>();
+                   actualSw = br.ReadNew<ByteClassSequenceWrapper>();
 
-                   Assert.AreEqual(11, ser.Position);
+                   Assert.AreEqual(11, br.Position);
                  });
 
     Assert.AreEqual(expectedSw, actualSw);

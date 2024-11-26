@@ -13,13 +13,13 @@ internal class SubreadTests {
 
     br.Subread(
         50,
-        sbr => {
-          Assert.AreEqual(3, sbr.Position);
-          Assert.AreEqual(53, sbr.Length);
+        () => {
+          Assert.AreEqual(3, br.Position);
+          Assert.AreEqual(53, br.Length);
 
-          sbr.Position = 4;
-          Assert.AreEqual(4, sbr.Position);
-          Assert.AreEqual(53, sbr.Length);
+          br.Position = 4;
+          Assert.AreEqual(4, br.Position);
+          Assert.AreEqual(53, br.Length);
         });
 
     Assert.AreEqual(53, br.Position);
@@ -36,13 +36,13 @@ internal class SubreadTests {
 
     var returnValue = br.Subread(
         50,
-        sbr => {
-          Assert.AreEqual(3, sbr.Position);
-          Assert.AreEqual(53, sbr.Length);
+        () => {
+          Assert.AreEqual(3, br.Position);
+          Assert.AreEqual(53, br.Length);
 
-          sbr.Position = 4;
-          Assert.AreEqual(4, sbr.Position);
-          Assert.AreEqual(53, sbr.Length);
+          br.Position = 4;
+          Assert.AreEqual(4, br.Position);
+          Assert.AreEqual(53, br.Length);
 
           return 123;
         });
@@ -62,9 +62,9 @@ internal class SubreadTests {
 
     br.SubreadAt(
         4,
-        sbr => {
-          Assert.AreEqual(4, sbr.Position);
-          Assert.AreEqual(100, sbr.Length);
+        () => {
+          Assert.AreEqual(4, br.Position);
+          Assert.AreEqual(100, br.Length);
         });
 
     Assert.AreEqual(3, br.Position);
@@ -82,9 +82,9 @@ internal class SubreadTests {
     br.SubreadAt(
         4,
         50,
-        sbr => {
-          Assert.AreEqual(4, sbr.Position);
-          Assert.AreEqual(54, sbr.Length);
+        () => {
+          Assert.AreEqual(4, br.Position);
+          Assert.AreEqual(54, br.Length);
         });
 
     Assert.AreEqual(3, br.Position);
@@ -101,9 +101,9 @@ internal class SubreadTests {
 
     var returnValue = br.SubreadAt(
         4,
-        sbr => {
-          Assert.AreEqual(4, sbr.Position);
-          Assert.AreEqual(100, sbr.Length);
+        () => {
+          Assert.AreEqual(4, br.Position);
+          Assert.AreEqual(100, br.Length);
           return 123;
         });
     Assert.AreEqual(123, returnValue);
@@ -123,9 +123,9 @@ internal class SubreadTests {
     var returnValue = br.SubreadAt(
         4,
         50,
-        sbr => {
-          Assert.AreEqual(4, sbr.Position);
-          Assert.AreEqual(54, sbr.Length);
+        () => {
+          Assert.AreEqual(4, br.Position);
+          Assert.AreEqual(54, br.Length);
           return 123;
         });
     Assert.AreEqual(123, returnValue);

@@ -105,24 +105,4 @@ public class WritableStreamTests {
 
     CollectionAssert.AreEqual(readData, ms.ToArray());
   }
-
-  [Test]
-  public void TestWriteRangedReadableStream() {
-    var ms = new MemoryStream();
-    var ws = new WritableStream(ms);
-
-    var rs = new ReadableStream([5, 6, 7, 8, 9]);
-
-    var rrs = new RangedReadableSubstream(rs, 1, 3);
-    rrs.Position = 1;
-
-    Assert.AreEqual(0, ms.Position);
-    Assert.AreEqual(0, ws.Position);
-
-    ws.Write(rrs);
-    Assert.AreEqual(3, ms.Position);
-    Assert.AreEqual(3, ws.Position);
-
-    CollectionAssert.AreEqual(new[] { 6, 7, 8 }, ms.ToArray());
-  }
 }

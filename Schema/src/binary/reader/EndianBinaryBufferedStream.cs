@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Runtime.CompilerServices;
 
 using CommunityToolkit.HighPerformance;
@@ -74,19 +73,6 @@ public class EndianBinaryBufferedStream : IEndiannessStack {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get;
     set;
-  }
-
-  public bool Eof {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get => this.BaseStream.Position >= this.BaseStream.Length;
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public void AssertNotEof() {
-    if (this.Eof) {
-      throw new EndOfStreamException(
-          $"Attempted to read past the end of the stream: position '{this.BaseStream.Position}' of stream length '{this.BaseStream.Length}'");
-    }
   }
 
   public byte[] Buffer { get; private set; }

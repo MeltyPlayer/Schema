@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.IO;
+using System.Runtime.CompilerServices;
 
 
 namespace schema.binary;
@@ -27,10 +28,18 @@ public sealed partial class SchemaBinaryReader {
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public void PopLocalSpace() => this.positionManagerImpl_.PopLocalSpace();
 
-  public bool Eof => this.bufferedStream_.Eof;
+  public bool Eof {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get => this.Position >= this.Length;
+  }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public void AssertNotEof() => this.bufferedStream_.AssertNotEof();
+  public void AssertNotEof() {
+    if (this.Eof) {
+      throw new EndOfStreamException(
+          $"Attempted to read past the end of the stream: position '{this.Position}' of stream length '{this.Length}'");
+    }
+  }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public void Align(uint amt) {

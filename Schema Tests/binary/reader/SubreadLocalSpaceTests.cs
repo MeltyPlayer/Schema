@@ -18,13 +18,13 @@ internal class SubreadLocalSpaceTests {
 
     br.Subread(
         50,
-        sbr => {
-          Assert.AreEqual(3, sbr.Position);
-          Assert.AreEqual(53, sbr.Length);
+        () => {
+          Assert.AreEqual(3, br.Position);
+          Assert.AreEqual(53, br.Length);
 
-          sbr.Position = 4;
-          Assert.AreEqual(4, sbr.Position);
-          Assert.AreEqual(53, sbr.Length);
+          br.Position = 4;
+          Assert.AreEqual(4, br.Position);
+          Assert.AreEqual(53, br.Length);
         });
 
     Assert.AreEqual(53, br.Position);
@@ -46,13 +46,13 @@ internal class SubreadLocalSpaceTests {
 
     var returnValue = br.Subread(
         50,
-        sbr => {
-          Assert.AreEqual(3, sbr.Position);
-          Assert.AreEqual(53, sbr.Length);
+        () => {
+          Assert.AreEqual(3, br.Position);
+          Assert.AreEqual(53, br.Length);
 
-          sbr.Position = 4;
-          Assert.AreEqual(4, sbr.Position);
-          Assert.AreEqual(53, sbr.Length);
+          br.Position = 4;
+          Assert.AreEqual(4, br.Position);
+          Assert.AreEqual(53, br.Length);
 
           return 123;
         });
@@ -77,9 +77,9 @@ internal class SubreadLocalSpaceTests {
 
     br.SubreadAt(
         4,
-        sbr => {
-          Assert.AreEqual(4, sbr.Position);
-          Assert.AreEqual(98, sbr.Length);
+        () => {
+          Assert.AreEqual(4, br.Position);
+          Assert.AreEqual(98, br.Length);
         });
 
     Assert.AreEqual(3, br.Position);
@@ -102,9 +102,9 @@ internal class SubreadLocalSpaceTests {
     br.SubreadAt(
         4,
         50,
-        sbr => {
-          Assert.AreEqual(4, sbr.Position);
-          Assert.AreEqual(54, sbr.Length);
+        () => {
+          Assert.AreEqual(4, br.Position);
+          Assert.AreEqual(54, br.Length);
         });
 
     Assert.AreEqual(3, br.Position);
@@ -126,9 +126,9 @@ internal class SubreadLocalSpaceTests {
 
     var returnValue = br.SubreadAt(
         4,
-        sbr => {
-          Assert.AreEqual(4, sbr.Position);
-          Assert.AreEqual(98, sbr.Length);
+        () => {
+          Assert.AreEqual(4, br.Position);
+          Assert.AreEqual(98, br.Length);
           return 123;
         });
     Assert.AreEqual(123, returnValue);
@@ -153,9 +153,9 @@ internal class SubreadLocalSpaceTests {
     var returnValue = br.SubreadAt(
         4,
         50,
-        sbr => {
-          Assert.AreEqual(4, sbr.Position);
-          Assert.AreEqual(54, sbr.Length);
+        () => {
+          Assert.AreEqual(4, br.Position);
+          Assert.AreEqual(54, br.Length);
           return 123;
         });
     Assert.AreEqual(123, returnValue);
