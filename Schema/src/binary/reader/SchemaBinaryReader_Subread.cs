@@ -9,15 +9,7 @@ namespace schema.binary;
 public partial class SchemaBinaryReader {
   public void Subread(int len, Action<IBinaryReader> subread) {
     var baseOffset = this.Position;
-    var substream = new RangedReadableSubstream(this.BaseStream_,
-                                                baseOffset,
-                                                len);
-    using var sbr = new SchemaBinaryReader(substream, this.Endianness) {
-        AssertAlreadyAtOffset = this.AssertAlreadyAtOffset,
-    };
-    sbr.positionManagerImpl_ = new StreamPositionManager(substream);
-    subread(sbr);
-
+    this.SubreadAt(baseOffset, len, subread);
     this.Position = baseOffset + len;
   }
 
