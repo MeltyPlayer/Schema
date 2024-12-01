@@ -46,15 +46,14 @@ public class BinarySchemaGenerator
       foreach (var container in containerByNamedTypeSymbol.Values) {
         foreach (var member in
                  container.Members.OfType<ISchemaValueMember>()) {
-          if (member.MemberType is IPrimitiveMemberType
-              primitiveMemberType) {
-            if (primitiveMemberType.AccessChainToSizeOf != null) {
+          if (member.MemberType is IIntegerMemberType integerMemberType) {
+            if (integerMemberType.AccessChainToSizeOf != null) {
               sizeOfMemberInBytesDependencyFixer.AddDependenciesForContainer(
                   containerByNamedTypeSymbol,
-                  primitiveMemberType.AccessChainToSizeOf);
+                  integerMemberType.AccessChainToSizeOf);
             }
 
-            var pointerToAttribute = primitiveMemberType.PointerToAttribute;
+            var pointerToAttribute = integerMemberType.PointerToAttribute;
             if (pointerToAttribute != null) {
               sizeOfMemberInBytesDependencyFixer.AddDependenciesForContainer(
                   containerByNamedTypeSymbol,

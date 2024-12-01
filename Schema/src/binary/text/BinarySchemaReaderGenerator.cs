@@ -33,6 +33,10 @@ public class BinarySchemaReaderGenerator {
         dependencies.Add("schema.binary.attributes");
       }
 
+      if (container.DependsOnSchemaUtil()) {
+        dependencies.Add("schema.util");
+      }
+
       if (container.DependsOnCollectionsImports()) {
         dependencies.Add("System.Collections.Generic");
       }
@@ -870,6 +874,17 @@ public class BinarySchemaReaderGenerator {
   private static string GetReadOneViaMethodText_(
       ITypeSymbol sourceSymbol,
       IMemberType memberType) {
+    if (memberType is IFloatMemberType {
+            FixedPointAttribute: not null
+        } floatMemberType) {
+      var target = floatMemberType.PrimitiveType is SchemaPrimitiveType.SINGLE
+          ? "Single"
+          : "Double";
+      var fixedPointAttribute = floatMemberType.FixedPointAttribute;
+      return
+          $"BitLogic.ConvertFixedPointTo{target}({READER}.ReadUInt32(), {fixedPointAttribute.SignBits}, {fixedPointAttribute.IntegerBits}, {fixedPointAttribute.FractionBits})";
+    }
+
     var readLabel = SchemaGeneratorUtil.GetLabelForMethod(memberType);
     var readText = $"{READER}.Read{readLabel}()";
 
@@ -901,6 +916,17 @@ public class BinarySchemaReaderGenerator {
   private static string GetAssertOneViaMethodText_(
       IMemberType memberType,
       string accessText) {
+    if (memberType is IFloatMemberType {
+            FixedPointAttribute: not null
+        } floatMemberType) {
+      var target = floatMemberType.PrimitiveType is SchemaPrimitiveType.SINGLE
+          ? "Single"
+          : "Double";
+      var fixedPointAttribute = floatMemberType.FixedPointAttribute;
+      return
+          $"{READER}.AssertUInt32(BitLogic.Convert{target}ToFixedPoint({accessText}, {fixedPointAttribute.SignBits}, {fixedPointAttribute.IntegerBits}, {fixedPointAttribute.FractionBits}))";
+    }
+
     var assertLabel = SchemaGeneratorUtil.GetLabelForMethod(memberType);
     var assertMethod = $"{READER}.Assert{assertLabel}";
 

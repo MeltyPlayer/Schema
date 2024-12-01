@@ -11,22 +11,28 @@ public static class DependencyExtensions {
     => container
        .Members
        .OfType<ISchemaValueMember>()
-       .Any(
-           member => member.MemberType is ISequenceMemberType {
-               LengthSourceType: not SequenceLengthSourceType
-                   .UNTIL_END_OF_STREAM,
-               SequenceTypeInfo: { IsLengthConst: false },
-           });
+       .Any(member => member.MemberType is ISequenceMemberType {
+           LengthSourceType: not SequenceLengthSourceType
+               .UNTIL_END_OF_STREAM,
+           SequenceTypeInfo: { IsLengthConst: false },
+       });
 
   public static bool DependsOnSchemaAttributes(
       this IBinarySchemaContainer container)
     => container
        .Members
        .OfType<ISchemaValueMember>()
-       .Any(
-           member => member.MemberType is IStringType {
-               EncodingType: not StringEncodingType.ASCII,
-           });
+       .Any(member => member.MemberType is IStringType {
+           EncodingType: not StringEncodingType.ASCII,
+       });
+
+  public static bool DependsOnSchemaUtil(this IBinarySchemaContainer container)
+    => container
+       .Members
+       .OfType<ISchemaValueMember>()
+       .Any(member => member.MemberType is IFloatMemberType {
+           FixedPointAttribute: not null
+       });
 
 
   public static bool DependsOnSchemaUtilAsserts(
@@ -34,15 +40,9 @@ public static class DependencyExtensions {
     => container
        .Members
        .OfType<ISchemaValueMember>()
-       .Any(
-           member
-               => member.MemberType is
-                   IPrimitiveMemberType {
-                       LengthOfStringMembers.Length: > 1
-                   }
-                   or IPrimitiveMemberType {
-                       LengthOfSequenceMembers.Length: > 1
-                   });
+       .Any(member => member.MemberType is
+                IIntegerMemberType { LengthOfStringMembers.Length: > 1 }
+                or IIntegerMemberType { LengthOfSequenceMembers.Length: > 1 });
 
 
   public static bool DependsOnSystemThreadingTasks(
@@ -50,7 +50,7 @@ public static class DependencyExtensions {
     => container
        .Members
        .OfType<ISchemaValueMember>()
-       .Any(member => member.MemberType is IPrimitiveMemberType {
+       .Any(member => member.MemberType is IIntegerMemberType {
            PointerToAttribute: { NullValue: { } }
        });
 

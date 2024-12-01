@@ -210,6 +210,9 @@ public interface IMemberReference {
   bool IsInteger { get; }
   IMemberReference AssertIsInteger();
 
+  bool IsFloat { get; }
+  IMemberReference AssertIsFloat();
+
   bool IsBool { get; }
   IMemberReference AssertIsBool();
 
@@ -219,31 +222,43 @@ public interface IMemberReference {
 
 public interface IMemberReference<T> : IMemberReference { }
 
-public class MemberReference : IMemberReference {
-  public MemberReference(
-      string name,
-      ITypeInfo containerTypeInfo,
-      ISymbol memberSymbol,
-      ITypeSymbol memberTypeSymbol,
-      ITypeInfo memberTypeInfo) {
-    this.Name = name;
-    this.ContainerTypeInfo = containerTypeInfo;
-    this.MemberSymbol = memberSymbol;
-    this.MemberTypeSymbol = memberTypeSymbol;
-    this.MemberTypeInfo = memberTypeInfo;
-  }
-
-  public string Name { get; }
-  public ITypeInfo ContainerTypeInfo { get; }
-  public ISymbol MemberSymbol { get; }
-  public ITypeSymbol MemberTypeSymbol { get; }
-  public ITypeInfo MemberTypeInfo { get; }
+public class MemberReference(
+    string name,
+    ITypeInfo containerTypeInfo,
+    ISymbol memberSymbol,
+    ITypeSymbol memberTypeSymbol,
+    ITypeInfo memberTypeInfo)
+    : IMemberReference {
+  public string Name { get; } = name;
+  public ITypeInfo ContainerTypeInfo { get; } = containerTypeInfo;
+  public ISymbol MemberSymbol { get; } = memberSymbol;
+  public ITypeSymbol MemberTypeSymbol { get; } = memberTypeSymbol;
+  public ITypeInfo MemberTypeInfo { get; } = memberTypeInfo;
 
   public bool IsInteger => this.MemberTypeInfo is IIntegerTypeInfo;
 
   public IMemberReference AssertIsInteger() {
     if (!this.IsInteger) {
       Asserts.Fail($"Expected {this.Name} to refer to an integer!");
+    }
+
+    return this;
+  }
+
+  public bool IsFloat
+    => this.MemberTypeInfo is INumberTypeInfo {
+        NumberType: (SchemaNumberType.HALF
+                     or SchemaNumberType.SINGLE
+                     or SchemaNumberType.DOUBLE
+                     or SchemaNumberType.SN8
+                     or SchemaNumberType.SN16
+                     or SchemaNumberType.UN8
+                     or SchemaNumberType.UN16)
+    };
+
+  public IMemberReference AssertIsFloat() {
+    if (!this.IsFloat) {
+      Asserts.Fail($"Expected {this.Name} to refer to a float!");
     }
 
     return this;

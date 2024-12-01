@@ -18,9 +18,9 @@ internal class WLengthOfStringParser : IAttributeParser {
     }
 
     if (memberTypeInfo is IIntegerTypeInfo &&
-        memberType is BinarySchemaContainerParser.PrimitiveMemberType
-            primitiveMemberType) {
-      primitiveMemberType.LengthOfStringMembers =
+        memberType is BinarySchemaContainerParser.IntegerMemberType
+            integerMemberType) {
+      integerMemberType.LengthOfStringMembers =
           lengthOfStringAttributes.Select(attr => attr.OtherMember)
                                   .ToArray();
     } else {

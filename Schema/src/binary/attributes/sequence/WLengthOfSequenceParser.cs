@@ -18,9 +18,9 @@ internal class WLengthOfSequenceParser : IAttributeParser {
     }
 
     if (memberTypeInfo is IIntegerTypeInfo &&
-        memberType is BinarySchemaContainerParser.PrimitiveMemberType
-            primitiveMemberType) {
-      primitiveMemberType.LengthOfSequenceMembers =
+        memberType is BinarySchemaContainerParser.IntegerMemberType
+            integerMemberType) {
+      integerMemberType.LengthOfSequenceMembers =
           lengthOfSequenceAttributes.Select(attr => attr.OtherMember)
                                     .ToArray();
     } else {

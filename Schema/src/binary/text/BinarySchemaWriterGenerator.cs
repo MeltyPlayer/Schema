@@ -33,6 +33,10 @@ public class BinarySchemaWriterGenerator {
         dependencies.Add("schema.binary.attributes");
       }
 
+      if (container.DependsOnSchemaUtil()) {
+        dependencies.Add("schema.util");
+      }
+
       if (container.DependsOnSchemaUtilAsserts()) {
         dependencies.Add("schema.util.asserts");
       }
@@ -238,24 +242,41 @@ public class BinarySchemaWriterGenerator {
         sw,
         member,
         () => {
+          if (member.MemberType is IFloatMemberType {
+                  FixedPointAttribute: not null
+              } floatMemberType) {
+            var target
+                = floatMemberType.PrimitiveType is SchemaPrimitiveType.SINGLE
+                    ? "Single"
+                    : "Double";
+            var fixedPointAttribute = floatMemberType.FixedPointAttribute;
+            sw.WriteLine(
+                $"{WRITER}.WriteUInt32(BitLogic.Convert{target}ToFixedPoint(this.{member.Name}, {fixedPointAttribute.SignBits}, {fixedPointAttribute.IntegerBits}, {fixedPointAttribute.FractionBits}));");
+            return;
+          }
+
           var writeType = useAltFormat
               ? altFormat.AsPrimitiveType()
               : primitiveType;
           var writeTypeLabel =
               SchemaGeneratorUtil.GetPrimitiveLabel(writeType);
 
-          var isNotDelayed =
-              !primitiveMemberType.SizeOfStream &&
-              primitiveMemberType.AccessChainToSizeOf == null &&
-              primitiveMemberType.PointerToAttribute == null;
+          var integerMemberType = primitiveMemberType as IIntegerMemberType;
+          var isNotDelayed = integerMemberType
+              is null
+                 or {
+                     SizeOfStream: false,
+                     AccessChainToSizeOf: null,
+                     PointerToAttribute: null
+                 };
           if (isNotDelayed) {
             var accessText = $"this.{member.Name}";
             if (member.MemberType.TypeInfo.IsNullable) {
               accessText = $"{accessText}.Value";
             }
 
-            var lengthOfStringMembers =
-                primitiveMemberType.LengthOfStringMembers;
+            var lengthOfStringMembers
+                = integerMemberType?.LengthOfStringMembers;
             var isLengthOfString = lengthOfStringMembers is { Length: > 0 };
             if (isLengthOfString) {
               accessText = $"{lengthOfStringMembers[0].Name}.Length";
@@ -265,8 +286,8 @@ public class BinarySchemaWriterGenerator {
               }
             }
 
-            var lengthOfSequenceMembers =
-                primitiveMemberType.LengthOfSequenceMembers;
+            var lengthOfSequenceMembers
+                = integerMemberType?.LengthOfSequenceMembers;
             var isLengthOfSequence = lengthOfSequenceMembers is
                 { Length: > 0 };
             if (isLengthOfSequence) {
@@ -308,8 +329,8 @@ public class BinarySchemaWriterGenerator {
                   $".ContinueWith(task => ({castType}) task.Result)";
             }
 
-            var accessChainToSizeOf = primitiveMemberType.AccessChainToSizeOf;
-            var pointerToAttribute = primitiveMemberType.PointerToAttribute;
+            var accessChainToSizeOf = integerMemberType?.AccessChainToSizeOf;
+            var pointerToAttribute = integerMemberType?.PointerToAttribute;
             string accessText;
             if (accessChainToSizeOf != null) {
               accessText =

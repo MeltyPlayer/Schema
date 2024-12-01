@@ -102,14 +102,14 @@ internal static class BinarySchemaTestUtil {
         new WSizeOfMemberInBytesDependencyFixer();
     foreach (var structure in structures) {
       foreach (var member in structure.Members.OfType<ISchemaValueMember>()) {
-        if (member.MemberType is IPrimitiveMemberType primitiveMemberType) {
-          if (primitiveMemberType.AccessChainToSizeOf != null) {
+        if (member.MemberType is IIntegerMemberType integerMemberType) {
+          if (integerMemberType.AccessChainToSizeOf != null) {
             sizeOfMemberInBytesDependencyFixer.AddDependenciesForContainer(
                 structureByNamedTypeSymbol,
-                primitiveMemberType.AccessChainToSizeOf);
+                integerMemberType.AccessChainToSizeOf);
           }
 
-          var pointerToAttribute = primitiveMemberType.PointerToAttribute;
+          var pointerToAttribute = integerMemberType.PointerToAttribute;
           if (pointerToAttribute != null) {
             sizeOfMemberInBytesDependencyFixer.AddDependenciesForContainer(
                 structureByNamedTypeSymbol,

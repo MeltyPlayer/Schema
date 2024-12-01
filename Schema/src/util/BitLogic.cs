@@ -10,17 +10,37 @@ namespace schema.util {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static double GetFixedPointDouble(uint x,
-                                             byte signBits,
-                                             byte integerBits,
-                                             byte fractionBits) {
+    public static float ConvertFixedPointToSingle(uint x,
+                                                  byte signBits,
+                                                  byte integerBits,
+                                                  byte fractionBits) {
+      float floatValue;
+      if (signBits == 0) {
+        floatValue = x;
+      } else {
+        var signMask = 1 << (integerBits + fractionBits);
+        if ((x & signMask) != 0) {
+          floatValue = (x | ~(signMask - 1));
+        } else {
+          floatValue = x;
+        }
+      }
+
+      return floatValue * (float) Math.Pow(.5f, fractionBits);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static double ConvertFixedPointToDouble(uint x,
+                                                   byte signBits,
+                                                   byte integerBits,
+                                                   byte fractionBits) {
       double doubleValue;
       if (signBits == 0) {
         doubleValue = x;
       } else {
         var signMask = 1 << (integerBits + fractionBits);
         if ((x & signMask) != 0) {
-          doubleValue = (double) (x | ~(signMask - 1));
+          doubleValue = (x | ~(signMask - 1));
         } else {
           doubleValue = x;
         }
@@ -28,5 +48,19 @@ namespace schema.util {
 
       return doubleValue * Math.Pow(.5, fractionBits);
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint ConvertSingleToFixedPoint(float x,
+                                                 byte signBits,
+                                                 byte integerBits,
+                                                 byte fractionBits)
+      => (uint) (x * Math.Pow(2, fractionBits));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint ConvertDoubleToFixedPoint(double x,
+                                                 byte signBits,
+                                                 byte integerBits,
+                                                 byte fractionBits)
+      => (uint) (x * Math.Pow(2, fractionBits));
   }
 }

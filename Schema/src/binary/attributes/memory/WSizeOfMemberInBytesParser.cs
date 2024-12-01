@@ -19,9 +19,9 @@ internal class WSizeOfMemberInBytesParser : IAttributeParser {
         sizeOfAttribute.AccessChainToOtherMember);
 
     if (memberTypeInfo is IIntegerTypeInfo &&
-        memberType is BinarySchemaContainerParser.PrimitiveMemberType
-            primitiveMemberType) {
-      primitiveMemberType.AccessChainToSizeOf =
+        memberType is BinarySchemaContainerParser.IntegerMemberType
+            integerMemberType) {
+      integerMemberType.AccessChainToSizeOf =
           sizeOfAttribute.AccessChainToOtherMember;
     } else {
       memberBetterSymbol.ReportDiagnostic(Rules.NotSupported);

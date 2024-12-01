@@ -21,9 +21,9 @@ internal class WPointerToParser : IAttributeParser {
         pointerToAttribute.AccessChainToOtherMember);
 
     if (memberTypeInfo is IIntegerTypeInfo &&
-        memberType is BinarySchemaContainerParser.PrimitiveMemberType
-            primitiveMemberType) {
-      primitiveMemberType.PointerToAttribute = pointerToAttribute;
+        memberType is BinarySchemaContainerParser.IntegerMemberType
+            integerMemberType) {
+      integerMemberType.PointerToAttribute = pointerToAttribute;
     } else {
       memberBetterSymbol.ReportDiagnostic(Rules.NotSupported);
     }

@@ -51,12 +51,18 @@ public interface IPrimitiveMemberType : IMemberType {
   SchemaPrimitiveType PrimitiveType { get; }
   bool UseAltFormat { get; }
   SchemaNumberType AltFormat { get; }
+}
 
+public interface IIntegerMemberType : IPrimitiveMemberType {
   bool SizeOfStream { get; }
   IMemberReference<string>[]? LengthOfStringMembers { get; }
   IMemberReference[]? LengthOfSequenceMembers { get; }
   IChain<IAccessChainNode>? AccessChainToSizeOf { get; }
   IPointerToAttribute? PointerToAttribute { get; }
+}
+
+public interface IFloatMemberType : IPrimitiveMemberType {
+  FixedPointAttribute? FixedPointAttribute { get; }
 }
 
 public interface IContainerMemberType : IMemberType {
@@ -278,15 +284,14 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
       var sizeOfMemberInBytesDependencyFixer =
           new WSizeOfMemberInBytesDependencyFixer();
       foreach (var member in members.OfType<ISchemaValueMember>()) {
-        if (member.MemberType is IPrimitiveMemberType
-            primitiveMemberType) {
-          if (primitiveMemberType.AccessChainToSizeOf != null) {
+        if (member.MemberType is IIntegerMemberType integerMemberType) {
+          if (integerMemberType.AccessChainToSizeOf != null) {
             sizeOfMemberInBytesDependencyFixer.AddDependenciesForContainer(
                 containerByNamedTypeSymbol,
-                primitiveMemberType.AccessChainToSizeOf);
+                integerMemberType.AccessChainToSizeOf);
           }
 
-          var pointerToAttribute = primitiveMemberType.PointerToAttribute;
+          var pointerToAttribute = integerMemberType.PointerToAttribute;
           if (pointerToAttribute != null) {
             sizeOfMemberInBytesDependencyFixer.AddDependenciesForContainer(
                 containerByNamedTypeSymbol,
@@ -333,6 +338,7 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
         MemberReferenceUtil.WrapTypeInfoWithMemberType(memberTypeInfo);
 
     var attributeParsers = new IAttributeParser[] {
+        new FixedPointParser(),
         new SequenceLengthSourceParser(),
         new WLengthOfSequenceParser(),
         new WLengthOfStringParser(),
@@ -354,8 +360,8 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
           memberBetterSymbol.GetAttribute<WSizeOfStreamInBytesAttribute>();
       if (sizeOfStreamAttribute != null) {
         if (memberTypeInfo is IIntegerTypeInfo &&
-            memberType is PrimitiveMemberType primitiveMemberType) {
-          primitiveMemberType.SizeOfStream = true;
+            memberType is IntegerMemberType integerMemberType) {
+          integerMemberType.SizeOfStream = true;
         } else {
           memberBetterSymbol.ReportDiagnostic(Rules.NotSupported);
         }
@@ -450,7 +456,7 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
 
           var canPrimitiveTypeBeReadAsNumber =
               targetPrimitiveType.CanBeReadAsNumber();
-          if (!(targetMemberType is PrimitiveMemberType &&
+          if (!(targetMemberType is IPrimitiveMemberType &&
                 canPrimitiveTypeBeReadAsNumber)) {
             memberBetterSymbol.ReportDiagnostic(
                 Rules.UnexpectedAttribute);
@@ -466,7 +472,7 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
 
           var canPrimitiveTypeBeReadAsInteger =
               targetPrimitiveType.CanBeReadAsInteger();
-          if (!(targetMemberType is PrimitiveMemberType &&
+          if (!(targetMemberType is BPrimitiveMemberType &&
                 canPrimitiveTypeBeReadAsInteger)) {
             memberBetterSymbol.ReportDiagnostic(Rules.UnexpectedAttribute);
           }
@@ -478,7 +484,7 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
         formatNumberType = formatIntegerType.AsNumberType();
       }
 
-      if (targetMemberType is PrimitiveMemberType primitiveMemberType) {
+      if (targetMemberType is BPrimitiveMemberType primitiveMemberType) {
         if (formatNumberType != SchemaNumberType.UNDEFINED) {
           primitiveMemberType.UseAltFormat = true;
           primitiveMemberType.AltFormat = formatNumberType;
@@ -620,7 +626,7 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
     public bool TrackStartAndEnd { get; set; }
   }
 
-  public class PrimitiveMemberType : IPrimitiveMemberType {
+  public abstract class BPrimitiveMemberType : IPrimitiveMemberType {
     public IPrimitiveTypeInfo PrimitiveTypeInfo { get; set; }
     public ITypeInfo TypeInfo => PrimitiveTypeInfo;
     public ITypeSymbol TypeSymbol => TypeInfo.TypeSymbol;
@@ -631,12 +637,18 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
 
     public bool UseAltFormat { get; set; }
     public SchemaNumberType AltFormat { get; set; }
+  }
 
+  public class IntegerMemberType : BPrimitiveMemberType, IIntegerMemberType {
     public bool SizeOfStream { get; set; }
     public IMemberReference<string>[]? LengthOfStringMembers { get; set; }
     public IMemberReference[]? LengthOfSequenceMembers { get; set; }
     public IChain<IAccessChainNode>? AccessChainToSizeOf { get; set; }
     public IPointerToAttribute? PointerToAttribute { get; set; }
+  }
+
+  public class FloatMemberType : BPrimitiveMemberType, IFloatMemberType {
+    public FixedPointAttribute? FixedPointAttribute { get; set; }
   }
 
   public class ContainerMemberType : IContainerMemberType {

@@ -46,11 +46,16 @@ internal static class MemberReferenceUtil {
       ITypeInfo memberTypeInfo) {
     switch (memberTypeInfo) {
       case IIntegerTypeInfo integerTypeInfo:
-      case INumberTypeInfo numberTypeInfo:
       case IBoolTypeInfo boolTypeInfo:
       case ICharTypeInfo charTypeInfo:
       case IEnumTypeInfo enumTypeInfo: {
-        return new BinarySchemaContainerParser.PrimitiveMemberType {
+        return new BinarySchemaContainerParser.IntegerMemberType {
+            PrimitiveTypeInfo =
+                Asserts.CastNonnull(memberTypeInfo as IPrimitiveTypeInfo),
+        };
+      }
+      case INumberTypeInfo numberTypeInfo: {
+        return new BinarySchemaContainerParser.FloatMemberType {
             PrimitiveTypeInfo =
                 Asserts.CastNonnull(memberTypeInfo as IPrimitiveTypeInfo),
         };
