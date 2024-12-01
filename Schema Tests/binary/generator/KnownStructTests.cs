@@ -66,6 +66,61 @@ internal class KnownStructTests {
 
   [Test]
   [TestCaseSource(nameof(KNOWN_STRUCT_TEST_CASES))]
+  public void TestSystemNumericsNullableField(string knownStructName)
+    => BinarySchemaTestUtil.AssertGenerated(
+        $$"""
+          using System.Numerics;
+          using schema.binary;
+          using schema.binary.attributes;
+
+          namespace foo.bar;
+
+          [BinarySchema]
+          public partial class Wrapper {
+            [IfBoolean(SchemaIntegerType.BYTE)]
+            public {{knownStructName}}? Field { get; set; }
+          }
+          """,
+        $$"""
+          using System;
+          using schema.binary;
+
+          namespace foo.bar;
+
+          public partial class Wrapper {
+            public void Read(IBinaryReader br) {
+              {
+                var b = br.ReadByte() != 0;
+                if (b) {
+                  this.Field = br.Read{{knownStructName}}();
+                }
+                else {
+                  this.Field = null;
+                }
+              }
+            }
+          }
+
+          """,
+        $$"""
+          using System;
+          using schema.binary;
+
+          namespace foo.bar;
+
+          public partial class Wrapper {
+            public void Write(IBinaryWriter bw) {
+              bw.WriteByte((byte) (this.Field != null ? 1 : 0));
+              if (this.Field != null) {
+                bw.Write{{knownStructName}}(this.Field.Value);
+              }
+            }
+          }
+
+          """);
+
+  [Test]
+  [TestCaseSource(nameof(KNOWN_STRUCT_TEST_CASES))]
   public void TestSystemNumericsReadonlyArray(string knownStructName)
     => BinarySchemaTestUtil.AssertGenerated(
         $$"""

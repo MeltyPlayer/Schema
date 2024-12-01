@@ -137,6 +137,7 @@ public class BinarySchemaReaderGenerator {
 
       if (member.MemberType is not IPrimitiveMemberType &&
           member.MemberType is not IContainerMemberType &&
+          member.MemberType is not IKnownStructMemberType &&
           member.MemberType is not ISequenceMemberType {
               SequenceTypeInfo.SequenceType: SequenceType
                   .MUTABLE_ARRAY

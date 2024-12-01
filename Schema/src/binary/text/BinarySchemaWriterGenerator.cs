@@ -420,11 +420,15 @@ public class BinarySchemaWriterGenerator {
         sw,
         member,
         () => {
-          var memberName = member.Name;
+          var accessText = $"this.{member.Name}";
+          if (knownStructMemberType.TypeInfo.IsNullable) {
+            accessText += ".Value";
+          }
+
           var knownStructName
               = SchemaGeneratorUtil.GetKnownStructName(
                   knownStructMemberType.KnownStruct);
-          sw.WriteLine($"{WRITER}.Write{knownStructName}(this.{memberName});");
+          sw.WriteLine($"{WRITER}.Write{knownStructName}({accessText});");
         });
   }
 
