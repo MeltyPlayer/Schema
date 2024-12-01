@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-using schema.binary.parser;
+﻿using schema.binary.parser;
 using schema.util.symbols;
 
 

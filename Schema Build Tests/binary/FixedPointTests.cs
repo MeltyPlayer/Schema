@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Numerics;
+﻿using System.IO;
 
 using NUnit.Framework;
 
 using schema.binary.attributes;
 using schema.testing;
-using schema.util.asserts;
 
 
 namespace schema.binary;
