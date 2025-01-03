@@ -60,7 +60,7 @@ internal class ConstraintTests {
         public partial class Circular<TMutable, TInterface, TImpl> : ICircular<TMutable, TInterface, TImpl>;
         
         #nullable enable
-        public interface ICircular<TMutable, TInterface, TImpl> where TMutable : Circular<TMutable, TInterface, TImpl>, TInterface where TInterface : foo.bar.ICircular<TMutable, TInterface, TImpl> {
+        public interface ICircular<TMutable, TInterface, TImpl> where TMutable : Circular<TMutable, TInterface, TImpl>, TInterface where TInterface : ICircular<TMutable, TInterface, TImpl> {
           public TMutable Foo(TInterface other);
           public TMutable Foo(in TImpl other);
         }

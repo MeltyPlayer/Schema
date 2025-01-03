@@ -5,6 +5,8 @@ using System.Runtime.CompilerServices;
 
 using Microsoft.CodeAnalysis;
 
+using schema.util.asserts;
+
 
 namespace schema.util.symbols;
 
@@ -61,8 +63,9 @@ public static class NamespaceExtensions {
            currentNamespace.ContainingNamespace.Name.Length == 0;
   }
 
-  public static string? GetFullyQualifiedNamespace(this ISymbol symbol) {
-    var containingNamespaces = symbol.GetContainingNamespaces().ToArray();
+  public static string? GetNamespaceBlockLabel(this ISymbol symbol) {
+    var containingNamespaces
+        = Asserts.CastNonnull(symbol.GetContainingNamespaces()).ToArray();
     if (containingNamespaces.Length == 0) {
       return null;
     }
@@ -70,17 +73,36 @@ public static class NamespaceExtensions {
     return string.Join(".", containingNamespaces);
   }
 
-  public static IEnumerable<string> GetContainingNamespaces(
-      this ISymbol symbol)
-    => symbol.GetContainingNamespacesReversed_().Reverse();
+  public static string? GetFullyQualifiedNamespace(this ISymbol symbol) {
+    var containingNamespaces = symbol.GetContainingNamespaces()?.ToArray();
+    if (containingNamespaces == null) {
+      return null;
+    }
+
+    if (containingNamespaces.Length == 0) {
+      return "global::";
+    }
+
+    return string.Join(".", containingNamespaces!);
+  }
+
+  public static IEnumerable<string>? GetContainingNamespaces(
+      this ISymbol symbol) {
+    var namespaceSymbol = symbol.ContainingNamespace;
+    if (namespaceSymbol == null) {
+      return null;
+    }
+
+    if (namespaceSymbol.IsGlobalNamespace) {
+      return [];
+    }
+    
+    return symbol.GetContainingNamespacesReversed_().Reverse();
+  }
 
   private static IEnumerable<string> GetContainingNamespacesReversed_(
       this ISymbol symbol) {
     var namespaceSymbol = symbol.ContainingNamespace;
-    if (namespaceSymbol?.IsGlobalNamespace ?? true) {
-      yield break;
-    }
-
     while (!namespaceSymbol?.IsGlobalNamespace ?? true) {
       if (namespaceSymbol.Name.Length > 0) {
         yield return namespaceSymbol.Name.EscapeKeyword();
