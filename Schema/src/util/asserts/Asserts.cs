@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 
@@ -33,18 +34,22 @@ public sealed class Asserts {
   public static bool Fail(string? message = null)
     => throw new AssertionException(message ?? "Failed.");
 
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static bool True(bool value, string? message = null)
     => value || Fail(message ?? "Expected to be true.");
 
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static bool False(bool value, string? message = null)
     => True(!value, message ?? "Expected to be false.");
 
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static bool Nonnull(
       object? instance,
       string? message = null)
     => True(instance != null,
             message ?? "Expected reference to be nonnull.");
 
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static T CastNonnull<T>(
       T? instance,
       string? message = null) {
@@ -53,40 +58,20 @@ public sealed class Asserts {
     return instance!;
   }
 
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static void Null(
       object? instance,
       string message = "Expected reference to be null.")
     => True(instance == null, message);
 
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static bool Same(
       object instanceA,
       object instanceB,
       string message = "Expected references to be the same.")
     => True(ReferenceEquals(instanceA, instanceB), message);
 
-  public static void Different(
-      object instanceA,
-      object instanceB,
-      string message = "Expected references to be different.") {
-    False(ReferenceEquals(instanceA, instanceB), message);
-  }
-
-  public static bool Equal(
-      object? expected,
-      object? actual,
-      string? message = null) {
-    if (expected == null && actual == null) {
-      return true;
-    }
-
-    if (expected?.Equals(actual) ?? actual?.Equals(expected) ?? false) {
-      return true;
-    }
-
-    Fail(message ?? $"Expected {actual} to equal {expected}.");
-    return false;
-  }
-
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static void Equal<TEnumerable>(
       TEnumerable enumerableA,
       TEnumerable enumerableB) where TEnumerable : IEnumerable {
@@ -115,7 +100,7 @@ public sealed class Asserts {
          "Expected enumerables to be the same length.");
   }
 
-
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static bool AllEqual<T>(params T[] values) where T : notnull {
     if (values.Length <= 1) {
       return true;
@@ -131,7 +116,7 @@ public sealed class Asserts {
     return true;
   }
 
-
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static bool Equal<T>(
       T expected,
       T actual,
@@ -144,12 +129,14 @@ public sealed class Asserts {
     return false;
   }
 
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static bool Equal(
       string expected,
       string actual,
       string? message = null)
     => Equal<string>(expected, actual, message);
 
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static TExpected AsA<TExpected>(
       object? instance,
       string? message = null) {
@@ -161,6 +148,7 @@ public sealed class Asserts {
     return default!;
   }
 
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static T Assert<T>(T? value) where T : notnull {
     Nonnull(value);
     return value!;
