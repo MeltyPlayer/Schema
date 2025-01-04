@@ -116,14 +116,14 @@ public sealed class Asserts {
   }
 
 
-  public static bool AllEqual<T>(params T[] values) {
+  public static bool AllEqual<T>(params T[] values) where T : notnull {
     if (values.Length <= 1) {
       return true;
     }
 
     var first = values[0];
     foreach (var value in values.Skip(1)) {
-      if (!Equal<T>(first, value)) {
+      if (!Equal(first, value)) {
         return false;
       }
     }
@@ -135,12 +135,8 @@ public sealed class Asserts {
   public static bool Equal<T>(
       T expected,
       T actual,
-      string? message = null) {
-    if (expected == null && actual == null) {
-      return true;
-    }
-
-    if (expected?.Equals(actual) ?? actual?.Equals(expected) ?? false) {
+      string? message = null) where T : notnull {
+    if (expected.Equals(actual)) {
       return true;
     }
 
