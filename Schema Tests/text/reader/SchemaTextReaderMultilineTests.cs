@@ -31,8 +31,8 @@ internal class SchemaTextReaderMultilineTests {
     using var tr = TextSchemaTestUtil.CreateTextReader(inputText);
     Assert.AreEqual(new[] { 1, 2, 3 },
                     tr.ReadInt32s(
-                        TextReaderConstants.WHITESPACE_STRINGS,
-                        TextReaderConstants.NEWLINE_STRINGS));
+                        TextReaderConstants.WHITESPACE_CHARS,
+                        TextReaderConstants.NEWLINE_CHARS));
 
     Assert.AreEqual("foobar", tr.ReadLine());
   }

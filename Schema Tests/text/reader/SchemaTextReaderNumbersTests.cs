@@ -10,9 +10,9 @@ internal class SchemaTextReaderNumbersTests {
   public void TestReadBytesNull() {
     using var tr = TextSchemaTestUtil.CreateTextReader("0,, ,255");
     Asserts.Equal([0, null, null, 255],
-                  tr.ReadBytesIncludingEmpty(new[] { "," },
-                                             TextReaderConstants
-                                                 .NEWLINE_STRINGS));
+                  tr.ReadBytesIncludingEmpty(
+                      TextReaderConstants.COMMA_CHARS,
+                      TextReaderConstants.NEWLINE_CHARS));
   }
 
   [Test]
@@ -20,8 +20,8 @@ internal class SchemaTextReaderNumbersTests {
     using var tr = TextSchemaTestUtil.CreateTextReader("0x00,, ,0xff");
     Asserts.Equal([0, null, null, 255],
                   tr.ReadHexBytesIncludingEmpty(
-                      new[] { "," },
-                      TextReaderConstants.NEWLINE_STRINGS));
+                      TextReaderConstants.COMMA_CHARS,
+                      TextReaderConstants.NEWLINE_CHARS));
   }
 
   [Test]
@@ -34,8 +34,8 @@ internal class SchemaTextReaderNumbersTests {
   public void TestReadBytes(string inputText, byte[] expectedValues) {
     using var tr = TextSchemaTestUtil.CreateTextReader(inputText);
     Asserts.Equal(expectedValues,
-                  tr.ReadBytes(new[] { "," },
-                               TextReaderConstants.NEWLINE_STRINGS));
+                  tr.ReadBytes(TextReaderConstants.COMMA_CHARS,
+                               TextReaderConstants.NEWLINE_CHARS));
   }
 
   [Test]
@@ -46,8 +46,8 @@ internal class SchemaTextReaderNumbersTests {
   public void TestReadHexBytes(string inputText, byte[] expectedValues) {
     using var tr = TextSchemaTestUtil.CreateTextReader(inputText);
     Asserts.Equal(expectedValues,
-                  tr.ReadHexBytes(new[] { "," },
-                                  TextReaderConstants.NEWLINE_STRINGS));
+                  tr.ReadHexBytes(TextReaderConstants.COMMA_CHARS,
+                                  TextReaderConstants.NEWLINE_CHARS));
   }
 
   [Test]
@@ -57,7 +57,7 @@ internal class SchemaTextReaderNumbersTests {
   public void TestReadSingles(string inputText, float[] expectedValues) {
     using var tr = TextSchemaTestUtil.CreateTextReader(inputText);
     Asserts.Equal(expectedValues,
-                  tr.ReadSingles(new[] { "," },
-                                 TextReaderConstants.NEWLINE_STRINGS));
+                  tr.ReadSingles(TextReaderConstants.COMMA_CHARS,
+                                 TextReaderConstants.NEWLINE_CHARS));
   }
 }

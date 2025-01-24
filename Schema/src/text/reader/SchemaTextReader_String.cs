@@ -57,5 +57,5 @@ public sealed partial class SchemaTextReader {
            .ToArray();
 
   public string ReadLine()
-    => this.ReadUpToAndPastTerminator(TextReaderConstants.NEWLINE_STRINGS);
+    => this.ReadUpToAndPastTerminator(TextReaderConstants.NEWLINE_CHARS);
 }
