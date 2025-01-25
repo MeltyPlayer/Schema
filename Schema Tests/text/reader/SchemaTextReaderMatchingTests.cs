@@ -5,28 +5,78 @@ namespace schema.text.reader;
 
 internal class SchemaTextReaderMatchingTests {
   [Test]
-  public void TestReadUpToStartOfTerminator() {
+  public void TestReadUpToStartOfTerminator_Char() {
     using var tr = TextSchemaTestUtil.CreateTextReader("abc,,xyz, 123");
 
-    Assert.AreEqual("abc", tr.ReadUpToStartOfTerminator(new[] { "," }));
+    Assert.AreEqual("abc", tr.ReadUpToStartOfTerminator(','));
     tr.AssertString(",");
     Assert.AreEqual(string.Empty,
-                    tr.ReadUpToStartOfTerminator(new[] { "," }));
+                    tr.ReadUpToStartOfTerminator(','));
     tr.AssertString(",");
-    Assert.AreEqual("xyz", tr.ReadUpToStartOfTerminator(new[] { ",", " " }));
+    Assert.AreEqual("xyz", tr.ReadUpToStartOfTerminator(','));
     tr.AssertString(",");
-    Assert.AreEqual(" 123", tr.ReadUpToStartOfTerminator(new[] { "," }));
+    Assert.AreEqual(" 123", tr.ReadUpToStartOfTerminator(','));
   }
 
   [Test]
-  public void TestReadUpToAndPastTerminator() {
+  public void TestReadUpToStartOfTerminator_ReadOnlySpanChar() {
     using var tr = TextSchemaTestUtil.CreateTextReader("abc,,xyz, 123");
 
-    Assert.AreEqual("abc", tr.ReadUpToAndPastTerminator(new[] { "," }));
+    Assert.AreEqual("abc", tr.ReadUpToStartOfTerminator([',']));
+    tr.AssertString(",");
     Assert.AreEqual(string.Empty,
-                    tr.ReadUpToAndPastTerminator(new[] { "," }));
-    Assert.AreEqual("xyz", tr.ReadUpToAndPastTerminator(new[] { "," }));
-    Assert.AreEqual(" 123", tr.ReadUpToAndPastTerminator(new[] { "," }));
+                    tr.ReadUpToStartOfTerminator([',']));
+    tr.AssertString(",");
+    Assert.AreEqual("xyz", tr.ReadUpToStartOfTerminator([',', ' ']));
+    tr.AssertString(",");
+    Assert.AreEqual(" 123", tr.ReadUpToStartOfTerminator([',']));
+  }
+
+  [Test]
+  public void TestReadUpToStartOfTerminator_ReadOnlySpanString() {
+    using var tr = TextSchemaTestUtil.CreateTextReader("abc,,xyz, 123");
+
+    Assert.AreEqual("abc", tr.ReadUpToStartOfTerminator([","]));
+    tr.AssertString(",");
+    Assert.AreEqual(string.Empty,
+                    tr.ReadUpToStartOfTerminator([","]));
+    tr.AssertString(",");
+    Assert.AreEqual("xyz", tr.ReadUpToStartOfTerminator([",", " "]));
+    tr.AssertString(",");
+    Assert.AreEqual(" 123", tr.ReadUpToStartOfTerminator([","]));
+  }
+
+  [Test]
+  public void TestReadUpToAndPastTerminator_Char() {
+    using var tr = TextSchemaTestUtil.CreateTextReader("abc,,xyz, 123");
+
+    Assert.AreEqual("abc", tr.ReadUpToAndPastTerminator(','));
+    Assert.AreEqual(string.Empty,
+                    tr.ReadUpToAndPastTerminator(','));
+    Assert.AreEqual("xyz", tr.ReadUpToAndPastTerminator(','));
+    Assert.AreEqual(" 123", tr.ReadUpToAndPastTerminator(','));
+  }
+
+  [Test]
+  public void TestReadUpToAndPastTerminator_ReadOnlySpanChar() {
+    using var tr = TextSchemaTestUtil.CreateTextReader("abc,,xyz, 123");
+
+    Assert.AreEqual("abc", tr.ReadUpToAndPastTerminator([',']));
+    Assert.AreEqual(string.Empty,
+                    tr.ReadUpToAndPastTerminator([',']));
+    Assert.AreEqual("xyz", tr.ReadUpToAndPastTerminator([',']));
+    Assert.AreEqual(" 123", tr.ReadUpToAndPastTerminator([',']));
+  }
+
+  [Test]
+  public void TestReadUpToAndPastTerminator_ReadOnlySpanString() {
+    using var tr = TextSchemaTestUtil.CreateTextReader("abc,,xyz, 123");
+
+    Assert.AreEqual("abc", tr.ReadUpToAndPastTerminator([","]));
+    Assert.AreEqual(string.Empty,
+                    tr.ReadUpToAndPastTerminator([","]));
+    Assert.AreEqual("xyz", tr.ReadUpToAndPastTerminator([","]));
+    Assert.AreEqual(" 123", tr.ReadUpToAndPastTerminator([","]));
   }
 
   [Test]

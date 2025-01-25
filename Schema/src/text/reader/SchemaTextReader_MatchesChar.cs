@@ -34,6 +34,7 @@ public sealed partial class SchemaTextReader {
       if (this.PeekCharAndProgressIfNotEqualTo_(terminator, out var peeked)) {
         sb.Append(peeked);
       } else {
+        this.ReadChar();
         break;
       }
     }
