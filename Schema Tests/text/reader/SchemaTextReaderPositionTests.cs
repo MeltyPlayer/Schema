@@ -83,10 +83,7 @@ internal class SchemaTextReaderPositionTests {
 
   [Test]
   public void TestGetPositionsAcrossLinesWhenReadingMultiple() {
-    var text = "abc\n\t1\t23\nfoo";
-
     using var tr = TextSchemaTestUtil.CreateTextReader("abc\n\t1\t23\nfoo");
-
 
     Assert.AreEqual(0, tr.Position);
     Assert.AreEqual(0, tr.LineNumber);

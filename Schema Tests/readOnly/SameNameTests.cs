@@ -19,20 +19,22 @@ internal class SameNameTests {
         public partial interface ISameName<T> : ISameName;
         """,
         """
+        #nullable enable
+
         namespace foo.bar;
         
         public partial interface ISameName : IReadOnlySameName;
         
-        #nullable enable
         public partial interface IReadOnlySameName;
 
         """,
         """
+        #nullable enable
+
         namespace foo.bar;
         
         public partial interface ISameName<T> : IReadOnlySameName<T>;
         
-        #nullable enable
         public partial interface IReadOnlySameName<out T> : IReadOnlySameName;
 
         """);

@@ -32,6 +32,8 @@ internal class BuiltInTypeTests {
           }
           """,
         $$"""
+          #nullable enable
+
           namespace foo.bar;
 
           public partial interface IWrapper : IReadOnlyWrapper {
@@ -39,7 +41,6 @@ internal class BuiltInTypeTests {
             {{readOnly}} IReadOnlyWrapper.Convert({{mutable}} value) => {{(needsToCast ? $"({readOnly})(object) " : "")}}Convert(value);
           }
 
-          #nullable enable
           public partial interface IReadOnlyWrapper {
             public {{readOnly}} Property { get; }
             public {{readOnly}} Convert({{mutable}} value);
@@ -66,13 +67,14 @@ internal class BuiltInTypeTests {
           }
           """,
         $$"""
+          #nullable enable
+
           namespace foo.bar;
 
           public partial interface IWrapper : IReadOnlyWrapper {
             {{mutable}} IReadOnlyWrapper.Property => Property;
           }
 
-          #nullable enable
           public partial interface IReadOnlyWrapper {
             public {{mutable}} Property { get; }
           }
@@ -99,13 +101,14 @@ internal class BuiltInTypeTests {
           }
           """,
         $$"""
+          #nullable enable
+
           namespace foo.bar;
 
           public partial interface IWrapper : IReadOnlyWrapper {
             {{mutable}} IReadOnlyWrapper.Convert({{mutable}} value) => Convert(value);
           }
 
-          #nullable enable
           public partial interface IReadOnlyWrapper {
             public {{mutable}} Convert({{mutable}} value);
           }

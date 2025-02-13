@@ -19,13 +19,14 @@ internal class NullableTests {
 
         """,
         """
+        #nullable enable
+
         namespace foo.bar;
         
         public partial interface IWrapper : IReadOnlyWrapper {
           int? IReadOnlyWrapper.NullablePrimitive => NullablePrimitive;
         }
         
-        #nullable enable
         public partial interface IReadOnlyWrapper {
           public int? NullablePrimitive { get; }
         }
@@ -48,13 +49,14 @@ internal class NullableTests {
 
         """,
         """
+        #nullable enable
+
         namespace foo.bar;
         
         public partial interface IWrapper<T> : IReadOnlyWrapper<T> {
           T? IReadOnlyWrapper<T>.NullableGeneric => NullableGeneric;
         }
         
-        #nullable enable
         public partial interface IReadOnlyWrapper<out T> {
           public T? NullableGeneric { get; }
         }
@@ -78,13 +80,14 @@ internal class NullableTests {
 
         """,
         """
+        #nullable enable
+
         namespace foo.bar;
 
         public partial interface IWrapper<T> : IReadOnlyWrapper<T> {
           T? IReadOnlyWrapper<T>.Method(T? t) => Method(t);
         }
         
-        #nullable enable
         public partial interface IReadOnlyWrapper<T> {
           public T? Method(T? t);
         }

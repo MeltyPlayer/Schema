@@ -9,14 +9,14 @@ internal class VarianceGeneratorTests {
   [TestCase("out")]
   public void TestSupportsEachTypeOfVarianceInType(string variance) {
     BinarySchemaTestUtil.AssertGenerated(
-        $$"""
+        $"""
 
           using schema.binary;
 
           namespace foo.bar;
           
           [BinarySchema]
-          public partial class Wrapper<{{variance}} T>;
+          public partial class Wrapper<{variance} T>;
           """,
         $$"""
           using System;
