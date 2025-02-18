@@ -34,8 +34,6 @@ internal class SchemaTextReaderMultilineTests {
                         TextReaderConstants.WHITESPACE_CHARS,
                         TextReaderConstants.NEWLINE_CHARS));
 
-    tr.AssertChar('\n');
-
     Assert.AreEqual("foobar", tr.ReadLine());
   }
 }

@@ -10,125 +10,125 @@ namespace schema.text.reader;
 public sealed partial class SchemaTextReader {
   public byte[] ReadBytes(char separator,
                           char terminator)
-    => this.ConvertSplitUpToTerminator_(separator,
+    => this.ConvertSplitUpToAndPastTerminator_(separator,
                                                terminator,
                                                this.ConvertByte_);
 
   public byte[] ReadHexBytes(char separator,
                              char terminator)
-    => this.ConvertSplitUpToHexTerminator_(separator,
+    => this.ConvertSplitUpToAndPastHexTerminator_(separator,
                                                   terminator,
                                                   this.ConvertHexByte_);
 
 
   public sbyte[] ReadSBytes(char separator,
                             char terminator)
-    => this.ConvertSplitUpToTerminator_(separator,
+    => this.ConvertSplitUpToAndPastTerminator_(separator,
                                                terminator,
                                                this.ConvertSByte_);
 
   public sbyte[] ReadHexSBytes(char separator,
                                char terminator)
-    => this.ConvertSplitUpToHexTerminator_(separator,
+    => this.ConvertSplitUpToAndPastHexTerminator_(separator,
                                                   terminator,
                                                   this.ConvertHexSByte_);
 
 
   public short[] ReadInt16s(char separator,
                             char terminator)
-    => this.ConvertSplitUpToTerminator_(separator,
+    => this.ConvertSplitUpToAndPastTerminator_(separator,
                                                terminator,
                                                this.ConvertInt16_);
 
   public short[] ReadHexInt16s(char separator,
                                char terminator)
-    => this.ConvertSplitUpToHexTerminator_(separator,
+    => this.ConvertSplitUpToAndPastHexTerminator_(separator,
                                                   terminator,
                                                   this.ConvertHexInt16_);
 
 
   public ushort[] ReadUInt16s(char separator,
                               char terminator)
-    => this.ConvertSplitUpToTerminator_(separator,
+    => this.ConvertSplitUpToAndPastTerminator_(separator,
                                                terminator,
                                                this.ConvertUInt16_);
 
   public ushort[] ReadHexUInt16s(char separator,
                                  char terminator)
-    => this.ConvertSplitUpToHexTerminator_(separator,
+    => this.ConvertSplitUpToAndPastHexTerminator_(separator,
                                                   terminator,
                                                   this.ConvertHexUInt16_);
 
 
   public int[] ReadInt32s(char separator,
                           char terminator)
-    => this.ConvertSplitUpToTerminator_(separator,
+    => this.ConvertSplitUpToAndPastTerminator_(separator,
                                                terminator,
                                                this.ConvertInt32_);
 
 
   public int[] ReadHexInt32s(char separator,
                              char terminator)
-    => this.ConvertSplitUpToHexTerminator_(separator,
+    => this.ConvertSplitUpToAndPastHexTerminator_(separator,
                                                   terminator,
                                                   this.ConvertHexInt32_);
 
   public uint[] ReadUInt32s(char separator,
                             char terminator)
-    => this.ConvertSplitUpToTerminator_(separator,
+    => this.ConvertSplitUpToAndPastTerminator_(separator,
                                                terminator,
                                                this.ConvertUInt32_);
 
   public uint[] ReadHexUInt32s(char separator,
                                char terminator)
-    => this.ConvertSplitUpToHexTerminator_(separator,
+    => this.ConvertSplitUpToAndPastHexTerminator_(separator,
                                                   terminator,
                                                   this.ConvertHexUInt32_);
 
   public long[] ReadInt64s(char separator,
                            char terminator)
-    => this.ConvertSplitUpToTerminator_(separator,
+    => this.ConvertSplitUpToAndPastTerminator_(separator,
                                                terminator,
                                                this.ConvertInt64_);
 
   public long[] ReadHexInt64s(char separator,
                               char terminator)
-    => this.ConvertSplitUpToHexTerminator_(separator,
+    => this.ConvertSplitUpToAndPastHexTerminator_(separator,
                                                   terminator,
                                                   this.ConvertHexInt64_);
 
 
   public ulong[] ReadUInt64s(char separator,
                              char terminator)
-    => this.ConvertSplitUpToTerminator_(separator,
+    => this.ConvertSplitUpToAndPastTerminator_(separator,
                                                terminator,
                                                this.ConvertUInt64_);
 
 
   public ulong[] ReadHexUInt64s(char separator,
                                 char terminator)
-    => this.ConvertSplitUpToHexTerminator_(separator,
+    => this.ConvertSplitUpToAndPastHexTerminator_(separator,
                                                   terminator,
                                                   this.ConvertHexUInt64_);
 
 
   public float[] ReadSingles(char separator,
                              char terminator)
-    => this.ConvertSplitUpToTerminator_(separator,
+    => this.ConvertSplitUpToAndPastTerminator_(separator,
                                                terminator,
                                                this.ConvertSingle_);
 
   public double[] ReadDoubles(char separator,
                               char terminator)
-    => this.ConvertSplitUpToTerminator_(separator,
+    => this.ConvertSplitUpToAndPastTerminator_(separator,
                                                terminator,
                                                this.ConvertDouble_);
 
 
-  private IEnumerable<string> ReadSplitUpToTerminator_(
+  private IEnumerable<string> ReadSplitUpToAndPastTerminator_(
       char separator,
       char terminator) {
-    var match = this.ReadUpToStartOfTerminator(terminator);
+    var match = this.ReadUpToAndPastTerminator(terminator);
     if (match.Length == 0) {
       return [];
     }
@@ -136,11 +136,11 @@ public sealed partial class SchemaTextReader {
     return match.SplitViaChar(separator, false);
   }
 
-  private T[] ConvertSplitUpToTerminator_<T>(
+  private T[] ConvertSplitUpToAndPastTerminator_<T>(
       char separator,
       char terminator,
       Func<string, T> converter)
-    => this.ReadSplitUpToTerminator_(separator, terminator)
+    => this.ReadSplitUpToAndPastTerminator_(separator, terminator)
            .Select(t => {
                      var start = 0;
 
@@ -162,11 +162,11 @@ public sealed partial class SchemaTextReader {
            .Select(converter)
            .ToArray();
 
-  private T[] ConvertSplitUpToHexTerminator_<T>(
+  private T[] ConvertSplitUpToAndPastHexTerminator_<T>(
       char separator,
       char terminator,
       Func<string, T> converter)
-    => this.ReadSplitUpToTerminator_(separator, terminator)
+    => this.ReadSplitUpToAndPastTerminator_(separator, terminator)
            .Select(t => {
                      var start = 0;
 
