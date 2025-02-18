@@ -37,21 +37,21 @@ public sealed partial class SchemaTextReader {
   }
 
   public string[] ReadStrings(char separator, char terminator)
-    => this.ReadSplitUpToAndPastTerminatorsIncludingEmpty_(
+    => this.ReadSplitUpToTerminatorsIncludingEmpty_(
                separator,
                terminator)
            .ToArray();
 
   public string[] ReadStrings(ReadOnlySpan<char> separators,
                               ReadOnlySpan<char> terminators)
-    => this.ReadSplitUpToAndPastTerminatorsIncludingEmpty_(
+    => this.ReadSplitUpToTerminatorsIncludingEmpty_(
                separators,
                terminators)
            .ToArray();
 
   public string[] ReadStrings(ReadOnlySpan<string> separators,
                               ReadOnlySpan<string> terminators)
-    => this.ReadSplitUpToAndPastTerminatorsIncludingEmpty_(
+    => this.ReadSplitUpToTerminatorsIncludingEmpty_(
                separators,
                terminators)
            .ToArray();
