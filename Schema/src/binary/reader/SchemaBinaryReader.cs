@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
+using schema.util.asserts;
 using schema.util.streams;
 
 
@@ -81,9 +83,17 @@ public sealed partial class SchemaBinaryReader : IBinaryReader {
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public void ReadIntoBuffer(Span<byte> dst)
-    => this.BaseStream_.ReadIntoBuffer(dst);
+    => Asserts.Equal(dst.Length, this.TryToReadIntoBuffer(dst));
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public int TryToReadIntoBuffer(Span<byte> dst)
-    => this.BaseStream_.TryToReadIntoBuffer(dst);
+  public int TryToReadIntoBuffer(Span<byte> dst) {
+    var position = this.Position;
+    var length = this.Length;
+
+    var remaining = length - position;
+    var maxReadCount = Math.Min(dst.Length, remaining);
+
+    var actualReadCount = this.BaseStream_.TryToReadIntoBuffer(dst.Slice(0, (int) maxReadCount));
+    return actualReadCount;
+  }
 }
