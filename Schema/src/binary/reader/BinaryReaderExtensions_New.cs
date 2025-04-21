@@ -56,8 +56,7 @@ public static partial class BinaryReaderExtensions {
     return value;
   }
 
-  public static string
-      SubreadStringNTAt(this IBinaryReader br, long position) {
+  public static string SubreadStringNTAt(this IBinaryReader br, long position) {
     var tmp = br.Position;
     br.Position = position;
 

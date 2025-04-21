@@ -19,14 +19,14 @@ public interface IBinaryReader
 
   void Align(uint amt);
 
-  void Subread(int len, Action subread);
-  T Subread<T>(int len, Func<T> subread);
+  void Subread(long len, Action subread);
+  T Subread<T>(long len, Func<T> subread);
 
   void SubreadAt(long position, Action subread);
-  void SubreadAt(long position, int len, Action subread);
+  void SubreadAt(long position, long len, Action subread);
 
   T SubreadAt<T>(long position, Func<T> subread);
-  T SubreadAt<T>(long position, int len, Func<T> subread);
+  T SubreadAt<T>(long position, long len, Func<T> subread);
 
   void FillBuffer(Span<byte> data, int stride);
 

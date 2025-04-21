@@ -6,19 +6,19 @@ using schema.util.asserts;
 namespace schema.binary;
 
 public partial class SchemaBinaryReader {
-  public void Subread(int len, Action subread) {
+  public void Subread(long len, Action subread) {
     var baseOffset = this.Position;
     this.SubreadAt(baseOffset, len, subread);
     this.Position = baseOffset + len;
   }
 
-  public T Subread<T>(int len, Func<T> subread) {
+  public T Subread<T>(long len, Func<T> subread) {
     T value = default;
     this.Subread(len, () => { value = subread(); });
     return value!;
   }
 
-  public void SubreadAt(long position, int len, Action subread) {
+  public void SubreadAt(long position, long len, Action subread) {
     var tempPos = this.Position;
 
     {
@@ -44,7 +44,7 @@ public partial class SchemaBinaryReader {
   }
 
 
-  public T SubreadAt<T>(long position, int len, Func<T> subread) {
+  public T SubreadAt<T>(long position, long len, Func<T> subread) {
     T value = default;
 
     this.SubreadAt(
