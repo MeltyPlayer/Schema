@@ -55,7 +55,8 @@ internal static class BinarySchemaTestUtil {
                                var classNameIndex
                                    = src.IndexOf(' ', classIndex) + 1;
                                var classNameLength =
-                                   src.IndexOf(' ', classNameIndex) -
+                                   Math.Min(src.IndexOf(' ', classNameIndex),
+                                            src.IndexOf('(', classNameIndex)) -
                                    classNameIndex;
 
                                var typeName =
