@@ -11,6 +11,7 @@ using NUnit.Framework;
 
 using schema.binary.attributes;
 using schema.binary.text;
+using schema.util.strings;
 
 #pragma warning disable CS8604
 
@@ -55,8 +56,9 @@ internal static class BinarySchemaTestUtil {
                                var classNameIndex
                                    = src.IndexOf(' ', classIndex) + 1;
                                var classNameLength =
-                                   Math.Min(src.IndexOf(' ', classNameIndex),
-                                            src.IndexOf('(', classNameIndex)) -
+                                   src.IndexOfFirst(
+                                       [' ', '('],
+                                       classNameIndex) -
                                    classNameIndex;
 
                                var typeName =

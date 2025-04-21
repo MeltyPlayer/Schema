@@ -7,6 +7,21 @@ using schema.util.enumerables;
 namespace schema.util.strings;
 
 public static class StringExtensions {
+  public static int IndexOfFirst(
+      this string text,
+      ReadOnlySpan<char> chars,
+      int startIndex) {
+    var minIndex = int.MaxValue;
+    foreach (var c in chars) {
+      var indexOf = text.IndexOf(c, startIndex);
+      if (indexOf > -1) {
+        minIndex = Math.Min(minIndex, indexOf);
+      }
+    }
+
+    return minIndex == int.MaxValue ? -1 : minIndex;
+  }
+
   public static IEnumerable<string> SplitViaChar(
       this string text,
       char separator,
