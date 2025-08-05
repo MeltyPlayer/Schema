@@ -65,7 +65,7 @@ public sealed partial class SchemaTextReader {
           .ToArray();
 
   private string ReadHexChars_() {
-    this.SkipManyIfPresent(TextReaderConstants.WHITESPACE_STRINGS);
+    this.SkipManyIfPresent(TextReaderConstants.WHITESPACE_CHARS);
     this.SkipOnceIfPresent(hexSpecifierMatches_);
     return this.ReadWhile(SchemaTextReader.hexMatches);
   }

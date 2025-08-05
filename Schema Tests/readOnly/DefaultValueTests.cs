@@ -22,13 +22,14 @@ internal class DefaultValueTests {
           }
           """,
         $$"""
+          #nullable enable
+
           namespace foo.bar;
           
           public partial interface IWrapper : IReadOnlyWrapper {
             void IReadOnlyWrapper.Foo(bool? value) => Foo(value);
           }
           
-          #nullable enable
           public partial interface IReadOnlyWrapper {
             public void Foo(bool? value = {{boolValue}});
           }
@@ -55,13 +56,14 @@ internal class DefaultValueTests {
           }
           """,
         $$"""
+          #nullable enable
+
           namespace foo.bar;
           
           public partial interface IWrapper : IReadOnlyWrapper {
             void IReadOnlyWrapper.Foo(int? value) => Foo(value);
           }
           
-          #nullable enable
           public partial interface IReadOnlyWrapper {
             public void Foo(int? value = {{intValue}});
           }
@@ -94,13 +96,14 @@ internal class DefaultValueTests {
           }
           """,
         $$"""
+          #nullable enable
+
           namespace foo.bar;
           
           public partial interface IWrapper : IReadOnlyWrapper {
             void IReadOnlyWrapper.Foo(other.SomeType? value) => Foo(value);
           }
           
-          #nullable enable
           public partial interface IReadOnlyWrapper {
             public void Foo(other.SomeType? value = {{readonlyValue}});
           }

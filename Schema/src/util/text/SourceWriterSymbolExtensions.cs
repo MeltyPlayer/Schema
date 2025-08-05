@@ -12,7 +12,7 @@ public static class SourceWriterSymbolExtensions {
       this ISourceWriter sw,
       INamedTypeSymbol symbol,
       Action insideBlockHandler) {
-    var fullyQualifiedNamespace = symbol.GetFullyQualifiedNamespace();
+    var fullyQualifiedNamespace = symbol.GetNamespaceBlockLabel();
     if (fullyQualifiedNamespace != null) {
       sw.WriteLine($"namespace {fullyQualifiedNamespace};")
         .WriteLine();

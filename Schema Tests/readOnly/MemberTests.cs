@@ -30,13 +30,14 @@ internal class MemberTests {
           }
           """,
         $$"""
+          #nullable enable
+
           namespace foo.bar;
           
           public partial interface IWrapper : IReadOnlyWrapper {
             {{primitiveType}} IReadOnlyWrapper.Value => Value;
           }
           
-          #nullable enable
           public partial interface IReadOnlyWrapper {
             public {{primitiveType}} Value { get; }
           }
@@ -60,13 +61,14 @@ internal class MemberTests {
 
         """,
         """
+        #nullable enable
+
         namespace foo.bar;
         
         public partial interface IWrapper : IReadOnlyWrapper {
           System.Collections.Generic.IEnumerable<bool> IReadOnlyWrapper.Value => Value;
         }
         
-        #nullable enable
         public partial interface IReadOnlyWrapper {
           public System.Collections.Generic.IEnumerable<bool> Value { get; }
         }
@@ -90,13 +92,14 @@ internal class MemberTests {
 
         """,
         """
+        #nullable enable
+
         namespace foo.bar;
         
         public partial interface IWrapper : IReadOnlyWrapper {
           System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<bool>> IReadOnlyWrapper.Value => Value;
         }
         
-        #nullable enable
         public partial interface IReadOnlyWrapper {
           public System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<bool>> Value { get; }
         }
@@ -120,13 +123,14 @@ internal class MemberTests {
 
         """,
         """
+        #nullable enable
+
         namespace foo.bar;
         
         public partial interface IWrapper : IReadOnlyWrapper {
           bool IReadOnlyWrapper.this[int index] => this[index];
         }
         
-        #nullable enable
         public partial interface IReadOnlyWrapper {
           public bool this[int index] { get; }
         }
@@ -150,13 +154,14 @@ internal class MemberTests {
 
         """,
         """
+        #nullable enable
+
         namespace foo.bar;
         
         public partial interface IWrapper : IReadOnlyWrapper {
           bool IReadOnlyWrapper.this[int x, int y] => this[x, y];
         }
         
-        #nullable enable
         public partial interface IReadOnlyWrapper {
           public bool this[int x, int y] { get; }
         }
@@ -183,13 +188,14 @@ internal class MemberTests {
           }
           """,
         $$"""
+          #nullable enable
+
           namespace foo.bar;
           
           public partial interface IWrapper : IReadOnlyWrapper {
             void IReadOnlyWrapper.Foo({{paramType}} int bar) => Foo({{paramType}} bar);
           }
           
-          #nullable enable
           public partial interface IReadOnlyWrapper {
             public void Foo({{paramType}} int bar);
           }
@@ -213,13 +219,14 @@ internal class MemberTests {
         }
         """,
         """
+        #nullable enable
+
         namespace foo.bar;
         
         public partial interface IWrapper : IReadOnlyWrapper {
           void IReadOnlyWrapper.Foo(params int[] bar) => Foo(bar);
         }
         
-        #nullable enable
         public partial interface IReadOnlyWrapper {
           public void Foo(params int[] bar);
         }
@@ -245,6 +252,8 @@ internal class MemberTests {
         }
         """,
         """
+        #nullable enable
+
         namespace foo.bar;
         
         public partial interface IWrapper : IReadOnlyWrapper {
@@ -252,7 +261,6 @@ internal class MemberTests {
           int? IReadOnlyWrapper.Bar => Bar;
         }
         
-        #nullable enable
         public partial interface IReadOnlyWrapper {
           public int? Foo(int? bar);
           public int? Bar { get; }
@@ -277,13 +285,14 @@ internal class MemberTests {
         }
         """,
         """
+        #nullable enable
+
         namespace foo.bar;
         
         public partial interface IWrapper : IReadOnlyWrapper {
           int IReadOnlyWrapper.Foo(int a, char b, string c, int? d) => Foo(a, b, c, d);
         }
         
-        #nullable enable
         public partial interface IReadOnlyWrapper {
           public int Foo(int a = 123, char b = '0', string c = "hello", int? d = null);
         }
@@ -307,13 +316,14 @@ internal class MemberTests {
 
         """,
         """
+        #nullable enable
+
         namespace foo.bar;
         
         public partial interface IWrapper : IReadOnlyWrapper {
           (bool, int) IReadOnlyWrapper.Tuple => Tuple;
         }
         
-        #nullable enable
         public partial interface IReadOnlyWrapper {
           public (bool, int) Tuple { get; }
         }
@@ -337,13 +347,14 @@ internal class MemberTests {
 
         """,
         """
+        #nullable enable
+
         namespace foo.bar;
         
         public partial interface IWrapper : IReadOnlyWrapper {
           (bool a, int b) IReadOnlyWrapper.Tuple => Tuple;
         }
         
-        #nullable enable
         public partial interface IReadOnlyWrapper {
           public (bool a, int b) Tuple { get; }
         }

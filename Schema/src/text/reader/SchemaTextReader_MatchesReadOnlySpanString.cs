@@ -78,16 +78,6 @@ public sealed partial class SchemaTextReader {
     return sb.ToString();
   }
 
-  public string ReadWhile(ReadOnlySpan<char> matches) {
-    var sb = new StringBuilder();
-
-    while (!this.Eof && this.Matches(out var c, matches)) {
-      sb.Append(c);
-    }
-
-    return sb.ToString();
-  }
-
   public string ReadWhile(ReadOnlySpan<string> matches) {
     var sb = new StringBuilder();
 

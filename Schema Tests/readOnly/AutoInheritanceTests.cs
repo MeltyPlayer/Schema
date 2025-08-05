@@ -8,21 +8,22 @@ internal class AutoInheritanceTests {
   [TestCase("System.Collections.Generic.IEnumerable<T>")]
   public void TestKnown(string knownBase) {
     ReadOnlyGeneratorTestUtil.AssertGenerated(
-        $$"""
+        $"""
           using schema.readOnly;
 
           namespace foo.bar;
 
           [GenerateReadOnly]
-          public partial interface IGenericWrapper<T> : {{knownBase}};
+          public partial interface IGenericWrapper<T> : {knownBase};
           """,
-        $$"""
+        $"""
+          #nullable enable
+
           namespace foo.bar;
 
           public partial interface IGenericWrapper<T> : IReadOnlyGenericWrapper<T>;
 
-          #nullable enable
-          public partial interface IReadOnlyGenericWrapper<out T> : {{knownBase}};
+          public partial interface IReadOnlyGenericWrapper<out T> : {knownBase};
 
           """);
   }
@@ -44,11 +45,12 @@ internal class AutoInheritanceTests {
 
         """,
         """
+        #nullable enable
+
         namespace foo.bar;
 
         public partial class AlreadyConstWrapper<T> : IReadOnlyAlreadyConstWrapper<T>;
 
-        #nullable enable
         public partial interface IReadOnlyAlreadyConstWrapper<out T> : IAlreadyConst where T : notnull;
 
         """);
@@ -71,11 +73,12 @@ internal class AutoInheritanceTests {
 
         """,
         """
+        #nullable enable
+
         namespace foo.bar;
         
         public partial class AlreadyConstWrapper : IReadOnlyAlreadyConstWrapper;
         
-        #nullable enable
         public partial interface IReadOnlyAlreadyConstWrapper : IAlreadyConst;
 
         """);
@@ -104,12 +107,13 @@ internal class AutoInheritanceTests {
 
         """,
         """
+        #nullable enable
+
         namespace foo.bar.place2;
 
         public partial class Parent {
           public partial class AlreadyConstWrapper : IReadOnlyAlreadyConstWrapper;
           
-          #nullable enable
           public partial interface IReadOnlyAlreadyConstWrapper : foo.bar.place1.OtherParent.IAlreadyConst;
         }
 
@@ -132,20 +136,22 @@ internal class AutoInheritanceTests {
 
         """,
         """
+        #nullable enable
+
         namespace foo.bar;
         
         public partial interface IBase : IReadOnlyBase;
         
-        #nullable enable
         public partial interface IReadOnlyBase;
 
         """,
         """
+        #nullable enable
+
         namespace foo.bar;
         
         public partial interface IChild : IReadOnlyChild;
         
-        #nullable enable
         public partial interface IReadOnlyChild : IReadOnlyBase;
 
         """);
@@ -177,6 +183,8 @@ internal class AutoInheritanceTests {
 
         """,
         """
+        #nullable enable
+
         namespace foo.bar.other;
 
         public partial class OtherParent {
@@ -184,7 +192,6 @@ internal class AutoInheritanceTests {
             bool IReadOnlyBase.Foo => Foo;
           }
           
-          #nullable enable
           public partial interface IReadOnlyBase {
             public bool Foo { get; }
           }
@@ -192,6 +199,8 @@ internal class AutoInheritanceTests {
 
         """,
         """
+        #nullable enable
+
         namespace foo.bar;
         
         public partial class Parent {
@@ -199,7 +208,6 @@ internal class AutoInheritanceTests {
             bool IReadOnlyChild.Value => Value;
           }
           
-          #nullable enable
           public partial interface IReadOnlyChild : other.OtherParent.IReadOnlyBase {
             public bool Value { get; }
           }
@@ -227,29 +235,32 @@ internal class AutoInheritanceTests {
 
         """,
         """
+        #nullable enable
+
         namespace foo.bar;
         
         public partial interface IBase1<T> : IReadOnlyBase1<T>;
         
-        #nullable enable
         public partial interface IReadOnlyBase1<out T>;
 
         """,
         """
+        #nullable enable
+
         namespace foo.bar;
         
         public partial interface IBase2<T> : IReadOnlyBase2<T>;
         
-        #nullable enable
         public partial interface IReadOnlyBase2<out T>;
 
         """,
         """
+        #nullable enable
+
         namespace foo.bar;
         
         public partial interface IChild<T1, T2> : IReadOnlyChild<T1, T2>;
         
-        #nullable enable
         public partial interface IReadOnlyChild<T1, T2> : IReadOnlyBase1<T1>, IReadOnlyBase2<T2>;
 
         """);

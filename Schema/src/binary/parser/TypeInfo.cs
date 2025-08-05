@@ -101,6 +101,12 @@ public class TypeInfoParser {
       return ParseStatus.NOT_A_FIELD_OR_PROPERTY_OR_METHOD;
     }
 
+    // Primary constructor params.
+    var memberName = memberSymbol.Name;
+    if (memberName.Contains('<') || memberName.Contains('>')) {
+      return ParseStatus.NOT_A_FIELD_OR_PROPERTY_OR_METHOD;
+    }
+
     return this.ParseTypeSymbol(
         memberTypeSymbol,
         isReadonly,

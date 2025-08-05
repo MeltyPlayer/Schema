@@ -12,7 +12,7 @@ public static class NameofUtil {
   private struct TypeAndNamespace {
     public bool Defined { get; set; }
     public string Name { get; set; }
-    public string[] NamespaceParts { get; set; }
+    public string[]? NamespaceParts { get; set; }
   }
 
   public static string GetChainedAccessFromCallerArgumentExpression(
@@ -28,8 +28,7 @@ public static class NameofUtil {
         new TypeAndNamespace {
             Defined = true,
             Name = parent.Name,
-            NamespaceParts =
-                parent.Namespace?.Split('.') ?? [],
+            NamespaceParts = parent.Namespace?.Split('.'),
         },
         text);
 
@@ -40,7 +39,7 @@ public static class NameofUtil {
         new TypeAndNamespace {
             Defined = true,
             Name = parent.Name,
-            NamespaceParts = parent.GetContainingNamespaces().ToArray(),
+            NamespaceParts = parent.GetContainingNamespaces()?.ToArray(),
         },
         text);
 

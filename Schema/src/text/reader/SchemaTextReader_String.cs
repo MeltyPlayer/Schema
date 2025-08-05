@@ -36,6 +36,19 @@ public sealed partial class SchemaTextReader {
     return sb.ToString();
   }
 
+  public string[] ReadStrings(char separator, char terminator)
+    => this.ReadSplitUpToAndPastTerminatorsIncludingEmpty_(
+               separator,
+               terminator)
+           .ToArray();
+
+  public string[] ReadStrings(ReadOnlySpan<char> separators,
+                              ReadOnlySpan<char> terminators)
+    => this.ReadSplitUpToAndPastTerminatorsIncludingEmpty_(
+               separators,
+               terminators)
+           .ToArray();
+
   public string[] ReadStrings(ReadOnlySpan<string> separators,
                               ReadOnlySpan<string> terminators)
     => this.ReadSplitUpToAndPastTerminatorsIncludingEmpty_(

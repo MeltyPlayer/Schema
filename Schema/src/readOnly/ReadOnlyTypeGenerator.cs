@@ -56,7 +56,9 @@ public class ReadOnlyTypeGenerator
     var sb = new StringBuilder();
     using var sw = new SourceWriter(new StringWriter(sb));
 
-    sw.WriteNamespaceAndParentTypeBlocks(
+    sw.WriteLine("#nullable enable")
+      .WriteLine()
+      .WriteNamespaceAndParentTypeBlocks(
         typeSymbol,
         () => {
           var interfaceName = typeSymbol.GetConstInterfaceName();
@@ -121,7 +123,6 @@ public class ReadOnlyTypeGenerator
 
           // Interface
           {
-            sw.WriteLine("#nullable enable");
             sw.Write(
                 SymbolTypeUtil.AccessibilityToModifier(
                     typeSymbol.DeclaredAccessibility));
@@ -431,6 +432,13 @@ public class ReadOnlyTypeGenerator
   }
 }
 
+internal class GeneratorUtilContext(
+    IReadOnlyDictionary<(string name, int arity), IEnumerable<string>?>
+        knownNamespaces) {
+  public IReadOnlyDictionary<(string name, int arity), IEnumerable<string>?>
+      KnownNamespaces { get; } = knownNamespaces;
+}
+
 internal static class ReadOnlyTypeGeneratorUtil {
   public const string PREFIX = "IReadOnly";
 
@@ -463,13 +471,17 @@ internal static class ReadOnlyTypeGeneratorUtil {
       this ITypeSymbol sourceSymbol,
       IReadOnlyList<ITypeParameterSymbol> typeParameters,
       SemanticModel semanticModel,
-      TypeDeclarationSyntax syntax) {
+      TypeDeclarationSyntax syntax,
+      GeneratorUtilContext? context = null) {
     var sb = new StringBuilder();
 
     foreach (var typeParameter in typeParameters) {
       var typeConstraintNames
           = sourceSymbol
-            .GetTypeConstraintNames_(typeParameter, semanticModel, syntax)
+            .GetTypeConstraintNames_(typeParameter,
+                                     semanticModel,
+                                     syntax,
+                                     context)
             .ToArray();
       if (typeConstraintNames.Length == 0) {
         continue;
@@ -495,7 +507,8 @@ internal static class ReadOnlyTypeGeneratorUtil {
       this ITypeSymbol sourceSymbol,
       ITypeParameterSymbol typeParameter,
       SemanticModel semanticModel,
-      TypeDeclarationSyntax sourceDeclarationSyntax) {
+      TypeDeclarationSyntax sourceDeclarationSyntax,
+      GeneratorUtilContext? context = null) {
     if (typeParameter.HasNotNullConstraint) {
       yield return "notnull";
     }
@@ -530,7 +543,8 @@ internal static class ReadOnlyTypeGeneratorUtil {
           ConvertName_,
           r => GetNamespaceOfType(r,
                                   semanticModel,
-                                  sourceDeclarationSyntax));
+                                  sourceDeclarationSyntax,
+                                  context));
 
       yield return typeParameter.ConstraintNullableAnnotations[i] ==
                    NullableAnnotation.Annotated
@@ -608,22 +622,27 @@ internal static class ReadOnlyTypeGeneratorUtil {
     => semanticModel
        .LookupNamespacesAndTypes(syntax.SpanStart, null, searchString)
        .Where(symbol => symbol.HasAttribute<GenerateReadOnlyAttribute>())
-       .Where(symbol => symbol is INamedTypeSymbol)
-       .Select(symbol => symbol as INamedTypeSymbol)
+       .OfType<INamedTypeSymbol>()
        .Where(symbol => symbol.Arity == arity);
 
-  public static IEnumerable<string> GetNamespaceOfType(
+  public static IEnumerable<string>? GetNamespaceOfType(
       this ITypeSymbol typeSymbol,
       SemanticModel semanticModel,
-      TypeDeclarationSyntax syntax) {
+      TypeDeclarationSyntax syntax,
+      GeneratorUtilContext? context = null) {
     if (!typeSymbol.Exists()) {
       var typeName = typeSymbol.Name;
-      if (typeName.StartsWith(
-              ReadOnlyTypeGeneratorUtil.PREFIX)) {
+      var arity = typeSymbol.GetArity();
+
+      if (context?.KnownNamespaces.TryGetValue((typeName, arity),
+                                               out var knownNamespace) ??
+          false) {
+        return knownNamespace;
+      }
+
+      if (typeName.StartsWith(ReadOnlyTypeGeneratorUtil.PREFIX)) {
         var nameWithoutPrefix
-            = typeName.Substring(
-                ReadOnlyTypeGeneratorUtil.PREFIX.Length);
-        var arity = typeSymbol.GetArity();
+            = typeName.Substring(ReadOnlyTypeGeneratorUtil.PREFIX.Length);
 
         var typesWithName
             = LookupTypesWithNameAndArity(semanticModel,

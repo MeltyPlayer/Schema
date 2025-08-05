@@ -146,9 +146,47 @@ public sealed partial class SchemaBinaryReader {
     return strBuilder.ToString();
   }
 
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public string ReadUpTo(StringEncodingType encodingType,
+                         ReadOnlySpan<char> endTokens)
+    => this.ReadUpTo(encodingType.GetEncoding(this.Endianness), endTokens);
+
+  public string ReadUpTo(Encoding encoding, ReadOnlySpan<char> endTokens) {
+    var strBuilder = new StringBuilder();
+    while (!this.Eof) {
+      var c = this.ReadChar(encoding);
+      foreach (var endToken in endTokens) {
+        if (c == endToken) {
+          break;
+        }
+      }
+
+      strBuilder.Append(c);
+    }
+
+    return strBuilder.ToString();
+  }
+
+  public string ReadUpTo(ReadOnlySpan<char> endTokens) {
+    var strBuilder = new StringBuilder();
+    while (!this.Eof) {
+      var c = this.ReadChar();
+      foreach (var endToken in endTokens) {
+        if (c == endToken) {
+          break;
+        }
+      }
+
+      strBuilder.Append(c);
+    }
+
+    Done:
+    return strBuilder.ToString();
+  }
+
   public string ReadUpTo(ReadOnlySpan<string> endTokens) {
     var strBuilder = new StringBuilder();
-    while (!Eof) {
+    while (!this.Eof) {
       var firstC = this.ReadChar();
       var originalOffset = Position;
 

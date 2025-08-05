@@ -191,4 +191,126 @@ internal class NamespaceGeneratorTests {
 
         """);
   }
+
+  [Test]
+  public void TestBothInGlobalNamespace() {
+    BinarySchemaTestUtil.AssertGenerated(
+        """
+        using schema.binary;
+
+        public enum A : byte {
+        }
+
+        [BinarySchema]
+        public partial class Wrapper : IBinaryConvertible {
+          public A Field { get; set; }
+        }
+        """,
+        """
+        using System;
+        using schema.binary;
+
+        public partial class Wrapper {
+          public void Read(IBinaryReader br) {
+            this.Field = (A) br.ReadByte();
+          }
+        }
+
+        """,
+        """
+        using System;
+        using schema.binary;
+
+        public partial class Wrapper {
+          public void Write(IBinaryWriter bw) {
+            bw.WriteByte((byte) this.Field);
+          }
+        }
+
+        """);
+  }
+
+  [Test]
+  public void TestFromGlobalNamespace() {
+    BinarySchemaTestUtil.AssertGenerated(
+        """
+        using schema.binary;
+
+        namespace foo {
+          public enum A : byte {
+          }
+        }
+
+        [BinarySchema]
+        public partial class Wrapper : IBinaryConvertible {
+          public foo.A Field { get; set; }
+        }
+        """,
+        """
+        using System;
+        using schema.binary;
+
+        public partial class Wrapper {
+          public void Read(IBinaryReader br) {
+            this.Field = (foo.A) br.ReadByte();
+          }
+        }
+
+        """,
+        """
+        using System;
+        using schema.binary;
+
+        public partial class Wrapper {
+          public void Write(IBinaryWriter bw) {
+            bw.WriteByte((byte) this.Field);
+          }
+        }
+
+        """);
+  }
+
+  [Test]
+  public void TestInGlobalNamespace() {
+    BinarySchemaTestUtil.AssertGenerated(
+        """
+        using schema.binary;
+          
+        public enum A : byte {
+        }
+
+        namespace foo {
+          [BinarySchema]
+          public partial class Wrapper : IBinaryConvertible {
+            public A Field { get; set; }
+          }
+        }
+        """,
+        """
+        using System;
+        using schema.binary;
+        
+        namespace foo;
+
+        public partial class Wrapper {
+          public void Read(IBinaryReader br) {
+            this.Field = (global::A) br.ReadByte();
+          }
+        }
+
+        """,
+        """
+        using System;
+        using schema.binary;
+
+        namespace foo;
+        
+        public partial class Wrapper {
+          public void Write(IBinaryWriter bw) {
+            bw.WriteByte((byte) this.Field);
+          }
+        }
+
+        """);
+  }
 }

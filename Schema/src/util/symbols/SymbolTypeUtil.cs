@@ -137,7 +137,7 @@ public static class SymbolTypeUtil {
       ITypeSymbol referencedSymbol,
       ISymbol? symbolForChecks,
       Func<ITypeSymbol, ISymbol?, string>? convertName = null,
-      Func<ITypeSymbol, IEnumerable<string>>? getNamespaceParts = null) {
+      Func<ITypeSymbol, IEnumerable<string>?>? getNamespaceParts = null) {
     if (referencedSymbol.IsArray(out var elementType)) {
       return
           $"{sourceSymbol.GetQualifiedNameFromCurrentSymbol(elementType, null, convertName, getNamespaceParts)}[]";
@@ -220,24 +220,25 @@ public static class SymbolTypeUtil {
       return sb.ToString();
     }
 
-    var currentNamespace
-        = sourceSymbol.GetContainingNamespaces()
-                      .Select(EscapeKeyword)
-                      .ToArray();
+    var currentNamespace = sourceSymbol.GetContainingNamespaces()
+                                       ?.Select(EscapeKeyword)
+                                       .ToArray();
     var referencedNamespace =
         (getNamespaceParts != null
             ? getNamespaceParts(referencedSymbol)
-            : referencedSymbol.GetContainingNamespaces())
+            : referencedSymbol.GetContainingNamespaces())?
         .Select(EscapeKeyword)
         .ToArray();
 
     string mergedNamespaceText;
-    if (currentNamespace.Length == 0 && referencedNamespace.Length == 0) {
+    if ((currentNamespace?.Length ?? 0) == 0 && (referencedNamespace?.Length ?? 0) == 0) {
       mergedNamespaceText = "";
-    } else if (currentNamespace.Length == 0) {
-      mergedNamespaceText = $"{referencedNamespace!}.";
-    } else if (referencedNamespace.Length == 0) {
+    } else if ((currentNamespace?.Length ?? 0) == 0) {
+      mergedNamespaceText = $"{string.Join(".", referencedNamespace)}.";
+    } else if (referencedNamespace == null) {
       mergedNamespaceText = $"{string.Join(".", currentNamespace)}.";
+    } else if (referencedNamespace.Length == 0) {
+      mergedNamespaceText = "global::";
     } else {
       bool allMatching = true;
       for (var i = 0;

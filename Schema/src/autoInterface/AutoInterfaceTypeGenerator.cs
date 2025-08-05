@@ -45,11 +45,15 @@ public class AutoInterfaceTypeGenerator
     var sb = new StringBuilder();
     using var sw = new SourceWriter(new StringWriter(sb));
 
+    var interfaceName = typeSymbol.GetInterfaceName();
+    var context = new GeneratorUtilContext(
+        new Dictionary<(string name, int arity), IEnumerable<string>?> {
+            [(interfaceName, typeSymbol.Arity)] = typeSymbol.GetContainingNamespaces(),
+        });
+
     sw.WriteNamespaceAndParentTypeBlocks(
         typeSymbol,
         () => {
-          var interfaceName = typeSymbol.GetInterfaceName();
-
           // Class
           {
             var blockPrefix =
@@ -126,7 +130,8 @@ public class AutoInterfaceTypeGenerator
             blockPrefix += typeSymbol.GetTypeConstraintsOrReadonly(
                 typeSymbol.TypeParameters,
                 semanticModel,
-                syntax);
+                syntax,
+                context);
 
             if (interfaceMembers.Length == 0) {
               sw.Write(blockPrefix).WriteLine(";");
@@ -136,7 +141,8 @@ public class AutoInterfaceTypeGenerator
                             typeSymbol,
                             interfaceMembers,
                             semanticModel,
-                            syntax);
+                            syntax,
+                            context);
               sw.ExitBlock();
             }
           }
@@ -150,7 +156,8 @@ public class AutoInterfaceTypeGenerator
       INamedTypeSymbol typeSymbol,
       IReadOnlyList<ISymbol> constMembers,
       SemanticModel semanticModel,
-      TypeDeclarationSyntax syntax) {
+      TypeDeclarationSyntax syntax,
+      GeneratorUtilContext context) {
     foreach (var memberSymbol in constMembers) {
       switch (memberSymbol) {
         case IPropertySymbol propertySymbol: {
@@ -290,7 +297,8 @@ public class AutoInterfaceTypeGenerator
           sw.Write(typeSymbol.GetTypeConstraintsOrReadonly(
                        methodSymbol.TypeParameters,
                        semanticModel,
-                       syntax));
+                       syntax,
+                       context));
 
           sw.WriteLine(";");
           break;
