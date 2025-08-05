@@ -15,4 +15,13 @@ public class FixedPointAttribute(
   protected override void InitFields() {
     this.memberThisIsAttachedTo_.AssertIsFloat();
   }
+
+  public SchemaIntegerType IntegerType
+    => (this.SignBits + this.IntegerBits + this.FractionBits) switch {
+        <= 8  => SchemaIntegerType.BYTE,
+        <= 16 => SchemaIntegerType.UINT16,
+        <= 24 => SchemaIntegerType.UINT24,
+        <= 32 => SchemaIntegerType.UINT32,
+        <= 64 => SchemaIntegerType.UINT64,
+    };
 }

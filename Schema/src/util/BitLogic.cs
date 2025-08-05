@@ -10,6 +10,10 @@ namespace schema.util {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint CreateMask(int bits)
+      => bits >= 32 ? uint.MaxValue : (uint) ((1 << bits) - 1);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float ConvertFixedPointToSingle(uint x,
                                                   byte signBits,
                                                   byte integerBits,
@@ -53,14 +57,15 @@ namespace schema.util {
     public static uint ConvertSingleToFixedPoint(float x,
                                                  byte signBits,
                                                  byte integerBits,
-                                                 byte fractionBits)
-      => (uint) (x * Math.Pow(2, fractionBits));
+                                                 byte fractionBits) 
+      => (uint) (x * Math.Pow(2, fractionBits)) &
+         BitLogic.CreateMask(signBits + integerBits + fractionBits);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static uint ConvertDoubleToFixedPoint(double x,
                                                  byte signBits,
                                                  byte integerBits,
                                                  byte fractionBits)
-      => (uint) (x * Math.Pow(2, fractionBits));
+      => (uint) (x * Math.Pow(2, fractionBits)) & BitLogic.CreateMask(signBits + integerBits + fractionBits);
   }
 }

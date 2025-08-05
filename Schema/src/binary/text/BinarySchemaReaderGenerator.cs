@@ -881,8 +881,10 @@ public class BinarySchemaReaderGenerator {
           ? "Single"
           : "Double";
       var fixedPointAttribute = floatMemberType.FixedPointAttribute;
+      var readIntegerText =
+          $"{READER}.Read{SchemaGeneratorUtil.GetIntLabel(fixedPointAttribute.IntegerType)}()";
       return
-          $"BitLogic.ConvertFixedPointTo{target}({READER}.ReadUInt32(), {fixedPointAttribute.SignBits}, {fixedPointAttribute.IntegerBits}, {fixedPointAttribute.FractionBits})";
+          $"BitLogic.ConvertFixedPointTo{target}({readIntegerText}, {fixedPointAttribute.SignBits}, {fixedPointAttribute.IntegerBits}, {fixedPointAttribute.FractionBits})";
     }
 
     var readLabel = SchemaGeneratorUtil.GetLabelForMethod(memberType);
@@ -923,8 +925,10 @@ public class BinarySchemaReaderGenerator {
           ? "Single"
           : "Double";
       var fixedPointAttribute = floatMemberType.FixedPointAttribute;
+      var assertIntegerText =
+          $"{READER}.Assert{SchemaGeneratorUtil.GetIntLabel(fixedPointAttribute.IntegerType)}";
       return
-          $"{READER}.AssertUInt32(BitLogic.Convert{target}ToFixedPoint({accessText}, {fixedPointAttribute.SignBits}, {fixedPointAttribute.IntegerBits}, {fixedPointAttribute.FractionBits}))";
+          $"{assertIntegerText}(BitLogic.Convert{target}ToFixedPoint({accessText}, {fixedPointAttribute.SignBits}, {fixedPointAttribute.IntegerBits}, {fixedPointAttribute.FractionBits}))";
     }
 
     var assertLabel = SchemaGeneratorUtil.GetLabelForMethod(memberType);

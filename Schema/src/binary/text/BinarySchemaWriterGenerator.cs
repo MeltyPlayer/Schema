@@ -250,7 +250,10 @@ public class BinarySchemaWriterGenerator {
                     : "Double";
             var fixedPointAttribute = floatMemberType.FixedPointAttribute;
             sw.WriteLine(
-                $"{WRITER}.WriteUInt32(BitLogic.Convert{target}ToFixedPoint(this.{member.Name}, {fixedPointAttribute.SignBits}, {fixedPointAttribute.IntegerBits}, {fixedPointAttribute.FractionBits}));");
+                $"{GetWritePrimitiveText_(
+                    SchemaPrimitiveType.UINT32,
+                    fixedPointAttribute.IntegerType.AsNumberType(),
+                    $"BitLogic.Convert{target}ToFixedPoint(this.{member.Name}, {fixedPointAttribute.SignBits}, {fixedPointAttribute.IntegerBits}, {fixedPointAttribute.FractionBits})")};");
             return;
           }
 
