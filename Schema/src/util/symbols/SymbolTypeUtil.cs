@@ -15,6 +15,22 @@ using schema.util.diagnostics;
 namespace schema.util.symbols;
 
 public static class SymbolTypeUtil {
+  public static Type LookUpType(this INamedTypeSymbol symbol) {
+    var name = $"{symbol.GetFullyQualifiedNamespace()}.{symbol.Name}";
+
+    var assemblies = AppDomain.CurrentDomain.GetAssemblies()
+                              .AsEnumerable()
+                              .Reverse();
+    foreach (var assembly in assemblies) {
+      var tt = assembly.GetType(name);
+      if (tt != null) {
+        return tt;
+      }
+    }
+
+    throw new Exception($"Failed to find type: {name}");
+  }
+
   public static INamedTypeSymbol[] GetDeclaringTypesDownward(
       this ISymbol type) {
     var declaringTypes = new List<INamedTypeSymbol>();
@@ -231,7 +247,8 @@ public static class SymbolTypeUtil {
         .ToArray();
 
     string mergedNamespaceText;
-    if ((currentNamespace?.Length ?? 0) == 0 && (referencedNamespace?.Length ?? 0) == 0) {
+    if ((currentNamespace?.Length ?? 0) == 0 &&
+        (referencedNamespace?.Length ?? 0) == 0) {
       mergedNamespaceText = "";
     } else if ((currentNamespace?.Length ?? 0) == 0) {
       mergedNamespaceText = $"{string.Join(".", referencedNamespace)}.";

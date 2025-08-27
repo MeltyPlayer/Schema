@@ -1,4 +1,6 @@
-﻿namespace schema.binary.attributes;
+﻿using schema.util.diagnostics;
+
+namespace schema.binary.attributes;
 
 public class RIfBooleanAttribute : BMemberAttribute, IIfBooleanAttribute {
   private readonly string? otherMemberName_;
@@ -8,11 +10,14 @@ public class RIfBooleanAttribute : BMemberAttribute, IIfBooleanAttribute {
     this.otherMemberName_ = otherMemberName;
   }
 
-  protected override void InitFields() {
+  protected override void InitFields(
+      IDiagnosticReporter diagnosticReporter,
+      IMemberReference memberThisIsAttachedTo) {
     if (this.otherMemberName_ != null) {
       this.OtherMember =
-          this.GetReadTimeOnlySourceRelativeToContainer(this.otherMemberName_)
-              .AssertIsBool();
+          this.GetReadTimeOnlySourceRelativeToContainer(this.otherMemberName_);
+
+      // TODO: Validate types
     }
   }
 

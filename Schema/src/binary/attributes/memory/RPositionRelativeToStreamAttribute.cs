@@ -1,5 +1,7 @@
 ﻿using System;
 
+using schema.util.diagnostics;
+
 
 namespace schema.binary.attributes;
 
@@ -34,5 +36,7 @@ namespace schema.binary.attributes;
 /// </summary>
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
 public class RPositionRelativeToStreamAttribute : BMemberAttribute<long> {
-  protected override void InitFields() { }
+  protected override void InitFields(
+      IDiagnosticReporter diagnosticReporter,
+      IMemberReference memberThisIsAttachedTo) { }
 }

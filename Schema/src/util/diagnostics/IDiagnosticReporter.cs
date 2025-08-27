@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace schema.util.diagnostics;
 
-internal interface IDiagnosticReporter {
+public interface IDiagnosticReporter {
   void WithContext(SyntaxNodeAnalysisContext context);
 
   IDiagnosticReporter GetSubReporter(ISymbol childSymbol);

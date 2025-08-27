@@ -1,5 +1,7 @@
 ﻿using System;
 
+using schema.util.diagnostics;
+
 
 namespace schema.binary.attributes;
 
@@ -18,11 +20,24 @@ public class RStringLengthSourceAttribute
     this.otherMemberName_ = otherMemberName;
   }
 
-  protected override void InitFields() {
+  protected override void InitFields(
+      IDiagnosticReporter diagnosticReporter,
+      IMemberReference memberThisIsAttachedTo) {
     if (this.otherMemberName_ != null) {
       this.OtherMember =
-          this.GetReadTimeOnlySourceRelativeToContainer(this.otherMemberName_)
-              .AssertIsInteger();
+          this.GetReadTimeOnlySourceRelativeToContainer(this.otherMemberName_);
+
+      if (!memberThisIsAttachedTo.IsString) {
+        diagnosticReporter.ReportDiagnostic(
+            memberThisIsAttachedTo.MemberSymbol,
+            Rules.StringLengthSourceCanOnlyBeUsedOnSequences);
+      }
+
+      if (!this.OtherMember.IsInteger) {
+        diagnosticReporter.ReportDiagnostic(
+            memberThisIsAttachedTo.MemberSymbol,
+            Rules.RStringLengthSourceOtherFieldMustBeAnInteger);
+      }
     }
   }
 

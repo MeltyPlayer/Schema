@@ -1,5 +1,7 @@
 ﻿using System;
 
+using schema.util.diagnostics;
+
 
 namespace schema.binary.attributes;
 
@@ -34,10 +36,13 @@ public class WLengthOfSequenceAttribute : BMemberAttribute {
     this.otherMemberName_ = otherMemberName;
   }
 
-  protected override void InitFields() {
+  protected override void InitFields(
+      IDiagnosticReporter diagnosticReporter,
+      IMemberReference memberThisIsAttachedTo) {
     this.OtherMember =
-        this.GetMemberRelativeToContainer(this.otherMemberName_)
-            .AssertIsSequence();
+        this.GetMemberRelativeToContainer(this.otherMemberName_);
+
+    // TODO: Validate types
   }
 
   public IMemberReference? OtherMember { get; private set; }

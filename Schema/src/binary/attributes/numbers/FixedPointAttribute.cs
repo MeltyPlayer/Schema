@@ -1,5 +1,7 @@
 ﻿using System;
 
+using schema.util.diagnostics;
+
 
 namespace schema.binary.attributes;
 
@@ -12,8 +14,11 @@ public class FixedPointAttribute(
   public int IntegerBits { get; set; } = integerBits;
   public int FractionBits { get; set; } = fractionBits;
 
-  protected override void InitFields() {
-    this.memberThisIsAttachedTo_.AssertIsFloat();
+  protected override void InitFields(IDiagnosticReporter diagnosticReporter,
+                                     IMemberReference memberThisIsAttachedTo) {
+    if (!memberThisIsAttachedTo.IsFloat) {
+      diagnosticReporter.ReportDiagnostic(Rules.FixedPointCanOnlyBeUsedOnFloats);
+    }
   }
 
   public SchemaIntegerType IntegerType

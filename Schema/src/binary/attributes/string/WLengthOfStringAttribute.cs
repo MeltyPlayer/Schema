@@ -1,5 +1,7 @@
 ﻿using System;
 
+using schema.util.diagnostics;
+
 
 namespace schema.binary.attributes;
 
@@ -34,9 +36,13 @@ public class WLengthOfStringAttribute : BMemberAttribute {
     this.otherMemberName_ = otherMemberName;
   }
 
-  protected override void InitFields() {
+  protected override void InitFields(
+      IDiagnosticReporter diagnosticReporter,
+      IMemberReference memberThisIsAttachedTo) {
     this.OtherMember =
         this.GetMemberRelativeToContainer<string>(this.otherMemberName_);
+
+    // TODO: Validate types
   }
 
   public IMemberReference<string>? OtherMember { get; private set; }

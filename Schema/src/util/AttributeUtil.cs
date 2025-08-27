@@ -6,17 +6,23 @@ using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+using schema.util.asserts;
+
 
 namespace schema.util;
 
 public static class AttributeUtil {
   public static TAttribute Instantiate<TAttribute>(
       this AttributeData attributeData,
-      ISymbol attachedSymbol) where TAttribute : Attribute {
-    var parameters = attributeData.AttributeConstructor.Parameters;
+      ISymbol attachedSymbol)
+    => Asserts.AsA<TAttribute>(
+        attributeData.Instantiate(typeof(TAttribute), attachedSymbol));
 
-    // TODO: Does this still work w/ optional arguments?
-    var attributeType = typeof(TAttribute);
+  public static Attribute Instantiate(
+      this AttributeData attributeData,
+      Type attributeType,
+      ISymbol attachedSymbol) {
+    var parameters = attributeData.AttributeConstructor.Parameters;
 
     var constructor =
         attributeType.GetConstructors()
@@ -39,8 +45,7 @@ public static class AttributeUtil {
                                        return true;
                                      });
     if (constructor == null) {
-      throw new Exception(
-          $"Failed to find constructor for {typeof(TAttribute)}");
+      throw new Exception($"Failed to find constructor for {attributeType}");
     }
 
     var attributeSyntax =
@@ -75,14 +80,12 @@ public static class AttributeUtil {
                                                .Length)))
             .ToArray();
 
-    var attribute = (TAttribute) constructor.Invoke(
+   return Asserts.AsA<Attribute>(constructor.Invoke(
         BindingFlags.OptionalParamBinding |
         BindingFlags.InvokeMethod |
         BindingFlags.CreateInstance,
         null,
         arguments,
-        CultureInfo.InvariantCulture);
-
-    return attribute;
+        CultureInfo.InvariantCulture));
   }
 }

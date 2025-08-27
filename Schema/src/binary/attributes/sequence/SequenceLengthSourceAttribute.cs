@@ -1,11 +1,13 @@
 ﻿using System;
 
+using schema.util.diagnostics;
+
 
 namespace schema.binary.attributes;
 
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
 public class SequenceLengthSourceAttribute
-    : Attribute,
+    : BMemberAttribute,
       ISequenceLengthSourceAttribute {
   /// <summary>
   ///   Parses an integer length with the given format immediately before the array.
@@ -21,6 +23,16 @@ public class SequenceLengthSourceAttribute
   public SequenceLengthSourceAttribute(uint constLength) {
     this.Method = SequenceLengthSourceType.CONST_LENGTH;
     this.ConstLength = constLength;
+  }
+
+  protected override void InitFields(
+      IDiagnosticReporter diagnosticReporter,
+      IMemberReference memberThisIsAttachedTo) {
+    if (!memberThisIsAttachedTo.IsSequence) {
+      diagnosticReporter.ReportDiagnostic(
+          memberThisIsAttachedTo.MemberSymbol,
+          Rules.SequenceLengthSourceCanOnlyBeUsedOnSequences);
+    }
   }
 
   public SequenceLengthSourceType Method { get; }

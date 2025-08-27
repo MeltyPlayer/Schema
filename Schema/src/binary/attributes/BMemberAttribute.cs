@@ -25,16 +25,17 @@ public abstract class BMemberAttribute : Attribute {
   private ITypeInfo containerTypeInfo_;
   protected IMemberReference memberThisIsAttachedTo_;
 
-  protected abstract void InitFields();
+  protected abstract void InitFields(
+      IDiagnosticReporter diagnosticReporter,
+      IMemberReference memberThisIsAttachedTo);
 
   protected virtual void SetMemberFromName(string memberName) {
     this.memberThisIsAttachedTo_ =
         this.GetMemberRelativeToContainer(memberName);
   }
 
-
   internal void Init(
-      IDiagnosticReporter? diagnosticReporter,
+      IDiagnosticReporter diagnosticReporter,
       INamedTypeSymbol containerTypeSymbol,
       string memberName) {
     this.diagnosticReporter_ = diagnosticReporter;
@@ -42,7 +43,7 @@ public abstract class BMemberAttribute : Attribute {
     this.containerTypeInfo_ = BMemberAttribute.parser_.AssertParseType(
         containerTypeSymbol);
     this.SetMemberFromName(memberName);
-    this.InitFields();
+    this.InitFields(diagnosticReporter, this.memberThisIsAttachedTo_);
   }
 
 
@@ -208,16 +209,10 @@ public interface IMemberReference {
   ITypeInfo MemberTypeInfo { get; }
 
   bool IsInteger { get; }
-  IMemberReference AssertIsInteger();
-
   bool IsFloat { get; }
-  IMemberReference AssertIsFloat();
-
   bool IsBool { get; }
-  IMemberReference AssertIsBool();
-
   bool IsSequence { get; }
-  IMemberReference AssertIsSequence();
+  bool IsString { get; }
 }
 
 public interface IMemberReference<T> : IMemberReference { }
@@ -237,14 +232,6 @@ public class MemberReference(
 
   public bool IsInteger => this.MemberTypeInfo is IIntegerTypeInfo;
 
-  public IMemberReference AssertIsInteger() {
-    if (!this.IsInteger) {
-      Asserts.Fail($"Expected {this.Name} to refer to an integer!");
-    }
-
-    return this;
-  }
-
   public bool IsFloat
     => this.MemberTypeInfo is INumberTypeInfo {
         NumberType: (SchemaNumberType.HALF
@@ -256,33 +243,11 @@ public class MemberReference(
                      or SchemaNumberType.UN16)
     };
 
-  public IMemberReference AssertIsFloat() {
-    if (!this.IsFloat) {
-      Asserts.Fail($"Expected {this.Name} to refer to a float!");
-    }
-
-    return this;
-  }
-
   public bool IsBool => this.MemberTypeInfo is IBoolTypeInfo;
-
-  public IMemberReference AssertIsBool() {
-    if (!this.IsBool) {
-      Asserts.Fail($"Expected {this.Name} to refer to an bool!");
-    }
-
-    return this;
-  }
 
   public bool IsSequence => this.MemberTypeInfo is ISequenceTypeInfo;
 
-  public IMemberReference AssertIsSequence() {
-    if (!this.IsSequence) {
-      Asserts.Fail($"Expected {this.Name} to refer to a sequence!");
-    }
-
-    return this;
-  }
+  public bool IsString => this.MemberTypeInfo is IStringTypeInfo;
 }
 
 public class MemberReference<T> : MemberReference, IMemberReference<T> {

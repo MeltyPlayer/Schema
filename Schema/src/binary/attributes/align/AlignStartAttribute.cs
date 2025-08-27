@@ -1,5 +1,7 @@
 ﻿using System;
 
+using schema.util.diagnostics;
+
 
 namespace schema.binary.attributes;
 
@@ -17,11 +19,14 @@ public class AlignStartAttribute : BMemberAttribute {
     this.otherMemberName_ = otherMemberName;
   }
 
-  protected override void InitFields() {
+  protected override void InitFields(
+      IDiagnosticReporter diagnosticReporter,
+      IMemberReference memberThisIsAttachedTo) {
     if (this.otherMemberName_ != null) {
       this.OtherMember =
-          this.GetOtherMemberRelativeToContainer(this.otherMemberName_)
-              .AssertIsInteger();
+          this.GetOtherMemberRelativeToContainer(this.otherMemberName_);
+
+      // TODO: Validate type
     }
   }
 

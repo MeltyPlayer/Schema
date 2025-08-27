@@ -1,5 +1,7 @@
 ﻿using System;
 
+using schema.util.diagnostics;
+
 
 namespace schema.binary.attributes;
 
@@ -9,7 +11,15 @@ public class StringEncodingAttribute : BMemberAttribute<string> {
     this.EncodingType = encodingType;
   }
 
-  protected override void InitFields() { }
+  protected override void InitFields(
+      IDiagnosticReporter diagnosticReporter,
+      IMemberReference memberThisIsAttachedTo) {
+    if (!memberThisIsAttachedTo.IsString) {
+      diagnosticReporter.ReportDiagnostic(
+          memberThisIsAttachedTo.MemberSymbol,
+          Rules.StringEncodingCanOnlyBeUsedOnStrings);
+    }
+  }
 
   public StringEncodingType EncodingType { get; private set; }
 }

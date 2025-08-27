@@ -1,5 +1,7 @@
 ﻿using System;
 
+using schema.util.diagnostics;
+
 
 namespace schema.binary.attributes;
 
@@ -19,7 +21,8 @@ public class WPointerToOrNullAttribute
     this.NullValue = nullValue;
   }
 
-  protected override void InitFields() {
+  protected override void InitFields(IDiagnosticReporter diagnosticReporter,
+                                     IMemberReference memberThisIsAttachedTo) {
     this.AccessChainToOtherMember =
         this.GetAccessChainRelativeToContainer(
             this.otherMemberName_,

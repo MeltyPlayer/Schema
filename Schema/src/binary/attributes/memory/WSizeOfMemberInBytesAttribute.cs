@@ -1,5 +1,7 @@
 ﻿using System;
 
+using schema.util.diagnostics;
+
 
 namespace schema.binary.attributes;
 
@@ -24,11 +26,15 @@ public class WSizeOfMemberInBytesAttribute : BMemberAttribute {
     this.otherMemberName_ = otherMemberName;
   }
 
-  protected override void InitFields() {
+  protected override void InitFields(
+      IDiagnosticReporter diagnosticReporter,
+      IMemberReference memberThisIsAttachedTo) {
     this.AccessChainToOtherMember =
         this.GetAccessChainRelativeToContainer(
             this.otherMemberName_,
             false);
+
+    // TODO: Validate types
   }
 
   public IChain<IAccessChainNode> AccessChainToOtherMember { get; private set; }

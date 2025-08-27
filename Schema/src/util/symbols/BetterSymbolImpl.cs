@@ -30,6 +30,8 @@ internal static partial class BetterSymbol {
                              IDiagnosticReporter diagnosticReporter) {
       this.Symbol = symbol;
       this.diagnosticReporter_ = diagnosticReporter;
+
+      this.InitAttributes();
     }
 
     public ISymbol Symbol { get; }
