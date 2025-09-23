@@ -19,7 +19,7 @@ public abstract class BMemberAttribute<T> : BMemberAttribute {
 
 public abstract class BMemberAttribute : Attribute {
   private static readonly TypeInfoParser parser_ = new();
-  private IDiagnosticReporter? diagnosticReporter_;
+  private IDiagnosticReporter diagnosticReporter_;
 
   private INamedTypeSymbol containerTypeSymbol_;
   private ITypeInfo containerTypeInfo_;

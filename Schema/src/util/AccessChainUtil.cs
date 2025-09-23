@@ -35,7 +35,7 @@ public interface IAccessChainNode {
 
 internal static class AccessChainUtil {
   public static IChain<IAccessChainNode> GetAccessChainForRelativeMember(
-      IDiagnosticReporter? diagnosticReporter,
+      IDiagnosticReporter diagnosticReporter,
       ITypeSymbol containerSymbol,
       string otherMemberPath,
       string thisMemberName,

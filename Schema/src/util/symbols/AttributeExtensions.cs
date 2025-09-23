@@ -33,7 +33,7 @@ public static class AttributeExtensions {
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   internal static TAttribute? GetAttribute<TAttribute>(
       this ISymbol symbol,
-      IDiagnosticReporter? diagnosticReporter)
+      IDiagnosticReporter diagnosticReporter)
       where TAttribute : Attribute
     => symbol.GetAttributes<TAttribute>(diagnosticReporter)
              .SingleOrDefault();
@@ -41,7 +41,7 @@ public static class AttributeExtensions {
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   internal static IEnumerable<TAttribute> GetAttributes<TAttribute>(
       this ISymbol symbol,
-      IDiagnosticReporter? diagnosticReporter = null)
+      IDiagnosticReporter diagnosticReporter)
       where TAttribute : Attribute
     => symbol.GetAttributeData<TAttribute>()
              .Select(attributeData => {

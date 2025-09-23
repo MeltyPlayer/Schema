@@ -323,7 +323,7 @@ public static class SymbolTypeUtil {
   }
 
   internal static void GetMemberRelativeToAnother(
-      IDiagnosticReporter? diagnosticReporter,
+      IDiagnosticReporter diagnosticReporter,
       INamedTypeSymbol containerTypeSymbol,
       string otherMemberName,
       string thisMemberNameForFirstPass,
