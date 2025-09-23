@@ -8,7 +8,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using schema.binary.parser;
-using schema.readOnly;
 using schema.util.generators;
 using schema.util.symbols;
 using schema.util.text;

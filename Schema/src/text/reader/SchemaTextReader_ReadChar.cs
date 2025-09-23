@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices.ComTypes;
-
-namespace schema.text.reader;
+﻿namespace schema.text.reader;
 
 public sealed partial class SchemaTextReader {
   private char? peekedChar_;

@@ -4,8 +4,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-using Microsoft.CodeAnalysis;
-
 using schema.binary.attributes;
 using schema.util.asserts;
 

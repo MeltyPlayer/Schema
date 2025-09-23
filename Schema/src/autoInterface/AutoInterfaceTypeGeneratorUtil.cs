@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-using schema.binary.parser;
-using schema.util.generators;
 using schema.util.symbols;
-using schema.util.text;
-using schema.util.types;
 
 
-namespace schema.readOnly;
+namespace schema.autoInterface;
 
 internal class GeneratorUtilContext(
     IReadOnlyDictionary<(string name, int arity), IEnumerable<string>?>
@@ -23,7 +17,7 @@ internal class GeneratorUtilContext(
       KnownNamespaces { get; } = knownNamespaces;
 }
 
-internal static class ReadOnlyTypeGeneratorUtil {
+internal static class AutoInterfaceTypeGeneratorUtil {
   public static string
       GetQualifiedNameAndGenericsOrReadOnlyFromCurrentSymbol(
           this ITypeSymbol sourceSymbol,
