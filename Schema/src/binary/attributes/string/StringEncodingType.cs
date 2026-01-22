@@ -8,6 +8,7 @@ public enum StringEncodingType {
   UTF8,
   UTF16,
   UTF32,
+  SHIFT_JIS,
 }
 
 public static class StringEncodingTypeExtensions {
@@ -22,5 +23,6 @@ public static class StringEncodingTypeExtensions {
             Endianness.LittleEndian => Encoding.Unicode,
         },
         StringEncodingType.UTF32 => Encoding.UTF32,
+        StringEncodingType.SHIFT_JIS => Encoding.GetEncoding(932),
     };
 }
