@@ -2,11 +2,36 @@
 using System.Collections.Generic;
 using System.Text;
 
-using schema.util.symbols;
-
 namespace schema.text.reader;
 
 public static partial class TextReaderExtensions {
+  public static void SkipWhitespace(this ITextReader tr)
+    => tr.SkipManyIfPresent(TextReaderConstants.WHITESPACE_CHARS);
+
+  public static string ReadWord(this ITextReader tr) {
+    tr.SkipWhitespace();
+    return tr.ReadUpToStartOfTerminator([
+        " ", "\t", "\n", "\r\n", ",", "{", "[", "}", "]", ":"
+    ]);
+  }
+
+  public static bool TryToSkipComment(
+      this ITextReader tr,
+      string lineCommentPrefix = "//") {
+    tr.SkipWhitespace();
+    if (tr.Matches(lineCommentPrefix)) {
+      tr.ReadLine();
+      return true;
+    }
+
+    if (tr.Matches("/*")) {
+      tr.ReadUpToAndPastTerminator("*/");
+      return true;
+    }
+
+    return false;
+  }
+
   public static string[] ReadArguments(
       this ITextReader tr,
       ReadOnlySpan<char> separators,
