@@ -3,7 +3,21 @@
 
 namespace schema.text.reader;
 
-internal class TextReaderExtensionTests {
+internal partial class TextReaderExtensionTests {
+  [Test]
+  [TestCase("", ExpectedResult = "")]
+  [TestCase("    ", ExpectedResult = "")]
+  [TestCase("  foo  ", ExpectedResult = "foo")]
+  [TestCase(" \n foo \t  ", ExpectedResult = "foo")]
+  [TestCase("foo bar", ExpectedResult = "foo")]
+  [TestCase("`foo bar`", ExpectedResult = "`foo bar`")]
+  [TestCase("'foo bar'", ExpectedResult = "'foo bar'")]
+  [TestCase("\"foo bar\"", ExpectedResult = "\"foo bar\"")]
+  public string TestReadWord(string text) {
+    using var tr = TextSchemaTestUtil.CreateTextReader(text);
+    return tr.ReadWord();
+  }
+
   [Test]
   // Empty cases
   [TestCase("", ExpectedResult = new string[] { })]
