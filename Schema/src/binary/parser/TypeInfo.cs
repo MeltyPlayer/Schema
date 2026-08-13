@@ -225,7 +225,11 @@ public class TypeInfoParser {
                             constraintType,
                             isReadonly,
                             out var constraintTypeInfo);
-                        Asserts.Equal(ParseStatus.SUCCESS, parseStatus);
+
+                        if (parseStatus != ParseStatus.SUCCESS) {
+                          Asserts.Fail($"Expected {parseStatus} to equal {ParseStatus.SUCCESS}.");
+                        }
+
                         return constraintTypeInfo;
                       })
               .ToArray();

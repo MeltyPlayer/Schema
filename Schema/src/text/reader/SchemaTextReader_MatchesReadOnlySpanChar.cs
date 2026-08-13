@@ -6,6 +6,11 @@ namespace schema.text.reader;
 
 public sealed partial class SchemaTextReader {
   public bool Matches(out char match, ReadOnlySpan<char> matches) {
+    if (this.Eof) {
+      match = default;
+      return false;
+    }
+
     foreach (var c in matches) {
       if (this.PeekCharAndProgressIfEqualTo_(c)) {
         match = c;

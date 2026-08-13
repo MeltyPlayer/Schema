@@ -12,6 +12,9 @@ public static partial class TextReaderExtensions {
     ]);
   }
 
+  public static string ReadRemainder(this ITextReader tr)
+    => tr.ReadString(tr.Length - tr.Position);
+
   public static string[] ReadArguments(
       this ITextReader tr,
       ReadOnlySpan<char> separators,

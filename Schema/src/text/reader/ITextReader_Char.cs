@@ -6,6 +6,9 @@ public partial interface ITextReader {
   string ReadUpToStartOfTerminator(char terminator);
   string ReadUpToAndPastTerminator(char terminator);
 
+  void SkipUpToStartOfTerminator(char terminator);
+  void SkipUpToAndPastTerminator(char terminator);
+
   string ReadWhile(char match);
 
   void SkipOnceIfPresent(char match);

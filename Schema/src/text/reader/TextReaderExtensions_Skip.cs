@@ -12,14 +12,14 @@ public static partial class TextReaderExtensions {
     char c;
     do {
       c = tr.ReadChar();
-    } while (c is not ('\n' or '\r'));
+    } while (!tr.Eof && c is not ('\n' or '\r'));
 
     if (c == '\r') {
       tr.SkipOnceIfPresent('\n');
     }
   }
 
-  public static void SkipComments(
+  public static void SkipCommentsAndWhitespace(
       this ITextReader tr,
       string lineCommentPrefix = "//") {
     TryAgain:
@@ -32,7 +32,7 @@ public static partial class TextReaderExtensions {
     }
 
     if (tr.Matches("/*")) {
-      tr.ReadUpToAndPastTerminator("*/");
+      tr.SkipUpToAndPastTerminator("*/");
       goto TryAgain;
     }
   }

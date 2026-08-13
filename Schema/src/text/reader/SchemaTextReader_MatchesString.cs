@@ -6,6 +6,10 @@ namespace schema.text.reader;
 
 public sealed partial class SchemaTextReader {
   public bool Matches(string match) {
+    if (this.Eof) {
+      return false;
+    }
+
     var originalLineNumber = this.LineNumber;
     var originalIndexInLine = this.IndexInLine;
     var originalPosition = this.PositionInternal_;
@@ -64,6 +68,33 @@ public sealed partial class SchemaTextReader {
     }
 
     return sb.ToString();
+  }
+
+  public void SkipUpToStartOfTerminator(string terminator) {
+    while (!this.Eof) {
+      var originalLineNumber = this.LineNumber;
+      var originalIndexInLine = this.IndexInLine;
+      var originalPosition = this.PositionInternal_;
+
+      if (this.Matches(terminator)) {
+        this.LineNumber = originalLineNumber;
+        this.IndexInLine = originalIndexInLine;
+        this.PositionInternal_ = originalPosition;
+        break;
+      }
+
+      this.ReadChar();
+    }
+  }
+
+  public void SkipUpToAndPastTerminator(string terminator) {
+    while (!this.Eof) {
+      if (this.Matches(terminator)) {
+        break;
+      }
+
+      this.ReadChar();
+    }
   }
 
   public string ReadWhile(string match) {

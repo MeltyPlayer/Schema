@@ -1,12 +1,13 @@
-﻿using System;
-
-namespace schema.text.reader;
+﻿namespace schema.text.reader;
 
 public partial interface ITextReader {
   bool Matches(string match);
 
   string ReadUpToStartOfTerminator(string terminator);
   string ReadUpToAndPastTerminator(string terminator);
+
+  void SkipUpToStartOfTerminator(string terminator);
+  void SkipUpToAndPastTerminator(string terminator);
 
   string ReadWhile(string match);
 

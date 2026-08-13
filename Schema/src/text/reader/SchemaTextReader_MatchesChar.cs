@@ -42,6 +42,34 @@ public sealed partial class SchemaTextReader {
     return sb.ToString();
   }
 
+  public void SkipUpToStartOfTerminator(char terminator) {
+    while (!this.Eof) {
+      var originalLineNumber = this.LineNumber;
+      var originalIndexInLine = this.IndexInLine;
+      var originalPosition = this.PositionInternal_;
+
+      if (this.PeekCharAndProgressIfNotEqualTo_(terminator, out _)) {
+        continue;
+      }
+
+      this.LineNumber = originalLineNumber;
+      this.IndexInLine = originalIndexInLine;
+      this.PositionInternal_ = originalPosition;
+      break;
+    }
+  }
+
+  public void SkipUpToAndPastTerminator(char terminator) {
+    while (!this.Eof) {
+      if (this.PeekCharAndProgressIfNotEqualTo_(terminator, out _)) {
+        continue;
+      }
+
+      this.ReadChar();
+      break;
+    }
+  }
+
   public string ReadWhile(char matches) {
     var sb = new StringBuilder();
 

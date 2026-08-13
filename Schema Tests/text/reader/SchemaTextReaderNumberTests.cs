@@ -12,7 +12,7 @@ internal class SchemaTextReaderNumberTests {
       SchemaTextReader tr,
       T expectedValue,
       Func<T> readHandler,
-      Action<T> assertValue) {
+      Action<T> assertValue) where T : notnull, IEquatable<T> {
     Asserts.Equal(expectedValue, readHandler());
     tr.Position = 0;
 

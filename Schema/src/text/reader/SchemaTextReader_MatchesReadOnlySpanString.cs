@@ -6,6 +6,11 @@ namespace schema.text.reader;
 
 public sealed partial class SchemaTextReader {
   public bool Matches(out string text, ReadOnlySpan<string> matches) {
+    if (this.Eof) {
+      text = default;
+      return false;
+    }
+
     var originalLineNumber = this.LineNumber;
     var originalIndexInLine = this.IndexInLine;
     var originalPosition = this.PositionInternal_;
