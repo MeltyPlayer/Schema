@@ -3,7 +3,7 @@
 
 namespace schema.text.reader;
 
-public partial interface ITextReader : ITextStream, IDataReader {
+public partial interface ITextReader {
   bool Matches(out char c, ReadOnlySpan<char> matches);
 
   string ReadUpToStartOfTerminator(ReadOnlySpan<char> terminators);

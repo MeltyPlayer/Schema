@@ -101,7 +101,23 @@ public sealed class Asserts {
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static bool AllEqual<T>(params T[] values) where T : notnull {
+  public static void Equal<T>(ReadOnlySpan<T> spanA, ReadOnlySpan<T> spanB)
+      where T : notnull, IEquatable<T> {
+    Equal(spanA.Length, spanB.Length);
+
+    for (var i = 0; i < spanA.Length; ++i) {
+      var currentA = spanA[i];
+      var currentB = spanB[i];
+
+      if (!currentA.Equals(currentB)) {
+        Fail($"Expected {currentA} to equal {currentB} at index ${i}.");
+      }
+    }
+  }
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public static bool AllEqual<T>(params T[] values)
+      where T : notnull, IEquatable<T> {
     if (values.Length <= 1) {
       return true;
     }
@@ -120,7 +136,7 @@ public sealed class Asserts {
   public static bool Equal<T>(
       T expected,
       T actual,
-      string? message = null) where T : notnull {
+      string? message = null) where T : notnull, IEquatable<T> {
     if (expected.Equals(actual)) {
       return true;
     }
@@ -128,13 +144,6 @@ public sealed class Asserts {
     Fail(message ?? $"Expected {actual} to equal {expected}.");
     return false;
   }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static bool Equal(
-      string expected,
-      string actual,
-      string? message = null)
-    => Equal<string>(expected, actual, message);
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static TExpected AsA<TExpected>(
@@ -146,11 +155,5 @@ public sealed class Asserts {
 
     Asserts.Fail(message);
     return default!;
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static T Assert<T>(T? value) where T : notnull {
-    Nonnull(value);
-    return value!;
   }
 }

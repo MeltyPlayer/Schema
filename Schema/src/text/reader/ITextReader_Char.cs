@@ -1,6 +1,6 @@
 ﻿namespace schema.text.reader;
 
-public partial interface ITextReader : ITextStream, IDataReader {
+public partial interface ITextReader {
   bool Matches(char match);
 
   string ReadUpToStartOfTerminator(char terminator);
