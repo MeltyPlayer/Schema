@@ -9,6 +9,10 @@ namespace schema.text.reader;
 public sealed partial class SchemaTextReader : ITextReader {
   private readonly ISeekableReadableStream baseStream_;
 
+  public SchemaTextReader(string text, int tabWidth = 4) : this(
+      StreamUtil.FromString(text),
+      tabWidth) { }
+
   public SchemaTextReader(Stream baseStream, int tabWidth = 4)
       : this(new ReadableStream(baseStream), tabWidth) { }
 

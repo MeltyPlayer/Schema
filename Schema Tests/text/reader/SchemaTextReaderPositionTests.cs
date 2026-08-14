@@ -6,7 +6,7 @@ namespace schema.text.reader;
 internal class SchemaTextReaderPositionTests {
   [Test]
   public void TestGetPositions() {
-    using var tr = TextSchemaTestUtil.CreateTextReader("abc");
+    using var tr = new SchemaTextReader("abc");
 
     Assert.AreEqual(0, tr.Position);
     Assert.AreEqual(0, tr.LineNumber);
@@ -20,7 +20,7 @@ internal class SchemaTextReaderPositionTests {
 
   [Test]
   public void TestGetPositionsWithTabs() {
-    using var tr = TextSchemaTestUtil.CreateTextReader("\t1\t");
+    using var tr = new SchemaTextReader("\t1\t");
 
     Assert.AreEqual(0, tr.Position);
     Assert.AreEqual(0, tr.LineNumber);
@@ -44,7 +44,7 @@ internal class SchemaTextReaderPositionTests {
 
   [Test]
   public void TestGetPositionsAcrossLines() {
-    using var tr = TextSchemaTestUtil.CreateTextReader("ab\n12\nfoo");
+    using var tr = new SchemaTextReader("ab\n12\nfoo");
 
     Assert.AreEqual(0, tr.Position);
     Assert.AreEqual(0, tr.LineNumber);
@@ -83,7 +83,7 @@ internal class SchemaTextReaderPositionTests {
 
   [Test]
   public void TestGetPositionsAcrossLinesWhenReadingMultiple() {
-    using var tr = TextSchemaTestUtil.CreateTextReader("abc\n\t1\t23\nfoo");
+    using var tr = new SchemaTextReader("abc\n\t1\t23\nfoo");
 
     Assert.AreEqual(0, tr.Position);
     Assert.AreEqual(0, tr.LineNumber);
@@ -117,7 +117,7 @@ internal class SchemaTextReaderPositionTests {
 
   [Test]
   public void TestLength() {
-    using var tr = TextSchemaTestUtil.CreateTextReader("abc");
+    using var tr = new SchemaTextReader("abc");
     Assert.AreEqual(3, tr.Length);
   }
 }

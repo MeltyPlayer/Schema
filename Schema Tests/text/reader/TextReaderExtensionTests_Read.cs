@@ -14,7 +14,7 @@ internal partial class TextReaderExtensionTests {
   [TestCase("'foo bar'", ExpectedResult = "'foo bar'")]
   [TestCase("\"foo bar\"", ExpectedResult = "\"foo bar\"")]*/
   public string TestReadWord(string text) {
-    using var tr = TextSchemaTestUtil.CreateTextReader(text);
+    using var tr = new SchemaTextReader(text);
     return tr.ReadWord();
   }
 
@@ -42,7 +42,7 @@ internal partial class TextReaderExtensionTests {
   [TestCase("\"foo bar\"", ExpectedResult = new[] { "\"foo bar\"" })]
   [TestCase("`foo bar`", ExpectedResult = new[] { "`foo bar`" })]
   public string[] TestReadArguments(string text) {
-    using var tr = TextSchemaTestUtil.CreateTextReader(text);
+    using var tr = new SchemaTextReader(text);
     return tr.ReadArguments([','], [')']);
   }
 }

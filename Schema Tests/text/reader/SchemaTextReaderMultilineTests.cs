@@ -8,7 +8,7 @@ internal class SchemaTextReaderMultilineTests {
   public void TestReadAcrossMultipleLinesSeparately() {
     var inputText = "1 2 3\n4, 5, 6\n7\n8\n9\nfoobar";
 
-    using var tr = TextSchemaTestUtil.CreateTextReader(inputText);
+    using var tr = new SchemaTextReader(inputText);
     Assert.AreEqual(1, tr.ReadInt32());
     Assert.AreEqual(2, tr.ReadInt32());
     Assert.AreEqual(3, tr.ReadInt32());
@@ -28,7 +28,7 @@ internal class SchemaTextReaderMultilineTests {
   public void TestReadAcrossMultipleLinesCombined() {
     var inputText = "1 2 3\nfoobar";
 
-    using var tr = TextSchemaTestUtil.CreateTextReader(inputText);
+    using var tr = new SchemaTextReader(inputText);
     Assert.AreEqual(new[] { 1, 2, 3 },
                     tr.ReadInt32s(
                         TextReaderConstants.WHITESPACE_CHARS,

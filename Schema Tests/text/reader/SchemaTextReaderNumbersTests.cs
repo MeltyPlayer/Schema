@@ -8,7 +8,7 @@ namespace schema.text.reader;
 internal class SchemaTextReaderNumbersTests {
   [Test]
   public void TestReadBytesNull() {
-    using var tr = TextSchemaTestUtil.CreateTextReader("0,, ,255");
+    using var tr = new SchemaTextReader("0,, ,255");
     Asserts.Equal([0, null, null, 255],
                   tr.ReadBytesIncludingEmpty(
                       TextReaderConstants.COMMA_CHARS,
@@ -17,7 +17,7 @@ internal class SchemaTextReaderNumbersTests {
 
   [Test]
   public void TestReadHexBytesNull() {
-    using var tr = TextSchemaTestUtil.CreateTextReader("0x00,, ,0xff");
+    using var tr = new SchemaTextReader("0x00,, ,0xff");
     Asserts.Equal([0, null, null, 255],
                   tr.ReadHexBytesIncludingEmpty(
                       TextReaderConstants.COMMA_CHARS,
@@ -32,7 +32,7 @@ internal class SchemaTextReaderNumbersTests {
   [TestCase("0, , 255", new byte[] { 0, 255 })]
   [TestCase("0, 255\n1", new byte[] { 0, 255 })]
   public void TestReadBytes(string inputText, byte[] expectedValues) {
-    using var tr = TextSchemaTestUtil.CreateTextReader(inputText);
+    using var tr = new SchemaTextReader(inputText);
     Asserts.Equal(expectedValues,
                   tr.ReadBytes(TextReaderConstants.COMMA_CHARS,
                                TextReaderConstants.NEWLINE_CHARS));
@@ -44,7 +44,7 @@ internal class SchemaTextReaderNumbersTests {
   [TestCase("0x00, 0xff", new byte[] { 0, 255 })]
   [TestCase("0x00, 0xff\n0x01", new byte[] { 0, 255 })]
   public void TestReadHexBytes(string inputText, byte[] expectedValues) {
-    using var tr = TextSchemaTestUtil.CreateTextReader(inputText);
+    using var tr = new SchemaTextReader(inputText);
     Asserts.Equal(expectedValues,
                   tr.ReadHexBytes(TextReaderConstants.COMMA_CHARS,
                                   TextReaderConstants.NEWLINE_CHARS));
@@ -55,7 +55,7 @@ internal class SchemaTextReaderNumbersTests {
   [TestCase("\n0", new float[0])]
   [TestCase("-.01, 0.01", new[] { -.01f, 0.01f })]
   public void TestReadSingles(string inputText, float[] expectedValues) {
-    using var tr = TextSchemaTestUtil.CreateTextReader(inputText);
+    using var tr = new SchemaTextReader(inputText);
     Asserts.Equal(expectedValues,
                   tr.ReadSingles(TextReaderConstants.COMMA_CHARS,
                                  TextReaderConstants.NEWLINE_CHARS));
