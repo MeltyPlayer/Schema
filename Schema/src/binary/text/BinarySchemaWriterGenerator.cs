@@ -369,12 +369,7 @@ public class BinarySchemaWriterGenerator {
 
           var encodingType = "";
           if (stringType.EncodingType != StringEncodingType.ASCII) {
-            encodingType = stringType.EncodingType switch {
-                StringEncodingType.UTF8 => "StringEncodingType.UTF8",
-                StringEncodingType.UTF16 => "StringEncodingType.UTF16",
-                StringEncodingType.UTF32 => "StringEncodingType.UTF32",
-                _ => throw new ArgumentOutOfRangeException()
-            };
+            encodingType = $"StringEncodingType.{stringType.EncodingType}";
           }
 
           var encodingTypeWithComma =
