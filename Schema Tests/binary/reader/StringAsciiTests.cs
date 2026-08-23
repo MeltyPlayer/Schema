@@ -36,6 +36,19 @@ public class StringAsciiTests {
   }
 
   [Test]
+  [TestCase("foobar\0e", ExpectedResult = "foobar")]
+  public string TestStringWithNullTerminator(string str) {
+    using var ms = new MemoryStream();
+    using var sw = new StreamWriter(ms);
+    sw.Write(str);
+    sw.Flush();
+    ms.Position = 0;
+
+    using var br = new SchemaBinaryReader(ms);
+    return br.ReadString(str.Length);
+  }
+
+  [Test]
   public void TestReadNT() {
     var str = "string 1\0string 2\0string 3";
 

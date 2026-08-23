@@ -4,6 +4,7 @@ using System.Text;
 
 using schema.binary.attributes;
 using schema.text.reader;
+using schema.util.strings;
 
 
 namespace schema.binary;
@@ -263,7 +264,7 @@ public sealed partial class SchemaBinaryReader {
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public void AssertString(string expectedValue)
     => SchemaBinaryReader.AssertStrings_(
-        expectedValue.AsSpan().TrimEnd('\0'),
+        expectedValue.TrimNt(),
         this.ReadString(expectedValue.Length).AsSpan());
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -275,14 +276,14 @@ public sealed partial class SchemaBinaryReader {
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public void AssertString(Encoding encoding, string expectedValue)
     => SchemaBinaryReader.AssertStrings_(
-        expectedValue.AsSpan().TrimEnd('\0'),
+        expectedValue.TrimNt(),
         this.ReadString(encoding, expectedValue.Length).AsSpan());
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public string ReadString(long count) {
     Span<char> buffer = stackalloc char[(int) count];
     this.ReadChars(buffer);
-    return ((ReadOnlySpan<char>) buffer).TrimEnd('\0').ToString();
+    return buffer.TrimNt().ToString();
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -293,7 +294,7 @@ public sealed partial class SchemaBinaryReader {
   public string ReadString(Encoding encoding, long count) {
     Span<char> buffer = stackalloc char[(int) count];
     this.ReadChars(encoding, buffer);
-    return ((ReadOnlySpan<char>) buffer).TrimEnd('\0').ToString();
+    return buffer.TrimNt().ToString();
   }
 
 

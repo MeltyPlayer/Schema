@@ -7,6 +7,11 @@ using schema.util.enumerables;
 namespace schema.util.strings;
 
 public static class StringExtensions {
+  public static ReadOnlySpan<char> TrimNt(this ReadOnlySpan<char> text) {
+    var ntIndex = text.IndexOf('\0');
+    return ntIndex != -1 ? text.Slice(0, ntIndex) : text;
+  }
+
   public static int IndexOfFirst(
       this string text,
       ReadOnlySpan<char> chars,
