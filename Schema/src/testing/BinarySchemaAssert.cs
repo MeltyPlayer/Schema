@@ -31,9 +31,16 @@ public static class BinarySchemaAssert {
   public static async Task ReadsAndWritesIdentically<T>(
       IBinaryReader br,
       bool assertExactLength = true)
-      where T : IBinaryConvertible, new() {
+      where T : IBinaryConvertible, new()
+    => await ReadsAndWritesIdentically(br, new T(), assertExactLength);
+
+  public static async Task ReadsAndWritesIdentically<T>(
+      IBinaryReader br,
+      T instance,
+      bool assertExactLength = true)
+      where T : IBinaryConvertible {
     var readerStartPos = br.Position;
-    var instance = br.ReadNew<T>();
+    instance.Read(br);
 
     var expectedReadLength = br.Position - readerStartPos;
 
