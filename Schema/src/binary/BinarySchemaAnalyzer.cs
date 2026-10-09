@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -51,6 +49,22 @@ public class BinarySchemaAnalyzer : DiagnosticAnalyzer {
           this.CheckType(syntaxNodeContext, syntax!, namedTypeSymbol);
         },
         SyntaxKind.StructDeclaration);
+
+    context.RegisterSyntaxNodeAction(
+        syntaxNodeContext => {
+          var syntax = syntaxNodeContext.Node as RecordDeclarationSyntax;
+
+          var symbol =
+              syntaxNodeContext.SemanticModel.GetDeclaredSymbol(syntax!);
+          if (symbol is not INamedTypeSymbol namedTypeSymbol) {
+            return;
+          }
+
+          this.CheckType(syntaxNodeContext, syntax!, namedTypeSymbol);
+        },
+        SyntaxKind.RecordDeclaration,
+        SyntaxKind.RecordStructDeclaration);
+
   }
 
   public void CheckType(
@@ -72,10 +86,6 @@ public class BinarySchemaAnalyzer : DiagnosticAnalyzer {
 
       this.parser_.ParseContainer(BetterSymbol.FromType(symbol, context));
     } catch (Exception exception) {
-      if (Debugger.IsAttached) {
-        throw;
-      }
-
       Rules.ReportExceptionDiagnostic(context, symbol, exception);
     }
   }

@@ -83,6 +83,7 @@ internal static class BinarySchemaTestUtil {
                                                t.Parent is
                                                    ClassDeclarationSyntax
                                                    or StructDeclarationSyntax
+                                                   or RecordDeclarationSyntax
                                    )
                                    .Parent;
 
