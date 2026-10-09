@@ -8,7 +8,7 @@ using schema.util.diagnostics;
 
 namespace schema.util.symbols;
 
-internal interface IBetterSymbol : IDiagnosticReporter {
+public interface IBetterSymbol : IDiagnosticReporter {
   ISymbol Symbol { get; }
   string Name { get; }
 
@@ -22,7 +22,7 @@ internal interface IBetterSymbol : IDiagnosticReporter {
       where TAttribute : Attribute;
 }
 
-internal interface IBetterSymbol<out TSymbol> : IBetterSymbol
+public interface IBetterSymbol<out TSymbol> : IBetterSymbol
     where TSymbol : ISymbol {
   TSymbol TypedSymbol { get; }
 }

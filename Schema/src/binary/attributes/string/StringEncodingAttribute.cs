@@ -14,11 +14,6 @@ public class StringEncodingAttribute : BMemberAttribute<string> {
   protected override void InitFields(
       IDiagnosticReporter diagnosticReporter,
       IMemberReference memberThisIsAttachedTo) {
-    if (!memberThisIsAttachedTo.IsString) {
-      diagnosticReporter.ReportDiagnostic(
-          memberThisIsAttachedTo.MemberSymbol,
-          Rules.StringEncodingCanOnlyBeUsedOnStrings);
-    }
   }
 
   public StringEncodingType EncodingType { get; private set; }

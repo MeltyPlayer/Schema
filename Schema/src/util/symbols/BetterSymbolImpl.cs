@@ -6,7 +6,7 @@ using schema.util.diagnostics;
 
 namespace schema.util.symbols;
 
-internal static partial class BetterSymbol {
+public static partial class BetterSymbol {
   public static IBetterSymbol<INamedTypeSymbol> FromType(
       INamedTypeSymbol symbol,
       SyntaxNodeAnalysisContext? context = null) {

@@ -10,10 +10,5 @@ public class NullTerminatedStringAttribute : BMemberAttribute<string> {
   protected override void InitFields(
       IDiagnosticReporter diagnosticReporter,
       IMemberReference memberThisIsAttachedTo) {
-    if (!memberThisIsAttachedTo.IsString) {
-      diagnosticReporter.ReportDiagnostic(
-          memberThisIsAttachedTo.MemberSymbol,
-          Rules.NullTerminatedStringCanOnlyBeUsedOnStrings);
-    }
   }
 }

@@ -54,11 +54,6 @@ public static partial class Rules {
               "Child type can only be contained in parent",
               "Type '{0}' is defined as a child of a different type than the one it is contained in.");
 
-  public static readonly DiagnosticDescriptor MutableStringNeedsLengthSource
-      = Rules.CreateDiagnosticDescriptor(
-          "Schema string must have length source",
-          "Mutable string '{0}' is missing a LengthSource attribute.");
-
   public static readonly DiagnosticDescriptor MutableArrayNeedsLengthSource
       = Rules.CreateDiagnosticDescriptor(
           "Mutable array needs length source",
@@ -97,25 +92,10 @@ public static partial class Rules {
         "Element of '{0}' must implement at least the same binary serializable/deserializable interface as its parent.");
 
 
-  public static readonly DiagnosticDescriptor ConstUninitialized
-      = Rules.CreateDiagnosticDescriptor(
-          "Const uninitialized",
-          "Const member '{0}' must be initialized.");
-
   public static DiagnosticDescriptor NotSupported { get; }
     = Rules.CreateDiagnosticDescriptor(
         "Not supported",
         "This feature is not yet supported.");
-
-  public static readonly DiagnosticDescriptor ReadAlreadyDefined
-      = Rules.CreateDiagnosticDescriptor(
-          "Read already defined",
-          "A Read method for '{0}' was already defined.");
-
-  public static readonly DiagnosticDescriptor WriteAlreadyDefined
-      = Rules.CreateDiagnosticDescriptor(
-          "Write already defined",
-          "A Write method for '{0}' was already defined.");
 
   public static DiagnosticDescriptor UnexpectedAttribute { get; }
     = Rules.CreateDiagnosticDescriptor(

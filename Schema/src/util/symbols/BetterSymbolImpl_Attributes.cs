@@ -10,7 +10,7 @@ using schema.util.asserts;
 
 namespace schema.util.symbols;
 
-internal static partial class BetterSymbol {
+public static partial class BetterSymbol {
   private partial class BetterSymbolImpl {
     private ImmutableArray<Attribute> attributes_;
 

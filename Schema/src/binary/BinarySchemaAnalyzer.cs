@@ -85,7 +85,7 @@ public class BinarySchemaAnalyzer : DiagnosticAnalyzer {
         return;
       }
 
-      this.parser_.ParseContainer(symbol);
+      this.parser_.ParseContainer(BetterSymbol.FromType(symbol, context));
     } catch (Exception exception) {
       if (Debugger.IsAttached) {
         throw;

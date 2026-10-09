@@ -16,9 +16,6 @@ public class FixedPointAttribute(
 
   protected override void InitFields(IDiagnosticReporter diagnosticReporter,
                                      IMemberReference memberThisIsAttachedTo) {
-    if (!memberThisIsAttachedTo.IsFloat) {
-      diagnosticReporter.ReportDiagnostic(Rules.FixedPointCanOnlyBeUsedOnFloats);
-    }
   }
 
   public SchemaIntegerType IntegerType

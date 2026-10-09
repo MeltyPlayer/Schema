@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace schema.binary;
 
-internal record Rule(string Title, string MessageFormat) {
+public record Rule(string Title, string MessageFormat) {
   private DiagnosticDescriptor? impl_;
 
   public void InitDescriptor()

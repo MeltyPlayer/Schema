@@ -27,12 +27,6 @@ public class RStringLengthSourceAttribute
       this.OtherMember =
           this.GetReadTimeOnlySourceRelativeToContainer(this.otherMemberName_);
 
-      if (!memberThisIsAttachedTo.IsString) {
-        diagnosticReporter.ReportDiagnostic(
-            memberThisIsAttachedTo.MemberSymbol,
-            Rules.StringLengthSourceCanOnlyBeUsedOnSequences);
-      }
-
       if (!this.OtherMember.IsInteger) {
         diagnosticReporter.ReportDiagnostic(
             memberThisIsAttachedTo.MemberSymbol,

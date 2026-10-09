@@ -12,7 +12,8 @@ using schema.util.symbols;
 namespace schema.binary;
 
 public interface IBinarySchemaContainerParser {
-  IBinarySchemaContainer ParseContainer(INamedTypeSymbol containerSymbol);
+  IBinarySchemaContainer ParseContainer(
+      IBetterSymbol<INamedTypeSymbol> containerSymbol);
 }
 
 public interface IBinarySchemaContainer {
@@ -174,8 +175,8 @@ public interface ISequenceMemberType : IMemberType {
 
 public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
   public IBinarySchemaContainer ParseContainer(
-      INamedTypeSymbol containerSymbol) {
-    var containerBetterSymbol = BetterSymbol.FromType(containerSymbol);
+      IBetterSymbol<INamedTypeSymbol> containerBetterSymbol) {
+    var containerSymbol = containerBetterSymbol.TypedSymbol;
 
     // All of the types that contain the container need to be partial
     new PartialContainerAsserter(containerBetterSymbol)

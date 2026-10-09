@@ -12,6 +12,7 @@ using NUnit.Framework;
 using schema.binary.attributes;
 using schema.binary.text;
 using schema.util.strings;
+using schema.util.symbols;
 
 #pragma warning disable CS8604
 
@@ -91,7 +92,7 @@ internal static class BinarySchemaTestUtil {
                                    = symbol as INamedTypeSymbol;
 
                                return new BinarySchemaContainerParser()
-                                   .ParseContainer(namedTypeSymbol);
+                                   .ParseContainer(BetterSymbol.FromType(namedTypeSymbol));
                              })
                      .ToArray();
 

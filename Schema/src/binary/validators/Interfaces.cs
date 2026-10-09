@@ -1,3 +1,6 @@
+using schema.binary.parser;
+using schema.util.symbols;
+
 namespace schema.binary.validators;
 
 internal interface IValidator;
@@ -7,5 +10,5 @@ internal interface IContainerValidator : IValidator {
 }
 
 internal interface IMemberValidator : IValidator {
-  void Validate(IBinarySchemaMemberV2 member);
+  void Validate(IBetterSymbol memberSymbol, ITypeInfo typeInfo);
 }

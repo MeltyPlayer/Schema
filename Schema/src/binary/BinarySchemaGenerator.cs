@@ -32,7 +32,7 @@ public class BinarySchemaGenerator
       return false;
     }
 
-    mapped = this.parser_.ParseContainer(typeSymbol);
+    mapped = this.parser_.ParseContainer(BetterSymbol.FromType(typeSymbol));
     return true;
   }
 
