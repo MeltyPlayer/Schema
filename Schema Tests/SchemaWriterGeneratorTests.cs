@@ -267,7 +267,7 @@ public class SchemaWriterGeneratorTests {
         namespace foo.bar;
 
         [BinarySchema]
-        public class ByteWrapper {
+        public partial class ByteWrapper {
           public byte field { get; set; }
         }
         """,
@@ -296,7 +296,7 @@ public class SchemaWriterGeneratorTests {
         namespace foo.bar;
 
         [BinarySchema]
-        public class ByteWrapper {
+        public partial class ByteWrapper {
           public readonly byte field;
         }
         """,

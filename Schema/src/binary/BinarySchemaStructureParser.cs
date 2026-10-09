@@ -310,6 +310,10 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
       }
     }
 
+    foreach (var validator in ValidatorManager.AllContainerValidators) {
+      validator.Validate(containerBetterSymbol);
+    }
+
     foreach (var member in members) {
       if (member is not ISchemaValueMember valueMember) {
         continue;

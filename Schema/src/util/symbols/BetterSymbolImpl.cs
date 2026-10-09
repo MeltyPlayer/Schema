@@ -65,10 +65,16 @@ public static partial class BetterSymbol {
     public ISymbol Symbol { get; }
     public string Name => this.Symbol.Name;
 
-    public IBetterSymbol<INamedTypeSymbol> GetContainingType()
-      => BetterSymbol.FromType(
-          this.Symbol.ContainingType,
-          this.diagnosticReporter_.GetSubReporter(this.Symbol.ContainingType));
+    public IBetterSymbol<INamedTypeSymbol>? GetContainingType() {
+      var containingType = this.Symbol.ContainingType;
+      if (containingType == null) {
+        return null;
+      }
+      
+      return BetterSymbol.FromType(
+          containingType,
+          this.diagnosticReporter_.GetSubReporter(containingType));
+    }
 
     public IBetterSymbol GetMember(ISymbol member)
       => BetterSymbol.FromMember(

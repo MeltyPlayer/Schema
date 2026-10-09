@@ -1,12 +1,23 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+using schema.util.syntax;
 
 
 namespace schema.util.symbols;
 
 public static class NamedTypeSymbolUtil {
+  extension(INamedTypeSymbol namedTypeSymbol) {
+    public bool IsPartial()
+      => namedTypeSymbol.DeclaringSyntaxReferences
+                        .Select(r => (r.GetSyntax() as TypeDeclarationSyntax)!)
+                        .All(s => s.IsPartial());
+  }
+
   public static IEnumerable<ISymbol> GetInstanceMembers(
       this INamedTypeSymbol containerSymbol) {
     var baseClassesAndSelf = new LinkedList<INamedTypeSymbol>();

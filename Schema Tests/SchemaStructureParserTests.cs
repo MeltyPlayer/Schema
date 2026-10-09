@@ -12,7 +12,7 @@ public partial class SchemaStructureParserTests {
 
                                                     namespace foo.bar {
                                                       [BinarySchema]
-                                                      public class ByteWrapper {
+                                                      public partial class ByteWrapper {
                                                         public byte field;
                                                       }
                                                     }
@@ -44,7 +44,7 @@ public partial class SchemaStructureParserTests {
 
                                                     namespace foo.bar {
                                                       [BinarySchema]
-                                                      public class SByteWrapper {
+                                                      public partial class SByteWrapper {
                                                         public sbyte field;
                                                       }
                                                     }
@@ -76,7 +76,7 @@ public partial class SchemaStructureParserTests {
 
                                                     namespace foo.bar {
                                                       [BinarySchema]
-                                                      public class Int16Wrapper {
+                                                      public partial class Int16Wrapper {
                                                         public short field;
                                                       }
                                                     }
@@ -115,7 +115,7 @@ public partial class SchemaStructureParserTests {
                                                       }
                                                     
                                                       [BinarySchema]
-                                                      public class EnumWrapper {
+                                                      public partial class EnumWrapper {
                                                         [IntegerFormat(SchemaIntegerType.UINT16)]
                                                         public ValueType field;
                                                       }
@@ -210,7 +210,7 @@ public partial class SchemaStructureParserTests {
 
                                                     namespace foo.bar {
                                                       [BinarySchema]
-                                                      public class ByteWrapper {
+                                                      public partial class ByteWrapper {
                                                         public byte field;
                                                       }
                                                     }
@@ -242,7 +242,7 @@ public partial class SchemaStructureParserTests {
 
                                                     namespace foo.bar {
                                                       [BinarySchema]
-                                                      public class ByteWrapper {
+                                                      public partial class ByteWrapper {
                                                         public byte Field { get; set; }
                                                       }
                                                     }
@@ -274,7 +274,7 @@ public partial class SchemaStructureParserTests {
 
                                                     namespace foo.bar {
                                                       [BinarySchema]
-                                                      public class ByteWrapper {
+                                                      public partial class ByteWrapper {
                                                         public readonly byte field;
                                                       }
                                                     }
@@ -306,7 +306,7 @@ public partial class SchemaStructureParserTests {
 
                                                     namespace foo.bar {
                                                       [BinarySchema]
-                                                      public class ByteWrapper {
+                                                      public partial class ByteWrapper {
                                                         public byte Field { get; }
                                                       }
                                                     }
