@@ -13,7 +13,7 @@ public class WSizeOfMemberInBytesDependencyFixer {
       IChain<IAccessChainNode> accessChain) {
     foreach (var typeChainNode in accessChain.RootToTarget.Skip(1)) {
       if (containerByNamedTypeSymbol.TryGetValue(
-              typeChainNode.ContainerSymbol,
+              typeChainNode.ContainerSymbol.TypedSymbol,
               out var container)) {
         var member = container.Members.Single(
                 member =>

@@ -9,17 +9,17 @@ using schema.util.symbols;
 
 namespace schema.binary;
 
-internal interface IBinarySchemaContainerParserV2 {
+public interface IBinarySchemaContainerParserV2 {
   IBinarySchemaContainerV2 ParseContainer(
       IBetterSymbol<INamedTypeSymbol> containerSymbol);
 }
 
-internal interface IBinarySchemaContainerV2 {
+public interface IBinarySchemaContainerV2 {
   IBetterSymbol<INamedTypeSymbol> TypeSymbol { get; }
   IReadOnlyList<IBinarySchemaMemberV2> Members { get; }
 }
 
-internal interface IBinarySchemaMemberV2 {
+public interface IBinarySchemaMemberV2 {
   IBetterSymbol MemberSymbol { get; }
   ITypeInfo TypeInfo { get; }
 }

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -9,22 +10,39 @@ using schema.util.diagnostics;
 namespace schema.util.symbols;
 
 public static partial class BetterSymbol {
+  private static readonly Dictionary<ISymbol, IBetterSymbol>
+      CACHE_BY_SYMBOL_ = new();
+
+  public static void ClearCache() => CACHE_BY_SYMBOL_.Clear();
+
   public static IBetterSymbol<INamedTypeSymbol> FromType(
       INamedTypeSymbol symbol,
       SyntaxNodeAnalysisContext? context = null) {
+    if (CACHE_BY_SYMBOL_.TryGetValue(symbol, out var betterSymbol)) {
+      return (betterSymbol as IBetterSymbol<INamedTypeSymbol>)!;
+    }
+
     return new BetterSymbolImpl<INamedTypeSymbol>(symbol, context);
   }
 
   public static IBetterSymbol<INamedTypeSymbol> FromType(
       INamedTypeSymbol symbol,
       IDiagnosticReporter diagnosticReporter) {
+    if (CACHE_BY_SYMBOL_.TryGetValue(symbol, out var betterSymbol)) {
+      return (betterSymbol as IBetterSymbol<INamedTypeSymbol>)!;
+    }
+
     return new BetterSymbolImpl<INamedTypeSymbol>(symbol, diagnosticReporter);
   }
 
   public static IBetterSymbol FromMember(
       ISymbol symbol,
-      SyntaxNodeAnalysisContext? context = null) {
-    return new BetterSymbolImpl(symbol, context);
+      IDiagnosticReporter diagnosticReporter) {
+    if (CACHE_BY_SYMBOL_.TryGetValue(symbol, out var betterSymbol)) {
+      return betterSymbol;
+    }
+
+    return new BetterSymbolImpl(symbol, diagnosticReporter);
   }
 
 
@@ -34,10 +52,12 @@ public static partial class BetterSymbol {
         symbol,
         new DiagnosticReporter(symbol, context)) { }
 
-    protected BetterSymbolImpl(ISymbol symbol,
-                               IDiagnosticReporter diagnosticReporter) {
+    public BetterSymbolImpl(ISymbol symbol,
+                            IDiagnosticReporter diagnosticReporter) {
       this.Symbol = symbol;
       this.diagnosticReporter_ = diagnosticReporter;
+
+      CACHE_BY_SYMBOL_[symbol] = this;
 
       this.InitAttributes_();
     }
@@ -46,14 +66,14 @@ public static partial class BetterSymbol {
     public string Name => this.Symbol.Name;
 
     public IBetterSymbol<INamedTypeSymbol> GetContainingType()
-      => new BetterSymbolImpl<INamedTypeSymbol>(
+      => BetterSymbol.FromType(
           this.Symbol.ContainingType,
           this.diagnosticReporter_.GetSubReporter(this.Symbol.ContainingType));
 
-    public IBetterSymbol GetMember(ISymbol memberName)
-      => new BetterSymbolImpl(
-          memberName,
-          this.diagnosticReporter_.GetSubReporter(memberName));
+    public IBetterSymbol GetMember(ISymbol member)
+      => BetterSymbol.FromMember(
+          member,
+          this.diagnosticReporter_.GetSubReporter(member));
   }
 
   private class BetterSymbolImpl<TSymbol>

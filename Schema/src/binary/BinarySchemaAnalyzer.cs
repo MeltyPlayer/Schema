@@ -21,22 +21,7 @@ public class BinarySchemaAnalyzer : DiagnosticAnalyzer {
   private readonly BinarySchemaContainerParser parser_ = new();
 
   public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
-    => field != null
-        ? field
-        : field =
-            ValidatorManager
-                .AllValidatorTypes
-                .SelectMany(t => t.GetFields(BindingFlags.Static |
-                                             BindingFlags.Public |
-                                             BindingFlags.NonPublic)
-                                  .Where(f => f.FieldType == typeof(Rule)))
-                .OrderBy(f => f.Name)
-                .Select(f => (Rule) f.GetValue(null))
-                .Select(rule => {
-                          rule.InitDescriptor();
-                          return rule.DiagnosticDescriptor;
-                        })
-                .ToImmutableArray();
+    => ValidatorManager.AllDiagnosticDescriptors;
 
   public override void Initialize(AnalysisContext context) {
     context.RegisterSyntaxNodeAction(

@@ -4,7 +4,7 @@ using schema.util.symbols;
 
 namespace schema.binary.validators;
 
-internal sealed class IfBooleanNeedsNullableValidator
+public sealed class IfBooleanNeedsNullableValidator
     : IMemberValidator {
   public static readonly Rule IF_BOOLEAN_NEEDS_NULLABLE_TYPE
       = new(

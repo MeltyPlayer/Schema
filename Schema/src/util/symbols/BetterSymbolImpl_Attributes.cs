@@ -34,7 +34,7 @@ public static partial class BetterSymbol {
                       if (attribute is BMemberAttribute
                           memberAttribute) {
                         memberAttribute.Init(this,
-                                             this.GetContainingType().TypedSymbol,
+                                             this.GetContainingType(),
                                              this.Symbol.Name);
                       }
 

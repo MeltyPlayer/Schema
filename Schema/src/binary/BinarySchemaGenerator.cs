@@ -27,6 +27,8 @@ public class BinarySchemaGenerator
       TypeDeclarationSyntax syntax,
       INamedTypeSymbol typeSymbol,
       out IBinarySchemaContainer mapped) {
+    BetterSymbol.ClearCache();
+
     mapped = default;
     if (!syntax.IsPartial()) {
       return false;

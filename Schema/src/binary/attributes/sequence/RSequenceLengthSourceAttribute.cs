@@ -28,12 +28,12 @@ public class RSequenceLengthSourceAttribute
 
       if (!memberThisIsAttachedTo.IsSequence) {
         diagnosticReporter.ReportDiagnostic(
-            memberThisIsAttachedTo.MemberSymbol,
+            memberThisIsAttachedTo.MemberSymbol.Symbol,
             Rules.SequenceLengthSourceCanOnlyBeUsedOnSequences);
       }
       if (!this.OtherMember.IsInteger) {
         diagnosticReporter.ReportDiagnostic(
-            memberThisIsAttachedTo.MemberSymbol,
+            memberThisIsAttachedTo.MemberSymbol.Symbol,
             Rules.RSequenceLengthSourceOtherFieldMustBeAnInteger);
       }
     }

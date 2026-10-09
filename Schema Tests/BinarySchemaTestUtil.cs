@@ -11,6 +11,7 @@ using NUnit.Framework;
 
 using schema.binary.attributes;
 using schema.binary.text;
+using schema.binary.validators;
 using schema.util.strings;
 using schema.util.symbols;
 
@@ -203,6 +204,8 @@ internal static class BinarySchemaTestUtil {
   public static void AssertGenerated(string src,
                                      string expectedReader,
                                      string expectedWriter) {
+    ValidatorManager.EnsureInitialized();
+
     var structure = BinarySchemaTestUtil.ParseFirst(src);
     Assert.IsEmpty(structure.Diagnostics);
 

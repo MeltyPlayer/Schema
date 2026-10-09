@@ -4,7 +4,7 @@ using schema.util.symbols;
 
 namespace schema.binary.validators;
 
-internal sealed class StringAttributesCanOnlyBeUsedOnStringsValidator : IMemberValidator {
+public sealed class StringAttributesCanOnlyBeUsedOnStringsValidator : IMemberValidator {
   public static readonly Rule STRING_ENCODING_CAN_ONLY_BE_USED_ON_STRINGS_RULE
       = new(
           $"{nameof(StringEncodingAttribute)} can only be used on strings",

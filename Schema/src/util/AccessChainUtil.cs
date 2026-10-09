@@ -26,8 +26,8 @@ public interface IChain<out T> {
 }
 
 public interface IAccessChainNode {
-  INamedTypeSymbol ContainerSymbol { get; }
-  ISymbol MemberSymbol { get; }
+  IBetterSymbol<INamedTypeSymbol> ContainerSymbol { get; }
+  IBetterSymbol MemberSymbol { get; }
   ITypeSymbol MemberTypeSymbol { get; }
   ITypeInfo MemberTypeInfo { get; }
   bool IsOrderValid { get; }
@@ -36,7 +36,7 @@ public interface IAccessChainNode {
 internal static class AccessChainUtil {
   public static IChain<IAccessChainNode> GetAccessChainForRelativeMember(
       IDiagnosticReporter diagnosticReporter,
-      ITypeSymbol containerSymbol,
+      IBetterSymbol<INamedTypeSymbol> containerSymbol,
       string otherMemberPath,
       string thisMemberName,
       bool assertOrder
@@ -54,11 +54,11 @@ internal static class AccessChainUtil {
     if (assertOrder) {
       foreach (var node in typeChain.RootToTarget) {
         if (!node.IsOrderValid &&
-            node.MemberSymbol
+            node.MemberSymbol.Symbol
                 .GetAttribute<SkipAttribute>(diagnosticReporter) ==
             null) {
           diagnosticReporter.ReportDiagnostic(
-              node.MemberSymbol,
+              node.MemberSymbol.Symbol,
               Rules.DependentMustComeAfterSource);
         }
       }
@@ -74,30 +74,31 @@ internal static class AccessChainUtil {
       var typeChainNode = accessChain.RootToTarget[i];
 
       var binarySchemaAttribute =
-          typeChainNode.ContainerSymbol.GetAttribute<BinarySchemaAttribute>(
+          typeChainNode.ContainerSymbol.Symbol.GetAttribute<BinarySchemaAttribute>(
               diagnosticReporter);
       if (binarySchemaAttribute == null) {
         diagnosticReporter.ReportDiagnostic(
-            typeChainNode.MemberSymbol,
+            typeChainNode.MemberSymbol.Symbol,
             Rules.AllMembersInChainMustUseSchema);
       }
     }
   }
 
   private static void GetMemberInContainer_(
-      ITypeSymbol containerSymbol,
+      IBetterSymbol<ITypeSymbol> containerSymbol,
       string memberName,
-      out ISymbol memberSymbol,
+      out IBetterSymbol memberSymbol,
       out ITypeSymbol memberTypeSymbol,
       out ITypeInfo memberTypeInfo
   ) {
-    memberSymbol = containerSymbol.GetMembers(memberName).SingleOrDefault();
-    if (memberSymbol == null) {
+    try {
+      memberSymbol = containerSymbol.GetMember(memberName);
+    } catch (Exception) {
       throw new Exception(
           $"Expected to find member \"{memberName}\" in container {containerSymbol.Name}");
     }
 
-    new TypeInfoParser().ParseMember(memberSymbol,
+    new TypeInfoParser().ParseMember(memberSymbol.Symbol,
                                      out memberTypeSymbol,
                                      out memberTypeInfo);
   }
@@ -106,7 +107,7 @@ internal static class AccessChainUtil {
   private static IChain<IAccessChainNode>
       GetAccessChainForRelativeMemberImpl_(
           IDiagnosticReporter? diagnosticReporter,
-          ITypeSymbol containerSymbol,
+          IBetterSymbol<INamedTypeSymbol> containerSymbol,
           string otherMemberPath,
           string thisMemberName,
           IUpDownStack<string> upDownStack,
@@ -123,7 +124,7 @@ internal static class AccessChainUtil {
 
       accessChain = new AccessChain(
           new AccessChainNode {
-              ContainerSymbol = (containerSymbol as INamedTypeSymbol)!,
+              ContainerSymbol = containerSymbol,
               MemberSymbol = rootSymbol,
               MemberTypeSymbol = rootTypeSymbol,
               MemberTypeInfo = rootTypeInfo,
@@ -152,7 +153,7 @@ internal static class AccessChainUtil {
     // Asserts that we're not referencing something that comes before the
     // current member.
     if (upDownStack.Count == 0) {
-      var members = containerSymbol.GetMembers();
+      var members = containerSymbol.TypedSymbol.GetMembers();
       var membersAndIndices =
           members.Select((member, index) => (member, index)).ToArray();
       var indexOfThisMember = membersAndIndices
@@ -172,8 +173,7 @@ internal static class AccessChainUtil {
     }
 
     accessChain.AddLinkInChain(new AccessChainNode {
-        ContainerSymbol =
-            (containerSymbol as INamedTypeSymbol)!,
+        ContainerSymbol = containerSymbol,
         MemberSymbol = memberSymbol,
         MemberTypeSymbol = memberTypeSymbol,
         MemberTypeInfo = memberTypeInfo,
@@ -181,7 +181,7 @@ internal static class AccessChainUtil {
     });
 
     if (currentMemberName == nameof(IChildOf<IBinaryConvertible>.Parent) &&
-        containerSymbol.IsChild(out _)) {
+        containerSymbol.TypedSymbol.IsChild(out _)) {
       upDownStack.PushUpFrom(prevMemberName);
     } else {
       upDownStack.PushDownTo(currentMemberName);
@@ -192,7 +192,8 @@ internal static class AccessChainUtil {
       var subMemberPath = otherMemberPath.Substring(periodIndex + 1);
       return GetAccessChainForRelativeMemberImpl_(
           diagnosticReporter,
-          memberTypeSymbol,
+          BetterSymbol.FromType((memberTypeSymbol as INamedTypeSymbol)!,
+                                diagnosticReporter!),
           subMemberPath,
           thisMemberName,
           upDownStack,
@@ -244,8 +245,8 @@ internal static class AccessChainUtil {
   }
 
   private class AccessChainNode : IAccessChainNode {
-    public INamedTypeSymbol ContainerSymbol { get; set; }
-    public ISymbol MemberSymbol { get; set; }
+    public IBetterSymbol<INamedTypeSymbol> ContainerSymbol { get; set; }
+    public IBetterSymbol MemberSymbol { get; set; }
     public ITypeSymbol MemberTypeSymbol { get; set; }
     public ITypeInfo MemberTypeInfo { get; set; }
     public bool IsOrderValid { get; set; }

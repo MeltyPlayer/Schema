@@ -48,9 +48,12 @@ public static class AttributeExtensions {
                        var attribute
                            = attributeData.Instantiate<TAttribute>(symbol);
                        if (attribute is BMemberAttribute memberAttribute) {
-                         memberAttribute.Init(diagnosticReporter,
-                                              symbol.ContainingType,
-                                              symbol.Name);
+                         memberAttribute.Init(
+                             diagnosticReporter,
+                             BetterSymbol.FromType(
+                                 symbol.ContainingType,
+                                 diagnosticReporter),
+                             symbol.Name);
                        }
 
                        return attribute;

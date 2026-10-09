@@ -310,25 +310,25 @@ public static class SymbolTypeUtil {
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static void GetMemberInContainer(
-      this ITypeSymbol containerSymbol,
+      this IBetterSymbol<INamedTypeSymbol> containerSymbol,
       string memberName,
-      out ISymbol memberSymbol,
+      out IBetterSymbol memberSymbol,
       out ITypeSymbol memberTypeSymbol,
       out ITypeInfo memberTypeInfo
   ) {
-    memberSymbol = containerSymbol.GetMembers(memberName).Single();
-    new TypeInfoParser().ParseMember(memberSymbol,
+    memberSymbol = containerSymbol.GetMember(memberName);
+    new TypeInfoParser().ParseMember(memberSymbol.Symbol,
                                      out memberTypeSymbol,
                                      out memberTypeInfo);
   }
 
   internal static void GetMemberRelativeToAnother(
       IDiagnosticReporter diagnosticReporter,
-      INamedTypeSymbol containerTypeSymbol,
+      IBetterSymbol<INamedTypeSymbol> containerTypeSymbol,
       string otherMemberName,
       string thisMemberNameForFirstPass,
       bool assertOrder,
-      out ISymbol memberSymbol,
+      out IBetterSymbol memberSymbol,
       out ITypeSymbol memberTypeSymbol,
       out ITypeInfo memberTypeInfo) {
     var typeChain = AccessChainUtil.GetAccessChainForRelativeMember(

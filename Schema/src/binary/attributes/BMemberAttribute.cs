@@ -21,7 +21,7 @@ public abstract class BMemberAttribute : Attribute {
   private static readonly TypeInfoParser parser_ = new();
   private IDiagnosticReporter diagnosticReporter_;
 
-  private INamedTypeSymbol containerTypeSymbol_;
+  private IBetterSymbol<INamedTypeSymbol> containerTypeSymbol_;
   private ITypeInfo containerTypeInfo_;
   protected IMemberReference memberThisIsAttachedTo_;
 
@@ -36,12 +36,12 @@ public abstract class BMemberAttribute : Attribute {
 
   internal void Init(
       IDiagnosticReporter diagnosticReporter,
-      INamedTypeSymbol containerTypeSymbol,
+      IBetterSymbol<INamedTypeSymbol> containerTypeSymbol,
       string memberName) {
     this.diagnosticReporter_ = diagnosticReporter;
     this.containerTypeSymbol_ = containerTypeSymbol;
     this.containerTypeInfo_ = BMemberAttribute.parser_.AssertParseType(
-        containerTypeSymbol);
+        containerTypeSymbol.TypedSymbol);
     this.SetMemberFromName(memberName);
     this.InitFields(diagnosticReporter, this.memberThisIsAttachedTo_);
   }
@@ -166,9 +166,9 @@ public abstract class BMemberAttribute : Attribute {
       string otherMemberName) {
     var source = this.GetOtherMemberRelativeToContainer(otherMemberName);
 
-    if (!this.IsMemberWritePrivateOrSkipped_(source.MemberSymbol)) {
+    if (!this.IsMemberWritePrivateOrSkipped_(source.MemberSymbol.Symbol)) {
       this.diagnosticReporter_.ReportDiagnostic(
-          source.MemberSymbol,
+          source.MemberSymbol.Symbol,
           Rules.SourceMustBePrivate);
     }
 
@@ -179,9 +179,9 @@ public abstract class BMemberAttribute : Attribute {
       string otherMemberName) {
     var source = this.GetOtherMemberRelativeToContainer<T>(otherMemberName);
 
-    if (!this.IsMemberWritePrivateOrSkipped_(source.MemberSymbol)) {
+    if (!this.IsMemberWritePrivateOrSkipped_(source.MemberSymbol.Symbol)) {
       this.diagnosticReporter_.ReportDiagnostic(
-          source.MemberSymbol,
+          source.MemberSymbol.Symbol,
           Rules.SourceMustBePrivate);
     }
 
@@ -204,7 +204,7 @@ public abstract class BMemberAttribute : Attribute {
 public interface IMemberReference {
   string Name { get; }
   ITypeInfo ContainerTypeInfo { get; }
-  ISymbol MemberSymbol { get; }
+  IBetterSymbol MemberSymbol { get; }
   ITypeSymbol MemberTypeSymbol { get; }
   ITypeInfo MemberTypeInfo { get; }
 
@@ -220,13 +220,13 @@ public interface IMemberReference<T> : IMemberReference { }
 public class MemberReference(
     string name,
     ITypeInfo containerTypeInfo,
-    ISymbol memberSymbol,
+    IBetterSymbol memberSymbol,
     ITypeSymbol memberTypeSymbol,
     ITypeInfo memberTypeInfo)
     : IMemberReference {
   public string Name { get; } = name;
   public ITypeInfo ContainerTypeInfo { get; } = containerTypeInfo;
-  public ISymbol MemberSymbol { get; } = memberSymbol;
+  public IBetterSymbol MemberSymbol { get; } = memberSymbol;
   public ITypeSymbol MemberTypeSymbol { get; } = memberTypeSymbol;
   public ITypeInfo MemberTypeInfo { get; } = memberTypeInfo;
 
@@ -254,7 +254,7 @@ public class MemberReference<T> : MemberReference, IMemberReference<T> {
   public MemberReference(
       string name,
       ITypeInfo containerTypeInfo,
-      ISymbol memberSymbol,
+      IBetterSymbol memberSymbol,
       ITypeSymbol memberTypeSymbol,
       ITypeInfo memberTypeInfo)
       : base(name,

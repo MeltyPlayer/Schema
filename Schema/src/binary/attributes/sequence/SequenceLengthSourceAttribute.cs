@@ -30,7 +30,7 @@ public class SequenceLengthSourceAttribute
       IMemberReference memberThisIsAttachedTo) {
     if (!memberThisIsAttachedTo.IsSequence) {
       diagnosticReporter.ReportDiagnostic(
-          memberThisIsAttachedTo.MemberSymbol,
+          memberThisIsAttachedTo.MemberSymbol.Symbol,
           Rules.SequenceLengthSourceCanOnlyBeUsedOnSequences);
     }
   }

@@ -1,5 +1,7 @@
 ﻿using NUnit.Framework;
 
+using schema.binary.validators;
+
 
 namespace schema.binary.text;
 
@@ -19,8 +21,11 @@ internal class IfBooleanDiagnosticsTests {
                                                       }
                                                     }
                                                     """);
-    BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
-                                           Rules.IfBooleanNeedsNullable);
+    BinarySchemaTestUtil.AssertDiagnostics(
+        structure.Diagnostics,
+        Rules.IfBooleanNeedsNullable,
+        IfBooleanNeedsNullableValidator.IF_BOOLEAN_NEEDS_NULLABLE_TYPE
+                                       .DiagnosticDescriptor);
   }
 
   [Test]
@@ -36,14 +41,17 @@ internal class IfBooleanDiagnosticsTests {
                                                         [IfBoolean(SchemaIntegerType.BYTE)]
                                                         public A field;
                                                       }
-                                                    
+
                                                       [BinarySchema]
                                                       public partial class A : IBinaryConvertible {
                                                       }
                                                     }
                                                     """);
-    BinarySchemaTestUtil.AssertDiagnostics(structure.Diagnostics,
-                                           Rules.IfBooleanNeedsNullable);
+    BinarySchemaTestUtil.AssertDiagnostics(
+        structure.Diagnostics,
+        Rules.IfBooleanNeedsNullable,
+        IfBooleanNeedsNullableValidator.IF_BOOLEAN_NEEDS_NULLABLE_TYPE
+                                       .DiagnosticDescriptor);
   }
 
   [Test]
@@ -58,11 +66,11 @@ internal class IfBooleanDiagnosticsTests {
                                                       public partial class ByteWrapper : IBinaryConvertible {
                                                         [RIfBoolean(nameof(Field))]
                                                         public int? OtherValue { get; set; }
-                                                    
+
                                                         [IntegerFormat(SchemaIntegerType.BYTE)]
                                                         private bool Field { get; set; }
                                                       }
-                                                    
+
                                                       public class A : IBinaryConvertible { }
                                                     }
                                                     """);
@@ -83,11 +91,11 @@ internal class IfBooleanDiagnosticsTests {
                                                       public partial class ByteWrapper : IBinaryConvertible {
                                                         [IntegerFormat(SchemaIntegerType.BYTE)]
                                                         public bool Field { get; set; }
-                                                    
+
                                                         [RIfBoolean(nameof(Field))]
                                                         public int? OtherValue { get; set; }
                                                       }
-                                                    
+
                                                       public class A : IBinaryConvertible { }
                                                     }
                                                     """);
@@ -107,11 +115,11 @@ internal class IfBooleanDiagnosticsTests {
                                                       public partial class ByteWrapper : IBinaryConvertible {
                                                         [IntegerFormat(SchemaIntegerType.BYTE)]
                                                         protected bool Field { get; set; }
-                                                    
+
                                                         [RIfBoolean(nameof(Field))]
                                                         public int? OtherValue { get; set; }
                                                       }
-                                                    
+
                                                       public class A : IBinaryConvertible { }
                                                     }
                                                     """);
@@ -131,11 +139,11 @@ internal class IfBooleanDiagnosticsTests {
                                                       public partial class ByteWrapper : IBinaryConvertible {
                                                         [IntegerFormat(SchemaIntegerType.BYTE)]
                                                         internal bool Field { get; set; }
-                                                    
+
                                                         [RIfBoolean(nameof(Field))]
                                                         public int? OtherValue { get; set; }
                                                       }
-                                                    
+
                                                       public class A : IBinaryConvertible { }
                                                     }
                                                     """);
@@ -155,11 +163,11 @@ internal class IfBooleanDiagnosticsTests {
                                                       public partial class ByteWrapper : IBinaryConvertible {
                                                         [IntegerFormat(SchemaIntegerType.BYTE)]
                                                         public bool Field;
-                                                    
+
                                                         [RIfBoolean(nameof(Field))]
                                                         public int? OtherValue { get; set; }
                                                       }
-                                                    
+
                                                       public class A : IBinaryConvertible { }
                                                     }
                                                     """);
@@ -179,11 +187,11 @@ internal class IfBooleanDiagnosticsTests {
                                                       public partial class ByteWrapper : IBinaryConvertible {
                                                         [IntegerFormat(SchemaIntegerType.BYTE)]
                                                         protected bool Field;
-                                                    
+
                                                         [RIfBoolean(nameof(Field))]
                                                         public int? OtherValue { get; set; }
                                                       }
-                                                    
+
                                                       public class A : IBinaryConvertible { }
                                                     }
                                                     """);
@@ -203,11 +211,11 @@ internal class IfBooleanDiagnosticsTests {
                                                       public partial class ByteWrapper : IBinaryConvertible {
                                                         [IntegerFormat(SchemaIntegerType.BYTE)]
                                                         internal bool Field;
-                                                    
+
                                                         [RIfBoolean(nameof(Field))]
                                                         public int? OtherValue { get; set; }
                                                       }
-                                                    
+
                                                       public class A : IBinaryConvertible { }
                                                     }
                                                     """);

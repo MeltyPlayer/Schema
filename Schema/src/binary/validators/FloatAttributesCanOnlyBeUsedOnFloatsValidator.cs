@@ -4,7 +4,7 @@ using schema.util.symbols;
 
 namespace schema.binary.validators;
 
-internal sealed class FloatAttributesCanOnlyBeUsedOnFloatsValidator : IMemberValidator {
+public sealed class FloatAttributesCanOnlyBeUsedOnFloatsValidator : IMemberValidator {
   public static readonly Rule FIXED_POINT_CAN_ONLY_BE_USED_ON_FLOATS_RULE
       = new(
           $"{nameof(FixedPointAttribute)} can only be used on floats",

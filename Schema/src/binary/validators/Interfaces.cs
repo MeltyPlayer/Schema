@@ -3,12 +3,12 @@ using schema.util.symbols;
 
 namespace schema.binary.validators;
 
-internal interface IValidator;
+public interface IValidator;
 
-internal interface IContainerValidator : IValidator {
+public interface IContainerValidator : IValidator {
   void Validate(IBinarySchemaContainerV2 container);
 }
 
-internal interface IMemberValidator : IValidator {
+public interface IMemberValidator : IValidator {
   void Validate(IBetterSymbol memberSymbol, ITypeInfo typeInfo);
 }

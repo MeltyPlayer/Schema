@@ -29,7 +29,7 @@ public class RStringLengthSourceAttribute
 
       if (!this.OtherMember.IsInteger) {
         diagnosticReporter.ReportDiagnostic(
-            memberThisIsAttachedTo.MemberSymbol,
+            memberThisIsAttachedTo.MemberSymbol.Symbol,
             Rules.RStringLengthSourceOtherFieldMustBeAnInteger);
       }
     }

@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis;
 using schema.binary.attributes;
 using schema.binary.parser;
 using schema.binary.parser.asserts;
+using schema.binary.validators;
 using schema.util.symbols;
 
 
@@ -27,6 +28,7 @@ public interface IBinarySchemaContainer {
 
 public interface ISchemaMember {
   string Name { get; }
+  IBetterSymbol MemberSymbol { get; }
 }
 
 public interface ISchemaMethodMember : ISchemaMember { }
@@ -232,7 +234,10 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
                                                 .Type,
                                             typeof(IBinaryReader))) {
               members.Add(
-                  new SchemaMethodMember { Name = methodSymbol.Name });
+                  new SchemaMethodMember {
+                      Name = methodSymbol.Name, 
+                      MemberSymbol = memberBetterSymbol,
+                  });
             } else {
               memberBetterSymbol.ReportDiagnostic(Rules.NotSupported);
             }
@@ -258,10 +263,13 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
       var field =
           !isSkipped
               ? this.ParseNonSkippedField_(
+                  containerBetterSymbol,
                   containerSymbol,
                   memberBetterSymbol,
                   parsedMember)
-              : this.ParseSkippedField_(parsedMember);
+              : this.ParseSkippedField_(
+                  memberBetterSymbol,
+                  parsedMember);
 
       if (field != null) {
         members.Add(field);
@@ -302,10 +310,24 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
       }
     }
 
+    foreach (var member in members) {
+      if (member is not ISchemaValueMember valueMember) {
+        continue;
+      }
+
+      var memberSymbol = valueMember.MemberSymbol;
+      var typeInfo = valueMember.MemberType.TypeInfo;
+
+      foreach (var validator in ValidatorManager.AllMemberValidators) {
+        validator.Validate(memberSymbol, typeInfo);
+      }
+    }
+
     return schemaContainer;
   }
 
   private ISchemaValueMember? ParseNonSkippedField_(
+      IBetterSymbol<INamedTypeSymbol> containerBetterSymbol,
       INamedTypeSymbol containerTypeSymbol,
       IBetterSymbol memberBetterSymbol,
       (TypeInfoParser.ParseStatus, ISymbol, ITypeSymbol, ITypeInfo)
@@ -403,7 +425,7 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
         var offsetName = atPositionAttribute.OffsetName;
         SymbolTypeUtil.GetMemberRelativeToAnother(
             memberBetterSymbol,
-            containerTypeSymbol,
+            containerBetterSymbol,
             offsetName,
             memberSymbol.Name,
             true,
@@ -414,6 +436,7 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
         offset = new Offset {
             OffsetName = new SchemaValueMember {
                 Name = offsetName,
+                MemberSymbol = memberBetterSymbol,
                 MemberType =
                     MemberReferenceUtil.WrapTypeInfoWithMemberType(
                         offsetTypeInfo),
@@ -573,6 +596,7 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
 
     return new SchemaValueMember {
         Name = memberSymbol.Name,
+        MemberSymbol = memberBetterSymbol,
         MemberType = memberType,
         IsSkipped = false,
         AlignStart = alignStart,
@@ -584,6 +608,7 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
   }
 
   private ISchemaValueMember? ParseSkippedField_(
+      IBetterSymbol memberBetterSymbol,
       (TypeInfoParser.ParseStatus, ISymbol, ITypeSymbol, ITypeInfo)
           parsedMember
   ) {
@@ -597,7 +622,10 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
         MemberReferenceUtil.WrapTypeInfoWithMemberType(memberTypeInfo);
 
     return new SchemaValueMember {
-        Name = memberSymbol.Name, MemberType = memberType, IsSkipped = true,
+        Name = memberSymbol.Name,
+        MemberSymbol = memberBetterSymbol,
+        MemberType = memberType, 
+        IsSkipped = true,
     };
   }
 
@@ -612,11 +640,13 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
   }
 
   public class SchemaMethodMember : ISchemaMethodMember {
-    public string Name { get; set; }
+    public required string Name { get; init; }
+    public required IBetterSymbol MemberSymbol { get; init; }
   }
 
   public class SchemaValueMember : ISchemaValueMember {
-    public string Name { get; set; }
+    public required string Name { get; init; }
+    public required IBetterSymbol MemberSymbol { get; init; }
     public IMemberType MemberType { get; set; }
     public bool IsSkipped { get; set; }
     public AlignStartAttribute? AlignStart { get; set; }

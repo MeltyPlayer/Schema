@@ -137,6 +137,7 @@ internal static class MemberReferenceUtil {
           IMemberReference memberReference)
     => new() {
         Name = memberReference.Name,
+        MemberSymbol = memberReference.MemberSymbol,
         MemberType = MemberReferenceUtil.WrapTypeInfoWithMemberType(
             memberReference.MemberTypeInfo),
     };
