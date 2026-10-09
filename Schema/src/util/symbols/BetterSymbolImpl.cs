@@ -82,7 +82,7 @@ public static partial class BetterSymbol {
 
 public static class BetterSymbolExtensions {
   extension(IBetterSymbol<ITypeSymbol> betterSymbol) {
-    public IBetterSymbol GetChild(string childName)
+    public IBetterSymbol GetMember(string childName)
       => betterSymbol.GetMember(betterSymbol.TypedSymbol.GetMembers(childName)
                                             .Single());
   }

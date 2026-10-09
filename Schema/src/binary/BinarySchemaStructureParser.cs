@@ -217,7 +217,7 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
         continue;
       }
 
-      var memberBetterSymbol = containerBetterSymbol.GetChild(memberSymbol);
+      var memberBetterSymbol = containerBetterSymbol.GetMember(memberSymbol);
 
       {
         var methodSymbol = memberSymbol as IMethodSymbol;

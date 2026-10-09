@@ -37,7 +37,7 @@ internal class BinarySchemaContainerParserV2 : IBinarySchemaContainerParserV2 {
         continue;
       }
 
-      members.Add(new BinarySchemaMemberV2Impl(containerSymbol.GetChild(memberSymbol), typeInfo!));
+      members.Add(new BinarySchemaMemberV2Impl(containerSymbol.GetMember(memberSymbol), typeInfo!));
     }
 
     return new BinarySchemaContainerV2Impl(containerSymbol, members);
