@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Linq;
+
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 using schema.util.diagnostics;
@@ -11,6 +13,12 @@ public static partial class BetterSymbol {
       INamedTypeSymbol symbol,
       SyntaxNodeAnalysisContext? context = null) {
     return new BetterSymbolImpl<INamedTypeSymbol>(symbol, context);
+  }
+
+  public static IBetterSymbol<INamedTypeSymbol> FromType(
+      INamedTypeSymbol symbol,
+      IDiagnosticReporter diagnosticReporter) {
+    return new BetterSymbolImpl<INamedTypeSymbol>(symbol, diagnosticReporter);
   }
 
   public static IBetterSymbol FromMember(
@@ -26,8 +34,8 @@ public static partial class BetterSymbol {
         symbol,
         new DiagnosticReporter(symbol, context)) { }
 
-    private BetterSymbolImpl(ISymbol symbol,
-                             IDiagnosticReporter diagnosticReporter) {
+    protected BetterSymbolImpl(ISymbol symbol,
+                               IDiagnosticReporter diagnosticReporter) {
       this.Symbol = symbol;
       this.diagnosticReporter_ = diagnosticReporter;
 
@@ -37,24 +45,45 @@ public static partial class BetterSymbol {
     public ISymbol Symbol { get; }
     public string Name => this.Symbol.Name;
 
-    public IBetterSymbol GetChild(ISymbol child) {
-      return new BetterSymbolImpl(child,
-                                  this.diagnosticReporter_
-                                      .GetSubReporter(child));
-    }
+    public IBetterSymbol<INamedTypeSymbol> GetContainingType()
+      => new BetterSymbolImpl<INamedTypeSymbol>(
+          this.Symbol.ContainingType,
+          this.diagnosticReporter_.GetSubReporter(this.Symbol.ContainingType));
+
+    public IBetterSymbol GetMember(ISymbol memberName)
+      => new BetterSymbolImpl(
+          memberName,
+          this.diagnosticReporter_.GetSubReporter(memberName));
   }
 
   private class BetterSymbolImpl<TSymbol>
       : BetterSymbolImpl,
         IBetterSymbol<TSymbol>
       where TSymbol : ISymbol {
-    public BetterSymbolImpl(TSymbol symbol,
-                            SyntaxNodeAnalysisContext? context = null) : base(
+    public BetterSymbolImpl(
+        TSymbol symbol,
+        SyntaxNodeAnalysisContext? context = null) : base(
         symbol,
         context) {
       this.TypedSymbol = symbol;
     }
 
+    public BetterSymbolImpl(
+        TSymbol symbol,
+        IDiagnosticReporter diagnosticReporter) : base(
+        symbol,
+        diagnosticReporter) {
+      this.TypedSymbol = symbol;
+    }
+
     public TSymbol TypedSymbol { get; }
+  }
+}
+
+public static class BetterSymbolExtensions {
+  extension(IBetterSymbol<ITypeSymbol> betterSymbol) {
+    public IBetterSymbol GetChild(string childName)
+      => betterSymbol.GetMember(betterSymbol.TypedSymbol.GetMembers(childName)
+                                            .Single());
   }
 }

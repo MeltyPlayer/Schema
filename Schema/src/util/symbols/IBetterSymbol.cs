@@ -12,7 +12,8 @@ public interface IBetterSymbol : IDiagnosticReporter {
   ISymbol Symbol { get; }
   string Name { get; }
 
-  IBetterSymbol GetChild(ISymbol child);
+  IBetterSymbol<INamedTypeSymbol> GetContainingType();
+  IBetterSymbol GetMember(ISymbol memberName);
 
   // Attributes
   bool HasAttribute<TAttribute>() where TAttribute : Attribute;
