@@ -56,6 +56,12 @@ internal class DiagnosticReporter : IDiagnosticReporter {
                           symbol.Locations.First(),
                           symbol.Name));
 
+  public void Report(Rule rule)
+    => this.ReportDiagnostic(rule.DiagnosticDescriptor);
+
+  public void Report(ISymbol symbol, Rule rule)
+    => this.ReportDiagnostic(symbol, rule.DiagnosticDescriptor);
+
   public void ReportException(Exception exception)
     => this.ReportDiagnosticImpl_(
         Diagnostic.Create(Rules.SymbolException,

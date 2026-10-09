@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
+using schema.binary;
 using schema.util.diagnostics;
 
 
@@ -27,6 +28,12 @@ internal partial class BetterSymbol {
       => this.diagnosticReporter_.ReportDiagnostic(
           symbol,
           diagnosticDescriptor);
+
+    public void Report(Rule rule)
+      => this.ReportDiagnostic(this.Symbol, rule.DiagnosticDescriptor);
+
+    public void Report(ISymbol symbol, Rule rule)
+      => this.ReportDiagnostic(symbol, rule.DiagnosticDescriptor);
 
     public void ReportException(Exception exception)
       => this.diagnosticReporter_.ReportException(exception);

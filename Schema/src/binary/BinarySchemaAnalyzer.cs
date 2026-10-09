@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
+using schema.binary.validators;
 using schema.util.symbols;
 using schema.util.syntax;
 
@@ -17,35 +20,23 @@ namespace schema.binary;
 public class BinarySchemaAnalyzer : DiagnosticAnalyzer {
   private readonly BinarySchemaContainerParser parser_ = new();
 
-  public override ImmutableArray<DiagnosticDescriptor>
-      SupportedDiagnostics { get; } =
-    ImmutableArray.Create(
-        Rules.AllMembersInChainMustUseSchema,
-        Rules.BooleanNeedsIntegerFormat,
-        Rules.ChildTypeCanOnlyBeContainedInParent,
-        Rules.ChildTypeMustBeContainedInParent,
-        Rules.ConstUninitialized,
-        Rules.ContainerMemberBinaryConvertabilityNeedsToSatisfyParent,
-        Rules.ContainerTypeMustBePartial,
-        Rules.DependentMustComeAfterSource,
-        Rules.EnumNeedsIntegerFormat,
-        Rules.ElementBinaryConvertabilityNeedsToSatisfyParent,
-        Rules.Exception,
-        Rules.FormatOnNonNumber,
-        Rules.IfBooleanNeedsNullable,
-        Rules.MutableArrayNeedsLengthSource,
-        Rules.MutableStringNeedsLengthSource,
-        Rules.NotSupported,
-        Rules.ParentBinaryConvertabilityMustSatisfyChild,
-        Rules.ReadAlreadyDefined,
-        Rules.SchemaTypeMustBePartial,
-        Rules.SourceMustBePrivate,
-        Rules.SymbolException,
-        Rules.UnexpectedAttribute,
-        Rules.UnexpectedSequenceAttribute,
-        Rules.UnsupportedArrayType,
-        Rules.WriteAlreadyDefined
-    );
+  public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
+    => field != null
+        ? field
+        : field =
+            ValidatorManager
+                .AllValidatorTypes
+                .SelectMany(t => t.GetFields(BindingFlags.Static |
+                                             BindingFlags.Public |
+                                             BindingFlags.NonPublic)
+                                  .Where(f => f.FieldType == typeof(Rule)))
+                .OrderBy(f => f.Name)
+                .Select(f => (Rule) f.GetValue(null))
+                .Select(rule => {
+                          rule.InitDescriptor();
+                          return rule.DiagnosticDescriptor;
+                        })
+                .ToImmutableArray();
 
   public override void Initialize(AnalysisContext context) {
     context.RegisterSyntaxNodeAction(

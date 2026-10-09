@@ -15,7 +15,7 @@ public static partial class Rules {
     return "SCH" + id.ToString("D3");
   }
 
-  private static DiagnosticDescriptor CreateDiagnosticDescriptor_(
+  public static DiagnosticDescriptor CreateDiagnosticDescriptor(
       string title,
       string messageFormat)
     => new(Rules.GetNextDiagnosticId_(),
@@ -27,118 +27,118 @@ public static partial class Rules {
 
 
   public static readonly DiagnosticDescriptor SchemaTypeMustBePartial
-      = Rules.CreateDiagnosticDescriptor_(
+      = Rules.CreateDiagnosticDescriptor(
           "Schema type must be partial",
           "Schema type '{0}' must be partial to accept automatically generated read/write code.");
 
   public static readonly DiagnosticDescriptor ContainerTypeMustBePartial
-      = Rules.CreateDiagnosticDescriptor_(
+      = Rules.CreateDiagnosticDescriptor(
           "Container of schema type must be partial",
           "Type '{0}' contains a schema type, must be partial to accept automatically generated code.");
 
   public static readonly DiagnosticDescriptor ChildTypeMustBeContainedInParent
-      = Rules.CreateDiagnosticDescriptor_(
+      = Rules.CreateDiagnosticDescriptor(
           "Child type must be contained in parent",
           "Type '{0}' is defined as a child, but is not actually contained in its parent type.");
 
   public static readonly DiagnosticDescriptor
       ParentBinaryConvertabilityMustSatisfyChild
-          = Rules.CreateDiagnosticDescriptor_(
+          = Rules.CreateDiagnosticDescriptor(
               "Parent's binary convertability must satisfy child's",
               "Type '{0}' is defined as a child, but its binary convertability is not satisfied by its parent's. The parent must at least implement the same binary serializable/deserializable interface as the child.");
 
 
   public static readonly DiagnosticDescriptor
       ChildTypeCanOnlyBeContainedInParent
-          = Rules.CreateDiagnosticDescriptor_(
+          = Rules.CreateDiagnosticDescriptor(
               "Child type can only be contained in parent",
               "Type '{0}' is defined as a child of a different type than the one it is contained in.");
 
   public static readonly DiagnosticDescriptor MutableStringNeedsLengthSource
-      = Rules.CreateDiagnosticDescriptor_(
+      = Rules.CreateDiagnosticDescriptor(
           "Schema string must have length source",
           "Mutable string '{0}' is missing a LengthSource attribute.");
 
   public static readonly DiagnosticDescriptor MutableArrayNeedsLengthSource
-      = Rules.CreateDiagnosticDescriptor_(
+      = Rules.CreateDiagnosticDescriptor(
           "Mutable array needs length source",
           "Mutable array '{0}' is missing a LengthSource attribute.");
 
   public static readonly DiagnosticDescriptor FormatOnNonNumber
-      = Rules.CreateDiagnosticDescriptor_(
+      = Rules.CreateDiagnosticDescriptor(
           "Format attribute on non-numerical member",
           "A Format attribute is applied to the non-numerical member '{0}', which is unsupported.");
 
   public static DiagnosticDescriptor EnumNeedsIntegerFormat { get; }
-    = Rules.CreateDiagnosticDescriptor_(
+    = Rules.CreateDiagnosticDescriptor(
         "Enum needs integer format",
         "Enum member '{0}' needs either a valid IntegerFormat attribute or for its enum type to specify an underlying representation.");
 
   public static DiagnosticDescriptor BooleanNeedsIntegerFormat { get; }
-    = Rules.CreateDiagnosticDescriptor_(
+    = Rules.CreateDiagnosticDescriptor(
         "Boolean needs integer format",
         "Boolean member '{0}' needs a valid IntegerFormat attribute.");
 
   public static DiagnosticDescriptor IfBooleanNeedsNullable { get; }
-    = Rules.CreateDiagnosticDescriptor_(
+    = Rules.CreateDiagnosticDescriptor(
         "IfBoolean Attribute needs nullable type",
         "Member '{0}' must be a nullable type to use IfBoolean.");
 
   public static DiagnosticDescriptor
       ContainerMemberBinaryConvertabilityNeedsToSatisfyParent { get; } =
-    Rules.CreateDiagnosticDescriptor_(
+    Rules.CreateDiagnosticDescriptor(
         "Container member must satisfy parent's binary convertability",
         "Container member '{0}' must implement at least the same binary serializable/deserializable interface as its parent.");
 
   public static DiagnosticDescriptor
       ElementBinaryConvertabilityNeedsToSatisfyParent { get; } =
-    Rules.CreateDiagnosticDescriptor_(
+    Rules.CreateDiagnosticDescriptor(
         "Element must satisfy parent's binary convertability",
         "Element of '{0}' must implement at least the same binary serializable/deserializable interface as its parent.");
 
 
   public static readonly DiagnosticDescriptor ConstUninitialized
-      = Rules.CreateDiagnosticDescriptor_(
+      = Rules.CreateDiagnosticDescriptor(
           "Const uninitialized",
           "Const member '{0}' must be initialized.");
 
   public static DiagnosticDescriptor NotSupported { get; }
-    = Rules.CreateDiagnosticDescriptor_(
+    = Rules.CreateDiagnosticDescriptor(
         "Not supported",
         "This feature is not yet supported.");
 
   public static readonly DiagnosticDescriptor ReadAlreadyDefined
-      = Rules.CreateDiagnosticDescriptor_(
+      = Rules.CreateDiagnosticDescriptor(
           "Read already defined",
           "A Read method for '{0}' was already defined.");
 
   public static readonly DiagnosticDescriptor WriteAlreadyDefined
-      = Rules.CreateDiagnosticDescriptor_(
+      = Rules.CreateDiagnosticDescriptor(
           "Write already defined",
           "A Write method for '{0}' was already defined.");
 
   public static DiagnosticDescriptor UnexpectedAttribute { get; }
-    = Rules.CreateDiagnosticDescriptor_(
+    = Rules.CreateDiagnosticDescriptor(
         "Unexpected attribute",
         "Did not expect this attribute on this field.");
 
   public static DiagnosticDescriptor UnexpectedSequenceAttribute { get; }
-    = Rules.CreateDiagnosticDescriptor_(
+    = Rules.CreateDiagnosticDescriptor(
         "Unexpected sequence attribute",
         "Expected for this sequence attribute used on a sequence.");
 
   public static readonly DiagnosticDescriptor UnsupportedArrayType
-      = Rules.CreateDiagnosticDescriptor_(
+      = Rules.CreateDiagnosticDescriptor(
           "Unsupported array type",
           "Array type '{0}' is not currently supported.");
 
   public static DiagnosticDescriptor Exception { get; }
-    = Rules.CreateDiagnosticDescriptor_(
+    = Rules.CreateDiagnosticDescriptor(
         "Exception",
         "Ran into an exception while generating source ({0}),{1}");
 
   public static DiagnosticDescriptor SymbolException { get; }
-    = Rules.CreateDiagnosticDescriptor_(
+    = Rules.CreateDiagnosticDescriptor(
         "Exception",
         "Ran into an exception while parsing ({0}),{1}");
 

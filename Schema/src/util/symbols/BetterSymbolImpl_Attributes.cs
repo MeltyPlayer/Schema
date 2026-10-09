@@ -14,7 +14,7 @@ internal static partial class BetterSymbol {
   private partial class BetterSymbolImpl {
     private ImmutableArray<Attribute> attributes_;
 
-    private void InitAttributes() {
+    private void InitAttributes_() {
       var attributeData
           = this.Symbol.GetAttributes()
                 .SkipWhile(a => !a.AttributeClass?.GetFullyQualifiedNamespace()
