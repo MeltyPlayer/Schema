@@ -166,7 +166,7 @@ public class SchemaWriterGeneratorTests {
 
         static internal partial class Parent {
           protected partial class Middle {
-            public enum ValueEnum {
+            public enum ValueEnum : int {
               A, B
             }
         

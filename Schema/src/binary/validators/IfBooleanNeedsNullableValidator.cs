@@ -12,6 +12,10 @@ public sealed class IfBooleanNeedsNullableValidator
           $"Member '{{0}}' must be a nullable type to use {nameof(IfBooleanAttribute)}.");
 
   public void Validate(IBetterSymbol memberSymbol, ITypeInfo typeInfo) {
+    if (memberSymbol.HasAttribute<SkipAttribute>()) {
+      return;
+    }
+
     if (!typeInfo.IsNullable &&
         (memberSymbol.HasAttribute<IfBooleanAttribute>() ||
          memberSymbol.HasAttribute<RIfBooleanAttribute>())) {

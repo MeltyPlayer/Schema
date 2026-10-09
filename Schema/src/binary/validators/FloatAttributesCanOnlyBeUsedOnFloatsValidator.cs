@@ -11,6 +11,10 @@ public sealed class FloatAttributesCanOnlyBeUsedOnFloatsValidator : IMemberValid
           $"Member '{{0}}' is not a float, so it cannot have a {nameof(FixedPointAttribute)}.");
   
   public void Validate(IBetterSymbol memberSymbol, ITypeInfo typeInfo) {
+    if (memberSymbol.HasAttribute<SkipAttribute>()) {
+      return;
+    }
+
     if (typeInfo.Kind == SchemaTypeKind.FLOAT) {
       return;
     }

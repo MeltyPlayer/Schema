@@ -22,6 +22,10 @@ public sealed class RequiredStringAttributeValidator
           $"String member '{{0}}' is readonly, so it cannot have a {nameof(StringLengthSourceAttribute)}, {nameof(RStringLengthSourceAttribute)}, or {nameof(NullTerminatedStringAttribute)}.");
 
   public void Validate(IBetterSymbol memberSymbol, ITypeInfo typeInfo) {
+    if (memberSymbol.HasAttribute<SkipAttribute>()) {
+      return;
+    }
+
     if (typeInfo.Kind != SchemaTypeKind.STRING) {
       return;
     }

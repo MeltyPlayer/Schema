@@ -2,6 +2,8 @@ using Microsoft.CodeAnalysis;
 
 using NUnit.Framework;
 
+using schema.binary.validators;
+
 
 namespace schema.binary;
 
@@ -48,7 +50,7 @@ public partial class SchemaStructureParserTests {
         """);
       BinarySchemaTestUtil.AssertDiagnostics(
           structure.Diagnostics,
-          System.Array.Empty<DiagnosticDescriptor>());
+          RequiredIntegerFormatAttributeValidator.ENUM_NEEDS_INTEGER_FORMAT_RULE.DiagnosticDescriptor);
     }
 
     [Test]

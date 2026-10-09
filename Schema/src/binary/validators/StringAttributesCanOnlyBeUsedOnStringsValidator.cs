@@ -26,6 +26,10 @@ public sealed class StringAttributesCanOnlyBeUsedOnStringsValidator : IMemberVal
           $"Member '{{0}}' is not a string, so it cannot have a {nameof(NullTerminatedStringAttribute)}.");
 
   public void Validate(IBetterSymbol memberSymbol, ITypeInfo typeInfo) {
+    if (memberSymbol.HasAttribute<SkipAttribute>()) {
+      return;
+    }
+
     if (typeInfo.Kind == SchemaTypeKind.STRING) {
       return;
     }
