@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using System.Linq;
 
 using Microsoft.CodeAnalysis;
@@ -10,7 +10,7 @@ using schema.util.diagnostics;
 namespace schema.util.symbols;
 
 public static partial class BetterSymbol {
-  private static readonly Dictionary<ISymbol, IBetterSymbol>
+  private static readonly ConcurrentDictionary<ISymbol, IBetterSymbol>
       CACHE_BY_SYMBOL_ = new();
 
   public static void ClearCache() => CACHE_BY_SYMBOL_.Clear();

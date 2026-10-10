@@ -24,6 +24,10 @@ public abstract class BMappedNamedTypesWithAttributeGenerator<
   public abstract void PreprocessCompilation(
       Compilation compilation);
 
+  
+  public abstract IEnumerable<Diagnostic>
+      GetDiagnosticsForMappedNamedType(TMapped mapped);
+
   public abstract IEnumerable<(string fileName, string source)>
       GenerateSourcesForMappedNamedType(TMapped mapped);
 
@@ -81,6 +85,12 @@ public abstract class BMappedNamedTypesWithAttributeGenerator<
 
             foreach (var kvp in mappedBySymbol) {
               var mapped = kvp.Value;
+
+              foreach (var diagnostic in this.GetDiagnosticsForMappedNamedType(
+                           mapped)) {
+                context.ReportDiagnostic(diagnostic);
+              }
+
               foreach (var (fileName, source) in this
                            .GenerateSourcesForMappedNamedType(mapped)) {
                 context.AddSource(fileName, source);

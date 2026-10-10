@@ -9,7 +9,6 @@ using schema.binary.parser;
 using schema.binary.text;
 using schema.util.generators;
 using schema.util.symbols;
-using schema.util.syntax;
 
 
 namespace schema.binary;
@@ -29,12 +28,8 @@ public class BinarySchemaGenerator
       out IBinarySchemaContainer mapped) {
     BetterSymbol.ClearCache();
 
-    mapped = default;
-    if (!syntax.IsPartial()) {
-      return false;
-    }
-
     mapped = this.parser_.ParseContainer(BetterSymbol.FromType(typeSymbol));
+
     return true;
   }
 
@@ -70,6 +65,10 @@ public class BinarySchemaGenerator
   public override void PreprocessCompilation(Compilation compilation) {
     MemberReferenceUtil.PopulateBinaryTypes(compilation);
   }
+
+  public override IEnumerable<Diagnostic> GetDiagnosticsForMappedNamedType(
+      IBinarySchemaContainer container)
+    => container.Diagnostics;
 
   public override IEnumerable<(string fileName, string source)>
       GenerateSourcesForMappedNamedType(IBinarySchemaContainer container) {

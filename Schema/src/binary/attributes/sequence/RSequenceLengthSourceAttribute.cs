@@ -25,17 +25,6 @@ public class RSequenceLengthSourceAttribute
     if (this.otherMemberName_ != null) {
       this.OtherMember =
           this.GetReadTimeOnlySourceRelativeToContainer(this.otherMemberName_);
-
-      if (!memberThisIsAttachedTo.IsSequence) {
-        diagnosticReporter.ReportDiagnostic(
-            memberThisIsAttachedTo.MemberSymbol.Symbol,
-            Rules.SequenceLengthSourceCanOnlyBeUsedOnSequences);
-      }
-      if (!this.OtherMember.IsInteger) {
-        diagnosticReporter.ReportDiagnostic(
-            memberThisIsAttachedTo.MemberSymbol.Symbol,
-            Rules.RSequenceLengthSourceOtherFieldMustBeAnInteger);
-      }
     }
   }
 

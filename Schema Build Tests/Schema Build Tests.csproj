@@ -29,7 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../Schema/Schema.csproj" PrivateAssets="all" OutputItemType="Analyzer" />
+    <ProjectReference Include="../Schema/Schema.csproj" 
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="true" />
     <ProjectReference Include="../SchemaTypes/SchemaTypes.csproj" />
   </ItemGroup>
 

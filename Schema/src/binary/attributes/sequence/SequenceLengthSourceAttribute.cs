@@ -28,11 +28,6 @@ public class SequenceLengthSourceAttribute
   protected override void InitFields(
       IDiagnosticReporter diagnosticReporter,
       IMemberReference memberThisIsAttachedTo) {
-    if (!memberThisIsAttachedTo.IsSequence) {
-      diagnosticReporter.ReportDiagnostic(
-          memberThisIsAttachedTo.MemberSymbol.Symbol,
-          Rules.SequenceLengthSourceCanOnlyBeUsedOnSequences);
-    }
   }
 
   public SequenceLengthSourceType Method { get; }
