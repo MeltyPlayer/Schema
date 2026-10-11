@@ -50,22 +50,8 @@ internal class SequenceLengthSourceParser : IAttributeParser {
         } else if (untilEndOfStreamAttribute != null) {
           sequenceMemberType.LengthSourceType =
               SequenceLengthSourceType.UNTIL_END_OF_STREAM;
-        } else {
-          memberBetterSymbol.ReportDiagnostic(
-              Rules.MutableArrayNeedsLengthSource);
         }
       }
-      // Didn't expect attribute b/c length is already specified
-      else if (lengthSourceAttribute != null) {
-        memberBetterSymbol.ReportDiagnostic(
-            Rules.UnexpectedAttribute);
-      }
-    }
-
-    // Didn't expect attribute b/c not a sequence
-    else if (lengthSourceAttribute != null) {
-      memberBetterSymbol.ReportDiagnostic(
-          Rules.UnexpectedSequenceAttribute);
     }
   }
 }

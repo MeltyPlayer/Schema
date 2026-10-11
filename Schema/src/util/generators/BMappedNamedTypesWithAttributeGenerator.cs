@@ -80,14 +80,14 @@ public abstract class BMappedNamedTypesWithAttributeGenerator<
               = allMapped.ToDictionary(pair => pair.symbol,
                                        pair => pair.mapped);
 
-          try {
-            this.PreprocessAllMapped(mappedBySymbol);
+          this.PreprocessAllMapped(mappedBySymbol);
 
-            foreach (var kvp in mappedBySymbol) {
-              var mapped = kvp.Value;
+          foreach (var kvp in mappedBySymbol) {
+            var mapped = kvp.Value;
 
+            try {
               foreach (var diagnostic in this.GetDiagnosticsForMappedNamedType(
-                           mapped)) {
+                             mapped)) {
                 context.ReportDiagnostic(diagnostic);
               }
 
@@ -95,12 +95,12 @@ public abstract class BMappedNamedTypesWithAttributeGenerator<
                            .GenerateSourcesForMappedNamedType(mapped)) {
                 context.AddSource(fileName, source);
               }
+            } catch (Exception ex) {
+              context.ReportDiagnostic(
+                  Rules.CreateExceptionDiagnostic(
+                      mappedBySymbol.Keys.First(),
+                      ex));
             }
-          } catch (Exception ex) {
-            context.ReportDiagnostic(
-                Rules.CreateExceptionDiagnostic(
-                    mappedBySymbol.Keys.First(),
-                    ex));
           }
         });
   }

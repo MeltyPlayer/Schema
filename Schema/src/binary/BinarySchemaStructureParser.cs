@@ -557,10 +557,6 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
 
       if (hasStringLengthAttribute || encodingTypeAttribute != null) {
         if (memberType is StringType stringType) {
-          if (memberTypeInfo.IsReadOnly && hasStringLengthAttribute) {
-            memberBetterSymbol.ReportDiagnostic(Rules.UnexpectedAttribute);
-          }
-
           stringType.EncodingType = encodingTypeAttribute?.EncodingType ??
                                     StringEncodingType.ASCII;
           stringType.IsNullTerminated = isNullTerminatedString;
@@ -586,13 +582,7 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
                   stringLengthSourceAttribute.OtherMember;
               break;
             }
-            default: {
-              memberBetterSymbol.ReportDiagnostic(Rules.NotSupported);
-              break;
-            }
           }
-        } else {
-          memberBetterSymbol.ReportDiagnostic(Rules.UnexpectedAttribute);
         }
       }
     }

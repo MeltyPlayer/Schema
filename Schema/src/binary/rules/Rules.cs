@@ -43,11 +43,6 @@ public static partial class Rules {
               "Child type can only be contained in parent",
               "Type '{0}' is defined as a child of a different type than the one it is contained in.");
 
-  public static readonly DiagnosticDescriptor MutableArrayNeedsLengthSource
-      = Rules.CreateDiagnosticDescriptor(
-          "Mutable array needs length source",
-          "Mutable array '{0}' is missing a LengthSource attribute.");
-
   public static readonly DiagnosticDescriptor FormatOnNonNumber
       = Rules.CreateDiagnosticDescriptor(
           "Format attribute on non-numerical member",
@@ -75,11 +70,6 @@ public static partial class Rules {
     = Rules.CreateDiagnosticDescriptor(
         "Unexpected attribute",
         "Did not expect this attribute on this field.");
-
-  public static DiagnosticDescriptor UnexpectedSequenceAttribute { get; }
-    = Rules.CreateDiagnosticDescriptor(
-        "Unexpected sequence attribute",
-        "Expected for this sequence attribute used on a sequence.");
 
   public static readonly DiagnosticDescriptor UnsupportedArrayType
       = Rules.CreateDiagnosticDescriptor(

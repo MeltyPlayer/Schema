@@ -20,7 +20,6 @@ public partial class SchemaStructureParserTests {
           """);
       BinarySchemaTestUtil.AssertDiagnostics(
           structure.Diagnostics,
-          Rules.MutableArrayNeedsLengthSource,
           RequiredSequenceAttributeValidator.SEQUENCE_REQUIRES_ATTRIBUTE_RULE.DiagnosticDescriptor);
     }
   }

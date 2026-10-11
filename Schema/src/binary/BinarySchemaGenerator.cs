@@ -33,7 +33,12 @@ public class BinarySchemaGenerator
     try {
       mapped = this.parser_.ParseContainer(betterSymbol);
     } catch (Exception e) {
+      mapped = this.parser_.StubContainer(betterSymbol);
       betterSymbol.ReportException(e);
+    }
+
+    // If there's any errors, it's safest to just not generate anything.
+    if (betterSymbol.Diagnostics.Count > 0) {
       mapped = this.parser_.StubContainer(betterSymbol);
     }
 

@@ -3,6 +3,7 @@
 using Microsoft.CodeAnalysis;
 
 using schema.binary.attributes;
+using schema.binary.parser;
 using schema.util.asserts;
 using schema.util.symbols;
 
@@ -12,8 +13,10 @@ namespace schema.binary;
 public static class BinarySchemaSymbolUtil {
   public static bool IsAtLeastAsBinaryConvertibleAs(this ISymbol symbol,
                                                     ITypeSymbol other)
-    => (!other.IsBinaryDeserializable() || symbol.IsBinaryDeserializable()) &&
-       (!other.IsBinarySerializable() || symbol.IsBinarySerializable());
+    => (symbol is ITypeSymbol typeSymbol && typeSymbol.IsKnownStruct(out _)) ||
+       (
+           (!other.IsBinaryDeserializable() || symbol.IsBinaryDeserializable()) &&
+           (!other.IsBinarySerializable() || symbol.IsBinarySerializable()));
 
   public static bool IsBinarySerializable(this ISymbol symbol)
     => symbol.Implements<IBinarySerializable>();
