@@ -23,16 +23,14 @@ public sealed class RLengthSourceMustPointToAnIntegerValidator
       return;
     }
 
-    if (typeInfo.Kind == SchemaTypeKind.SEQUENCE &&
-        memberSymbol.TryGetAttribute<RSequenceLengthSourceAttribute>(
+    if (memberSymbol.TryGetAttribute<RSequenceLengthSourceAttribute>(
             out var rSequenceLengthSourceAttribute) &&
         !rSequenceLengthSourceAttribute.OtherMember.IsInteger) {
       memberSymbol.Report(
           RSEQUENCE_LENGTH_SOURCE_MUST_POINT_TO_AN_INTEGER_RULE);
     }
 
-    if (typeInfo.Kind == SchemaTypeKind.STRING &&
-        memberSymbol.TryGetAttribute<RStringLengthSourceAttribute>(
+    if (memberSymbol.TryGetAttribute<RStringLengthSourceAttribute>(
             out var rStringLengthSourceAttribute) &&
         !rStringLengthSourceAttribute.OtherMember.IsInteger) {
       memberSymbol.Report(
