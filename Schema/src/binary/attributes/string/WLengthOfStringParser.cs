@@ -23,8 +23,6 @@ internal class WLengthOfStringParser : IAttributeParser {
       integerMemberType.LengthOfStringMembers =
           lengthOfStringAttributes.Select(attr => attr.OtherMember)
                                   .ToArray();
-    } else {
-      memberBetterSymbol.ReportDiagnostic(Rules.NotSupported);
     }
   }
 }

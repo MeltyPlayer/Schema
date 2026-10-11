@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.CodeAnalysis;
@@ -28,7 +29,13 @@ public class BinarySchemaGenerator
       out IBinarySchemaContainer mapped) {
     BetterSymbol.ClearCache();
 
-    mapped = this.parser_.ParseContainer(BetterSymbol.FromType(typeSymbol));
+    var betterSymbol = BetterSymbol.FromType(typeSymbol);
+    try {
+      mapped = this.parser_.ParseContainer(betterSymbol);
+    } catch (Exception e) {
+      betterSymbol.ReportException(e);
+      mapped = this.parser_.StubContainer(betterSymbol);
+    }
 
     return true;
   }

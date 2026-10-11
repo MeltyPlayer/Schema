@@ -23,8 +23,6 @@ internal class WLengthOfSequenceParser : IAttributeParser {
       integerMemberType.LengthOfSequenceMembers =
           lengthOfSequenceAttributes.Select(attr => attr.OtherMember)
                                     .ToArray();
-    } else {
-      memberBetterSymbol.ReportDiagnostic(Rules.NotSupported);
     }
   }
 }

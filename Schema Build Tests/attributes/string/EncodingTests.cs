@@ -13,6 +13,7 @@ internal partial class EncodingTests {
   [BinarySchema]
   public partial class AsciiWrapper : IBinaryConvertible {
     [StringEncoding(StringEncodingType.ASCII)]
+    [NullTerminatedString]
     public string Text { get; set; }
   }
 
@@ -30,6 +31,7 @@ internal partial class EncodingTests {
   [BinarySchema]
   public partial class Utf8Wrapper : IBinaryConvertible {
     [StringEncoding(StringEncodingType.UTF8)]
+    [NullTerminatedString]
     public string Text { get; set; }
   }
 
@@ -48,6 +50,7 @@ internal partial class EncodingTests {
   [BinarySchema]
   public partial class Utf16Wrapper : IBinaryConvertible {
     [StringEncoding(StringEncodingType.UTF16)]
+    [NullTerminatedString]
     public string Text { get; set; }
   }
 
@@ -73,6 +76,7 @@ internal partial class EncodingTests {
   [BinarySchema]
   public partial class Utf32Wrapper : IBinaryConvertible {
     [StringEncoding(StringEncodingType.UTF32)]
+    [NullTerminatedString]
     public string Text { get; set; }
   }
 

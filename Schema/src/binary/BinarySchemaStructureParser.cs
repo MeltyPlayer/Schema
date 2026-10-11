@@ -13,6 +13,9 @@ using schema.util.symbols;
 namespace schema.binary;
 
 public interface IBinarySchemaContainerParser {
+  IBinarySchemaContainer StubContainer(
+      IBetterSymbol<INamedTypeSymbol> containerSymbol);
+
   IBinarySchemaContainer ParseContainer(
       IBetterSymbol<INamedTypeSymbol> containerSymbol);
 }
@@ -176,13 +179,17 @@ public interface ISequenceMemberType : IMemberType {
 }
 
 public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
+  public IBinarySchemaContainer StubContainer(
+      IBetterSymbol<INamedTypeSymbol> containerSymbol)
+    => new BinarySchemaContainer {
+        Diagnostics = containerSymbol.Diagnostics,
+        TypeSymbol = containerSymbol.TypedSymbol,
+        Members = [],
+    };
+
   public IBinarySchemaContainer ParseContainer(
       IBetterSymbol<INamedTypeSymbol> containerBetterSymbol) {
     var containerSymbol = containerBetterSymbol.TypedSymbol;
-
-    // All of the types that contain the container need to be partial
-    new PartialContainerAsserter(containerBetterSymbol)
-        .AssertContainersArePartial(containerSymbol);
 
     if (containerSymbol.IsChild(out var parentSymbol)) {
       if (!parentSymbol.ContainsMemberWithType(containerSymbol)) {
@@ -235,7 +242,7 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
                                             typeof(IBinaryReader))) {
               members.Add(
                   new SchemaMethodMember {
-                      Name = methodSymbol.Name, 
+                      Name = methodSymbol.Name,
                       MemberSymbol = memberBetterSymbol,
                   });
             } else {
@@ -414,9 +421,6 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
         (IIfBooleanAttribute?)
         memberBetterSymbol.GetAttribute<IfBooleanAttribute>() ??
         memberBetterSymbol.GetAttribute<RIfBooleanAttribute>();
-    if (ifBooleanAttribute != null && !memberTypeInfo.IsNullable) {
-      memberBetterSymbol.ReportDiagnostic(Rules.IfBooleanNeedsNullable);
-    }
 
     IOffset? offset = null;
     {
@@ -516,11 +520,6 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
         if (formatNumberType != SchemaNumberType.UNDEFINED) {
           primitiveMemberType.UseAltFormat = true;
           primitiveMemberType.AltFormat = formatNumberType;
-        } else if (targetPrimitiveType == SchemaPrimitiveType.ENUM) {
-          memberBetterSymbol.ReportDiagnostic(Rules.EnumNeedsIntegerFormat);
-        } else if (targetPrimitiveType == SchemaPrimitiveType.BOOLEAN) {
-          memberBetterSymbol.ReportDiagnostic(
-              Rules.BooleanNeedsIntegerFormat);
         }
       }
 
@@ -628,7 +627,7 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
     return new SchemaValueMember {
         Name = memberSymbol.Name,
         MemberSymbol = memberBetterSymbol,
-        MemberType = memberType, 
+        MemberType = memberType,
         IsSkipped = true,
     };
   }

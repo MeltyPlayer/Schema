@@ -25,17 +25,6 @@ public static partial class Rules {
            DiagnosticSeverity.Error,
            true);
 
-
-  public static readonly DiagnosticDescriptor SchemaTypeMustBePartial
-      = Rules.CreateDiagnosticDescriptor(
-          "Schema type must be partial",
-          "Schema type '{0}' must be partial to accept automatically generated read/write code.");
-
-  public static readonly DiagnosticDescriptor ContainerTypeMustBePartial
-      = Rules.CreateDiagnosticDescriptor(
-          "Container of schema type must be partial",
-          "Type '{0}' contains a schema type, must be partial to accept automatically generated code.");
-
   public static readonly DiagnosticDescriptor ChildTypeMustBeContainedInParent
       = Rules.CreateDiagnosticDescriptor(
           "Child type must be contained in parent",
@@ -63,21 +52,6 @@ public static partial class Rules {
       = Rules.CreateDiagnosticDescriptor(
           "Format attribute on non-numerical member",
           "A Format attribute is applied to the non-numerical member '{0}', which is unsupported.");
-
-  public static DiagnosticDescriptor EnumNeedsIntegerFormat { get; }
-    = Rules.CreateDiagnosticDescriptor(
-        "Enum needs integer format",
-        "Enum member '{0}' needs either a valid IntegerFormat attribute or for its enum type to specify an underlying representation.");
-
-  public static DiagnosticDescriptor BooleanNeedsIntegerFormat { get; }
-    = Rules.CreateDiagnosticDescriptor(
-        "Boolean needs integer format",
-        "Boolean member '{0}' needs a valid IntegerFormat attribute.");
-
-  public static DiagnosticDescriptor IfBooleanNeedsNullable { get; }
-    = Rules.CreateDiagnosticDescriptor(
-        "IfBoolean Attribute needs nullable type",
-        "Member '{0}' must be a nullable type to use IfBoolean.");
 
   public static DiagnosticDescriptor
       ContainerMemberBinaryConvertabilityNeedsToSatisfyParent { get; } =

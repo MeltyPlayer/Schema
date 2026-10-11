@@ -23,7 +23,6 @@ internal class IfBooleanDiagnosticsTests {
                                                     """);
     BinarySchemaTestUtil.AssertDiagnostics(
         structure.Diagnostics,
-        Rules.IfBooleanNeedsNullable,
         IfBooleanNeedsNullableValidator.IF_BOOLEAN_NEEDS_NULLABLE_TYPE
                                        .DiagnosticDescriptor);
   }
@@ -49,7 +48,6 @@ internal class IfBooleanDiagnosticsTests {
                                                     """);
     BinarySchemaTestUtil.AssertDiagnostics(
         structure.Diagnostics,
-        Rules.IfBooleanNeedsNullable,
         IfBooleanNeedsNullableValidator.IF_BOOLEAN_NEEDS_NULLABLE_TYPE
                                        .DiagnosticDescriptor);
   }

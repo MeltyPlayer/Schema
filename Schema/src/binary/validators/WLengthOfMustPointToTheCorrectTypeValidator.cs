@@ -1,3 +1,5 @@
+using System.Linq;
+
 using schema.binary.attributes;
 using schema.binary.parser;
 using schema.util.symbols;
@@ -23,15 +25,12 @@ public sealed class WLengthOfMustPointToTheCorrectTypeValidator
       return;
     }
 
-    if (memberSymbol.TryGetAttribute<WLengthOfSequenceAttribute>(
-            out var wLengthOfSequenceAttribute) &&
-        !wLengthOfSequenceAttribute.OtherMember.IsSequence) {
+    if (memberSymbol.GetAttributes<WLengthOfSequenceAttribute>()
+                    .Any(a => !a.OtherMember.IsSequence)) {
       memberSymbol.Report(WLENGTH_OF_SEQUENCE_MUST_POINT_TO_A_SEQUENCE_RULE);
     }
-
-    if (memberSymbol.TryGetAttribute<WLengthOfStringAttribute>(
-            out var wLengthOfStringAttribute) &&
-        !wLengthOfStringAttribute.OtherMember.IsString) {
+    if (memberSymbol.GetAttributes<WLengthOfStringAttribute>()
+                    .Any(a => !a.OtherMember.IsString)) {
       memberSymbol.Report(WLENGTH_OF_STRING_MUST_POINT_TO_A_STRING_RULE);
     }
   }

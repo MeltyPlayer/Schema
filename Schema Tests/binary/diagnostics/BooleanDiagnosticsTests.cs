@@ -19,7 +19,6 @@ public class BooleanDiagnosticTests {
                                                     """);
     BinarySchemaTestUtil.AssertDiagnostics(
         structure.Diagnostics,
-        Rules.BooleanNeedsIntegerFormat,
         RequiredIntegerFormatAttributeValidator.BOOLEAN_NEEDS_INTEGER_FORMAT_RULE.DiagnosticDescriptor);
   }
 }
