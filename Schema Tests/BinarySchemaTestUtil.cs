@@ -51,22 +51,25 @@ internal static class BinarySchemaTestUtil {
                      .Select(attributeSyntax => {
                                var attributeSpan = attributeSyntax!.FullSpan;
 
-                               var classIndex =
-                                   src.IndexOf("class",
-                                               attributeSpan.Start +
-                                               attributeSpan.Length);
-                               var classNameIndex
-                                   = src.IndexOf(' ', classIndex) + 1;
-                               var classNameLength =
+                               var containerIndex = src.IndexOfFirst(
+                                   [
+                                       "class",
+                                       "struct",
+                                       "record"
+                                   ],
+                                   attributeSpan.Start +
+                                   attributeSpan.Length);
+                               var containerNameIndex
+                                   = src.IndexOf(' ', containerIndex) + 1;
+                               var containerNameLength =
                                    src.IndexOfFirst(
                                        [' ', '('],
-                                       classNameIndex) -
-                                   classNameIndex;
+                                       containerNameIndex) -
+                                   containerNameIndex;
 
-                               var typeName =
-                                   src.Substring(
-                                       classNameIndex,
-                                       classNameLength);
+                               var typeName = src.Substring(
+                                   containerNameIndex,
+                                   containerNameLength);
                                var angleBracketIndex = typeName.IndexOf('<');
                                if (angleBracketIndex > -1) {
                                  typeName
@@ -94,7 +97,8 @@ internal static class BinarySchemaTestUtil {
                                    = symbol as INamedTypeSymbol;
 
                                return new BinarySchemaContainerParser()
-                                   .ParseContainer(BetterSymbol.FromType(namedTypeSymbol));
+                                   .ParseContainer(
+                                       BetterSymbol.FromType(namedTypeSymbol));
                              })
                      .ToArray();
 

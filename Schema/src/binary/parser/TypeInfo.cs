@@ -101,9 +101,16 @@ public class TypeInfoParser {
       return ParseStatus.NOT_A_FIELD_OR_PROPERTY_OR_METHOD;
     }
 
-    // Primary constructor params.
     var memberName = memberSymbol.Name;
+
+    // Primary constructor params.
     if (memberName.Contains('<') || memberName.Contains('>')) {
+      return ParseStatus.NOT_A_FIELD_OR_PROPERTY_OR_METHOD;
+    }
+
+    // Record equality contract.
+    if (memberSymbol.ContainingType.IsRecord &&
+        memberSymbol.Name == "EqualityContract") {
       return ParseStatus.NOT_A_FIELD_OR_PROPERTY_OR_METHOD;
     }
 

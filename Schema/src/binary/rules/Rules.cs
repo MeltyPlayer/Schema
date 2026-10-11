@@ -25,11 +25,6 @@ public static partial class Rules {
            DiagnosticSeverity.Error,
            true);
 
-  public static readonly DiagnosticDescriptor ChildTypeMustBeContainedInParent
-      = Rules.CreateDiagnosticDescriptor(
-          "Child type must be contained in parent",
-          "Type '{0}' is defined as a child, but is not actually contained in its parent type.");
-
   public static readonly DiagnosticDescriptor
       ParentBinaryConvertabilityMustSatisfyChild
           = Rules.CreateDiagnosticDescriptor(

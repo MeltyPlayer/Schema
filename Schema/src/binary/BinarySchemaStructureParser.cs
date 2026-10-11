@@ -192,11 +192,6 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
     var containerSymbol = containerBetterSymbol.TypedSymbol;
 
     if (containerSymbol.IsChild(out var parentSymbol)) {
-      if (!parentSymbol.ContainsMemberWithType(containerSymbol)) {
-        containerBetterSymbol.ReportDiagnostic(
-            Rules.ChildTypeMustBeContainedInParent);
-      }
-
       if (!parentSymbol.IsAtLeastAsBinaryConvertibleAs(containerSymbol)) {
         containerBetterSymbol.ReportDiagnostic(
             Rules.ParentBinaryConvertabilityMustSatisfyChild);

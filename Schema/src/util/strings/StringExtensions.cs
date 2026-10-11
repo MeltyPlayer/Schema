@@ -14,6 +14,21 @@ public static class StringExtensions {
 
   public static int IndexOfFirst(
       this string text,
+      ReadOnlySpan<string> strings,
+      int startIndex) {
+    var minIndex = int.MaxValue;
+    foreach (var str in strings) {
+      var indexOf = text.IndexOf(str, startIndex);
+      if (indexOf > -1) {
+        minIndex = Math.Min(minIndex, indexOf);
+      }
+    }
+
+    return minIndex == int.MaxValue ? -1 : minIndex;
+  }
+
+  public static int IndexOfFirst(
+      this string text,
       ReadOnlySpan<char> chars,
       int startIndex) {
     var minIndex = int.MaxValue;
