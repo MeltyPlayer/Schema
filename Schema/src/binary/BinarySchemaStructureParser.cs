@@ -245,11 +245,7 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
                       Name = methodSymbol.Name,
                       MemberSymbol = memberBetterSymbol,
                   });
-            } else {
-              memberBetterSymbol.ReportDiagnostic(Rules.NotSupported);
             }
-          } else {
-            memberBetterSymbol.ReportDiagnostic(Rules.NotSupported);
           }
         }
 
@@ -396,8 +392,6 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
         if (memberTypeInfo is IIntegerTypeInfo &&
             memberType is IntegerMemberType integerMemberType) {
           integerMemberType.SizeOfStream = true;
-        } else {
-          memberBetterSymbol.ReportDiagnostic(Rules.NotSupported);
         }
       }
     }

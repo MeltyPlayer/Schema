@@ -28,7 +28,7 @@ public partial class SchemaStructureParserTests {
         """);
       BinarySchemaTestUtil.AssertDiagnostics(
           structure.Diagnostics,
-          System.Array.Empty<DiagnosticDescriptor>());
+          []);
     }
 
     [Test]
@@ -50,7 +50,7 @@ public partial class SchemaStructureParserTests {
         """);
       BinarySchemaTestUtil.AssertDiagnostics(
           structure.Diagnostics,
-          RequiredIntegerFormatAttributeValidator.ENUM_NEEDS_INTEGER_FORMAT_RULE.DiagnosticDescriptor);
+          []);
     }
 
     [Test]

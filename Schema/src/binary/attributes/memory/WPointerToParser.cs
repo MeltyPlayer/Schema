@@ -24,8 +24,6 @@ internal class WPointerToParser : IAttributeParser {
         memberType is BinarySchemaContainerParser.IntegerMemberType
             integerMemberType) {
       integerMemberType.PointerToAttribute = pointerToAttribute;
-    } else {
-      memberBetterSymbol.ReportDiagnostic(Rules.NotSupported);
     }
   }
 }

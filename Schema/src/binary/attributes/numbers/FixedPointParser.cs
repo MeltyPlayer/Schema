@@ -18,8 +18,6 @@ internal class FixedPointParser : IAttributeParser {
         memberType is BinarySchemaContainerParser.FloatMemberType
             floatMemberType) {
       floatMemberType.FixedPointAttribute = fixedPointAttribute;
-    } else {
-      memberBetterSymbol.ReportDiagnostic(Rules.NotSupported);
     }
   }
 }

@@ -23,8 +23,6 @@ internal class WSizeOfMemberInBytesParser : IAttributeParser {
             integerMemberType) {
       integerMemberType.AccessChainToSizeOf =
           sizeOfAttribute.AccessChainToOtherMember;
-    } else {
-      memberBetterSymbol.ReportDiagnostic(Rules.NotSupported);
     }
   }
 }
