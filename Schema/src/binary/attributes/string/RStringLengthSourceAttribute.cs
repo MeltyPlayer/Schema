@@ -26,12 +26,6 @@ public class RStringLengthSourceAttribute
     if (this.otherMemberName_ != null) {
       this.OtherMember =
           this.GetReadTimeOnlySourceRelativeToContainer(this.otherMemberName_);
-
-      if (!this.OtherMember.IsInteger) {
-        diagnosticReporter.ReportDiagnostic(
-            memberThisIsAttachedTo.MemberSymbol.Symbol,
-            Rules.RStringLengthSourceOtherFieldMustBeAnInteger);
-      }
     }
   }
 

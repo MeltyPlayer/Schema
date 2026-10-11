@@ -54,6 +54,13 @@ public static partial class BetterSymbol {
              .SingleOrDefault();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool TryGetAttribute<TAttribute>(out TAttribute attribute)
+        where TAttribute : Attribute {
+      attribute = this.GetAttribute<TAttribute>()!;
+      return attribute != null;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IEnumerable<TAttribute> GetAttributes<TAttribute>()
         where TAttribute : Attribute
       => this.attributes_.OfType<TAttribute>();

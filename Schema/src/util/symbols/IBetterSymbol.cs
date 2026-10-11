@@ -18,6 +18,7 @@ public interface IBetterSymbol : IDiagnosticReporter {
   // Attributes
   bool HasAttribute<TAttribute>() where TAttribute : Attribute;
   TAttribute? GetAttribute<TAttribute>() where TAttribute : Attribute;
+  bool TryGetAttribute<TAttribute>(out TAttribute attribute) where TAttribute : Attribute;
 
   IEnumerable<TAttribute> GetAttributes<TAttribute>()
       where TAttribute : Attribute;
