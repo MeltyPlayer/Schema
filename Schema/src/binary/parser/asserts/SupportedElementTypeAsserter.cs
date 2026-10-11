@@ -24,7 +24,8 @@ internal class SupportedElementTypeAsserter {
     var elementTypeInfo = sequenceMemberType.ElementType.TypeInfo;
     if (elementTypeInfo is IContainerTypeInfo elementContainerTypeInfo) {
       var elementContainerTypeV2 = elementContainerTypeInfo.TypeSymbol;
-      if (!elementContainerTypeV2.IsAtLeastAsBinaryConvertibleAs(
+      if (!elementContainerTypeV2.IsKnownStruct(out _) &&
+          !elementContainerTypeV2.IsAtLeastAsBinaryConvertibleAs(
               containerTypeV2)) {
         diagnosticReporter.ReportDiagnostic(
             Rules.ElementBinaryConvertabilityNeedsToSatisfyParent);

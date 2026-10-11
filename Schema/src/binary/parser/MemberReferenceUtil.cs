@@ -142,7 +142,7 @@ internal static class MemberReferenceUtil {
             memberReference.MemberTypeInfo),
     };
 
-  public static bool IsKnownStruct(ITypeSymbol typeSymbol,
+  public static bool IsKnownStruct(this ITypeSymbol typeSymbol,
                                    out KnownStruct knownStruct) {
     if (typeSymbol.IsType<Vector2>()) {
       knownStruct = KnownStruct.VECTOR2;
