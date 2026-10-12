@@ -12,10 +12,6 @@ public sealed class RequiredIntegerFormatAttributeValidator
           $"Boolean member '{{0}}' needs a valid {nameof(IntegerFormatAttribute)}.");
 
   public void Validate(IBetterSymbol memberSymbol, ITypeInfo typeInfo) {
-    if (memberSymbol.HasAttribute<SkipAttribute>()) {
-      return;
-    }
-
     if (typeInfo.Kind == SchemaTypeKind.BOOL) {
       if (!memberSymbol.HasAttribute<IntegerFormatAttribute>()) {
         memberSymbol.Report(BOOLEAN_NEEDS_INTEGER_FORMAT_RULE);

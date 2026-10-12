@@ -19,10 +19,6 @@ public sealed class RLengthSourceMustPointToAnIntegerValidator
               $"String member '{{0}}''s {nameof(RStringLengthSourceAttribute)} must point to a member that is an integer.");
 
   public void Validate(IBetterSymbol memberSymbol, ITypeInfo typeInfo) {
-    if (memberSymbol.HasAttribute<SkipAttribute>()) {
-      return;
-    }
-
     if (memberSymbol.TryGetAttribute<RSequenceLengthSourceAttribute>(
             out var rSequenceLengthSourceAttribute) &&
         !rSequenceLengthSourceAttribute.OtherMember.IsInteger) {

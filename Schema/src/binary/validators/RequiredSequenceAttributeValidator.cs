@@ -22,10 +22,6 @@ public sealed class RequiredSequenceAttributeValidator
           $"Sequence member '{{0}}' has a const-length, so it cannot have a {nameof(SequenceLengthSourceAttribute)}, {nameof(RSequenceLengthSourceAttribute)}, or {nameof(RSequenceUntilEndOfStreamAttribute)}.");
 
   public void Validate(IBetterSymbol memberSymbol, ITypeInfo typeInfo) {
-    if (memberSymbol.HasAttribute<SkipAttribute>()) {
-      return;
-    }
-
     if (typeInfo.Kind != SchemaTypeKind.SEQUENCE) {
       return;
     }

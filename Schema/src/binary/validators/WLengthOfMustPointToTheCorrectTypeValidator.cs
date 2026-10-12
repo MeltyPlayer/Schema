@@ -21,10 +21,6 @@ public sealed class WLengthOfMustPointToTheCorrectTypeValidator
               $"Member '{{0}}''s {nameof(WLengthOfStringAttribute)} points to a member that is not a string.");
 
   public void Validate(IBetterSymbol memberSymbol, ITypeInfo typeInfo) {
-    if (memberSymbol.HasAttribute<SkipAttribute>()) {
-      return;
-    }
-
     if (memberSymbol.GetAttributes<WLengthOfSequenceAttribute>()
                     .Any(a => !a.OtherMember.IsSequence)) {
       memberSymbol.Report(WLENGTH_OF_SEQUENCE_MUST_POINT_TO_A_SEQUENCE_RULE);

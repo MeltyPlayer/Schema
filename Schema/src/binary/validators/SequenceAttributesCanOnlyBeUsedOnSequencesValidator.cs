@@ -21,10 +21,6 @@ public sealed class SequenceAttributesCanOnlyBeUsedOnSequencesValidator : IMembe
           $"Member '{{0}}' is not a sequence, so it cannot have a {nameof(RSequenceUntilEndOfStreamAttribute)}.");
 
   public void Validate(IBetterSymbol memberSymbol, ITypeInfo typeInfo) {
-    if (memberSymbol.HasAttribute<SkipAttribute>()) {
-      return;
-    }
-
     if (typeInfo.Kind == SchemaTypeKind.SEQUENCE) {
       return;
     }

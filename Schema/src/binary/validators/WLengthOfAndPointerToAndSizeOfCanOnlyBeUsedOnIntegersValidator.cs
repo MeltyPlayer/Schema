@@ -36,10 +36,6 @@ public sealed class WLengthOfAndPointerToAndSizeOfCanOnlyBeUsedOnIntegersValidat
               $"Member '{{0}}' is not an integer, so it cannot be used with {nameof(WSizeOfStreamInBytesAttribute)}.");
 
   public void Validate(IBetterSymbol memberSymbol, ITypeInfo typeInfo) {
-    if (memberSymbol.HasAttribute<SkipAttribute>()) {
-      return;
-    }
-
     if (typeInfo.Kind == SchemaTypeKind.INTEGER) {
       return;
     }

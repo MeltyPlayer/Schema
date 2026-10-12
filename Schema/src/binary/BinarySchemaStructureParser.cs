@@ -318,6 +318,10 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
       }
 
       var memberSymbol = valueMember.MemberSymbol;
+      if (memberSymbol.HasAttribute<SkipAttribute>()) {
+        continue;
+      }
+
       var typeInfo = valueMember.MemberType.TypeInfo;
 
       foreach (var validator in ValidatorManager.AllMemberValidators) {
