@@ -12,11 +12,12 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v5
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 11.0.x
         include-prerelease: true
     - name: Restore dependencies
       run: dotnet restore
@@ -31,7 +32,7 @@ jobs:
       with:
         node-version: '14'
     - name: Install 'lcov-result-merger'
-      run: npm i -g lcov-result-merger
+      run: npm i -g lcov-result-merger@5.0.1
     - name: Merge Test Coverage
       run: lcov-result-merger "**/coverage.info" "lcov.info" --legacy-temp-file
 
