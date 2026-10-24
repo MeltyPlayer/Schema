@@ -26,7 +26,7 @@ public static class BinaryStepExtensions {
                   Offset = offset,
                   ValidOffsetChildren = memberSteps,
                   InvalidValidOffsetChildren = [
-                      new ClearMemberBinaryStep { Member = member }
+                      new ClearMemberBinaryStep { Member = valueMember }
                   ]
               }
           ];
@@ -47,7 +47,7 @@ public static class BinaryStepExtensions {
                   Attribute = ifBoolean,
                   TrueChildren = memberSteps,
                   FalseChildren = [
-                      new ClearMemberBinaryStep { Member = member }
+                      new ClearMemberBinaryStep { Member = valueMember }
                   ]
               }
           ];

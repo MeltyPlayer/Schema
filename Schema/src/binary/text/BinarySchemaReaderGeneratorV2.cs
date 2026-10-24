@@ -58,19 +58,7 @@ public class BinarySchemaReaderGeneratorV2 {
               typeSymbol.GetQualifiersAndNameAndGenericParametersFor());
 
           sw.EnterBlock($"public void Read(IBinaryReader {READER})");
-          {
-            var hasLocalPositions = container.LocalPositions;
-            if (hasLocalPositions) { }
-
-            var hasEndianness = container.Endianness != null;
-            if (hasEndianness) {
-              sw.WriteLine(
-                  $"{READER}.PushContainerEndianness({SchemaGeneratorUtil.GetEndiannessName(container.Endianness.Value)});");
-            }
-
-            var steps = container.ToBinarySteps();
-            HandleSteps_(sw, typeSymbol, steps, false);
-          }
+          HandleSteps_(sw, typeSymbol, container.ToBinarySteps(), false);
           sw.ExitBlock();
 
           // TODO: Handle fancier cases here
@@ -139,7 +127,7 @@ public class BinarySchemaReaderGeneratorV2 {
 
               HandleSteps_(sw,
                            sourceSymbol,
-                           atPositionBinarySteps.InvalidValidOffsetChildren,
+                           atPositionBinarySteps.ValidOffsetChildren,
                            true);
 
               sw.WriteLine($"{READER}.Position = tempLocation;");
@@ -173,7 +161,7 @@ public class BinarySchemaReaderGeneratorV2 {
                 HandleSteps_(sw, sourceSymbol, ifBooleanBinarySteps.TrueChildren, inBlock || enteredBlock);
               },
               () => {
-                HandleSteps_(sw, sourceSymbol, ifBooleanBinarySteps.TrueChildren, true);
+                HandleSteps_(sw, sourceSymbol, ifBooleanBinarySteps.FalseChildren, true);
               });
           sw.ExitBlock();
         } else {
@@ -184,7 +172,7 @@ public class BinarySchemaReaderGeneratorV2 {
                 HandleSteps_(sw, sourceSymbol, ifBooleanBinarySteps.TrueChildren, inBlock || enteredBlock);
               },
               () => {
-                HandleSteps_(sw, sourceSymbol, ifBooleanBinarySteps.TrueChildren, true);
+                HandleSteps_(sw, sourceSymbol, ifBooleanBinarySteps.FalseChildren, true);
               });
         }
 
@@ -234,11 +222,12 @@ public class BinarySchemaReaderGeneratorV2 {
               sw.WriteLine($"this.{member.Name} = {defaultValue};");
               break;
             }
-            case IContainerTypeInfo containerTypeInfo: {
-              var defaultValue = containerTypeInfo.TypeSymbol.IsStruct()
-                  ? "default"
-                  : "null";
-              sw.WriteLine($"this.{member.Name} = {defaultValue};");
+            case IContainerTypeInfo: {
+              sw.WriteLine($"this.{member.Name} = default;");
+              break;
+            }
+            case ISequenceTypeInfo: {
+              ResizeArray_(sw, member, "0");
               break;
             }
           }
@@ -279,11 +268,6 @@ public class BinarySchemaReaderGeneratorV2 {
       }
 
       return;
-    }
-
-    if (member.MemberType.TypeInfo.TypeSymbol.IsClass()) {
-      sw.WriteLine(
-          $"this.{member.Name} ??= new {sourceSymbol.GetQualifiedNameFromCurrentSymbol(member.MemberType.TypeSymbol.AsNonNullable())}();");
     }
 
     var memberType = member.MemberType;
@@ -415,8 +399,17 @@ public class BinarySchemaReaderGeneratorV2 {
 
     if (stringType.LengthSourceType == StringLengthSourceType.CONST) {
       var constLength = stringType.ConstLength;
+
+      string readValue; 
+      if (constLength == 0) {
+        readValue = "\"\"";
+      } else {
+        readValue
+            = $"{READER}.{readMethod}({encodingTypeWithComma}{constLength})";
+      }
+
       sw.WriteLine(
-          $"this.{member.Name} = {READER}.{readMethod}({encodingTypeWithComma}{constLength});");
+          $"this.{member.Name} = {readValue};");
       return;
     }
 
