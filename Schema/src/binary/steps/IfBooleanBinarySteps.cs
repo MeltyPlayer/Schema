@@ -4,7 +4,8 @@ using schema.binary.attributes;
 
 namespace schema.binary.steps;
 
-public sealed class IfBooleanBinarySteps : IGroupBinaryStep {
+public sealed class IfBooleanBinarySteps : IBinaryStep {
   public required IIfBooleanAttribute Attribute { get; init; }
-  public required IReadOnlyList<IBinaryStep> Children { get; init; }
+  public required IReadOnlyList<IBinaryStep> TrueChildren { get; init; }
+  public required IReadOnlyList<IBinaryStep> FalseChildren { get; init; }
 }

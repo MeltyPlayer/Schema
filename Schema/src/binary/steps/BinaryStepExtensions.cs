@@ -23,7 +23,11 @@ public static class BinaryStepExtensions {
         if (valueMember.Offset is { } offset) {
           memberSteps = [
               new AtPositionBinarySteps {
-                  Offset = offset, Children = memberSteps
+                  Offset = offset,
+                  ValidOffsetChildren = memberSteps,
+                  InvalidValidOffsetChildren = [
+                      new ClearMemberBinaryStep { Member = member }
+                  ]
               }
           ];
         }
@@ -40,7 +44,11 @@ public static class BinaryStepExtensions {
         if (valueMember.IfBoolean is { } ifBoolean) {
           memberSteps = [
               new IfBooleanBinarySteps {
-                  Attribute = ifBoolean, Children = memberSteps
+                  Attribute = ifBoolean,
+                  TrueChildren = memberSteps,
+                  FalseChildren = [
+                      new ClearMemberBinaryStep { Member = member }
+                  ]
               }
           ];
         }
