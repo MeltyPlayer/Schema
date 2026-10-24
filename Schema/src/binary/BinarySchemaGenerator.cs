@@ -21,7 +21,7 @@ public class BinarySchemaGenerator
   private readonly BinarySchemaContainerParser parser_ = new();
 
   private readonly BinarySchemaReaderGeneratorV2 readerImpl_ = new();
-  private readonly BinarySchemaWriterGenerator writerImpl_ = new();
+  private readonly BinarySchemaWriterGeneratorV2 writerImpl_ = new();
 
   public override bool TryToMap(
       TypeDeclarationSyntax syntax,

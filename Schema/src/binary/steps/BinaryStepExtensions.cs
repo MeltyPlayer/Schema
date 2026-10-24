@@ -45,6 +45,7 @@ public static class BinaryStepExtensions {
           memberSteps = [
               new IfBooleanBinarySteps {
                   Attribute = ifBoolean,
+                  Member = valueMember,
                   TrueChildren = memberSteps,
                   FalseChildren = [
                       new ClearMemberBinaryStep { Member = valueMember }

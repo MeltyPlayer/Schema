@@ -235,7 +235,7 @@ internal static class BinarySchemaTestUtil {
       var actualReader =
           new BinarySchemaReaderGeneratorV2().Generate(structure);
       var actualWriter =
-          new BinarySchemaWriterGenerator().Generate(structure);
+          new BinarySchemaWriterGeneratorV2().Generate(structure);
 
       Assert.AreEqual(expectedReader, actualReader.ReplaceLineEndings());
       Assert.AreEqual(expectedWriter, actualWriter.ReplaceLineEndings());

@@ -447,7 +447,7 @@ public class SchemaWriterGeneratorTests {
     Assert.IsEmpty(structure.Diagnostics);
 
     var actualGenerated =
-        new BinarySchemaWriterGenerator().Generate(structure);
+        new BinarySchemaWriterGeneratorV2().Generate(structure);
     Assert.AreEqual(expectedGenerated, actualGenerated.ReplaceLineEndings());
   }
 }
