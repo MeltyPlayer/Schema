@@ -8,7 +8,7 @@ public class EnumSchemaMemberEvaluator : ISchemaMemberEvaluator {
       IBetterSymbol memberSymbol,
       ITypeInfo typeInfo,
       out ISchemaMember schemaMember) {
-    if (typeInfo is not IEnumTypeInfo enumTypeInfo) {
+    if (!memberSymbol.Symbol.IsEnum(out var underlyingType)) {
       schemaMember = null!;
       return false;
     }
