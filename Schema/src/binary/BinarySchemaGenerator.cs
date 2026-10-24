@@ -20,6 +20,7 @@ public class BinarySchemaGenerator
         IBinarySchemaContainer> {
   private readonly BinarySchemaContainerParser parser_ = new();
 
+  private readonly BinarySchemaOffsetsGenerator offsetsImpl_ = new();
   private readonly BinarySchemaReaderGenerator readerImpl_ = new();
   private readonly BinarySchemaWriterGenerator writerImpl_ = new();
 
@@ -85,16 +86,27 @@ public class BinarySchemaGenerator
   public override IEnumerable<(string fileName, string source)>
       GenerateSourcesForMappedNamedType(IBinarySchemaContainer container) {
     var containerSymbol = container.TypeSymbol;
-    if (containerSymbol.Implements<IBinaryDeserializable>() &&
-        containerSymbol.MemberNames.All(member => member != "Read")) {
+
+    var needsRead = containerSymbol.Implements<IBinaryDeserializable>() &&
+                    containerSymbol.MemberNames.All(member => member != "Read");
+    var needsWrite = containerSymbol.Implements<IBinarySerializable>() &&
+                     containerSymbol.MemberNames.All(member => member != "Write");
+
+    if (needsRead || needsWrite) {
+      var offetsCode = this.offsetsImpl_.Generate(container);
+      yield return (
+          $"{containerSymbol.GetUniqueNameForGenerator()}_offsets.g",
+          offetsCode);
+    }
+
+    if (needsRead) {
       var readerCode = this.readerImpl_.Generate(container);
       yield return (
           $"{containerSymbol.GetUniqueNameForGenerator()}_reader.g",
           readerCode);
     }
 
-    if (containerSymbol.Implements<IBinarySerializable>() &&
-        containerSymbol.MemberNames.All(member => member != "Write")) {
+    if (needsWrite) {
       var writerCode = this.writerImpl_.Generate(container);
       yield return (
           $"{containerSymbol.GetUniqueNameForGenerator()}_writer.g",

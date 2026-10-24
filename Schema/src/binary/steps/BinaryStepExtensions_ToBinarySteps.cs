@@ -2,7 +2,7 @@
 
 namespace schema.binary.steps;
 
-public static class BinaryStepExtensions {
+public static partial class BinaryStepExtensions {
   public static IReadOnlyList<IBinaryStep> ToBinarySteps(
       this IBinarySchemaContainer container) {
     var steps = new List<IBinaryStep>();

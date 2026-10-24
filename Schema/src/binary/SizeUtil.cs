@@ -1,5 +1,8 @@
 ﻿using System;
 
+using schema.binary.attributes;
+using schema.binary.parser;
+
 namespace schema.binary;
 
 public static class SizeUtil {
@@ -10,18 +13,38 @@ public static class SizeUtil {
           size = GetSize(primitiveMemberType.AltFormat);
           return true;
         }
-
         return TryGetSize(primitiveMemberType.PrimitiveType, out size);
       }
       case IKnownStructMemberType knownStructMemberType: {
         size = GetSize(knownStructMemberType.KnownStruct);
         return true;
       }
-      default: {
-        size = -1;
-        return false;
+      case IStringType stringType: {
+        if (stringType.LengthSourceType is StringLengthSourceType.CONST &&
+            TryGetEncodingCharLength(
+                stringType.EncodingType,
+                out var charSize)) {
+          size = stringType.ConstLength * charSize;
+          return true;
+        }
+
+        break;
+      }
+      case ISequenceMemberType sequenceType: {
+        if (sequenceType.LengthSourceType is SequenceLengthSourceType
+                .CONST_LENGTH) {
+          if (TryGetSizeOfType(sequenceType.ElementType, out var elementSize)) {
+            size = (int) sequenceType.ConstLength * elementSize;
+            return true;
+          }
+        }
+
+        break;
       }
     }
+
+    size = -1;
+    return false;
   }
 
   public static int GetSize(SchemaIntegerType type) => type switch {
@@ -69,6 +92,10 @@ public static class SizeUtil {
 
   public static bool TryGetSize(SchemaPrimitiveType primitiveType,
                                 out int size) {
+    if (primitiveType is SchemaPrimitiveType.CHAR) {
+      return TryGetEncodingCharLength(StringEncodingType.ASCII, out size);
+    }
+
     var numberType = primitiveType.AsNumberType();
     if (numberType == SchemaNumberType.UNDEFINED) {
       size = -1;
@@ -77,5 +104,17 @@ public static class SizeUtil {
 
     size = GetSize(numberType);
     return true;
+  }
+
+  public static bool TryGetEncodingCharLength(
+      StringEncodingType encodingType,
+      out int charSize) {
+    if (encodingType is StringEncodingType.ASCII) {
+      charSize = 1;
+      return true;
+    }
+
+    charSize = default;
+    return false;
   }
 }

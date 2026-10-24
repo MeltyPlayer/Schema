@@ -214,6 +214,7 @@ internal static class BinarySchemaTestUtil {
     var structure = BinarySchemaTestUtil.ParseFirst(src);
     Assert.IsEmpty(structure.Diagnostics);
 
+    var actualOffsets = new BinarySchemaOffsetsGenerator().Generate(structure);
     var actualReader = new BinarySchemaReaderGenerator().Generate(structure);
     var actualWriter = new BinarySchemaWriterGenerator().Generate(structure);
 
