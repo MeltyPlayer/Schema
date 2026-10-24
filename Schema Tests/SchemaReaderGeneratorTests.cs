@@ -368,7 +368,7 @@ public class SchemaReaderGeneratorTests {
     Assert.IsEmpty(structure.Diagnostics);
 
     var actualGenerated =
-        new BinarySchemaReaderGeneratorV2().Generate(structure);
+        new BinarySchemaReaderGenerator().Generate(structure);
     Assert.AreEqual(expectedGenerated, actualGenerated.ReplaceLineEndings());
   }
 }

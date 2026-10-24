@@ -198,8 +198,8 @@ internal class AlignStartGeneratorTests {
         
         public partial class AlignWrapper {
           public void Write(IBinaryWriter bw) {
-            bw.WriteUInt32((uint) this.Field.Length);
             bw.Align(2);
+            bw.WriteUInt32((uint) this.Field.Length);
             bw.WriteInt32s(this.Field);
           }
         }

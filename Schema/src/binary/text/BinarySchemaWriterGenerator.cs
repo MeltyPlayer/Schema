@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis;
 using schema.binary.attributes;
 using schema.binary.dependencies;
 using schema.binary.parser;
+using schema.binary.steps;
 using schema.util.asserts;
 using schema.util.symbols;
 using schema.util.text;
@@ -59,36 +60,7 @@ public class BinarySchemaWriterGenerator {
               typeSymbol.GetQualifiersAndNameAndGenericParametersFor());
 
           sw.EnterBlock($"public void Write(IBinaryWriter {WRITER})");
-          {
-            var hasLocalPositions = container.LocalPositions;
-            if (hasLocalPositions) {
-              sw.WriteLine($"{WRITER}.PushLocalSpace();");
-            }
-
-            var hasEndianness = container.Endianness != null;
-            if (hasEndianness) {
-              sw.WriteLine(
-                  $"{WRITER}.PushContainerEndianness({SchemaGeneratorUtil.GetEndiannessName(container.Endianness.Value)});");
-            }
-
-            foreach (var member in container.Members
-                                            .OfType<ISchemaValueMember>()) {
-              BinarySchemaWriterGenerator.WriteValueMember_(
-                  sw,
-                  typeSymbol,
-                  member);
-            }
-
-            if (hasEndianness) {
-              sw.WriteLine($"{WRITER}.PopEndianness();");
-            }
-
-            if (hasLocalPositions) {
-              sw.WriteLine($"{WRITER}.PopLocalSpace();");
-            }
-
-            AlignEndOfContainer_(sw, container);
-          }
+          HandleSteps_(sw, container.ToBinarySteps());
           sw.ExitBlock();
 
           // TODO: Handle fancier cases here
@@ -101,9 +73,104 @@ public class BinarySchemaWriterGenerator {
     return generatedCode;
   }
 
+    private static void HandleSteps_(
+      ISourceWriter sw,
+      IEnumerable<IBinaryStep> steps) {
+    foreach (var step in steps) {
+      HandleStep_(sw, step);
+    }
+  }
+
+  private static void HandleStep_(
+      ISourceWriter sw,
+      IBinaryStep step) {
+    switch (step) {
+      case AlignStartBinaryStep alignStartBinaryStep: {
+        var alignStart = alignStartBinaryStep.Attribute;
+        var valueName = alignStart.Method switch {
+            AlignSourceType.CONST        => $"{alignStart.ConstAlign}",
+            AlignSourceType.OTHER_MEMBER => $"{alignStart.OtherMember.Name}"
+        };
+        sw.WriteLine($"{WRITER}.Align({valueName});");
+        break;
+      }
+      case AlignEndBinaryStep alignEndBinaryStep: {
+        var alignEnd = alignEndBinaryStep.Attribute;
+        var valueName = alignEnd.Method switch {
+            AlignSourceType.CONST => $"{alignEnd.ConstAlign}",
+        };
+        sw.WriteLine($"{WRITER}.Align({valueName});");
+        break;
+      }
+      case AtPositionBinarySteps atPositionBinarySteps: {
+        // (We ignore the at position logic at write time.)
+        HandleSteps_(
+            sw,
+            atPositionBinarySteps.ValidOffsetChildren);
+        break;
+      }
+      case IfBooleanBinarySteps ifBooleanBinarySteps: {
+        var ifBoolean = ifBooleanBinarySteps.Attribute;
+        var member = ifBooleanBinarySteps.Member;
+        var shouldSkipWhenNull = member.MemberType.TypeInfo.IsNullable &&
+                                 member.MemberType is not IContainerMemberType;
+        if (ifBoolean.SourceType == IfBooleanSourceType.IMMEDIATE_VALUE) {
+          sw.WriteLine(
+              $"{GetWritePrimitiveText_(SchemaPrimitiveType.BOOLEAN, ifBoolean.ImmediateBooleanType.AsNumberType(), $"this.{member.Name} != null")};");
+        }
+
+        if (shouldSkipWhenNull) {
+          sw.EnterBlock($"if (this.{member.Name} != null)");
+        }
+
+        HandleSteps_(sw, ifBooleanBinarySteps.TrueChildren);
+
+        if (shouldSkipWhenNull) {
+          sw.ExitBlock();
+        }
+
+        break;
+      }
+      case LocalSpaceBinaryStep localSpaceBinaryStep: {
+        sw.WriteLine($"{WRITER}.PushLocalSpace();");
+        HandleSteps_(sw, localSpaceBinaryStep.Children);
+        sw.WriteLine($"{WRITER}.PopLocalSpace();");
+        break;
+      }
+      case ContainerEndiannessBinaryStep containerEndiannessBinaryStep: {
+        var endianness = containerEndiannessBinaryStep.Endianness;
+        sw.WriteLine(
+            $"{WRITER}.PushContainerEndianness({SchemaGeneratorUtil.GetEndiannessName(endianness)});");
+        HandleSteps_(sw,
+                     containerEndiannessBinaryStep.Children);
+        sw.WriteLine($"{WRITER}.PopEndianness();");
+        break;
+      }
+      case MemberEndiannessBinaryStep memberEndiannessBinaryStep: {
+        var endianness = memberEndiannessBinaryStep.Endianness;
+        sw.WriteLine(
+            $"{WRITER}.PushMemberEndianness({SchemaGeneratorUtil.GetEndiannessName(endianness)});");
+        HandleSteps_(sw,
+                     memberEndiannessBinaryStep.Children);
+        sw.WriteLine($"{WRITER}.PopEndianness();");
+        break;
+      }
+      case MemberBinaryStep memberBinaryStep: {
+        if (memberBinaryStep.Member is ISchemaValueMember valueMmeber) {
+          WriteValueMember_(sw, valueMmeber);
+        }
+        break;
+      }
+      case ClearMemberBinaryStep: {
+        // (Skip.)
+        break;
+      }
+      default: throw new ArgumentOutOfRangeException(nameof(step));
+    }
+  }
+
   private static void WriteValueMember_(
       ISourceWriter sw,
-      ITypeSymbol sourceSymbol,
       ISchemaValueMember member) {
     if (member.IsSkipped) {
       return;
@@ -113,48 +180,43 @@ public class BinarySchemaWriterGenerator {
       return;
     }
 
-    var shouldSkipWhenNull = member.MemberType.TypeInfo.IsNullable &&
-                             member.MemberType is not IContainerMemberType;
-    var ifBoolean = member.IfBoolean;
-    if (ifBoolean?.SourceType == IfBooleanSourceType.IMMEDIATE_VALUE) {
-      sw.WriteLine(
-          $"{GetWritePrimitiveText_(SchemaPrimitiveType.BOOLEAN, ifBoolean.ImmediateBooleanType.AsNumberType(), $"this.{member.Name} != null")};");
-    }
-
-    if (shouldSkipWhenNull) {
-      sw.EnterBlock($"if (this.{member.Name} != null)");
-    }
-
     var memberType = member.MemberType;
     if (memberType is IGenericMemberType genericMemberType) {
       memberType = genericMemberType.ConstraintType;
     }
 
+    var shouldSkipWhenNull = member.MemberType.TypeInfo.IsNullable &&
+                             member.MemberType is not IContainerMemberType &&
+                             member.IfBoolean == null;
+    if (shouldSkipWhenNull) {
+      sw.EnterBlock($"if (this.{member.Name} != null)");
+    }
+
     switch (memberType) {
       case IPrimitiveMemberType: {
-        BinarySchemaWriterGenerator.WritePrimitive_(sw, member);
+        WritePrimitive_(sw, member);
         break;
       }
       case IStringType: {
-        BinarySchemaWriterGenerator.WriteString_(sw, member);
+        WriteString_(sw, member);
         break;
       }
       case IContainerMemberType containerMemberType: {
-        BinarySchemaWriterGenerator.WriteContainer_(
+        WriteContainer_(
             sw,
             containerMemberType,
             member);
         break;
       }
       case IKnownStructMemberType knownStructMemberType: {
-        BinarySchemaWriterGenerator.WriteKnownStruct_(
+        WriteKnownStruct_(
             sw,
             knownStructMemberType,
             member);
         break;
       }
       case ISequenceMemberType: {
-        BinarySchemaWriterGenerator.WriteArray_(sw, member);
+        WriteArray_(sw, member);
         break;
       }
       default:
@@ -167,47 +229,10 @@ public class BinarySchemaWriterGenerator {
     }
   }
 
-  private static void AlignStartOfMember_(
-      ISourceWriter sw,
-      ISchemaValueMember member) {
-    var alignStart = member.AlignStart;
-    if (alignStart == null) {
-      return;
-    }
-
-    var valueName = alignStart.Method switch {
-        AlignSourceType.CONST        => $"{alignStart.ConstAlign}",
-        AlignSourceType.OTHER_MEMBER => $"{alignStart.OtherMember.Name}"
-    };
-    sw.WriteLine($"{WRITER}.Align({valueName});");
-  }
-
-  private static void AlignEndOfContainer_(
-      ISourceWriter sw,
-      IBinarySchemaContainer container) {
-    var alignEnd = container.AlignEnd;
-    if (alignEnd == null) {
-      return;
-    }
-
-    var valueName = alignEnd.Method switch {
-        AlignSourceType.CONST => $"{alignEnd.ConstAlign}",
-    };
-    sw.WriteLine($"{WRITER}.Align({valueName});");
-  }
-
-  private static void HandleMemberEndiannessAndTracking_(
+  private static void HandleMemberTracking_(
       ISourceWriter sw,
       ISchemaValueMember member,
       Action handler) {
-    BinarySchemaWriterGenerator.AlignStartOfMember_(sw, member);
-
-    var hasEndianness = member.Endianness != null;
-    if (hasEndianness) {
-      sw.WriteLine(
-          $"{WRITER}.PushMemberEndianness({SchemaGeneratorUtil.GetEndiannessName(member.Endianness.Value)});");
-    }
-
     var shouldTrackStartAndEnd = member.TrackStartAndEnd;
     if (shouldTrackStartAndEnd) {
       sw.WriteLine($"{WRITER}.MarkStartOfMember(\"{member.Name}\");");
@@ -217,10 +242,6 @@ public class BinarySchemaWriterGenerator {
 
     if (shouldTrackStartAndEnd) {
       sw.WriteLine($"{WRITER}.MarkEndOfMember();");
-    }
-
-    if (hasEndianness) {
-      sw.WriteLine($"{WRITER}.PopEndianness();");
     }
   }
 
@@ -237,7 +258,7 @@ public class BinarySchemaWriterGenerator {
     var altFormat = primitiveMemberType.AltFormat;
     var primitiveType = primitiveMemberType.PrimitiveType;
 
-    HandleMemberEndiannessAndTracking_(
+    HandleMemberTracking_(
         sw,
         member,
         () => {
@@ -360,7 +381,7 @@ public class BinarySchemaWriterGenerator {
   private static void WriteString_(
       ISourceWriter sw,
       ISchemaValueMember member) {
-    HandleMemberEndiannessAndTracking_(
+    HandleMemberTracking_(
         sw,
         member,
         () => {
@@ -418,7 +439,7 @@ public class BinarySchemaWriterGenerator {
       sw.WriteLine($"this.{memberName}.Parent = this;");
     }
 
-    HandleMemberEndiannessAndTracking_(
+    HandleMemberTracking_(
         sw,
         member,
         () => {
@@ -434,7 +455,7 @@ public class BinarySchemaWriterGenerator {
       ISourceWriter sw,
       IKnownStructMemberType knownStructMemberType,
       ISchemaValueMember member) {
-    HandleMemberEndiannessAndTracking_(
+    HandleMemberTracking_(
         sw,
         member,
         () => {
@@ -470,12 +491,12 @@ public class BinarySchemaWriterGenerator {
       }
     }
 
-    BinarySchemaWriterGenerator.WriteIntoArray_(sw, member);
+    WriteIntoArray_(sw, member);
   }
 
   private static void WriteIntoArray_(ISourceWriter sw,
                                       ISchemaValueMember member) {
-    HandleMemberEndiannessAndTracking_(
+    HandleMemberTracking_(
         sw,
         member,
         () => {
