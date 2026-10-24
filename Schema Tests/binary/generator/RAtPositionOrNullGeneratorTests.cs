@@ -341,7 +341,7 @@ internal class RAtPositionOrNullGeneratorTests {
               br.Position = tempLocation;
             }
             else {
-              this.Field = default;
+              this.Field = null;
             }
           }
         }

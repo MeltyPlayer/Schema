@@ -180,11 +180,11 @@ internal class AlignStartGeneratorTests {
         
         public partial class AlignWrapper {
           public void Read(IBinaryReader br) {
+            br.Align(2);
             {
               var c = br.ReadUInt32();
               this.Field = SequencesUtil.CloneAndResizeSequence(this.Field, (int) c);
             }
-            br.Align(2);
             br.ReadInt32s(this.Field);
           }
         }

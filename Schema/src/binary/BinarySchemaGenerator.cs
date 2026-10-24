@@ -20,7 +20,7 @@ public class BinarySchemaGenerator
         IBinarySchemaContainer> {
   private readonly BinarySchemaContainerParser parser_ = new();
 
-  private readonly BinarySchemaReaderGenerator readerImpl_ = new();
+  private readonly BinarySchemaReaderGeneratorV2 readerImpl_ = new();
   private readonly BinarySchemaWriterGenerator writerImpl_ = new();
 
   public override bool TryToMap(

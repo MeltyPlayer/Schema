@@ -217,6 +217,10 @@ public class BinarySchemaReaderGeneratorV2 {
           sw.WriteLine($"this.{member.Name} = null;");
         } else {
           switch (member.MemberType.TypeInfo) {
+            case IPrimitiveTypeInfo: {
+              sw.WriteLine($"this.{member.Name} = default;");
+              break;
+            }
             case IStringTypeInfo stringTypeInfo: {
               var defaultValue = stringTypeInfo.IsNullable ? "null" : "\"\"";
               sw.WriteLine($"this.{member.Name} = {defaultValue};");
@@ -499,7 +503,15 @@ public class BinarySchemaReaderGeneratorV2 {
       ISchemaValueMember member) {
     var arrayType =
         Asserts.CastNonnull(member.MemberType as ISequenceMemberType);
-    var sequenceType = arrayType.SequenceTypeInfo.SequenceType;
+
+    var sequenceTypeInfo = arrayType.SequenceTypeInfo;
+    var sequenceType = sequenceTypeInfo.SequenceType;
+
+    if (sequenceTypeInfo is { IsNullable: true, SequenceType: not SequenceType.MUTABLE_ARRAY }) {
+      sw.WriteLine(
+          $"this.{member.Name} = new {sourceSymbol.GetQualifiedNameFromCurrentSymbol(member.MemberType.TypeSymbol.AsNonNullable())}();");
+    }
+
     // TODO: Not valid for sequences (yet?)
     if (arrayType.LengthSourceType ==
         SequenceLengthSourceType.UNTIL_END_OF_STREAM) {

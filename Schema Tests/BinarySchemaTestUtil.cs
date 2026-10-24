@@ -214,7 +214,7 @@ internal static class BinarySchemaTestUtil {
     var structure = BinarySchemaTestUtil.ParseFirst(src);
     Assert.IsEmpty(structure.Diagnostics);
 
-    var actualReader = new BinarySchemaReaderGenerator().Generate(structure);
+    var actualReader = new BinarySchemaReaderGeneratorV2().Generate(structure);
     var actualWriter = new BinarySchemaWriterGenerator().Generate(structure);
 
     Assert.AreEqual(expectedReader, actualReader.ReplaceLineEndings());
@@ -233,7 +233,7 @@ internal static class BinarySchemaTestUtil {
       Assert.IsEmpty(structure.Diagnostics);
 
       var actualReader =
-          new BinarySchemaReaderGenerator().Generate(structure);
+          new BinarySchemaReaderGeneratorV2().Generate(structure);
       var actualWriter =
           new BinarySchemaWriterGenerator().Generate(structure);
 
