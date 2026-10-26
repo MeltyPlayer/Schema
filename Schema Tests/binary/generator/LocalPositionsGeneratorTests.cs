@@ -21,6 +21,17 @@ internal class LocalPositionsGeneratorTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x0<br/>
+        ///<br/>
+        ///   Offsets: (none)<br/>
+        /// </remarks>
+        public partial class LocalPositionsWrapper;
+
+        """,
+        """
         using System;
         using schema.binary;
 

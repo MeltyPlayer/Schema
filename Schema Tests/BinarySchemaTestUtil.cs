@@ -208,6 +208,12 @@ internal static class BinarySchemaTestUtil {
 
   public static void AssertGenerated(string src,
                                      string expectedReader,
+                                     string expectedWriter)
+    => AssertGenerated(src, "", expectedReader, expectedWriter);
+
+  public static void AssertGenerated(string src,
+                                     string expectedOffsets,
+                                     string expectedReader,
                                      string expectedWriter) {
     ValidatorManager.EnsureInitialized();
 
@@ -218,8 +224,27 @@ internal static class BinarySchemaTestUtil {
     var actualReader = new BinarySchemaReaderGenerator().Generate(structure);
     var actualWriter = new BinarySchemaWriterGenerator().Generate(structure);
 
-    Assert.AreEqual(expectedReader, actualReader.ReplaceLineEndings());
-    Assert.AreEqual(expectedWriter, actualWriter.ReplaceLineEndings());
+    AssertStringsEqual_(expectedOffsets, actualOffsets.ReplaceLineEndings());
+    AssertStringsEqual_(expectedReader, actualReader.ReplaceLineEndings());
+    AssertStringsEqual_(expectedWriter, actualWriter.ReplaceLineEndings());
+  }
+
+  private static void AssertStringsEqual_(string expected, string actual) {
+    if (expected != actual) {
+      Assert.Fail($""""
+                   Unexpected strings found.
+
+                   Got:
+                   """
+                   {actual}
+                   """
+
+                   Expected:
+                   """
+                   {expected}
+                   """
+                   """");
+    }
   }
 
   public static void AssertGeneratedForAll(

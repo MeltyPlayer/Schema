@@ -21,6 +21,18 @@ internal class RSequenceUntilEndOfStreamAttributeTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
+        """,
+        """
         using System;
         using System.Collections.Generic;
         using schema.binary;
@@ -66,6 +78,18 @@ internal class RSequenceUntilEndOfStreamAttributeTests {
           [RSequenceUntilEndOfStream]
           public List<byte> Field { get; } = new();
         }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
         """,
         """
         using System;
@@ -119,6 +143,18 @@ internal class RSequenceUntilEndOfStreamAttributeTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
+        """,
+        """
         using System;
         using System.Collections.Generic;
         using schema.binary;
@@ -169,6 +205,18 @@ internal class RSequenceUntilEndOfStreamAttributeTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
+        """,
+        """
         using System;
         using System.Collections.Generic;
         using schema.binary;
@@ -214,6 +262,18 @@ internal class RSequenceUntilEndOfStreamAttributeTests {
           [RSequenceUntilEndOfStream]
           public List<int> Field { get; } = new();
         }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
         """,
         """
         using System;
@@ -325,6 +385,18 @@ internal class RSequenceUntilEndOfStreamAttributeTests {
           [RSequenceUntilEndOfStream]
           public List<A> Field { get; } = new();
         }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
         """,
         """
         using System;
@@ -440,6 +512,18 @@ internal class RSequenceUntilEndOfStreamAttributeTests {
           [RSequenceUntilEndOfStream]
           public List<A> Field { get; } = new();
          }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
         """,
         """
         using System;

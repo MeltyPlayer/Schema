@@ -23,6 +23,18 @@ internal class RAtPositionGeneratorTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x4<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Offset: 0x0<br/>
+        /// </remarks>
+        public partial class OffsetWrapper;
+
+        """,
+        """
         using System;
         using schema.binary;
 
@@ -78,6 +90,18 @@ internal class RAtPositionGeneratorTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x4<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Offset: 0x0<br/>
+        /// </remarks>
+        public partial class OffsetWrapper;
+
+        """,
+        """
         using System;
         using schema.binary;
 
@@ -131,6 +155,18 @@ internal class RAtPositionGeneratorTests {
           [RAtPosition(nameof(Offset))]
           public A Struct { get; set; }
         }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x4<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Offset: 0x0<br/>
+        /// </remarks>
+        public partial class OffsetWrapper;
+
         """,
         """
         using System;
@@ -191,6 +227,18 @@ internal class RAtPositionGeneratorTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x4<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Offset: 0x0<br/>
+        /// </remarks>
+        public partial class OffsetWrapper;
+
+        """,
+        """
         using System;
         using schema.binary;
         using schema.util.sequences;
@@ -245,6 +293,18 @@ internal class RAtPositionGeneratorTests {
           [SequenceLengthSource(SchemaIntegerType.UINT32)]
           public byte[] ImmediateArray { get; set; }
         }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x4<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Offset: 0x0<br/>
+        /// </remarks>
+        public partial class OffsetWrapper;
+
         """,
         """
         using System;
@@ -307,6 +367,18 @@ internal class RAtPositionGeneratorTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x4<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Offset: 0x0<br/>
+        /// </remarks>
+        public partial class OffsetWrapper;
+
+        """,
+        """
         using System;
         using System.Collections.Generic;
         using schema.binary;
@@ -365,6 +437,17 @@ internal class RAtPositionGeneratorTests {
         
           public OffsetWrapper Child { get; set; }
         }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x0<br/>
+        ///<br/>
+        ///   Offsets: (none)<br/>
+        /// </remarks>
+        public partial class OffsetWrapper;
+
         """,
         """
         using System;

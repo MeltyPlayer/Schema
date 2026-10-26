@@ -24,6 +24,19 @@ internal class FixedPointTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0xC<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - SingleField: 0x0<br/>
+        ///     - DoubleField: 0x4<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
+        """,
+        """
         using System;
         using schema.binary;
         using schema.util;
@@ -72,6 +85,19 @@ internal class FixedPointTests {
           [FixedPoint(1, 19, 12)]
           public double DoubleField { get; }
         }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0xC<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - SingleField: 0x0<br/>
+        ///     - DoubleField: 0x4<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
         """,
         """
         using System;

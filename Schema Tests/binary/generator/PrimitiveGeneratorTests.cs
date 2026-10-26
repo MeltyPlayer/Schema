@@ -4,10 +4,10 @@ namespace schema.binary.text;
 
 internal class PrimitiveGeneratorTests {
   [Test]
-  [TestCase("byte", "Byte")]
-  [TestCase("sbyte", "SByte")]
-  [TestCase("short", "Int16")]
-  public void TestBasicPrimitive(string primitiveType, string primitiveLabel) {
+  [TestCase("byte", "Byte", 1)]
+  [TestCase("sbyte", "SByte", 1)]
+  [TestCase("short", "Int16", 2)]
+  public void TestBasicPrimitive(string primitiveType, string primitiveLabel, int size) {
     BinarySchemaTestUtil.AssertGenerated(
         $$"""
           using schema.binary;
@@ -19,6 +19,19 @@ internal class PrimitiveGeneratorTests {
             public {{primitiveType}} Field { get; set; }
             public {{primitiveType}} ReadonlyField { get; }
           }
+          """,
+          $"""
+          namespace foo.bar;
+
+          /// <remarks>
+          ///   Size: 0x{2*size:X}<br/>
+          ///<br/>
+          ///   Offsets:<br/>
+          ///     - Field: 0x0<br/>
+          ///     - ReadonlyField: 0x{size:X}<br/>
+          /// </remarks>
+          public partial class Wrapper;
+
           """,
         $$"""
           using System;
@@ -51,10 +64,11 @@ internal class PrimitiveGeneratorTests {
   }
 
   [Test]
-  [TestCase("int", "Int24", false)]
-  [TestCase("float", "Half", true)]
+  [TestCase("int", "Int24", 3, false)]
+  [TestCase("float", "Half", 2, true)]
   public void TestSpecialPrimitive(string primitiveType,
                                    string primitiveLabel,
+                                   int size,
                                    bool expectCast) {
     var schemaNumberTypeText = $"SchemaNumberType.{primitiveLabel.ToUpper()}";
     var castText = expectCast ? $"({primitiveType}) " : "";
@@ -77,6 +91,20 @@ internal class PrimitiveGeneratorTests {
             [NumberFormat({{schemaNumberTypeText}})]
             public readonly {{primitiveType}}[] ArrayField = new {{primitiveType}}[5];
           }
+          """,
+          $"""
+          namespace foo.bar;
+
+          /// <remarks>
+          ///   Size: (indeterminate)<br/>
+          ///<br/>
+          ///   Offsets:<br/>
+          ///     - Field: 0x0<br/>
+          ///     - ReadonlyField: 0x{size:X}<br/>
+          ///     - ArrayField: 0x{2*size:X}<br/>
+          /// </remarks>
+          public partial class Wrapper;
+
           """,
         $$"""
           using System;

@@ -22,6 +22,19 @@ internal class CharGeneratorTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x2<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        ///     - ReadonlyField: 0x1<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
+        """,
+        """
         using System;
         using schema.binary;
 
@@ -67,6 +80,18 @@ internal class CharGeneratorTests {
           [SequenceLengthSource(4)]
           public char[] Field { get; set; }
         }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x4<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
         """,
         """
         using System;

@@ -21,6 +21,19 @@ internal class AlignEndGeneratorTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        ///     - Align: 0x1<br/>
+        /// </remarks>
+        public partial class AlignWrapper;
+
+        """,
+        """
         using System;
         using schema.binary;
 
@@ -67,6 +80,20 @@ internal class AlignEndGeneratorTests {
           [AlignStart(nameof(Value))]
           public byte Field { get; set; }
         }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Value: 0x0<br/>
+        ///     - Align: 0x4<br/>
+        ///     - Field: (indeterminate)<br/>
+        /// </remarks>
+        public partial class AlignWrapper;
+
         """,
         """
         using System;
@@ -123,6 +150,20 @@ internal class AlignEndGeneratorTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Wrapper: 0x0<br/>
+        ///     - Align: 0x4<br/>
+        ///     - Field: (indeterminate)<br/>
+        /// </remarks>
+        public partial class AlignWrapper;
+
+        """,
+        """
         using System;
         using schema.binary;
 
@@ -170,6 +211,20 @@ internal class AlignEndGeneratorTests {
           [SequenceLengthSource(SchemaIntegerType.UINT32)]
           public int[] Field { get; set; }
         }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Align: 0x0<br/>
+        ///     - Field.Length: (indeterminate)<br/>
+        ///     - Field: (indeterminate)<br/>
+        /// </remarks>
+        public partial class AlignWrapper;
+
         """,
         """
         using System;

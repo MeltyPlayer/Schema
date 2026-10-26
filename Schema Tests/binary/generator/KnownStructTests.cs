@@ -20,9 +20,10 @@ internal class KnownStructTests {
       = KNOWN_STRUCT_AND_LENGTH_TEST_CASES.Select(e => e.Item1).ToArray();
 
   [Test]
-  [TestCaseSource(nameof(KNOWN_STRUCT_TEST_CASES))]
-  public void TestSystemNumericsField(string knownStructName)
-    => BinarySchemaTestUtil.AssertGenerated(
+  [TestCaseSource(nameof(KNOWN_STRUCT_AND_LENGTH_TEST_CASES))]
+  public void TestSystemNumericsField((string, int) knownStructNameAndSize) {
+    var (knownStructName, knownStructSize) = knownStructNameAndSize;
+    BinarySchemaTestUtil.AssertGenerated(
         $$"""
           using System.Numerics;
           using schema.binary;
@@ -35,6 +36,19 @@ internal class KnownStructTests {
             public {{knownStructName}} PrivateField { get; private set; }
           }
           """,
+        $"""
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x{2 * knownStructSize:X}<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        ///     - PrivateField: 0x{knownStructSize:X}<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
+        """,
         $$"""
           using System;
           using schema.binary;
@@ -63,11 +77,12 @@ internal class KnownStructTests {
           }
 
           """);
+  }
 
   [Test]
   [TestCaseSource(nameof(KNOWN_STRUCT_TEST_CASES))]
-  public void TestSystemNumericsNullableField(string knownStructName)
-    => BinarySchemaTestUtil.AssertGenerated(
+  public void TestSystemNumericsNullableField(string knownStructName) {
+    BinarySchemaTestUtil.AssertGenerated(
         $$"""
           using System.Numerics;
           using schema.binary;
@@ -81,6 +96,19 @@ internal class KnownStructTests {
             public {{knownStructName}}? Field { get; set; }
           }
           """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - IfBoolean (Immediate): 0x0<br/>
+        ///     - Field: 0x1<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
+        """,
         $$"""
           using System;
           using schema.binary;
@@ -118,6 +146,7 @@ internal class KnownStructTests {
           }
 
           """);
+  }
 
   [Test]
   [TestCaseSource(nameof(KNOWN_STRUCT_TEST_CASES))]
@@ -134,6 +163,18 @@ internal class KnownStructTests {
             public {{knownStructName}}[] Field { get; }
           }
           """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
+        """,
         $$"""
           using System;
           using schema.binary;
@@ -186,6 +227,18 @@ internal class KnownStructTests {
             public {{knownStructName}}[] Field { get; set; }
           }
           """,
+          """
+          namespace foo.bar;
+
+          /// <remarks>
+          ///   Size: (indeterminate)<br/>
+          ///<br/>
+          ///   Offsets:<br/>
+          ///     - Field: 0x0<br/>
+          /// </remarks>
+          public partial class Wrapper;
+
+          """,
         $$"""
           using System;
           using System.Collections.Generic;
@@ -216,9 +269,10 @@ internal class KnownStructTests {
   }
 
   [Test]
-  [TestCaseSource(nameof(KNOWN_STRUCT_TEST_CASES))]
-  public void TestSystemNumericsList(string knownStructName)
-    => BinarySchemaTestUtil.AssertGenerated(
+  [TestCaseSource(nameof(KNOWN_STRUCT_AND_LENGTH_TEST_CASES))]
+  public void TestSystemNumericsList((string, int) knownStructNameAndSize) {
+    var (knownStructName, knownStructSize) = knownStructNameAndSize;
+    BinarySchemaTestUtil.AssertGenerated(
         $$"""
           using System.Collections.Generic;
           using System.Numerics;
@@ -232,6 +286,18 @@ internal class KnownStructTests {
             [SequenceLengthSource(10)]
             public List<{{knownStructName}}> Field { get; set; }
           }
+          """,
+          $"""
+          namespace foo.bar;
+
+          /// <remarks>
+          ///   Size: 0x{10*knownStructSize:X}<br/>
+          ///<br/>
+          ///   Offsets:<br/>
+          ///     - Field: 0x0<br/>
+          /// </remarks>
+          public partial class Wrapper;
+
           """,
         $$"""
           using System;
@@ -261,4 +327,5 @@ internal class KnownStructTests {
           }
 
           """);
+  }
 }

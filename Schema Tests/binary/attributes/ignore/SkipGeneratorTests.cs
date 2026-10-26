@@ -21,6 +21,17 @@ internal class SkipGeneratorTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x0<br/>
+        ///<br/>
+        ///   Offsets: (none)<br/>
+        /// </remarks>
+        public partial class SkipWrapper;
+
+        """,
+        """
         using System;
         using schema.binary;
 
@@ -61,6 +72,17 @@ internal class SkipGeneratorTests {
           [Skip]
           public byte Field => 0;
         }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x0<br/>
+        ///<br/>
+        ///   Offsets: (none)<br/>
+        /// </remarks>
+        public partial class SkipWrapper;
+
         """,
         """
         using System;
@@ -107,6 +129,17 @@ internal class SkipGeneratorTests {
           [Skip]
           public byte Field { get; set; }
         }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x0<br/>
+        ///<br/>
+        ///   Offsets: (none)<br/>
+        /// </remarks>
+        public partial class SkipWrapper;
+
         """,
         """
         using System;
