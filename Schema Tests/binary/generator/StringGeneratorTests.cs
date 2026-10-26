@@ -27,6 +27,18 @@ internal class StringGeneratorTests {
             public string Field { get; set; }
           }
           """,
+          """
+          namespace foo.bar;
+
+          /// <remarks>
+          ///   Size: (indeterminate)<br/>
+          ///<br/>
+          ///   Offsets:<br/>
+          ///     - Field: 0x0<br/>
+          /// </remarks>
+          public partial class Wrapper;
+
+          """,
         $$"""
           using System;
           using schema.binary;

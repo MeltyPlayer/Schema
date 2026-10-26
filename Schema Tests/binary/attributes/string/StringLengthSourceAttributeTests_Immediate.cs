@@ -21,6 +21,19 @@ internal partial class StringLengthSourceAttributeTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field.Length: 0x0<br/>
+        ///     - Field: 0x4<br/>
+        /// </remarks>
+        public partial class ImmediateLengthWrapper;
+
+        """,
+        """
         using System;
         using schema.binary;
 
@@ -67,6 +80,19 @@ internal partial class StringLengthSourceAttributeTests {
           [StringLengthSource(SchemaIntegerType.BYTE)]
           public string Field { get; set; }
         }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field.Length: 0x0<br/>
+        ///     - Field: 0x1<br/>
+        /// </remarks>
+        public partial class ImmediateLengthWrapper;
+
         """,
         """
         using System;

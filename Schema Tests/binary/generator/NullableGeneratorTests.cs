@@ -22,6 +22,19 @@ internal class NullableGeneratorTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x5<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field1: 0x0<br/>
+        ///     - Field2: 0x1<br/>
+        /// </remarks>
+        public partial class NullableWrapper;
+
+        """,
+        """
         using System;
         using schema.binary;
 

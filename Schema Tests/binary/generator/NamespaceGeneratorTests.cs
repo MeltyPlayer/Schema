@@ -22,6 +22,18 @@ internal class NamespaceGeneratorTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x1<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
+        """,
+        """
         using System;
         using schema.binary;
 
@@ -69,6 +81,18 @@ internal class NamespaceGeneratorTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x1<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
+        """,
+        """
         using System;
         using schema.binary;
 
@@ -114,6 +138,18 @@ internal class NamespaceGeneratorTests {
             public goo.A Field { get; set; }
           }
         }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x1<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
         """,
         """
         using System;
@@ -165,6 +201,18 @@ internal class NamespaceGeneratorTests {
         }
         """,
         """
+        namespace foo.bar.gar;
+
+        /// <remarks>
+        ///   Size: 0x1<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
+        """,
+        """
         using System;
         using schema.binary;
 
@@ -207,6 +255,16 @@ internal class NamespaceGeneratorTests {
         }
         """,
         """
+        /// <remarks>
+        ///   Size: 0x1<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
+        """,
+        """
         using System;
         using schema.binary;
 
@@ -247,6 +305,16 @@ internal class NamespaceGeneratorTests {
         }
         """,
         """
+        /// <remarks>
+        ///   Size: 0x1<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
+        """,
+        """
         using System;
         using schema.binary;
 
@@ -285,6 +353,18 @@ internal class NamespaceGeneratorTests {
             public A Field { get; set; }
           }
         }
+        """,
+        """
+        namespace foo;
+
+        /// <remarks>
+        ///   Size: 0x1<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
         """,
         """
         using System;

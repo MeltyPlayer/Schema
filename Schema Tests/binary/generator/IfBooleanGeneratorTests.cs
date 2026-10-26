@@ -33,6 +33,23 @@ internal class IfBooleanGeneratorTests {
         public class A : IBinaryConvertible { }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - IfBoolean (Immediate): 0x0<br/>
+        ///     - ImmediateValue: 0x1<br/>
+        ///     - IfBoolean (Immediate): (indeterminate)<br/>
+        ///     - NullableArray: (indeterminate)<br/>
+        ///     - Field: (indeterminate)<br/>
+        ///     - OtherValue: (indeterminate)<br/>
+        /// </remarks>
+        public partial class ByteWrapper;
+
+        """,
+        """
         using System;
         using System.Collections.Generic;
         using schema.binary;
@@ -122,6 +139,19 @@ internal class IfBooleanGeneratorTests {
         public class A : IBinaryConvertible { }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        ///     - OtherValue: 0x1<br/>
+        /// </remarks>
+        public partial class ByteWrapper;
+
+        """,
+        """
         using System;
         using schema.binary;
 
@@ -179,6 +209,19 @@ internal class IfBooleanGeneratorTests {
         public class Wrapper : IBinaryConvertible {
           public bool Bool { get; private set; }
         }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        ///     - OtherValue: (indeterminate)<br/>
+        /// </remarks>
+        public partial class ByteWrapper;
+
         """,
         """
         using System;

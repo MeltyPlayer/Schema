@@ -36,6 +36,21 @@ internal class SequenceLengthSourceGeneratorTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        ///     - NullableField: 0xC<br/>
+        ///     - IfBooleanArray: 0x18<br/>
+        ///     - IfBooleanList: (indeterminate)<br/>
+        /// </remarks>
+        public partial class ConstLengthWrapper;
+
+        """,
+        """
         using System;
         using System.Collections.Generic;
         using schema.binary;
@@ -124,6 +139,21 @@ internal class SequenceLengthSourceGeneratorTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        ///     - NullableField: 0x0<br/>
+        ///     - IfBooleanArray: 0x0<br/>
+        ///     - IfBooleanList: (indeterminate)<br/>
+        /// </remarks>
+        public partial class ConstLengthWrapper;
+
+        """,
+        """
         using System;
         using System.Collections.Generic;
         using schema.binary;
@@ -195,6 +225,18 @@ internal class SequenceLengthSourceGeneratorTests {
 
         public class SequenceImpl<T1, T2> : ISequence<SequenceImpl<(T1 First, T2 Second)>, (T1 First, T2 Second)> { 
         }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x3C<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class ConstLengthWrapper;
+
         """,
         """
         using System;

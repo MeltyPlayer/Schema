@@ -19,6 +19,18 @@ internal partial class StringLengthSourceAttributeTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class StringWrapper;
+
+        """,
+        """
         using System;
         using schema.binary;
 
@@ -63,6 +75,18 @@ internal partial class StringLengthSourceAttributeTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x3<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class StringWrapper;
+
+        """,
+        """
         using System;
         using schema.binary;
 
@@ -105,6 +129,18 @@ internal partial class StringLengthSourceAttributeTests {
           [StringLengthSource((int) 0)]
           public string Field;
         }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x0<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class StringWrapper;
+
         """,
         """
         using System;

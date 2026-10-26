@@ -20,6 +20,17 @@ internal class IIndexedGeneratorTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x0<br/>
+        ///<br/>
+        ///   Offsets: (none)<br/>
+        /// </remarks>
+        public partial class IndexedImpl;
+
+        """,
+        """
         using System;
         using schema.binary;
 
@@ -58,10 +69,22 @@ internal class IIndexedGeneratorTests {
         [BinarySchema]
         public partial class Wrapper : IBinaryConvertible {
           [SequenceLengthSource(10)]
-          public IValue[] Field { get; set; }
+          public Value[] Field { get; set; }
         }
 
-        public partial class IValue : IBinaryConvertible, IIndexed;
+        public partial class Value : IBinaryConvertible, IIndexed;
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x0<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
         """,
         """
         using System;
@@ -119,6 +142,18 @@ internal class IIndexedGeneratorTests {
         public partial class IValue : IBinaryConvertible, IIndexed;
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x0<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
+        """,
+        """
         using System;
         using schema.binary;
         using schema.util.sequences;
@@ -171,6 +206,18 @@ internal class IIndexedGeneratorTests {
         }
 
         public partial struct IValue : IBinaryConvertible, IIndexed;
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x0<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
         """,
         """
         using System;
@@ -227,6 +274,18 @@ internal class IIndexedGeneratorTests {
         }
 
         public partial struct IValue : IBinaryConvertible, IIndexed;
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x0<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
         """,
         """
         using System;

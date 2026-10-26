@@ -25,6 +25,19 @@ internal class RSequenceLengthSourceAttributeTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - count_: 0x0<br/>
+        ///     - Values: 0x4<br/>
+        /// </remarks>
+        public partial class ReadonlyListClass;
+
+        """,
+        """
         using System;
         using schema.binary;
         using schema.util.sequences;
@@ -77,6 +90,19 @@ internal class RSequenceLengthSourceAttributeTests {
           [RSequenceLengthSource(nameof(count_))]
           public readonly List<A> Values = new();
         }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - count_: 0x0<br/>
+        ///     - Values: 0x4<br/>
+        /// </remarks>
+        public partial class ReadonlyListClass;
+
         """,
         """
         using System;
@@ -135,6 +161,19 @@ internal class RSequenceLengthSourceAttributeTests {
           [RSequenceLengthSource(nameof(count_))]
           public readonly List<A> Values = new();
         }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - count_: 0x0<br/>
+        ///     - Values: 0x4<br/>
+        /// </remarks>
+        public partial class ReadonlyListClass;
+
         """,
         """
         using System;

@@ -179,6 +179,8 @@ public interface ISequenceMemberType : IMemberType {
 }
 
 public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
+  public static BinarySchemaContainerParser Instance { get; } = new();
+
   public IBinarySchemaContainer StubContainer(
       IBetterSymbol<INamedTypeSymbol> containerSymbol)
     => new BinarySchemaContainer {

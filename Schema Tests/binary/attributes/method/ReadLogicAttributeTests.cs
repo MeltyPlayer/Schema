@@ -25,6 +25,20 @@ internal class ReadLogicAttributeTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field1: 0x0<br/>
+        ///     - Method: 0x1<br/>
+        ///     - Field2: (indeterminate)<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
+        """,
+        """
         using System;
         using schema.binary;
 

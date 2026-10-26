@@ -24,6 +24,19 @@ internal class WLengthOfStringAttributeTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Length: 0x0<br/>
+        ///     - Text: 0x4<br/>
+        /// </remarks>
+        public partial class intsWrapper;
+
+        """,
+        """
         using System;
         using schema.binary;
 
@@ -75,6 +88,20 @@ internal class WLengthOfStringAttributeTests {
           [RStringLengthSource(nameof(Length))]
           public string Text2 { get; set; }
         }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Length: 0x0<br/>
+        ///     - Text1: 0x4<br/>
+        ///     - Text2: (indeterminate)<br/>
+        /// </remarks>
+        public partial class intsWrapper;
+
         """,
         """
         using System;

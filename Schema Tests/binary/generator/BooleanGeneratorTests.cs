@@ -5,11 +5,12 @@ namespace schema.binary.text;
 
 internal class BooleanGeneratorTests {
   [Test]
-  [TestCase("byte", "Byte", true)]
-  [TestCase("short", "Int16", true)]
-  [TestCase("int", "Int32", false)]
+  [TestCase("byte", "Byte", 1, true)]
+  [TestCase("short", "Int16", 2, true)]
+  [TestCase("int", "Int32", 4, false)]
   public void TestEachType(string primitiveType,
                            string primitiveLabel,
+                           int bytesPerBool,
                            bool expectCast) {
     var schemaIntegerType = $"SchemaIntegerType.{primitiveLabel.ToUpper()}";
     var castText = expectCast ? $"({primitiveType}) " : "";
@@ -30,6 +31,19 @@ internal class BooleanGeneratorTests {
             [IntegerFormat({{schemaIntegerType}})]
             public bool ReadonlyField { get; }
           }
+          """,
+        $"""
+          namespace foo.bar;
+
+          /// <remarks>
+          ///   Size: 0x{2 * bytesPerBool}<br/>
+          ///<br/>
+          ///   Offsets:<br/>
+          ///     - Field: 0x0<br/>
+          ///     - ReadonlyField: 0x{bytesPerBool}<br/>
+          /// </remarks>
+          public partial class Wrapper;
+
           """,
         $$"""
           using System;
@@ -78,6 +92,18 @@ internal class BooleanGeneratorTests {
           [IntegerFormat(SchemaIntegerType.BYTE)]
           public bool[] Field { get; set; }
         }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x4<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class ByteWrapper;
+
         """,
         """
         using System;

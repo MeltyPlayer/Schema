@@ -20,6 +20,17 @@ internal class IndexerGeneratorTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: 0x0<br/>
+        ///<br/>
+        ///   Offsets: (none)<br/>
+        /// </remarks>
+        public partial class ByteWrapper;
+
+        """,
+        """
         using System;
         using schema.binary;
 
