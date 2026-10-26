@@ -5,7 +5,7 @@ using schema.util.symbols;
 namespace schema.binary.validators;
 
 public sealed class RLengthSourceMustPointToAnIntegerValidator
-    : IMemberValidator {
+    : IValueMemberValidator {
   public static readonly Rule
       RSEQUENCE_LENGTH_SOURCE_MUST_POINT_TO_AN_INTEGER_RULE
           = new(
@@ -18,7 +18,9 @@ public sealed class RLengthSourceMustPointToAnIntegerValidator
               $"{nameof(RStringLengthSourceAttribute)} must point to an integer",
               $"String member '{{0}}''s {nameof(RStringLengthSourceAttribute)} must point to a member that is an integer.");
 
-  public void Validate(IBetterSymbol memberSymbol, ITypeInfo typeInfo) {
+  public void Validate(ISchemaValueMember valueMember) {
+    var memberSymbol = valueMember.MemberSymbol;
+
     if (memberSymbol.TryGetAttribute<RSequenceLengthSourceAttribute>(
             out var rSequenceLengthSourceAttribute) &&
         !rSequenceLengthSourceAttribute.OtherMember.IsInteger) {

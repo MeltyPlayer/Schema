@@ -551,10 +551,23 @@ public class BinarySchemaReaderGenerator {
             sw.WriteLine(
                   $"{memberAccessor} = new {qualifiedElementName}[{readCountAccessor}];")
               .EnterBlock(
-                  $"for (var i = 0; i < {memberAccessor}.Length; ++i)")
-              .WriteLine(
-                  $"{memberAccessor}[i] = {GetReadOneViaMethodText_(sourceSymbol, elementType)};")
-              .ExitBlock();
+                  $"for (var i = 0; i < {memberAccessor}.Length; ++i)");
+
+            if (elementType is IPrimitiveMemberType primitiveElementType) {
+              sw.WriteLine($"{memberAccessor}[i] = {GetReadOneViaMethodText_(sourceSymbol, primitiveElementType)});");
+            } else if (elementType is IContainerMemberType containerElementType) {
+              sw.WriteLine(
+                  $"var e = new {sourceSymbol.GetQualifiedNameFromCurrentSymbol(
+                      arrayType.ElementType.TypeSymbol.AsNonNullable())}();");
+
+              if (containerElementType.IsChild) {
+                sw.WriteLine("e.Parent = this;");
+              }
+
+              sw.WriteLine($"e.Read({READER});");
+              sw.WriteLine($"{memberAccessor}[i] = e;");
+            }
+            sw.ExitBlock();
           }
 
           return;

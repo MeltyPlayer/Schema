@@ -4,7 +4,7 @@ using schema.util.symbols;
 
 namespace schema.binary.validators;
 
-public sealed class SequenceAttributesCanOnlyBeUsedOnSequencesValidator : IMemberValidator {
+public sealed class SequenceAttributesCanOnlyBeUsedOnSequencesValidator : IValueMemberValidator {
   public static readonly Rule SEQUENCE_LENGTH_SOURCE_CAN_ONLY_BE_USED_ON_SEQUENCES_RULE
       = new(
           $"{nameof(SequenceLengthSourceAttribute)} can only be used on sequences",
@@ -20,7 +20,10 @@ public sealed class SequenceAttributesCanOnlyBeUsedOnSequencesValidator : IMembe
           $"{nameof(RSequenceUntilEndOfStreamAttribute)} can only be used on sequences",
           $"Member '{{0}}' is not a sequence, so it cannot have a {nameof(RSequenceUntilEndOfStreamAttribute)}.");
 
-  public void Validate(IBetterSymbol memberSymbol, ITypeInfo typeInfo) {
+  public void Validate(ISchemaValueMember valueMember) {
+    var memberSymbol = valueMember.MemberSymbol;
+    var typeInfo = valueMember.MemberType.TypeInfo;
+
     if (typeInfo.Kind == SchemaTypeKind.SEQUENCE) {
       return;
     }

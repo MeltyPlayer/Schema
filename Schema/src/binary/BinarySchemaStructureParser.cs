@@ -315,20 +315,26 @@ public class BinarySchemaContainerParser : IBinarySchemaContainerParser {
     }
 
     foreach (var member in members) {
-      if (member is not ISchemaValueMember valueMember) {
-        continue;
-      }
-
-      var memberSymbol = valueMember.MemberSymbol;
+      var memberSymbol = member.MemberSymbol;
       if (memberSymbol.HasAttribute<SkipAttribute>()) {
         continue;
       }
 
-      var typeInfo = valueMember.MemberType.TypeInfo;
-
-      foreach (var validator in ValidatorManager.AllMemberValidators) {
-        validator.Validate(memberSymbol, typeInfo);
+      switch (member) {
+        case ISchemaValueMember valueMember: {
+          foreach (var validator in ValidatorManager.AllValueMemberValidators) {
+            validator.Validate(valueMember);
+          }
+          break;
+        }
+        case ISchemaMethodMember methodMember: {
+          foreach (var validator in ValidatorManager.AllMethodMemberValidators) {
+            validator.Validate(methodMember);
+          }
+          break;
+        }
       }
+
     }
 
     return schemaContainer;

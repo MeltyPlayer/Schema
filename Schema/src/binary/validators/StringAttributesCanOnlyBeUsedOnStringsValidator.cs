@@ -4,7 +4,7 @@ using schema.util.symbols;
 
 namespace schema.binary.validators;
 
-public sealed class StringAttributesCanOnlyBeUsedOnStringsValidator : IMemberValidator {
+public sealed class StringAttributesCanOnlyBeUsedOnStringsValidator : IValueMemberValidator {
   public static readonly Rule STRING_ENCODING_CAN_ONLY_BE_USED_ON_STRINGS_RULE
       = new(
           $"{nameof(StringEncodingAttribute)} can only be used on strings",
@@ -25,7 +25,10 @@ public sealed class StringAttributesCanOnlyBeUsedOnStringsValidator : IMemberVal
           $"{nameof(NullTerminatedStringAttribute)} can only be used on strings",
           $"Member '{{0}}' is not a string, so it cannot have a {nameof(NullTerminatedStringAttribute)}.");
 
-  public void Validate(IBetterSymbol memberSymbol, ITypeInfo typeInfo) {
+  public void Validate(ISchemaValueMember valueMember) {
+    var memberSymbol = valueMember.MemberSymbol;
+    var typeInfo = valueMember.MemberType.TypeInfo;
+
     if (typeInfo.Kind == SchemaTypeKind.STRING) {
       return;
     }

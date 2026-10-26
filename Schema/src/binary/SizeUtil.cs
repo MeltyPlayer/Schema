@@ -3,6 +3,7 @@
 using Microsoft.CodeAnalysis;
 
 using schema.binary.attributes;
+using schema.binary.parser;
 using schema.binary.steps;
 using schema.util.symbols;
 
@@ -46,27 +47,9 @@ public static class SizeUtil {
         break;
       }
       case IContainerMemberType containerType: {
-        if (containerType.TypeSymbol.IsInterface()) {
-          break;
-        }
-
-        var container = BinarySchemaContainerParser.Instance.ParseContainer(
-            BetterSymbol.FromType(
-                (containerType.TypeSymbol as INamedTypeSymbol)!));
-        if (container.IsRecursive()) {
-          break;
-        }
-
-        container.ToBinarySteps()
-                 .TryToGetMemberOffsetsAndContainerSize(
-                     out _,
-                     out var containerSize);
-        if (containerSize != null) {
-          size = containerSize.Value;
-          return true;
-        }
-
-        break;
+        return TryGetSizeOfContainer(
+            (containerType.TypeSymbol as INamedTypeSymbol)!,
+            out size);
       }
     }
 
@@ -147,6 +130,34 @@ public static class SizeUtil {
     }
 
     charSize = default;
+    return false;
+  }
+
+  public static bool TryGetSizeOfContainer(
+      INamedTypeSymbol typeSymbol,
+      out int size) {
+    if (typeSymbol.IsInterface()) {
+      size = -1;
+      return false;
+    }
+
+    var container = BinarySchemaContainerParser.Instance.ParseContainer(
+        BetterSymbol.FromType(typeSymbol));
+    if (container.IsRecursive()) {
+      size = -1;
+      return false;
+    }
+
+    container.ToBinarySteps()
+             .TryToGetMemberOffsetsAndContainerSize(
+                 out _,
+                 out var containerSize);
+    if (containerSize != null) {
+      size = containerSize.Value;
+      return true;
+    }
+
+    size = -1;
     return false;
   }
 }

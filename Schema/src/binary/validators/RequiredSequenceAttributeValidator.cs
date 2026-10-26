@@ -5,7 +5,7 @@ using schema.util.symbols;
 namespace schema.binary.validators;
 
 public sealed class RequiredSequenceAttributeValidator
-    : IMemberValidator {
+    : IValueMemberValidator {
   public static readonly Rule SEQUENCE_CAN_ONLY_HAVE_ONE_REQUIRED_ATTRIBUTE_RULE
       = new(
           $"Sequences can only have one of {nameof(SequenceLengthSourceAttribute)}, {nameof(RSequenceLengthSourceAttribute)}, or {nameof(RSequenceUntilEndOfStreamAttribute)}",
@@ -21,7 +21,10 @@ public sealed class RequiredSequenceAttributeValidator
           $"Const-length sequences cannot have a {nameof(SequenceLengthSourceAttribute)}, {nameof(RSequenceLengthSourceAttribute)}, or {nameof(RSequenceUntilEndOfStreamAttribute)}",
           $"Sequence member '{{0}}' has a const-length, so it cannot have a {nameof(SequenceLengthSourceAttribute)}, {nameof(RSequenceLengthSourceAttribute)}, or {nameof(RSequenceUntilEndOfStreamAttribute)}.");
 
-  public void Validate(IBetterSymbol memberSymbol, ITypeInfo typeInfo) {
+  public void Validate(ISchemaValueMember valueMember) {
+    var memberSymbol = valueMember.MemberSymbol;
+    var typeInfo = valueMember.MemberType.TypeInfo;
+
     if (typeInfo.Kind != SchemaTypeKind.SEQUENCE) {
       return;
     }

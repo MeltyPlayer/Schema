@@ -7,7 +7,7 @@ using schema.util.symbols;
 namespace schema.binary.validators;
 
 public sealed class WLengthOfMustPointToTheCorrectTypeValidator
-    : IMemberValidator {
+    : IValueMemberValidator {
   public static readonly Rule
       WLENGTH_OF_SEQUENCE_MUST_POINT_TO_A_SEQUENCE_RULE
           = new(
@@ -20,7 +20,9 @@ public sealed class WLengthOfMustPointToTheCorrectTypeValidator
               $"{nameof(WLengthOfStringAttribute)} must point to a string",
               $"Member '{{0}}''s {nameof(WLengthOfStringAttribute)} points to a member that is not a string.");
 
-  public void Validate(IBetterSymbol memberSymbol, ITypeInfo typeInfo) {
+  public void Validate(ISchemaValueMember valueMember) {
+    var memberSymbol = valueMember.MemberSymbol;
+
     if (memberSymbol.GetAttributes<WLengthOfSequenceAttribute>()
                     .Any(a => !a.OtherMember.IsSequence)) {
       memberSymbol.Report(WLENGTH_OF_SEQUENCE_MUST_POINT_TO_A_SEQUENCE_RULE);

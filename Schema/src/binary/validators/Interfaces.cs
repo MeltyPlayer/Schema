@@ -11,6 +11,10 @@ public interface IContainerValidator : IValidator {
   void Validate(IBetterSymbol<INamedTypeSymbol> containerSymbol);
 }
 
-public interface IMemberValidator : IValidator {
-  void Validate(IBetterSymbol memberSymbol, ITypeInfo typeInfo);
+public interface IMethodMemberValidator : IValidator {
+  void Validate(ISchemaMethodMember methodMember);
+}
+
+public interface IValueMemberValidator : IValidator {
+  void Validate(ISchemaValueMember valueMember);
 }

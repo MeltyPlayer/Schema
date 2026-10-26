@@ -5,13 +5,16 @@ using schema.util.symbols;
 namespace schema.binary.validators;
 
 public sealed class IfBooleanNeedsNullableValidator
-    : IMemberValidator {
+    : IValueMemberValidator {
   public static readonly Rule IF_BOOLEAN_NEEDS_NULLABLE_TYPE
       = new(
           $"{nameof(IfBooleanAttribute)} needs nullable type",
           $"Member '{{0}}' must be a nullable type to use {nameof(IfBooleanAttribute)}.");
 
-  public void Validate(IBetterSymbol memberSymbol, ITypeInfo typeInfo) {
+  public void Validate(ISchemaValueMember valueMember) {
+    var memberSymbol = valueMember.MemberSymbol;
+    var typeInfo = valueMember.MemberType.TypeInfo;
+
     if (!typeInfo.IsNullable &&
         (memberSymbol.HasAttribute<IfBooleanAttribute>() ||
          memberSymbol.HasAttribute<RIfBooleanAttribute>())) {

@@ -5,7 +5,7 @@ using schema.util.symbols;
 namespace schema.binary.validators;
 
 public sealed class RequiredStringAttributeValidator
-    : IMemberValidator {
+    : IValueMemberValidator {
   public static readonly Rule STRING_CAN_ONLY_HAVE_ONE_REQUIRED_ATTRIBUTE_RULE
       = new(
           $"Strings can only have one of {nameof(StringLengthSourceAttribute)}, {nameof(RStringLengthSourceAttribute)}, or {nameof(NullTerminatedStringAttribute)}",
@@ -21,7 +21,10 @@ public sealed class RequiredStringAttributeValidator
           $"Readonly strings cannot have a {nameof(StringLengthSourceAttribute)} or {nameof(RStringLengthSourceAttribute)}",
           $"String member '{{0}}' is readonly, so it cannot have a {nameof(StringLengthSourceAttribute)} or {nameof(RStringLengthSourceAttribute)}.");
 
-  public void Validate(IBetterSymbol memberSymbol, ITypeInfo typeInfo) {
+  public void Validate(ISchemaValueMember valueMember) {
+    var memberSymbol = valueMember.MemberSymbol;
+    var typeInfo = valueMember.MemberType.TypeInfo;
+
     if (typeInfo.Kind != SchemaTypeKind.STRING) {
       return;
     }

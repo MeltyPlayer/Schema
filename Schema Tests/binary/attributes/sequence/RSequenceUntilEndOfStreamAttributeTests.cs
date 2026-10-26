@@ -165,7 +165,7 @@ internal class RSequenceUntilEndOfStreamAttributeTests {
           public void Read(IBinaryReader br) {
             this.Field = new int[(br.Length - br.Position) / 3];
             for (var i = 0; i < this.Field.Length; ++i) {
-              this.Field[i] = br.ReadInt24();
+              this.Field[i] = br.ReadInt24());
             }
           }
         }
@@ -319,13 +319,27 @@ internal class RSequenceUntilEndOfStreamAttributeTests {
 
         namespace foo.bar;
 
-        public class A : IBinaryConvertible {}
+        public class A : IBinaryConvertible {
+          public byte field;
+        }
 
         [BinarySchema]
         public partial class Wrapper : IBinaryConvertible {
           [RSequenceUntilEndOfStream]
           public A[] Field { get; set; }
         }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
         """,
         """
         using System;
@@ -336,14 +350,11 @@ internal class RSequenceUntilEndOfStreamAttributeTests {
 
         public partial class Wrapper {
           public void Read(IBinaryReader br) {
-            {
-              var temp = new List<A>();
-              while (!br.Eof) {
-                var e = new A();
-                e.Read(br);
-                temp.Add(e);
-              }
-              this.Field = temp.ToArray();
+            this.Field = new A[br.Length - br.Position];
+            for (var i = 0; i < this.Field.Length; ++i) {
+              var e = new A();
+              e.Read(br);
+              this.Field[i] = e;
             }
           }
         }
@@ -378,7 +389,9 @@ internal class RSequenceUntilEndOfStreamAttributeTests {
 
         namespace foo.bar;
 
-        public class A : IBinaryConvertible {}
+        public class A : IBinaryConvertible {
+          public byte field;
+        }
 
         [BinarySchema]
         public partial class Wrapper : IBinaryConvertible {
@@ -446,7 +459,9 @@ internal class RSequenceUntilEndOfStreamAttributeTests {
 
         namespace foo.bar;
         
-        public struct A : IBinaryConvertible {}
+        public struct A : IBinaryConvertible {
+          public byte field;
+        }
       
         [BinarySchema]
         public partial class Wrapper : IBinaryConvertible {
@@ -455,22 +470,31 @@ internal class RSequenceUntilEndOfStreamAttributeTests {
         }
         """,
         """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Field: 0x0<br/>
+        /// </remarks>
+        public partial class Wrapper;
+
+        """,
+        """
         using System;
         using System.Collections.Generic;
         using schema.binary;
 
         namespace foo.bar;
-        
+
         public partial class Wrapper {
           public void Read(IBinaryReader br) {
-            {
-              var temp = new List<A>();
-              while (!br.Eof) {
-                var e = new A();
-                e.Read(br);
-                temp.Add(e);
-              }
-              this.Field = temp.ToArray();
+            this.Field = new A[br.Length - br.Position];
+            for (var i = 0; i < this.Field.Length; ++i) {
+              var e = new A();
+              e.Read(br);
+              this.Field[i] = e;
             }
           }
         }
@@ -505,7 +529,9 @@ internal class RSequenceUntilEndOfStreamAttributeTests {
 
         namespace foo.bar;
 
-        public struct A : IBinaryConvertible {}
+        public struct A : IBinaryConvertible {
+          public byte field;
+        }
 
         [BinarySchema]
         public partial class Wrapper : IBinaryConvertible {

@@ -4,7 +4,7 @@ using schema.util.symbols;
 
 namespace schema.binary.validators;
 
-public sealed class WLengthOfAndPointerToAndSizeOfCanOnlyBeUsedOnIntegersValidator : IMemberValidator {
+public sealed class WLengthOfAndPointerToAndSizeOfCanOnlyBeUsedOnIntegersValidator : IValueMemberValidator {
   public static readonly Rule
       WLENGTH_OF_SEQUENCE_CAN_ONLY_BE_USED_ON_INTEGERS_RULE
           = new(
@@ -35,7 +35,10 @@ public sealed class WLengthOfAndPointerToAndSizeOfCanOnlyBeUsedOnIntegersValidat
               $"{nameof(WSizeOfStreamInBytesAttribute)} can only be used on integers",
               $"Member '{{0}}' is not an integer, so it cannot be used with {nameof(WSizeOfStreamInBytesAttribute)}.");
 
-  public void Validate(IBetterSymbol memberSymbol, ITypeInfo typeInfo) {
+  public void Validate(ISchemaValueMember valueMember) {
+    var memberSymbol = valueMember.MemberSymbol;
+    var typeInfo = valueMember.MemberType.TypeInfo;
+
     if (typeInfo.Kind == SchemaTypeKind.INTEGER) {
       return;
     }

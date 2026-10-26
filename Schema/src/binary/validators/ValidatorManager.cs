@@ -18,7 +18,8 @@ public static class ValidatorManager {
     get;
   }
 
-  public static IReadOnlyList<IMemberValidator> AllMemberValidators { get; }
+  public static IReadOnlyList<IValueMemberValidator> AllValueMemberValidators { get; }
+  public static IReadOnlyList<IMethodMemberValidator> AllMethodMemberValidators { get; }
 
   public static ImmutableArray<DiagnosticDescriptor> AllDiagnosticDescriptors {
     get;
@@ -31,7 +32,8 @@ public static class ValidatorManager {
             .Select(t => (IValidator) t.GetConstructor([]).Invoke([]))
     ];
     AllContainerValidators = [.. AllValidators.OfType<IContainerValidator>()];
-    AllMemberValidators = [.. AllValidators.OfType<IMemberValidator>()];
+    AllValueMemberValidators = [.. AllValidators.OfType<IValueMemberValidator>()];
+    AllMethodMemberValidators = [.. AllValidators.OfType<IMethodMemberValidator>()];
 
     AllDiagnosticDescriptors
         = ValidatorManager
