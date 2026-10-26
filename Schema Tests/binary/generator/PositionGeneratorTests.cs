@@ -26,20 +26,6 @@ internal class PositionGeneratorTests {
         }
         """,
         """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: 0x11<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - Position: 0x0<br/>
-        ///     - Value: 0x8<br/>
-        ///     - ExpectedPosition: 0x9<br/>
-        /// </remarks>
-        public partial class PositionWrapper;
-
-        """,
-        """
         using System;
         using schema.binary;
 

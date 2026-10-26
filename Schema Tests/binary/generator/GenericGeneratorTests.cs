@@ -19,18 +19,6 @@ internal class GenericGeneratorTests {
         }
         """,
         """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: (indeterminate)<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - Data: 0x0<br/>
-        /// </remarks>
-        public partial class GenericWrapper<T>;
-
-        """,
-        """
         using System;
         using schema.binary;
 
@@ -76,19 +64,6 @@ internal class GenericGeneratorTests {
         }
         """,
         """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: (indeterminate)<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - Data1: 0x0<br/>
-        ///     - Data2: (indeterminate)<br/>
-        /// </remarks>
-        public partial class GenericWrapper<T1, T2>;
-
-        """,
-        """
         using System;
         using schema.binary;
 
@@ -131,18 +106,6 @@ internal class GenericGeneratorTests {
         public partial class GenericWrapper<T> : IBinaryConvertible where T : IBinaryConvertible, new() {
           public T[] Data { get; } = {};
         }
-        """,
-        """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: (indeterminate)<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - Data: 0x0<br/>
-        /// </remarks>
-        public partial class GenericWrapper<T>;
-
         """,
         """
         using System;
@@ -191,17 +154,6 @@ internal class GenericGeneratorTests {
           [Skip]
           public T[] Data { get; } = {};
         }
-        """,
-        """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: 0x0<br/>
-        ///<br/>
-        ///   Offsets: (none)<br/>
-        /// </remarks>
-        public partial class GenericWrapper<T>;
-
         """,
         """
         using System;
@@ -261,16 +213,6 @@ internal class GenericGeneratorTests {
           [Skip]
           public T Data => this.impl_.Data;
         }
-        """,
-        """
-        /// <remarks>
-        ///   Size: (indeterminate)<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - impl_: 0x0<br/>
-        /// </remarks>
-        public partial class SwitchMagicStringUInt32SizedSection<T>;
-
         """,
         """
         using System;

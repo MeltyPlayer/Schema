@@ -1,10 +1,7 @@
 ﻿using System;
 
-using Microsoft.CodeAnalysis;
-
 using schema.binary.attributes;
-using schema.binary.steps;
-using schema.util.symbols;
+using schema.binary.parser;
 
 namespace schema.binary;
 
@@ -16,7 +13,6 @@ public static class SizeUtil {
           size = GetSize(primitiveMemberType.AltFormat);
           return true;
         }
-
         return TryGetSize(primitiveMemberType.PrimitiveType, out size);
       }
       case IKnownStructMemberType knownStructMemberType: {
@@ -41,29 +37,6 @@ public static class SizeUtil {
             size = (int) sequenceType.ConstLength * elementSize;
             return true;
           }
-        }
-
-        break;
-      }
-      case IContainerMemberType containerType: {
-        if (containerType.TypeSymbol.IsInterface()) {
-          break;
-        }
-
-        var container = BinarySchemaContainerParser.Instance.ParseContainer(
-            BetterSymbol.FromType(
-                (containerType.TypeSymbol as INamedTypeSymbol)!));
-        if (container.IsRecursive()) {
-          break;
-        }
-
-        container.ToBinarySteps()
-                 .TryToGetMemberOffsetsAndContainerSize(
-                     out _,
-                     out var containerSize);
-        if (containerSize != null) {
-          size = containerSize.Value;
-          return true;
         }
 
         break;
@@ -121,11 +94,6 @@ public static class SizeUtil {
                                 out int size) {
     if (primitiveType is SchemaPrimitiveType.CHAR) {
       return TryGetEncodingCharLength(StringEncodingType.ASCII, out size);
-    }
-
-    if (primitiveType is SchemaPrimitiveType.BOOLEAN) {
-      size = -1;
-      return false;
     }
 
     var numberType = primitiveType.AsNumberType();

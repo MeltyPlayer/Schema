@@ -18,17 +18,6 @@ internal class VarianceGeneratorTests {
           [BinarySchema]
           public partial class Wrapper<{variance} T>;
           """,
-          $"""
-          namespace foo.bar;
-
-          /// <remarks>
-          ///   Size: 0x0<br/>
-          ///<br/>
-          ///   Offsets: (none)<br/>
-          /// </remarks>
-          public partial class Wrapper<{variance} T>;
-
-          """,
         $$"""
           using System;
           using schema.binary;

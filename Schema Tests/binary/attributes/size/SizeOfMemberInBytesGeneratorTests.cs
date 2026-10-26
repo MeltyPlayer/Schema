@@ -23,19 +23,6 @@ internal class SizeOfMemberInBytesGeneratorTests {
         }
         """,
         """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: 0x5<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - FooSize: 0x0<br/>
-        ///     - Foo: 0x4<br/>
-        /// </remarks>
-        public partial class SizeWrapper;
-
-        """,
-        """
         using System;
         using schema.binary;
 
@@ -89,19 +76,6 @@ internal class SizeOfMemberInBytesGeneratorTests {
         public partial class Child : IBinaryConvertible {
           public byte Bar;
         }
-        """,
-        """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: 0x5<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - FooBarSize: 0x0<br/>
-        ///     - Foo: 0x4<br/>
-        /// </remarks>
-        public partial class SizeWrapper;
-
         """,
         """
         using System;

@@ -18,31 +18,26 @@ public class BinarySchemaOffsetsGenerator {
     sw.WriteNamespaceAndParentTypeBlocks(
         typeSymbol,
         () => {
-          sw.WriteLine("/// <remarks>");
+          sw.WriteLine("/// <content>");
 
           container.ToBinarySteps()
                    .TryToGetMemberOffsetsAndContainerSize(
-                       out var memberOffsets,
+                       out var knownMemberOffsets,
                        out var containerSize);
           if (containerSize == null) {
-            sw.WriteLine("///   Size: (indeterminate)<br/>");
+            sw.WriteLine("///   Size: indeterminate");
           } else {
-            sw.WriteLine($"///   Size: 0x{containerSize.Value:X}<br/>");
+            sw.WriteLine($"///   Size: 0x{containerSize.Value:X} / {containerSize.Value}");
           }
 
-          sw.WriteLine("///<br/>");
+          sw.WriteLine(" /// ");
 
-
-          if (memberOffsets.Count == 0) {
-            sw.WriteLine("///   Offsets: (none)<br/>");
-          } else {
-            sw.WriteLine("///   Offsets:<br/>");
-            foreach (var memberOffset in memberOffsets) {
-              sw.WriteLine($"///     - {memberOffset}<br/>");
-            }
+          sw.WriteLine(" ///   Determinate offsets:");
+          foreach (var (member, offset) in knownMemberOffsets) {
+            sw.WriteLine($" ///     - {member.Name}: 0x{offset:X} / {offset}");
           }
 
-          sw.WriteLine("/// </remarks>");
+          sw.WriteLine("/// </content>");
 
           sw.WriteLine(
               $"{typeSymbol.GetQualifiersAndNameAndGenericParametersFor()};");

@@ -26,18 +26,6 @@ internal class IChildOfGeneratorTests {
         }
         """,
         """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: 0x1<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - Field: 0x0<br/>
-        /// </remarks>
-        public partial class ChildOfWrapper;
-
-        """,
-        """
         using System;
         using schema.binary;
 
@@ -85,18 +73,6 @@ internal class IChildOfGeneratorTests {
         
           public byte Field { get; set; }
         }
-        """,
-        """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: (indeterminate)<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - Child: 0x0<br/>
-        /// </remarks>
-        public partial class Parent;
-
         """,
         """
         using System;
@@ -151,17 +127,6 @@ internal class IChildOfGeneratorTests {
         }
         """,
         """
-        namespace foo.bar;
-        
-        /// <remarks>
-        ///   Size: 0x0<br/>
-        ///<br/>
-        ///   Offsets: (none)<br/>
-        /// </remarks>
-        public partial class ChildOfWrapper;
-        
-        """,
-        """
         using System;
         using schema.binary;
 
@@ -208,19 +173,6 @@ internal class IChildOfGeneratorTests {
         public partial class ChildOfWrapper : IBinaryConvertible, IChildOf<Parent> {
           public Parent Parent { get; set; }
         }
-        """,
-        """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: (indeterminate)<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - Length: 0x0<br/>
-        ///     - Child: 0x4<br/>
-        /// </remarks>
-        public partial class Parent;
-
         """,
         """
         using System;

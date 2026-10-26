@@ -24,19 +24,6 @@ internal class WLengthOfSequenceAttributeTests {
         }
         """,
         """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: (indeterminate)<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - Length: 0x0<br/>
-        ///     - Sequence: 0x4<br/>
-        /// </remarks>
-        public partial class SequenceWrapper;
-
-        """,
-        """
         using System;
         using schema.binary;
         using schema.util.sequences;
@@ -87,19 +74,6 @@ internal class WLengthOfSequenceAttributeTests {
           public byte[] Sequence { get; set; }
         }
         
-        """,
-        """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: (indeterminate)<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - Length: 0x0<br/>
-        ///     - Sequence: 0x2<br/>
-        /// </remarks>
-        public partial class SequenceWrapper;
-
         """,
         """
         using System;
@@ -156,20 +130,6 @@ internal class WLengthOfSequenceAttributeTests {
           [RSequenceLengthSource(nameof(Length))]
           public List<byte> Sequence2 { get; set; }
         }
-        """,
-        """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: (indeterminate)<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - Length: 0x0<br/>
-        ///     - Sequence1: 0x4<br/>
-        ///     - Sequence2: (indeterminate)<br/>
-        /// </remarks>
-        public partial class SequenceWrapper;
-
         """,
         """
         using System;

@@ -23,18 +23,6 @@ internal class ContainerTypeTests {
             public int Field { get; set; }
           }
           """,
-        $"""
-          namespace foo.bar;
-
-          /// <remarks>
-          ///   Size: 0x4<br/>
-          ///<br/>
-          ///   Offsets:<br/>
-          ///     - Field: 0x0<br/>
-          /// </remarks>
-          public partial {containerType} Wrapper;
-
-          """,
         $$"""
           using System;
           using schema.binary;

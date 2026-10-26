@@ -31,7 +31,6 @@ public static class SchemaGeneratorUtil {
         IKnownStructMemberType knownStructMemberType
             => SchemaGeneratorUtil.GetKnownStructName(
                 knownStructMemberType.KnownStruct),
-        _ => throw new NotImplementedException(),
     };
 
   public static string GetPrimitiveLabel(SchemaPrimitiveType type)

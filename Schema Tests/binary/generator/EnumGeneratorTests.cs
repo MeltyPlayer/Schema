@@ -28,19 +28,6 @@ internal class EnumGeneratorTests {
         }
         """,
         """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: 0x5<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - fieldA: 0x0<br/>
-        ///     - fieldB: 0x1<br/>
-        /// </remarks>
-        public partial class EnumWrapper;
-
-        """,
-        """
         using System;
         using schema.binary;
 
@@ -94,19 +81,6 @@ internal class EnumGeneratorTests {
         }
         """,
         """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: 0x5<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - fieldA: 0x0<br/>
-        ///     - fieldB: 0x1<br/>
-        /// </remarks>
-        public partial class EnumWrapper;
-
-        """,
-        """
         using System;
         using schema.binary;
 
@@ -158,19 +132,6 @@ internal class EnumGeneratorTests {
         
           public readonly B[] fieldB = new B[5];
         }
-        """,
-        """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: (indeterminate)<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - fieldA: 0x0<br/>
-        ///     - fieldB: (indeterminate)<br/>
-        /// </remarks>
-        public partial class EnumWrapper;
-
         """,
         """
         using System;

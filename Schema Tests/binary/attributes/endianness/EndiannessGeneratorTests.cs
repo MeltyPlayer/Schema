@@ -19,18 +19,6 @@ internal class EndiannessGeneratorTests {
         }
         """,
         """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: 0x4<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - Field: 0x0<br/>
-        /// </remarks>
-        public partial class EndiannessWrapper;
-
-        """,
-        """
         using System;
         using schema.binary;
 
@@ -77,20 +65,6 @@ internal class EndiannessGeneratorTests {
         
           public uint Field3 { get; set; }
         }
-        """,
-        """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: 0xC<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - Field1: 0x0<br/>
-        ///     - Field2: 0x4<br/>
-        ///     - Field3: 0x8<br/>
-        /// </remarks>
-        public partial class EndiannessWrapper;
-
         """,
         """
         using System;
@@ -144,20 +118,6 @@ internal class EndiannessGeneratorTests {
           public uint Field2 { get; set; }
           public uint Field3 { get; set; }
         }
-        """,
-        """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: 0xC<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - Field1: 0x0<br/>
-        ///     - Field2: 0x4<br/>
-        ///     - Field3: 0x8<br/>
-        /// </remarks>
-        public partial class EndiannessWrapper;
-
         """,
         """
         using System;

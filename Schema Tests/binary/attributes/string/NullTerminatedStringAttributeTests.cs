@@ -21,18 +21,6 @@ internal class NullTerminatedStringAttributeTests {
         }
         """,
         """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: (indeterminate)<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - Field: 0x0<br/>
-        /// </remarks>
-        public partial class intsWrapper;
-
-        """,
-        """
         using System;
         using schema.binary;
 

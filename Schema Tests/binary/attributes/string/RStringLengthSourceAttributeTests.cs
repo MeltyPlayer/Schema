@@ -24,19 +24,6 @@ internal class RStringLengthSourceAttributeTests {
         }
         """,
         """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: (indeterminate)<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - length: 0x0<br/>
-        ///     - Field: 0x4<br/>
-        /// </remarks>
-        public partial class ImmediateLengthWrapper;
-
-        """,
-        """
         using System;
         using schema.binary;
 
@@ -86,19 +73,6 @@ internal class RStringLengthSourceAttributeTests {
         }
         """,
         """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: (indeterminate)<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - length: 0x0<br/>
-        ///     - Field: 0x4<br/>
-        /// </remarks>
-        public partial class ImmediateLengthWrapper;
-
-        """,
-        """
         using System;
         using schema.binary;
 
@@ -145,19 +119,6 @@ internal class RStringLengthSourceAttributeTests {
           [RStringLengthSource(nameof(ImmediateLengthWrapper.length)]
           public string Field { get; set; }
         }
-
-        """,
-        """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: (indeterminate)<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - length: 0x0<br/>
-        ///     - Field: 0x4<br/>
-        /// </remarks>
-        public partial class ImmediateLengthWrapper;
 
         """,
         """
@@ -210,19 +171,6 @@ internal class RStringLengthSourceAttributeTests {
         }
         """,
         """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: (indeterminate)<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - length: 0x0<br/>
-        ///     - Field: 0x4<br/>
-        /// </remarks>
-        public partial class ImmediateLengthWrapper;
-
-        """,
-        """
         using System;
         using schema.binary;
 
@@ -270,19 +218,6 @@ internal class RStringLengthSourceAttributeTests {
           [RStringLengthSource(nameof(bar.ImmediateLengthWrapper.length)]
           public string Field { get; set; }
         }
-        """,
-        """
-        namespace foo.bar;
-
-        /// <remarks>
-        ///   Size: (indeterminate)<br/>
-        ///<br/>
-        ///   Offsets:<br/>
-        ///     - length: 0x0<br/>
-        ///     - Field: 0x4<br/>
-        /// </remarks>
-        public partial class ImmediateLengthWrapper;
-
         """,
         """
         using System;
