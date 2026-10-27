@@ -200,7 +200,9 @@ internal class GenericGeneratorTests {
         ///<br/>
         ///   Offsets: (none)<br/>
         /// </remarks>
-        public partial class GenericWrapper<T>;
+        public partial class GenericWrapper<T> {
+          public const int SCHEMA_SIZE = 0x0;
+        }
 
         """,
         """
@@ -288,6 +290,57 @@ internal class GenericGeneratorTests {
         using schema.binary;
 
         public partial class SwitchMagicStringUInt32SizedSection<T> {
+          public void Write(IBinaryWriter bw) {
+            this.impl_.Write(bw);
+          }
+        }
+
+        """);
+  }
+
+  [Test]
+  public void TestChildWithGenericParameter() {
+    BinarySchemaTestUtil.AssertGenerated(
+        """
+
+        using schema.binary;
+        using schema.binary.attributes;
+        using schema.binary.types.data;
+        
+        public class A : IBinaryConvertible;
+        
+        [BinarySchema]
+        public partial class Parent : IBinaryConvertible {
+          private readonly AutoUInt32SizedSection<A> impl_ = new();
+        }
+
+        """,
+        """
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - impl_: 0x0<br/>
+        /// </remarks>
+        public partial class Parent;
+
+        """,
+        """
+        using System;
+        using schema.binary;
+
+        public partial class Parent {
+          public void Read(IBinaryReader br) {
+            this.impl_.Read(br);
+          }
+        }
+
+        """,
+        """
+        using System;
+        using schema.binary;
+
+        public partial class Parent {
           public void Write(IBinaryWriter bw) {
             this.impl_.Write(bw);
           }

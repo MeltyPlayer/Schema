@@ -18,7 +18,7 @@ internal class VarianceGeneratorTests {
           [BinarySchema]
           public partial class Wrapper<{variance} T>;
           """,
-          $"""
+          $$"""
           namespace foo.bar;
 
           /// <remarks>
@@ -26,7 +26,9 @@ internal class VarianceGeneratorTests {
           ///<br/>
           ///   Offsets: (none)<br/>
           /// </remarks>
-          public partial class Wrapper<{variance} T>;
+          public partial class Wrapper<{{variance}} T> {
+            public const int SCHEMA_SIZE = 0x0;
+          }
 
           """,
         $$"""

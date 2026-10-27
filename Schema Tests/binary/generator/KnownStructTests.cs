@@ -36,17 +36,19 @@ internal class KnownStructTests {
             public {{knownStructName}} PrivateField { get; private set; }
           }
           """,
-        $"""
+        $$"""
         namespace foo.bar;
 
         /// <remarks>
-        ///   Size: 0x{2 * knownStructSize:X}<br/>
+        ///   Size: 0x{{2 * knownStructSize:X}}<br/>
         ///<br/>
         ///   Offsets:<br/>
         ///     - Field: 0x0<br/>
-        ///     - PrivateField: 0x{knownStructSize:X}<br/>
+        ///     - PrivateField: 0x{{knownStructSize:X}}<br/>
         /// </remarks>
-        public partial class Wrapper;
+        public partial class Wrapper {
+          public const int SCHEMA_SIZE = 0x{{2 * knownStructSize:X}};
+        }
 
         """,
         $$"""
@@ -287,16 +289,18 @@ internal class KnownStructTests {
             public List<{{knownStructName}}> Field { get; set; }
           }
           """,
-          $"""
+          $$"""
           namespace foo.bar;
 
           /// <remarks>
-          ///   Size: 0x{10*knownStructSize:X}<br/>
+          ///   Size: 0x{{10*knownStructSize:X}}<br/>
           ///<br/>
           ///   Offsets:<br/>
           ///     - Field: 0x0<br/>
           /// </remarks>
-          public partial class Wrapper;
+          public partial class Wrapper {
+            public const int SCHEMA_SIZE = 0x{{10*knownStructSize:X}};
+          }
 
           """,
         $$"""

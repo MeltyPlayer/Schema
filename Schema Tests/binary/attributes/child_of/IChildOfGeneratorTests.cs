@@ -34,7 +34,9 @@ internal class IChildOfGeneratorTests {
         ///   Offsets:<br/>
         ///     - Field: 0x0<br/>
         /// </remarks>
-        public partial class ChildOfWrapper;
+        public partial class ChildOfWrapper {
+          public const int SCHEMA_SIZE = 0x1;
+        }
 
         """,
         """
@@ -158,7 +160,9 @@ internal class IChildOfGeneratorTests {
         ///<br/>
         ///   Offsets: (none)<br/>
         /// </remarks>
-        public partial class ChildOfWrapper;
+        public partial class ChildOfWrapper {
+          public const int SCHEMA_SIZE = 0x0;
+        }
         
         """,
         """

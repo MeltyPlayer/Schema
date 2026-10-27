@@ -83,7 +83,9 @@ internal partial class StringLengthSourceAttributeTests {
         ///   Offsets:<br/>
         ///     - Field: 0x0<br/>
         /// </remarks>
-        public partial class StringWrapper;
+        public partial class StringWrapper {
+          public const int SCHEMA_SIZE = 0x3;
+        }
 
         """,
         """
@@ -139,7 +141,9 @@ internal partial class StringLengthSourceAttributeTests {
         ///   Offsets:<br/>
         ///     - Field: 0x0<br/>
         /// </remarks>
-        public partial class StringWrapper;
+        public partial class StringWrapper {
+          public const int SCHEMA_SIZE = 0x0;
+        }
 
         """,
         """

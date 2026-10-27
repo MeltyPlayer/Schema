@@ -23,7 +23,7 @@ internal class ContainerTypeTests {
             public int Field { get; set; }
           }
           """,
-        $"""
+        $$"""
           namespace foo.bar;
 
           /// <remarks>
@@ -32,7 +32,9 @@ internal class ContainerTypeTests {
           ///   Offsets:<br/>
           ///     - Field: 0x0<br/>
           /// </remarks>
-          public partial {containerType} Wrapper;
+          public partial {{containerType}} Wrapper {
+            public const int SCHEMA_SIZE = 0x4;
+          }
 
           """,
         $$"""

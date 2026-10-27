@@ -31,7 +31,9 @@ internal class RAtPositionGeneratorTests {
         ///   Offsets:<br/>
         ///     - Offset: 0x0<br/>
         /// </remarks>
-        public partial class OffsetWrapper;
+        public partial class OffsetWrapper {
+          public const int SCHEMA_SIZE = 0x4;
+        }
 
         """,
         """
@@ -98,7 +100,9 @@ internal class RAtPositionGeneratorTests {
         ///   Offsets:<br/>
         ///     - Offset: 0x0<br/>
         /// </remarks>
-        public partial class OffsetWrapper;
+        public partial class OffsetWrapper {
+          public const int SCHEMA_SIZE = 0x4;
+        }
 
         """,
         """
@@ -165,7 +169,9 @@ internal class RAtPositionGeneratorTests {
         ///   Offsets:<br/>
         ///     - Offset: 0x0<br/>
         /// </remarks>
-        public partial class OffsetWrapper;
+        public partial class OffsetWrapper {
+          public const int SCHEMA_SIZE = 0x4;
+        }
 
         """,
         """
@@ -235,7 +241,9 @@ internal class RAtPositionGeneratorTests {
         ///   Offsets:<br/>
         ///     - Offset: 0x0<br/>
         /// </remarks>
-        public partial class OffsetWrapper;
+        public partial class OffsetWrapper {
+          public const int SCHEMA_SIZE = 0x4;
+        }
 
         """,
         """
@@ -303,7 +311,9 @@ internal class RAtPositionGeneratorTests {
         ///   Offsets:<br/>
         ///     - Offset: 0x0<br/>
         /// </remarks>
-        public partial class OffsetWrapper;
+        public partial class OffsetWrapper {
+          public const int SCHEMA_SIZE = 0x4;
+        }
 
         """,
         """
@@ -375,7 +385,9 @@ internal class RAtPositionGeneratorTests {
         ///   Offsets:<br/>
         ///     - Offset: 0x0<br/>
         /// </remarks>
-        public partial class OffsetWrapper;
+        public partial class OffsetWrapper {
+          public const int SCHEMA_SIZE = 0x4;
+        }
 
         """,
         """
@@ -446,7 +458,9 @@ internal class RAtPositionGeneratorTests {
         ///<br/>
         ///   Offsets: (none)<br/>
         /// </remarks>
-        public partial class OffsetWrapper;
+        public partial class OffsetWrapper {
+          public const int SCHEMA_SIZE = 0x0;
+        }
 
         """,
         """

@@ -27,7 +27,9 @@ internal class EndiannessGeneratorTests {
         ///   Offsets:<br/>
         ///     - Field: 0x0<br/>
         /// </remarks>
-        public partial class EndiannessWrapper;
+        public partial class EndiannessWrapper {
+          public const int SCHEMA_SIZE = 0x4;
+        }
 
         """,
         """
@@ -89,7 +91,9 @@ internal class EndiannessGeneratorTests {
         ///     - Field2: 0x4<br/>
         ///     - Field3: 0x8<br/>
         /// </remarks>
-        public partial class EndiannessWrapper;
+        public partial class EndiannessWrapper {
+          public const int SCHEMA_SIZE = 0xC;
+        }
 
         """,
         """
@@ -156,7 +160,9 @@ internal class EndiannessGeneratorTests {
         ///     - Field2: 0x4<br/>
         ///     - Field3: 0x8<br/>
         /// </remarks>
-        public partial class EndiannessWrapper;
+        public partial class EndiannessWrapper {
+          public const int SCHEMA_SIZE = 0xC;
+        }
 
         """,
         """

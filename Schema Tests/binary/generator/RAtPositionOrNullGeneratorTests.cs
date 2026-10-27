@@ -31,7 +31,9 @@ internal class RAtPositionOrNullGeneratorTests {
         ///   Offsets:<br/>
         ///     - Offset: 0x0<br/>
         /// </remarks>
-        public partial class OffsetWrapper;
+        public partial class OffsetWrapper {
+          public const int SCHEMA_SIZE = 0x4;
+        }
 
         """,
         """
@@ -101,7 +103,9 @@ internal class RAtPositionOrNullGeneratorTests {
         ///   Offsets:<br/>
         ///     - Offset: 0x0<br/>
         /// </remarks>
-        public partial class OffsetWrapper;
+        public partial class OffsetWrapper {
+          public const int SCHEMA_SIZE = 0x4;
+        }
 
         """,
         """
@@ -171,7 +175,9 @@ internal class RAtPositionOrNullGeneratorTests {
         ///   Offsets:<br/>
         ///     - Offset: 0x0<br/>
         /// </remarks>
-        public partial class OffsetWrapper;
+        public partial class OffsetWrapper {
+          public const int SCHEMA_SIZE = 0x4;
+        }
 
         """,
         """
@@ -244,7 +250,9 @@ internal class RAtPositionOrNullGeneratorTests {
         ///   Offsets:<br/>
         ///     - Offset: 0x0<br/>
         /// </remarks>
-        public partial class OffsetWrapper;
+        public partial class OffsetWrapper {
+          public const int SCHEMA_SIZE = 0x4;
+        }
 
         """,
         """
@@ -315,7 +323,9 @@ internal class RAtPositionOrNullGeneratorTests {
         ///   Offsets:<br/>
         ///     - Offset: 0x0<br/>
         /// </remarks>
-        public partial class OffsetWrapper;
+        public partial class OffsetWrapper {
+          public const int SCHEMA_SIZE = 0x4;
+        }
 
         """,
         """
@@ -394,7 +404,9 @@ internal class RAtPositionOrNullGeneratorTests {
         ///<br/>
         ///   Offsets: (none)<br/>
         /// </remarks>
-        public partial class OffsetWrapper;
+        public partial class OffsetWrapper {
+          public const int SCHEMA_SIZE = 0x0;
+        }
 
         """,
         """

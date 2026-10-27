@@ -31,7 +31,9 @@ internal class CharGeneratorTests {
         ///     - Field: 0x0<br/>
         ///     - ReadonlyField: 0x1<br/>
         /// </remarks>
-        public partial class Wrapper;
+        public partial class Wrapper {
+          public const int SCHEMA_SIZE = 0x2;
+        }
 
         """,
         """
@@ -90,7 +92,9 @@ internal class CharGeneratorTests {
         ///   Offsets:<br/>
         ///     - Field: 0x0<br/>
         /// </remarks>
-        public partial class Wrapper;
+        public partial class Wrapper {
+          public const int SCHEMA_SIZE = 0x4;
+        }
 
         """,
         """

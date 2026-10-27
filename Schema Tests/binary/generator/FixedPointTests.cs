@@ -33,7 +33,9 @@ internal class FixedPointTests {
         ///     - SingleField: 0x0<br/>
         ///     - DoubleField: 0x4<br/>
         /// </remarks>
-        public partial class Wrapper;
+        public partial class Wrapper {
+          public const int SCHEMA_SIZE = 0xC;
+        }
 
         """,
         """
@@ -96,7 +98,9 @@ internal class FixedPointTests {
         ///     - SingleField: 0x0<br/>
         ///     - DoubleField: 0x4<br/>
         /// </remarks>
-        public partial class Wrapper;
+        public partial class Wrapper {
+          public const int SCHEMA_SIZE = 0xC;
+        }
 
         """,
         """

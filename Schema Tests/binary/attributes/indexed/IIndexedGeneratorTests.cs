@@ -27,7 +27,9 @@ internal class IIndexedGeneratorTests {
         ///<br/>
         ///   Offsets: (none)<br/>
         /// </remarks>
-        public partial class IndexedImpl;
+        public partial class IndexedImpl {
+          public const int SCHEMA_SIZE = 0x0;
+        }
 
         """,
         """
@@ -83,7 +85,9 @@ internal class IIndexedGeneratorTests {
         ///   Offsets:<br/>
         ///     - Field: 0x0<br/>
         /// </remarks>
-        public partial class Wrapper;
+        public partial class Wrapper {
+          public const int SCHEMA_SIZE = 0x0;
+        }
 
         """,
         """
@@ -150,7 +154,9 @@ internal class IIndexedGeneratorTests {
         ///   Offsets:<br/>
         ///     - Field: 0x0<br/>
         /// </remarks>
-        public partial class Wrapper;
+        public partial class Wrapper {
+          public const int SCHEMA_SIZE = 0x0;
+        }
 
         """,
         """
@@ -216,7 +222,9 @@ internal class IIndexedGeneratorTests {
         ///   Offsets:<br/>
         ///     - Field: 0x0<br/>
         /// </remarks>
-        public partial class Wrapper;
+        public partial class Wrapper {
+          public const int SCHEMA_SIZE = 0x0;
+        }
 
         """,
         """
@@ -284,7 +292,9 @@ internal class IIndexedGeneratorTests {
         ///   Offsets:<br/>
         ///     - Field: 0x0<br/>
         /// </remarks>
-        public partial class Wrapper;
+        public partial class Wrapper {
+          public const int SCHEMA_SIZE = 0x0;
+        }
 
         """,
         """

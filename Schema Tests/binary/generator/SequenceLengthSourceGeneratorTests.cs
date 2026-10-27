@@ -235,7 +235,9 @@ internal class SequenceLengthSourceGeneratorTests {
         ///   Offsets:<br/>
         ///     - Field: 0x0<br/>
         /// </remarks>
-        public partial class ConstLengthWrapper;
+        public partial class ConstLengthWrapper {
+          public const int SCHEMA_SIZE = 0x3C;
+        }
 
         """,
         """

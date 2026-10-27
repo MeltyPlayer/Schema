@@ -16,6 +16,27 @@ public static class NamedTypeSymbolUtil {
       => namedTypeSymbol.DeclaringSyntaxReferences
                         .Select(r => (r.GetSyntax() as TypeDeclarationSyntax)!)
                         .All(s => s.IsPartial());
+
+    public bool TryGetConst<T>(string constName, out T value) {
+      var matchingField
+          = namedTypeSymbol.GetMembers()
+                           .OfType<IFieldSymbol>()
+                           .Where(s => s.IsConst && s.Name == constName)
+                           .FirstOrDefault();
+
+      if (matchingField == null) {
+        value = default!;
+        return false;
+      }
+
+      if (matchingField.ConstantValue is T constantValue) {
+        value = constantValue;
+        return true;
+      }
+
+      value = default!;
+      return false;
+    }
   }
 
   public static IEnumerable<ISymbol> GetInstanceMembers(

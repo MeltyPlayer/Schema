@@ -28,7 +28,9 @@ internal class LocalPositionsGeneratorTests {
         ///<br/>
         ///   Offsets: (none)<br/>
         /// </remarks>
-        public partial class LocalPositionsWrapper;
+        public partial class LocalPositionsWrapper {
+          public const int SCHEMA_SIZE = 0x0;
+        }
 
         """,
         """

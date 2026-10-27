@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Reflection;
 
 using Microsoft.CodeAnalysis;
 
 using schema.binary.attributes;
 using schema.binary.parser;
 using schema.binary.steps;
+using schema.binary.text;
 using schema.util.symbols;
 
 namespace schema.binary;
@@ -141,21 +143,29 @@ public static class SizeUtil {
       return false;
     }
 
-    var container = BinarySchemaContainerParser.Instance.ParseContainer(
-        BetterSymbol.FromType(typeSymbol));
-    if (container.IsRecursive()) {
-      size = -1;
-      return false;
-    }
-
-    container.ToBinarySteps()
-             .TryToGetMemberOffsetsAndContainerSize(
-                 out _,
-                 out var containerSize);
-    if (containerSize != null) {
-      size = containerSize.Value;
+    if (typeSymbol.TryGetConst(
+            BinarySchemaOffsetsGenerator.SCHEMA_SIZE_NAME,
+            out size)) {
       return true;
     }
+
+    try {
+      var container = BinarySchemaContainerParser.Instance.ParseContainer(
+          BetterSymbol.FromType(typeSymbol));
+      if (container.IsRecursive()) {
+        size = -1;
+        return false;
+      }
+
+      container.ToBinarySteps()
+               .TryToGetMemberOffsetsAndContainerSize(
+                   out _,
+                   out var containerSize);
+      if (containerSize != null) {
+        size = containerSize.Value;
+        return true;
+      }
+    } catch { }
 
     size = -1;
     return false;

@@ -20,17 +20,19 @@ internal class PrimitiveGeneratorTests {
             public {{primitiveType}} ReadonlyField { get; }
           }
           """,
-          $"""
+          $$"""
           namespace foo.bar;
 
           /// <remarks>
-          ///   Size: 0x{2*size:X}<br/>
+          ///   Size: 0x{{2*size:X}}<br/>
           ///<br/>
           ///   Offsets:<br/>
           ///     - Field: 0x0<br/>
-          ///     - ReadonlyField: 0x{size:X}<br/>
+          ///     - ReadonlyField: 0x{{size:X}}<br/>
           /// </remarks>
-          public partial class Wrapper;
+          public partial class Wrapper {
+            public const int SCHEMA_SIZE = 0x{{2*size:X}};
+          }
 
           """,
         $$"""

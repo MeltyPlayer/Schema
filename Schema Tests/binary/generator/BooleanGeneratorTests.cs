@@ -32,17 +32,19 @@ internal class BooleanGeneratorTests {
             public bool ReadonlyField { get; }
           }
           """,
-        $"""
+        $$"""
           namespace foo.bar;
 
           /// <remarks>
-          ///   Size: 0x{2 * bytesPerBool}<br/>
+          ///   Size: 0x{{2 * bytesPerBool}}<br/>
           ///<br/>
           ///   Offsets:<br/>
           ///     - Field: 0x0<br/>
-          ///     - ReadonlyField: 0x{bytesPerBool}<br/>
+          ///     - ReadonlyField: 0x{{bytesPerBool}}<br/>
           /// </remarks>
-          public partial class Wrapper;
+          public partial class Wrapper {
+            public const int SCHEMA_SIZE = 0x{{2*bytesPerBool:X}};
+          }
 
           """,
         $$"""
@@ -102,7 +104,9 @@ internal class BooleanGeneratorTests {
         ///   Offsets:<br/>
         ///     - Field: 0x0<br/>
         /// </remarks>
-        public partial class ByteWrapper;
+        public partial class ByteWrapper {
+          public const int SCHEMA_SIZE = 0x4;
+        }
 
         """,
         """

@@ -27,7 +27,9 @@ internal class IndexerGeneratorTests {
         ///<br/>
         ///   Offsets: (none)<br/>
         /// </remarks>
-        public partial class ByteWrapper;
+        public partial class ByteWrapper {
+          public const int SCHEMA_SIZE = 0x0;
+        }
 
         """,
         """

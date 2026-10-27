@@ -28,7 +28,9 @@ internal class SkipGeneratorTests {
         ///<br/>
         ///   Offsets: (none)<br/>
         /// </remarks>
-        public partial class SkipWrapper;
+        public partial class SkipWrapper {
+          public const int SCHEMA_SIZE = 0x0;
+        }
 
         """,
         """
@@ -81,7 +83,9 @@ internal class SkipGeneratorTests {
         ///<br/>
         ///   Offsets: (none)<br/>
         /// </remarks>
-        public partial class SkipWrapper;
+        public partial class SkipWrapper {
+          public const int SCHEMA_SIZE = 0x0;
+        }
 
         """,
         """
@@ -138,7 +142,9 @@ internal class SkipGeneratorTests {
         ///<br/>
         ///   Offsets: (none)<br/>
         /// </remarks>
-        public partial class SkipWrapper;
+        public partial class SkipWrapper {
+          public const int SCHEMA_SIZE = 0x0;
+        }
 
         """,
         """

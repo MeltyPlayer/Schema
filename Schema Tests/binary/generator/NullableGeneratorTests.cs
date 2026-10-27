@@ -31,7 +31,9 @@ internal class NullableGeneratorTests {
         ///     - Field1: 0x0<br/>
         ///     - Field2: 0x1<br/>
         /// </remarks>
-        public partial class NullableWrapper;
+        public partial class NullableWrapper {
+          public const int SCHEMA_SIZE = 0x5;
+        }
 
         """,
         """

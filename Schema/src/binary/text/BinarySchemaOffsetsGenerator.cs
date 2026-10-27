@@ -9,6 +9,8 @@ using schema.util.text;
 namespace schema.binary.text;
 
 public class BinarySchemaOffsetsGenerator {
+  public const string SCHEMA_SIZE_NAME = "SCHEMA_SIZE";
+
   public string Generate(IBinarySchemaContainer container) {
     var typeSymbol = container.TypeSymbol;
 
@@ -44,8 +46,15 @@ public class BinarySchemaOffsetsGenerator {
 
           sw.WriteLine("/// </remarks>");
 
-          sw.WriteLine(
-              $"{typeSymbol.GetQualifiersAndNameAndGenericParametersFor()};");
+          if (containerSize == null) {
+            sw.WriteLine(
+                $"{typeSymbol.GetQualifiersAndNameAndGenericParametersFor()};");
+          } else {
+            sw.EnterBlock(
+                $"{typeSymbol.GetQualifiersAndNameAndGenericParametersFor()}");
+            sw.WriteLine($"public const int {SCHEMA_SIZE_NAME} = 0x{containerSize.Value:X};");
+            sw.ExitBlock();
+          }
         });
 
     var generatedCode = sb.ToString();

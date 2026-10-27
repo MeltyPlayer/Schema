@@ -36,7 +36,9 @@ internal class PositionGeneratorTests {
         ///     - Value: 0x8<br/>
         ///     - ExpectedPosition: 0x9<br/>
         /// </remarks>
-        public partial class PositionWrapper;
+        public partial class PositionWrapper {
+          public const int SCHEMA_SIZE = 0x11;
+        }
 
         """,
         """

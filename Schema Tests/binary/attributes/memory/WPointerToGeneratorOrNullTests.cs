@@ -32,7 +32,9 @@ internal class WPointerToGeneratorOrNullTests {
         ///     - FooOffset: 0x0<br/>
         ///     - Foo: 0x4<br/>
         /// </remarks>
-        public partial class SizeWrapper;
+        public partial class SizeWrapper {
+          public const int SCHEMA_SIZE = 0x5;
+        }
 
         """,
         """
@@ -103,7 +105,9 @@ internal class WPointerToGeneratorOrNullTests {
         ///     - FooBarOffset: 0x0<br/>
         ///     - Foo: 0x4<br/>
         /// </remarks>
-        public partial class SizeWrapper;
+        public partial class SizeWrapper {
+          public const int SCHEMA_SIZE = 0x5;
+        }
 
         """,
         """

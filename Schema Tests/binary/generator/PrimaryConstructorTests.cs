@@ -23,7 +23,9 @@ internal class PrimaryConstructorTests {
           ///<br/>
           ///   Offsets: (none)<br/>
           /// </remarks>
-          public partial class Wrapper;
+          public partial class Wrapper {
+            public const int SCHEMA_SIZE = 0x0;
+          }
 
           """,
         """

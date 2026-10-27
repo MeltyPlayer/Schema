@@ -37,7 +37,9 @@ internal class EnumGeneratorTests {
         ///     - fieldA: 0x0<br/>
         ///     - fieldB: 0x1<br/>
         /// </remarks>
-        public partial class EnumWrapper;
+        public partial class EnumWrapper {
+          public const int SCHEMA_SIZE = 0x5;
+        }
 
         """,
         """
@@ -103,7 +105,9 @@ internal class EnumGeneratorTests {
         ///     - fieldA: 0x0<br/>
         ///     - fieldB: 0x1<br/>
         /// </remarks>
-        public partial class EnumWrapper;
+        public partial class EnumWrapper {
+          public const int SCHEMA_SIZE = 0x5;
+        }
 
         """,
         """

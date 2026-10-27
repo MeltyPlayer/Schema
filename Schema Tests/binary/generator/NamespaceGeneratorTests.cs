@@ -30,7 +30,9 @@ internal class NamespaceGeneratorTests {
         ///   Offsets:<br/>
         ///     - Field: 0x0<br/>
         /// </remarks>
-        public partial class Wrapper;
+        public partial class Wrapper {
+          public const int SCHEMA_SIZE = 0x1;
+        }
 
         """,
         """
@@ -89,7 +91,9 @@ internal class NamespaceGeneratorTests {
         ///   Offsets:<br/>
         ///     - Field: 0x0<br/>
         /// </remarks>
-        public partial class Wrapper;
+        public partial class Wrapper {
+          public const int SCHEMA_SIZE = 0x1;
+        }
 
         """,
         """
@@ -148,7 +152,9 @@ internal class NamespaceGeneratorTests {
         ///   Offsets:<br/>
         ///     - Field: 0x0<br/>
         /// </remarks>
-        public partial class Wrapper;
+        public partial class Wrapper {
+          public const int SCHEMA_SIZE = 0x1;
+        }
 
         """,
         """
@@ -209,7 +215,9 @@ internal class NamespaceGeneratorTests {
         ///   Offsets:<br/>
         ///     - Field: 0x0<br/>
         /// </remarks>
-        public partial class Wrapper;
+        public partial class Wrapper {
+          public const int SCHEMA_SIZE = 0x1;
+        }
 
         """,
         """
@@ -261,7 +269,9 @@ internal class NamespaceGeneratorTests {
         ///   Offsets:<br/>
         ///     - Field: 0x0<br/>
         /// </remarks>
-        public partial class Wrapper;
+        public partial class Wrapper {
+          public const int SCHEMA_SIZE = 0x1;
+        }
 
         """,
         """
@@ -311,7 +321,9 @@ internal class NamespaceGeneratorTests {
         ///   Offsets:<br/>
         ///     - Field: 0x0<br/>
         /// </remarks>
-        public partial class Wrapper;
+        public partial class Wrapper {
+          public const int SCHEMA_SIZE = 0x1;
+        }
 
         """,
         """
@@ -363,7 +375,9 @@ internal class NamespaceGeneratorTests {
         ///   Offsets:<br/>
         ///     - Field: 0x0<br/>
         /// </remarks>
-        public partial class Wrapper;
+        public partial class Wrapper {
+          public const int SCHEMA_SIZE = 0x1;
+        }
 
         """,
         """
