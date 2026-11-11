@@ -69,7 +69,7 @@ internal class WLengthOfSequenceAttributeTests {
   }
 
   [Test]
-  public void TestAttributeOnNullable() {
+  public void TestAttributeTowardNullable() {
     BinarySchemaTestUtil.AssertGenerated(
         """
 
@@ -200,7 +200,7 @@ internal class WLengthOfSequenceAttributeTests {
   }
 
   [Test]
-  public void TestAttributeWithSmallerThanIntOnNullable() {
+  public void TestAttributeWithSmallerThanIntTowardNullable() {
     BinarySchemaTestUtil.AssertGenerated(
         """
 

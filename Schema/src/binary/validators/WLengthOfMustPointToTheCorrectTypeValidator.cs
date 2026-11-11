@@ -1,8 +1,6 @@
 using System.Linq;
 
 using schema.binary.attributes;
-using schema.binary.parser;
-using schema.util.symbols;
 
 namespace schema.binary.validators;
 

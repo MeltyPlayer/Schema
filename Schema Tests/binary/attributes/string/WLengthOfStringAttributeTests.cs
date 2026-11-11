@@ -67,7 +67,7 @@ internal class WLengthOfStringAttributeTests {
   }
 
   [Test]
-  public void TestAttributeOnNullable() {
+  public void TestAttributeTowardNullable() {
     BinarySchemaTestUtil.AssertGenerated(
         """
 
