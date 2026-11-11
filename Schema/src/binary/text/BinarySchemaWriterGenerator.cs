@@ -4,8 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-using Microsoft.CodeAnalysis;
-
 using schema.binary.attributes;
 using schema.binary.dependencies;
 using schema.binary.parser;
@@ -302,7 +300,14 @@ public class BinarySchemaWriterGenerator {
                 = integerMemberType?.LengthOfStringMembers;
             var isLengthOfString = lengthOfStringMembers is { Length: > 0 };
             if (isLengthOfString) {
-              accessText = $"{lengthOfStringMembers[0].Name}.Length";
+              var first = lengthOfStringMembers[0];
+              var firstTypeInfo = first.MemberTypeInfo;
+              if (!firstTypeInfo.IsNullable) {
+                accessText = $"{first.Name}.Length";
+              } else {
+                accessText = $"{first.Name}?.Length ?? 0";
+              }
+
               if (lengthOfStringMembers.Length > 1) {
                 sw.WriteLine(
                     $"Asserts.AllEqual({string.Join(", ", lengthOfStringMembers.Select(member => $"{member.Name}.Length"))});");
@@ -315,9 +320,13 @@ public class BinarySchemaWriterGenerator {
                 { Length: > 0 };
             if (isLengthOfSequence) {
               var first = lengthOfSequenceMembers[0];
-              var firstLengthName =
-                  (first.MemberTypeInfo as ISequenceTypeInfo).LengthName;
-              accessText = $"{first.Name}.{firstLengthName}";
+              var firstTypeInfo = first.MemberTypeInfo as ISequenceTypeInfo;
+              var firstLengthName = firstTypeInfo.LengthName;
+              if (!firstTypeInfo.IsNullable) {
+                accessText = $"{first.Name}.{firstLengthName}";
+              } else {
+                accessText = $"{first.Name}?.{firstLengthName} ?? 0";
+              }
               if (lengthOfSequenceMembers.Length > 1) {
                 sw.WriteLine(
                     $"Asserts.AllEqual({string.Join(", ", lengthOfSequenceMembers.Select(
@@ -636,6 +645,9 @@ public class BinarySchemaWriterGenerator {
     } else {
       needToCast = dstType.AsPrimitiveType() !=
                    srcType.GetUnderlyingPrimitiveType();
+      if (needToCast && accessText.Contains("??")) {
+        accessText = $"({accessText})";
+      }
     }
 
     var castText = "";

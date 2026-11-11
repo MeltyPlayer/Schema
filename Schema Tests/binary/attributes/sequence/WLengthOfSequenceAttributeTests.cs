@@ -69,6 +69,72 @@ internal class WLengthOfSequenceAttributeTests {
   }
 
   [Test]
+  public void TestAttributeOnNullable() {
+    BinarySchemaTestUtil.AssertGenerated(
+        """
+
+        using schema.binary;
+        using schema.binary.attributes;
+
+        namespace foo.bar;
+
+        [BinarySchema]
+        public partial class SequenceWrapper : IBinaryConvertible {
+          [WLengthOfSequence(nameof(Sequence)]
+          public int Length { get; private set; }
+
+          [RSequenceLengthSource(nameof(Length))]
+          public byte[]? Sequence { get; set; }
+        }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Length: 0x0<br/>
+        ///     - Sequence: 0x4<br/>
+        /// </remarks>
+        public partial class SequenceWrapper;
+
+        """,
+        """
+        using System;
+        using schema.binary;
+        using schema.util.sequences;
+
+        namespace foo.bar;
+
+        public partial class SequenceWrapper {
+          public void Read(IBinaryReader br) {
+            this.Length = br.ReadInt32();
+            this.Sequence = SequencesUtil.CloneAndResizeSequence(this.Sequence, this.Length);
+            br.ReadBytes(this.Sequence);
+          }
+        }
+
+        """,
+        """
+        using System;
+        using schema.binary;
+        
+        namespace foo.bar;
+        
+        public partial class SequenceWrapper {
+          public void Write(IBinaryWriter bw) {
+            bw.WriteInt32(Sequence?.Length ?? 0);
+            if (this.Sequence != null) {
+              bw.WriteBytes(this.Sequence);
+            }
+          }
+        }
+
+        """);
+  }
+
+  [Test]
   public void TestAttributeWithSmallerThanInt() {
     BinarySchemaTestUtil.AssertGenerated(
         """
@@ -127,6 +193,73 @@ internal class WLengthOfSequenceAttributeTests {
           public void Write(IBinaryWriter bw) {
             bw.WriteUInt16((ushort) Sequence.Length);
             bw.WriteBytes(this.Sequence);
+          }
+        }
+
+        """);
+  }
+
+  [Test]
+  public void TestAttributeWithSmallerThanIntOnNullable() {
+    BinarySchemaTestUtil.AssertGenerated(
+        """
+
+        using schema.binary;
+        using schema.binary.attributes;
+
+        namespace foo.bar;
+
+        [BinarySchema]
+        public partial class SequenceWrapper : IBinaryConvertible {
+          [WLengthOfSequence(nameof(Sequence)]
+          public ushort Length { get; private set; }
+
+          [RSequenceLengthSource(nameof(Length))]
+          public byte[]? Sequence { get; set; }
+        }
+
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Length: 0x0<br/>
+        ///     - Sequence: 0x2<br/>
+        /// </remarks>
+        public partial class SequenceWrapper;
+
+        """,
+        """
+        using System;
+        using schema.binary;
+        using schema.util.sequences;
+
+        namespace foo.bar;
+
+        public partial class SequenceWrapper {
+          public void Read(IBinaryReader br) {
+            this.Length = br.ReadUInt16();
+            this.Sequence = SequencesUtil.CloneAndResizeSequence(this.Sequence, this.Length);
+            br.ReadBytes(this.Sequence);
+          }
+        }
+
+        """,
+        """
+        using System;
+        using schema.binary;
+
+        namespace foo.bar;
+
+        public partial class SequenceWrapper {
+          public void Write(IBinaryWriter bw) {
+            bw.WriteUInt16((ushort) (Sequence?.Length ?? 0));
+            if (this.Sequence != null) {
+              bw.WriteBytes(this.Sequence);
+            }
           }
         }
 

@@ -67,6 +67,70 @@ internal class WLengthOfStringAttributeTests {
   }
 
   [Test]
+  public void TestAttributeOnNullable() {
+    BinarySchemaTestUtil.AssertGenerated(
+        """
+
+        using schema.binary;
+        using schema.binary.attributes;
+
+        namespace foo.bar;
+
+        [BinarySchema]
+        public partial class intsWrapper : IBinaryConvertible {
+          [WLengthOfString(nameof(Text)]
+          public uint Length { get; private set; }
+
+          [RStringLengthSource(nameof(Length))]
+          public string? Text { get; set; }
+        }
+        """,
+        """
+        namespace foo.bar;
+
+        /// <remarks>
+        ///   Size: (indeterminate)<br/>
+        ///<br/>
+        ///   Offsets:<br/>
+        ///     - Length: 0x0<br/>
+        ///     - Text: 0x4<br/>
+        /// </remarks>
+        public partial class intsWrapper;
+
+        """,
+        """
+        using System;
+        using schema.binary;
+
+        namespace foo.bar;
+
+        public partial class intsWrapper {
+          public void Read(IBinaryReader br) {
+            this.Length = br.ReadUInt32();
+            this.Text = br.ReadString(Length);
+          }
+        }
+
+        """,
+        """
+        using System;
+        using schema.binary;
+
+        namespace foo.bar;
+
+        public partial class intsWrapper {
+          public void Write(IBinaryWriter bw) {
+            bw.WriteUInt32((uint) (Text?.Length ?? 0));
+            if (this.Text != null) {
+              bw.WriteString(this.Text);
+            }
+          }
+        }
+
+        """);
+  }
+
+  [Test]
   public void TestMultipleStrings() {
     BinarySchemaTestUtil.AssertGenerated(
         """
