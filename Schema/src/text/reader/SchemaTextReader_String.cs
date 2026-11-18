@@ -17,7 +17,6 @@ public sealed partial class SchemaTextReader {
     return newArray;
   }
 
-  // TODO: Handle other encodings besides ASCII
   public void ReadChars(Span<char> dst) {
     for (var i = 0; i < dst.Length; ++i) {
       dst[i] = this.ReadChar();

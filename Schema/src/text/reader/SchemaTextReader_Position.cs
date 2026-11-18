@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.CompilerServices;
 
 
@@ -10,36 +11,51 @@ public partial class SchemaTextReader {
   public int IndexInLine { get; private set; }
 
   public long Position {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get => this.PositionInternal_;
     set {
       if (value == this.PositionInternal_) {
         return;
       }
 
-      long charsToRead;
+      long bytesToRead;
       if (value > this.PositionInternal_) {
-        charsToRead = value - this.PositionInternal_;
+        bytesToRead = value - this.PositionInternal_;
       } else {
         this.IndexInLine = 0;
         this.LineNumber = 0;
         this.PositionInternal_ = 0;
 
-        charsToRead = value;
+        bytesToRead = value;
       }
 
+      var charsToRead = this.impl_.Encoding.GetMaxCharCount((int) bytesToRead);
       for (var i = 0; i < charsToRead; i++) {
+        if (this.PositionInternal_ >= value) {
+          break;
+        }
+
         this.ReadChar();
       }
     }
   }
 
   private long PositionInternal_ {
-    get => this.baseStream_.Position;
-    set => this.baseStream_.Position = value;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get => this.impl_.Position;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    set => this.impl_.Position = value;
   }
 
-  public long Length => this.baseStream_.Length;
-  public bool Eof => this.PositionInternal_ >= this.Length;
+  public long Length {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get => this.impl_.Length;
+  }
+
+  public bool Eof {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get => this.impl_.Eof;
+  }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   private void IncrementLineIndicesForChar_(char c) {

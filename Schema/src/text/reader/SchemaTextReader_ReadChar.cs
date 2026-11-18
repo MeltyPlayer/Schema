@@ -1,75 +1,85 @@
-﻿namespace schema.text.reader;
+﻿using System.Runtime.CompilerServices;
+
+using schema.util.asserts;
+
+namespace schema.text.reader;
 
 public sealed partial class SchemaTextReader {
-  private char? peekedChar_;
+  private bool hasPeekedChar_;
+  private char peekedChar_;
 
   private char PeekChar_() {
-    if (this.peekedChar_ != null) {
-      return this.peekedChar_.Value;
+    if (this.hasPeekedChar_) {
+      return this.peekedChar_;
     }
 
     var originalPosition = this.PositionInternal_;
-    this.peekedChar_ = (char) this.baseStream_.ReadByte();
+    this.peekedChar_ = this.ReadChar();
+    this.hasPeekedChar_ = true;
     this.PositionInternal_ = originalPosition;
 
-    return this.peekedChar_.Value;
+    return this.peekedChar_;
   }
 
   private bool PeekCharAndProgressIfEqualTo_(char c) {
-    if (this.peekedChar_ == c) {
-      this.peekedChar_ = null;
+    if (this.hasPeekedChar_ && this.peekedChar_ == c) {
       this.ReadChar();
       return true;
     }
 
-    if (this.peekedChar_ == null) {
+    if (!this.hasPeekedChar_) {
       var originalPosition = this.PositionInternal_;
-      this.peekedChar_ = (char) this.baseStream_.ReadByte();
+      this.peekedChar_ = this.ReadChar();
 
       if (this.peekedChar_ == c) {
-        this.peekedChar_ = null;
         return true;
       }
 
+      this.hasPeekedChar_ = true;
       this.PositionInternal_ = originalPosition;
-      return false;
     }
 
     return false;
   }
 
   private bool PeekCharAndProgressIfNotEqualTo_(char c, out char peeked) {
-    if (this.peekedChar_ != null && this.peekedChar_ != c) {
-      peeked = this.peekedChar_.Value;
-      this.peekedChar_ = null;
+    if (this.hasPeekedChar_ && this.peekedChar_ != c) {
+      peeked = this.peekedChar_;
       this.ReadChar();
       return true;
     }
 
-    if (this.peekedChar_ == null) {
+    if (!this.hasPeekedChar_) {
       var originalPosition = this.PositionInternal_;
-      this.peekedChar_ = (char) this.baseStream_.ReadByte();
+      this.peekedChar_ = this.ReadChar();
 
       if (this.peekedChar_ != c) {
-        peeked = this.peekedChar_.Value;
-        this.peekedChar_ = null;
+        peeked = this.peekedChar_;
         return true;
       }
 
-      peeked = default;
+      this.hasPeekedChar_ = true;
       this.PositionInternal_ = originalPosition;
-      return false;
     }
 
     peeked = default;
     return false;
   }
 
-  // TODO: Handle other encodings besides ASCII
   public char ReadChar() {
-    this.peekedChar_ = null;
-    var c = (char) this.baseStream_.ReadByte();
+    this.hasPeekedChar_ = false;
+    var c = this.impl_.ReadChar();
     this.IncrementLineIndicesForChar_(c);
     return c;
+  }
+
+  public bool TryReadChar(out char c) {
+    this.hasPeekedChar_ = false;
+    if (this.impl_.TryReadChar(out c)) {
+      this.IncrementLineIndicesForChar_(c);
+      return true;
+    }
+
+    return false;
   }
 }

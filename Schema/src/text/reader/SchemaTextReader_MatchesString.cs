@@ -16,14 +16,22 @@ public sealed partial class SchemaTextReader {
 
     var maxLength = match.Length;
 
-    var readLength =
-        Math.Min(maxLength, this.Length - this.PositionInternal_);
-    Span<char> peeked = stackalloc char[(int) readLength];
-    this.ReadChars(peeked);
+    var readLength = Math.Min(maxLength, this.impl_.MaxRemainingChars);
+    if (readLength < match.Length) {
+      return false;
+    }
+
+    Span<char> peeked = stackalloc char[readLength];
+    var charCount = this.impl_.ReadChars(peeked);
+    peeked = peeked[..charCount];
 
     this.LineNumber = originalLineNumber;
     this.IndexInLine = originalIndexInLine;
     this.PositionInternal_ = originalPosition;
+
+    if (match.Length > peeked.Length) {
+      return false;
+    }
 
     for (var j = 0; j < match.Length; ++j) {
       if (match[j] != peeked[j]) {
@@ -31,7 +39,7 @@ public sealed partial class SchemaTextReader {
       }
     }
 
-    this.Position += match.Length;
+    this.Position = Math.Min(this.Length, this.Position + this.impl_.Encoding.GetByteCount(match));
     return true;
   }
 
@@ -83,6 +91,10 @@ public sealed partial class SchemaTextReader {
         break;
       }
 
+      if (this.Eof) {
+        break;
+      }
+
       this.ReadChar();
     }
   }
@@ -90,6 +102,10 @@ public sealed partial class SchemaTextReader {
   public void SkipUpToAndPastTerminator(string terminator) {
     while (!this.Eof) {
       if (this.Matches(terminator)) {
+        break;
+      }
+
+      if (this.Eof) {
         break;
       }
 

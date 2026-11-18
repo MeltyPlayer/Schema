@@ -12,8 +12,14 @@ public static partial class TextReaderExtensions {
     ]);
   }
 
-  public static string ReadRemainder(this ITextReader tr)
-    => tr.ReadString(tr.Length - tr.Position);
+  public static string ReadRemainder(this ITextReader tr) {
+    var sb = new StringBuilder();
+    while (!tr.Eof) {
+      sb.Append(tr.ReadChar());
+    }
+
+    return sb.ToString();
+  }
 
   public static string[] ReadArguments(
       this ITextReader tr,

@@ -5,6 +5,18 @@ namespace schema.text.reader;
 
 internal class SchemaTextReaderMultilineTests {
   [Test]
+  public void TestReadSingleChar() {
+    using var tr = new SchemaTextReader("a");
+    Assert.AreEqual("a", tr.ReadLine());
+  }
+  
+  [Test]
+  public void TestReadSingleLine() {
+    using var tr = new SchemaTextReader("foobar");
+    Assert.AreEqual("foobar", tr.ReadLine());
+  }
+
+  [Test]
   public void TestReadAcrossMultipleLinesSeparately() {
     var inputText = "1 2 3\n4, 5, 6\n7\n8\n9\nfoobar";
 

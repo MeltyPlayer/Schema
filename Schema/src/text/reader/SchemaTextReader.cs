@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 
 using schema.util.streams;
 
@@ -7,18 +8,24 @@ using schema.util.streams;
 namespace schema.text.reader;
 
 public sealed partial class SchemaTextReader : ITextReader {
-  private readonly ISeekableReadableStream baseStream_;
+  private readonly UnbufferedStreamReader impl_;
 
-  public SchemaTextReader(string text, int tabWidth = 4) : this(
-      StreamUtil.FromString(text),
-      tabWidth) { }
+  public SchemaTextReader(string text, int tabWidth = 4)
+      : this(text, Encoding.Unicode, tabWidth) { }
+
+  public SchemaTextReader(string text, Encoding encoding, int tabWidth = 4) :
+      this(StreamReaderUtil.FromString(text, encoding), tabWidth) { }
 
   public SchemaTextReader(Stream baseStream, int tabWidth = 4)
-      : this(new ReadableStream(baseStream), tabWidth) { }
+      : this(baseStream, Encoding.Unicode, tabWidth) { }
 
-  public SchemaTextReader(ISeekableReadableStream baseStream,
-                          int tabWidth = 4) {
-    this.baseStream_ = baseStream;
+  public SchemaTextReader(Stream baseStream,
+                          Encoding encoding,
+                          int tabWidth = 4)
+      : this(new UnbufferedStreamReader(baseStream, encoding), tabWidth) { }
+
+  private SchemaTextReader(UnbufferedStreamReader impl, int tabWidth = 4) {
+    this.impl_ = impl;
     this.TabWidth = tabWidth;
   }
 
@@ -29,7 +36,7 @@ public sealed partial class SchemaTextReader : ITextReader {
     GC.SuppressFinalize(this);
   }
 
-  private void ReleaseUnmanagedResources_() => this.baseStream_.Dispose();
+  private void ReleaseUnmanagedResources_() => this.impl_.Dispose();
 
   public T ReadNew<T>() where T : ITextDeserializable, new() {
     var value = new T();

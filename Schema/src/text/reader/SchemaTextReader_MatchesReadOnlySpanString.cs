@@ -16,14 +16,22 @@ public sealed partial class SchemaTextReader {
     var originalPosition = this.PositionInternal_;
 
     var maxLength = 0;
+    var minLength = int.MaxValue;
     for (var i = 0; i < matches.Length; ++i) {
-      maxLength = Math.Max(maxLength, matches[i].Length);
+      var matchLength = matches[i].Length;
+      maxLength = Math.Max(maxLength, matchLength);
+      minLength = Math.Min(minLength, matchLength);
     }
 
-    var readLength =
-        Math.Min(maxLength, this.Length - this.PositionInternal_);
-    Span<char> peeked = stackalloc char[(int) readLength];
-    this.ReadChars(peeked);
+    var readLength = Math.Min(maxLength, this.impl_.MaxRemainingChars);
+    if (readLength < minLength) {
+      text = default;
+      return false;
+    }
+
+    Span<char> peeked = stackalloc char[readLength];
+    var charCount = this.impl_.ReadChars(peeked);
+    peeked = peeked[..charCount];
 
     this.LineNumber = originalLineNumber;
     this.IndexInLine = originalIndexInLine;
@@ -31,13 +39,17 @@ public sealed partial class SchemaTextReader {
 
     for (var i = 0; i < matches.Length; ++i) {
       var match = matches[i];
+      if (match.Length > peeked.Length) {
+        continue;
+      }
+
       for (var j = 0; j < match.Length; ++j) {
         if (match[j] != peeked[j]) {
           goto DidNotMatch;
         }
       }
 
-      this.Position += match.Length;
+      this.Position += this.impl_.Encoding.GetByteCount(match);
       text = match;
       return true;
 
