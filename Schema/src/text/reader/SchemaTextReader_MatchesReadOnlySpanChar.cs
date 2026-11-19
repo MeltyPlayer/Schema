@@ -1,5 +1,7 @@
 ﻿using System;
-using System.Text;
+using System.Runtime.CompilerServices;
+
+using schema.util.strings;
 
 
 namespace schema.text.reader;
@@ -23,7 +25,7 @@ public sealed partial class SchemaTextReader {
   }
 
   public string ReadUpToStartOfTerminator(ReadOnlySpan<char> terminators) {
-    var sb = new StringBuilder();
+    var sb = new ValueStringBuilder();
 
     while (!this.Eof) {
       var originalLineNumber = this.LineNumber;
@@ -40,11 +42,13 @@ public sealed partial class SchemaTextReader {
       sb.Append(this.ReadChar());
     }
 
-    return sb.ToString();
+    var str = sb.ToString();
+    sb.Dispose();
+    return str;
   }
 
   public string ReadUpToAndPastTerminator(ReadOnlySpan<char> terminators) {
-    var sb = new StringBuilder();
+    var sb = new ValueStringBuilder();
 
     while (!this.Eof) {
       if (this.Matches(out _, terminators)) {
@@ -54,17 +58,26 @@ public sealed partial class SchemaTextReader {
       sb.Append(this.ReadChar());
     }
 
-    return sb.ToString();
+    var str = sb.ToString();
+    sb.Dispose();
+    return str;
   }
 
   public string ReadWhile(ReadOnlySpan<char> matches) {
-    var sb = new StringBuilder();
+    var sb = new ValueStringBuilder();
+    this.ReadWhileImpl_(ref sb, matches);
+    var str = sb.ToString();
+    sb.Dispose();
+    return str;
+  }
 
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private void ReadWhileImpl_(
+      ref ValueStringBuilder sb,
+      ReadOnlySpan<char> matches) {
     while (!this.Eof && this.Matches(out var c, matches)) {
       sb.Append(c);
     }
-
-    return sb.ToString();
   }
 
   public void SkipManyIfPresent(ReadOnlySpan<char> matches) {

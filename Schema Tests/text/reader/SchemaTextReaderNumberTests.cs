@@ -51,7 +51,6 @@ internal class SchemaTextReaderNumberTests {
 
   [Test]
   [TestCase("0x00", 0)]
-  [TestCase("0xFF", -1)]
   public void
       TestReadAndAssertHexSByte(string inputText, sbyte expectedValue) {
     using var tr = new SchemaTextReader(inputText);

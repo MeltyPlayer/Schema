@@ -1,5 +1,7 @@
 ﻿using System.Text;
 
+using schema.util.strings;
+
 
 namespace schema.text.reader;
 
@@ -28,8 +30,16 @@ public sealed partial class SchemaTextReader {
   }
 
   public string ReadUpToAndPastTerminator(char terminator) {
-    var sb = new StringBuilder();
+    var sb = new ValueStringBuilder();
+    this.ReadUpToAndPastTerminatorImpl_(ref sb, terminator);
+    var value = sb.ToString();
+    sb.Dispose();
+    return value;
+  }
 
+  private void ReadUpToAndPastTerminatorImpl_(
+      ref ValueStringBuilder sb,
+      char terminator) {
     while (!this.Eof) {
       if (this.PeekCharAndProgressIfNotEqualTo_(terminator, out var peeked)) {
         sb.Append(peeked);
@@ -38,8 +48,6 @@ public sealed partial class SchemaTextReader {
         break;
       }
     }
-
-    return sb.ToString();
   }
 
   public void SkipUpToStartOfTerminator(char terminator) {

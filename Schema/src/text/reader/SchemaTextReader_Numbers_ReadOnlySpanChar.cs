@@ -139,7 +139,7 @@ public sealed partial class SchemaTextReader {
   private T[] ConvertSplitUpToAndPastTerminators_<T>(
       ReadOnlySpan<char> separators,
       ReadOnlySpan<char> terminators,
-      Func<string, T> converter)
+      ConvertSpanToValue<T> converter)
     => this.ReadSplitUpToAndPastTerminators_(separators, terminators)
            .Select(t => {
                      var start = 0;
@@ -159,13 +159,13 @@ public sealed partial class SchemaTextReader {
                      return start == 0 ? t : t.Substring(start);
                    })
            .Where(text => text != null)
-           .Select(converter)
+           .Select(t => converter(t))
            .ToArray();
 
   private T[] ConvertSplitUpToAndPastHexTerminators_<T>(
       ReadOnlySpan<char> separators,
       ReadOnlySpan<char> terminators,
-      Func<string, T> converter)
+      ConvertSpanToValue<T> converter)
     => this.ReadSplitUpToAndPastTerminators_(separators, terminators)
            .Select(t => {
                      var start = 0;
@@ -191,6 +191,6 @@ public sealed partial class SchemaTextReader {
                      return start == 0 ? t : t.Substring(start);
                    })
            .Where(text => text != null)
-           .Select(converter)
+           .Select(t => converter(t))
            .ToArray();
 }

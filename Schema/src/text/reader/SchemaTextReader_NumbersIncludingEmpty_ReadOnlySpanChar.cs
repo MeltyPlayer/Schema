@@ -144,7 +144,7 @@ public sealed partial class SchemaTextReader {
   private T?[] ConvertSplitUpToAndPastTerminatorsIncludingEmpty_<T>(
       ReadOnlySpan<char> separators,
       ReadOnlySpan<char> terminators,
-      Func<string, T> converter) where T : struct
+      ConvertSpanToValue<T> converter) where T : struct
     => this.ReadSplitUpToAndPastTerminatorsIncludingEmpty_(
                separators,
                terminators)
@@ -171,7 +171,7 @@ public sealed partial class SchemaTextReader {
   private T?[] ConvertSplitUpToAndPastHexTerminatorsIncludingEmpty_<T>(
       ReadOnlySpan<char> separators,
       ReadOnlySpan<char> terminators,
-      Func<string, T> converter) where T : struct
+      ConvertSpanToValue<T> converter) where T : struct
     => this.ReadSplitUpToAndPastTerminatorsIncludingEmpty_(
                separators,
                terminators)

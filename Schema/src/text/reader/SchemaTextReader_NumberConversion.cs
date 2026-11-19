@@ -1,57 +1,106 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Runtime.CompilerServices;
+
+using csFastFloat;
+
+using schema.util.asserts;
 
 
 namespace schema.text.reader;
 
 public sealed partial class SchemaTextReader {
-  private byte ConvertByte_(string text) => byte.Parse(text);
+  private byte ConvertByte_(ReadOnlySpan<char> span)
+    => (byte) ParseUlongLessThan_(span, byte.MaxValue);
 
-  private byte ConvertHexByte_(string text)
-    => byte.Parse(text, NumberStyles.HexNumber);
+  private sbyte ConvertSByte_(ReadOnlySpan<char> span)
+    => (sbyte) ParseLongWithinRange(span, sbyte.MinValue, sbyte.MaxValue);
 
+  private short ConvertInt16_(ReadOnlySpan<char> span)
+    => (short) ParseLongWithinRange(span, short.MinValue, short.MaxValue);
 
-  private sbyte ConvertSByte_(string text) => sbyte.Parse(text);
+  private ushort ConvertUInt16_(ReadOnlySpan<char> span)
+    => (ushort) ParseUlongLessThan_(span, ushort.MaxValue);
 
-  private sbyte ConvertHexSByte_(string text)
-    => sbyte.Parse(text, NumberStyles.HexNumber);
+  private int ConvertInt32_(ReadOnlySpan<char> span)
+    => (int) ParseLongWithinRange(span, int.MinValue, int.MaxValue);
 
+  private uint ConvertUInt32_(ReadOnlySpan<char> span)
+    => (uint) ParseUlongLessThan_(span, uint.MaxValue);
 
-  private short ConvertInt16_(string text) => short.Parse(text);
+  private long ConvertInt64_(ReadOnlySpan<char> span)
+    => ParseLongWithinRange(span, long.MinValue, long.MaxValue);
 
-  private short ConvertHexInt16_(string text)
-    => short.Parse(text, NumberStyles.HexNumber);
-
-
-  private ushort ConvertUInt16_(string text) => ushort.Parse(text);
-
-  private ushort ConvertHexUInt16_(string text)
-    => ushort.Parse(text, NumberStyles.HexNumber);
-
-
-  private int ConvertInt32_(string text) => int.Parse(text);
-
-  private int ConvertHexInt32_(string text)
-    => int.Parse(text, NumberStyles.HexNumber);
+  private ulong ConvertUInt64_(ReadOnlySpan<char> span) => ParseUlong_(span);
 
 
-  private uint ConvertUInt32_(string text) => uint.Parse(text);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private float ConvertSingle_(ReadOnlySpan<char> span)
+    => FastFloatParser.ParseFloat(span);
 
-  private uint ConvertHexUInt32_(string text)
-    => uint.Parse(text, NumberStyles.HexNumber);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private double ConvertDouble_(ReadOnlySpan<char> span)
+    => FastDoubleParser.ParseDouble(span);
 
+  public static long ParseLongWithinRange(
+      ReadOnlySpan<char> span,
+      long minValue,
+      long maxValue) {
+    Asserts.False(span.IsEmpty, "Span was empty");
 
-  private long ConvertInt64_(string text) => long.Parse(text);
+    int i = 0;
+    bool negative = false;
+    if (span[0] == '-') {
+      negative = true;
+      i = 1;
 
-  private long ConvertHexInt64_(string text)
-    => long.Parse(text, NumberStyles.HexNumber);
+      if (span.Length == 1) {
+        Asserts.Fail("Span was only '-'");
+      }
+    } else if (span[0] == '+') {
+      i = 1;
+      if (span.Length == 1) {
+        Asserts.Fail("Span was only '+'");
+      }
+    }
 
+    return negative
+        ? -1 *
+          (long) ParseUlongLessThan_(span[i..], unchecked((ulong) -minValue))
+        : (long) ParseUlongLessThan_(span[i..], (ulong) maxValue);
+  }
 
-  private ulong ConvertUInt64_(string text) => ulong.Parse(text);
+  public static ulong ParseUlongLessThan_(
+      ReadOnlySpan<char> span,
+      ulong maxValue) {
+    var value = ParseUlong_(span);
+    if (value > maxValue) {
+      Asserts.Fail($"Expected to read value less than: {maxValue}");
+    }
 
-  private ulong ConvertHexUInt64_(string text)
-    => ulong.Parse(text, NumberStyles.HexNumber);
+    return value;
+  }
 
+  public static ulong ParseUlong_(ReadOnlySpan<char> span) {
+    Asserts.False(span.IsEmpty, "Span was empty");
 
-  private float ConvertSingle_(string text) => float.Parse(text);
-  private double ConvertDouble_(string text) => double.Parse(text);
+    ulong previousAccumulator = 0;
+    ulong accumulator = 0;
+    for (var i = 0; i < span.Length; i++) {
+      var c = span[i];
+
+      uint digit = (uint) (span[i] - '0');
+      if (digit > 9) {
+        Asserts.Fail($"Unexpected character in number: {c}");
+      }
+
+      previousAccumulator = accumulator;
+      accumulator = accumulator * 10 + digit;
+
+      if (accumulator < previousAccumulator) {
+        Asserts.Fail("Overflow when parsing number");
+      }
+    }
+
+    return accumulator;
+  }
 }

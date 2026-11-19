@@ -2,6 +2,7 @@
 using System.Linq;
 
 using schema.util.asserts;
+using schema.util.strings;
 
 
 namespace schema.text.reader;
@@ -10,99 +11,156 @@ public sealed partial class SchemaTextReader {
   public void AssertByte(byte expectedValue)
     => Asserts.Equal(expectedValue, this.ReadByte());
 
-  public byte ReadByte()
-    => this.ConvertByte_(this.ReadPositiveIntegerChars_());
+  public byte ReadByte() {
+    var sb = new ValueStringBuilder();
+    this.ReadPositiveIntegerChars_(ref sb);
+    var value = this.ConvertByte_(sb.AsSpan());
+    sb.Dispose();
+    return value;
+  }
 
 
   public void AssertSByte(sbyte expectedValue)
     => Asserts.Equal(expectedValue, this.ReadSByte());
 
-  public sbyte ReadSByte()
-    => this.ConvertSByte_(this.ReadNegativeIntegerChars_());
+  public sbyte ReadSByte() {
+    var sb = new ValueStringBuilder();
+    this.ReadNegativeIntegerChars_(ref sb);
+    var value = this.ConvertSByte_(sb.AsSpan());
+    sb.Dispose();
+    return value;
+  }
 
 
   public void AssertInt16(short expectedValue)
     => Asserts.Equal(expectedValue, this.ReadInt16());
 
-  public short ReadInt16()
-    => this.ConvertInt16_(this.ReadPositiveIntegerChars_());
+  public short ReadInt16() {
+    var sb = new ValueStringBuilder();
+    this.ReadNegativeIntegerChars_(ref sb);
+    var value = this.ConvertInt16_(sb.AsSpan());
+    sb.Dispose();
+    return value;
+  }
 
   public void AssertUInt16(ushort expectedValue)
     => Asserts.Equal(expectedValue, this.ReadUInt16());
 
 
-  public ushort ReadUInt16()
-    => this.ConvertUInt16_(this.ReadNegativeIntegerChars_());
+  public ushort ReadUInt16() {
+    var sb = new ValueStringBuilder();
+    this.ReadPositiveIntegerChars_(ref sb);
+    var value = this.ConvertUInt16_(sb.AsSpan());
+    sb.Dispose();
+    return value;
+  }
 
 
   public void AssertInt32(int expectedValue)
     => Asserts.Equal(expectedValue, this.ReadInt32());
 
-  public int ReadInt32()
-    => this.ConvertInt32_(this.ReadPositiveIntegerChars_());
+  public int ReadInt32() {
+    var sb = new ValueStringBuilder();
+    this.ReadNegativeIntegerChars_(ref sb);
+    var value = this.ConvertInt32_(sb.AsSpan());
+    sb.Dispose();
+    return value;
+  }
 
 
   public void AssertUInt32(uint expectedValue)
     => Asserts.Equal(expectedValue, this.ReadUInt32());
 
-  public uint ReadUInt32()
-    => this.ConvertUInt32_(this.ReadNegativeIntegerChars_());
+  public uint ReadUInt32() {
+    var sb = new ValueStringBuilder();
+    this.ReadPositiveIntegerChars_(ref sb);
+    var value = this.ConvertUInt32_(sb.AsSpan());
+    sb.Dispose();
+    return value;
+  }
 
 
   public void AssertInt64(long expectedValue)
     => Asserts.Equal(expectedValue, this.ReadInt64());
 
-  public long ReadInt64()
-    => this.ConvertInt64_(this.ReadPositiveIntegerChars_());
+  public long ReadInt64() {
+    var sb = new ValueStringBuilder();
+    this.ReadNegativeIntegerChars_(ref sb);
+    var value = this.ConvertInt64_(sb.AsSpan());
+    sb.Dispose();
+    return value;
+  }
 
 
   public void AssertUInt64(ulong expectedValue)
     => Asserts.Equal(expectedValue, this.ReadUInt64());
 
-  public ulong ReadUInt64()
-    => this.ConvertUInt64_(this.ReadNegativeIntegerChars_());
+  public ulong ReadUInt64() {
+    var sb = new ValueStringBuilder();
+    this.ReadPositiveIntegerChars_(ref sb);
+    var value = this.ConvertUInt64_(sb.AsSpan());
+    sb.Dispose();
+    return value;
+  }
 
 
   public void AssertSingle(float expectedValue)
     => Asserts.Equal(expectedValue, this.ReadSingle());
 
-  public float ReadSingle() => this.ConvertSingle_(this.ReadFloatChars_());
+  public float ReadSingle() {
+    var sb = new ValueStringBuilder();
+    this.ReadFloatChars_(ref sb);
+    var value = this.ConvertSingle_(sb.AsSpan());
+    sb.Dispose();
+    return value;
+  }
 
 
   public void AssertDouble(double expectedValue)
     => Asserts.Equal(expectedValue, this.ReadDouble());
 
-  public double ReadDouble() => this.ConvertDouble_(this.ReadFloatChars_());
+  public double ReadDouble() {
+    var sb = new ValueStringBuilder();
+    this.ReadFloatChars_(ref sb);
+    var value = this.ConvertDouble_(sb.AsSpan());
+    sb.Dispose();
+    return value;
+  }
 
-  private static readonly char[] digitMatches_ = [
+  private static readonly char[] DIGIT_MATCHES_ = [
       '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
   ];
 
-  private static readonly char[] positiveIntegerMatches_ =
-      digitMatches_;
+  private static readonly char[] POSITIVE_INTEGER_MATCHES_ =
+      DIGIT_MATCHES_;
 
-  private static readonly char[] negativeIntegerMatches_ =
-      positiveIntegerMatches_.Concat(['-']).ToArray();
+  private static readonly char[] NEGATIVE_INTEGER_MATCHES_ =
+      POSITIVE_INTEGER_MATCHES_.Concat(['-']).ToArray();
 
 
-  private static readonly char[] floatMatches_ =
-      negativeIntegerMatches_.Concat(['.']).ToArray();
+  private static readonly char[] FLOAT_MATCHES_ =
+      NEGATIVE_INTEGER_MATCHES_.Concat(['.']).ToArray();
 
-  private string ReadPositiveIntegerChars_()
+  private void ReadPositiveIntegerChars_(ref ValueStringBuilder sb)
     => this.ReadMatchingNonWhitespaceChars_(
-        SchemaTextReader.positiveIntegerMatches_);
+        ref sb,
+        POSITIVE_INTEGER_MATCHES_);
 
-  private string ReadNegativeIntegerChars_()
+  private void ReadNegativeIntegerChars_(ref ValueStringBuilder sb)
     => this.ReadMatchingNonWhitespaceChars_(
-        SchemaTextReader.negativeIntegerMatches_);
+        ref sb,
+        NEGATIVE_INTEGER_MATCHES_);
 
-  private string ReadFloatChars_()
-    => this.ReadMatchingNonWhitespaceChars_(SchemaTextReader.floatMatches_);
+  private void ReadFloatChars_(ref ValueStringBuilder sb)
+    => this.ReadMatchingNonWhitespaceChars_(
+        ref sb,
+        FLOAT_MATCHES_);
 
-  private string ReadMatchingNonWhitespaceChars_(ReadOnlySpan<char> matches) {
+  private void ReadMatchingNonWhitespaceChars_(
+      ref ValueStringBuilder sb,
+      ReadOnlySpan<char> matches) {
     this.SkipManyIfPresent(TextReaderConstants.TERMINATORS);
-    var matching = this.ReadWhile(matches);
+    this.ReadWhileImpl_(ref sb, matches);
     this.SkipManyIfPresent(TextReaderConstants.TERMINATORS);
-    return matching;
   }
 }
