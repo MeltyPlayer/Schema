@@ -46,7 +46,7 @@ public sealed partial class SchemaTextReader {
   }
 
   public string ReadUpToStartOfTerminator(string terminator) {
-    var sb = new StringBuilder();
+    using var sb = new ValueStringBuilder();
 
     while (!this.Eof) {
       var originalLineNumber = this.LineNumber;
@@ -122,7 +122,7 @@ public sealed partial class SchemaTextReader {
   }
 
   public string ReadWhile(string match) {
-    var sb = new StringBuilder();
+    using var sb = new ValueStringBuilder();
 
     while (!this.Eof && this.Matches(match)) {
       sb.Append(match);

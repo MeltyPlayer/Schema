@@ -9,7 +9,7 @@ public sealed partial class SchemaTextReader {
   public bool Matches(char match) => this.PeekCharAndProgressIfEqualTo_(match);
 
   public string ReadUpToStartOfTerminator(char terminator) {
-    var sb = new StringBuilder();
+    using var sb = new ValueStringBuilder();
 
     while (!this.Eof) {
       var originalLineNumber = this.LineNumber;
@@ -32,9 +32,9 @@ public sealed partial class SchemaTextReader {
   public string ReadUpToAndPastTerminator(char terminator) {
     var sb = new ValueStringBuilder();
     this.ReadUpToAndPastTerminatorImpl_(ref sb, terminator);
-    var value = sb.ToString();
+    var str = sb.ToString();
     sb.Dispose();
-    return value;
+    return str;
   }
 
   private void ReadUpToAndPastTerminatorImpl_(
@@ -79,7 +79,7 @@ public sealed partial class SchemaTextReader {
   }
 
   public string ReadWhile(char matches) {
-    var sb = new StringBuilder();
+    using var sb = new ValueStringBuilder();
 
     while (!this.Eof && this.Matches(matches)) {
       sb.Append(matches);

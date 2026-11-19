@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using System.Text;
-
 
 namespace schema.binary;
 
@@ -10,7 +8,6 @@ public sealed partial class SchemaBinaryReader {
   private static void AssertStrings_(ReadOnlySpan<char> expectedValue,
                                      ReadOnlySpan<char> actualValue) {
     if (!expectedValue.SequenceEqual(actualValue)) {
-      var sb = new StringBuilder();
       throw new SchemaAssertionException(
           $"Expected {actualValue.ToString()} to be {expectedValue.ToString()}");
     }

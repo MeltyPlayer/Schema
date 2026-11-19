@@ -25,7 +25,7 @@ public sealed partial class SchemaTextReader {
   }
 
   public string ReadUpToStartOfTerminator(ReadOnlySpan<char> terminators) {
-    var sb = new ValueStringBuilder();
+    using var sb = new ValueStringBuilder();
 
     while (!this.Eof) {
       var originalLineNumber = this.LineNumber;
@@ -42,13 +42,11 @@ public sealed partial class SchemaTextReader {
       sb.Append(this.ReadChar());
     }
 
-    var str = sb.ToString();
-    sb.Dispose();
-    return str;
+    return sb.ToString();
   }
 
   public string ReadUpToAndPastTerminator(ReadOnlySpan<char> terminators) {
-    var sb = new ValueStringBuilder();
+    using var sb = new ValueStringBuilder();
 
     while (!this.Eof) {
       if (this.Matches(out _, terminators)) {
@@ -58,9 +56,7 @@ public sealed partial class SchemaTextReader {
       sb.Append(this.ReadChar());
     }
 
-    var str = sb.ToString();
-    sb.Dispose();
-    return str;
+    return sb.ToString();
   }
 
   public string ReadWhile(ReadOnlySpan<char> matches) {

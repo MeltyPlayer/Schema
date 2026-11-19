@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+using schema.util.strings;
+
 namespace schema.text.reader;
 
 public static partial class TextReaderExtensions {
@@ -31,8 +33,8 @@ public static partial class TextReaderExtensions {
 
     var arguments = new List<string>();
 
-    var sb = new StringBuilder();
-    var internalWhitespaceSb = new StringBuilder();
+    using var sb = new ValueStringBuilder();
+    using var internalWhitespaceSb = new ValueStringBuilder();
 
     char? inQuoteType = null;
 
@@ -74,7 +76,7 @@ public static partial class TextReaderExtensions {
       }
 
       if (internalWhitespaceSb.Length > 0) {
-        sb.Append(internalWhitespaceSb);
+        sb.Append(internalWhitespaceSb.AsSpan());
         internalWhitespaceSb.Clear();
       }
 

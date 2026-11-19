@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Buffers;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace schema.util.strings;
 
@@ -10,13 +9,13 @@ internal ref struct ValueStringBuilder {
   private Span<char> chars_;
   private int pos_;
 
-  public ValueStringBuilder(Encoding encoding, Span<char> initialBuffer) {
+  public ValueStringBuilder(Span<char> initialBuffer) {
     this.arrayToReturnToPool_ = null;
     this.chars_ = initialBuffer;
     this.pos_ = 0;
   }
 
-  public ValueStringBuilder(Encoding encoding, int initialCapacity) {
+  public ValueStringBuilder(int initialCapacity) {
     this.arrayToReturnToPool_ = ArrayPool<char>.Shared.Rent(initialCapacity);
     this.chars_ = this.arrayToReturnToPool_;
     this.pos_ = 0;
@@ -29,6 +28,9 @@ internal ref struct ValueStringBuilder {
       ArrayPool<char>.Shared.Return(toReturn);
     }
   }
+
+  public void Clear() => this.pos_ = 0;
+
 
   public ReadOnlySpan<char> AsSpan() => this.chars_[..this.pos_];
 
@@ -43,29 +45,28 @@ internal ref struct ValueStringBuilder {
   }
 
   public void Append(char c) {
-    int pos = this.pos_;
-    if ((uint) pos < (uint) this.chars_.Length) {
-      this.chars_[pos] = c;
-      this.pos_ = pos + 1;
-    } else {
-      this.GrowAndAppend_(c);
+    this.GrowIfNeeded_(this.pos_ + 1);
+    this.chars_[this.pos_++] = c;
+  }
+
+  public void Append(ReadOnlySpan<char> chars) {
+    this.GrowIfNeeded_(this.pos_ + chars.Length);
+    chars.CopyTo(this.chars_[this.pos_..]);
+    this.pos_ += chars.Length;
+  }
+
+  [MethodImpl(MethodImplOptions.NoInlining)]
+  private void GrowIfNeeded_(int neededLength) {
+    if (neededLength < (uint) this.chars_.Length) {
+      return;
     }
-  }
 
-  [MethodImpl(MethodImplOptions.NoInlining)]
-  private void GrowAndAppend_(char b) {
-    this.Grow_(1);
-    this.Append(b);
-  }
-
-  [MethodImpl(MethodImplOptions.NoInlining)]
-  private void Grow_(int additionalCapacityBeyondPos) {
     int newCapacity = (int) Math.Max(
-        (uint) (this.pos_ + additionalCapacityBeyondPos),
+        (uint) neededLength,
         (uint) this.chars_.Length * 2);
 
     char[] poolArray = ArrayPool<char>.Shared.Rent(newCapacity);
-    this.chars_.Slice(0, this.pos_).CopyTo(poolArray);
+    this.chars_[..this.pos_].CopyTo(poolArray);
 
     char[]? toReturn = this.arrayToReturnToPool_;
     this.chars_ = this.arrayToReturnToPool_ = poolArray;

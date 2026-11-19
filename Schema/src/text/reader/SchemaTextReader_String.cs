@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 
 using schema.util.asserts;
+using schema.util.strings;
 
 
 namespace schema.text.reader;
@@ -27,7 +28,7 @@ public sealed partial class SchemaTextReader {
     => Asserts.Equal(expectedValue, this.ReadString(expectedValue.Length));
 
   public string ReadString(long count) {
-    var sb = new StringBuilder((int) count);
+    using var sb = new ValueStringBuilder((int)count);
     for (var i = 0; i < count; ++i) {
       sb.Append(this.ReadChar());
     }

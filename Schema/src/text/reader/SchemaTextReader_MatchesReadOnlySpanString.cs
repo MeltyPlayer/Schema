@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Text;
 
+using schema.util.strings;
+
 
 namespace schema.text.reader;
 
@@ -61,7 +63,7 @@ public sealed partial class SchemaTextReader {
   }
 
   public string ReadUpToStartOfTerminator(ReadOnlySpan<string> terminators) {
-    var sb = new StringBuilder();
+    using var sb = new ValueStringBuilder();
 
     while (!this.Eof) {
       var originalLineNumber = this.LineNumber;
@@ -82,7 +84,7 @@ public sealed partial class SchemaTextReader {
   }
 
   public string ReadUpToAndPastTerminator(ReadOnlySpan<string> terminators) {
-    var sb = new StringBuilder();
+    using var sb = new ValueStringBuilder();
 
     while (!this.Eof) {
       if (this.Matches(out _, terminators)) {
@@ -96,7 +98,7 @@ public sealed partial class SchemaTextReader {
   }
 
   public string ReadWhile(ReadOnlySpan<string> matches) {
-    var sb = new StringBuilder();
+    using var sb = new ValueStringBuilder();
 
     while (!this.Eof && this.Matches(out var text, matches)) {
       sb.Append(text);

@@ -120,13 +120,13 @@ public sealed partial class SchemaBinaryReader {
   public string ReadUpTo(char endToken) {
     var remainingCharacters = this.Length - this.Position;
 
-    var strBuilder = new StringBuilder();
+    using var sb = new ValueStringBuilder();
     char c;
     while ((remainingCharacters--) > 0 && (c = this.ReadChar()) != endToken) {
-      strBuilder.Append(c);
+      sb.Append(c);
     }
 
-    return strBuilder.ToString();
+    return sb.ToString();
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -134,17 +134,17 @@ public sealed partial class SchemaBinaryReader {
     => this.ReadUpTo(encodingType.GetEncoding(this.Endianness), endToken);
 
   public string ReadUpTo(Encoding encoding, char endToken) {
-    var strBuilder = new StringBuilder();
+    using var sb = new ValueStringBuilder();
     while (!this.Eof) {
       var c = this.ReadChar(encoding);
       if (c == endToken) {
         break;
       }
 
-      strBuilder.Append(c);
+      sb.Append(c);
     }
 
-    return strBuilder.ToString();
+    return sb.ToString();
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -169,7 +169,7 @@ public sealed partial class SchemaBinaryReader {
   }
 
   public string ReadUpTo(ReadOnlySpan<char> endTokens) {
-    var strBuilder = new StringBuilder();
+    using var sb = new ValueStringBuilder();
     while (!this.Eof) {
       var c = this.ReadChar();
       foreach (var endToken in endTokens) {
@@ -178,25 +178,25 @@ public sealed partial class SchemaBinaryReader {
         }
       }
 
-      strBuilder.Append(c);
+      sb.Append(c);
     }
 
     Done:
-    return strBuilder.ToString();
+    return sb.ToString();
   }
 
   public string ReadUpTo(ReadOnlySpan<string> endTokens) {
-    var strBuilder = new StringBuilder();
+    using var sb = new ValueStringBuilder();
     while (!this.Eof) {
       var firstC = this.ReadChar();
-      var originalOffset = Position;
+      var originalOffset = this.Position;
 
       foreach (var endToken in endTokens) {
         if (firstC == endToken[0]) {
           for (var i = 1; i < endToken.Length; ++i) {
             var c = this.ReadChar();
             if (c != endToken[1]) {
-              Position = originalOffset;
+              this.Position = originalOffset;
               break;
             }
           }
@@ -205,11 +205,11 @@ public sealed partial class SchemaBinaryReader {
         }
       }
 
-      strBuilder.Append(firstC);
+      sb.Append(firstC);
     }
 
     Done:
-    return strBuilder.ToString();
+    return sb.ToString();
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -218,17 +218,17 @@ public sealed partial class SchemaBinaryReader {
     => this.ReadUpTo(encodingType.GetEncoding(this.Endianness), endTokens);
 
   public string ReadUpTo(Encoding encoding, ReadOnlySpan<string> endTokens) {
-    var strBuilder = new StringBuilder();
-    while (!Eof) {
+    using var sb = new ValueStringBuilder();
+    while (!this.Eof) {
       var firstC = this.ReadChar(encoding);
-      var originalOffset = Position;
+      var originalOffset = this.Position;
 
       foreach (var endToken in endTokens) {
         if (firstC == endToken[0]) {
           for (var i = 1; i < endToken.Length; ++i) {
             var c = this.ReadChar(encoding);
             if (c != endToken[1]) {
-              Position = originalOffset;
+              this.Position = originalOffset;
               break;
             }
           }
@@ -237,11 +237,11 @@ public sealed partial class SchemaBinaryReader {
         }
       }
 
-      strBuilder.Append(firstC);
+      sb.Append(firstC);
     }
 
     Done:
-    return strBuilder.ToString();
+    return sb.ToString();
   }
 
 
