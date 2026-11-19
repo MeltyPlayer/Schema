@@ -11,18 +11,16 @@ public sealed partial class SchemaTextReader : ITextReader {
   private readonly UnbufferedStreamReader impl_;
 
   public SchemaTextReader(string text, int tabWidth = 4)
-      : this(text, Encoding.Unicode, tabWidth) { }
-
-  public SchemaTextReader(string text, Encoding encoding, int tabWidth = 4) :
-      this(StreamReaderUtil.FromString(text, encoding), tabWidth) { }
+      : this(StreamReaderUtil.FromString(text), tabWidth) { }
 
   public SchemaTextReader(Stream baseStream, int tabWidth = 4)
-      : this(baseStream, Encoding.Unicode, tabWidth) { }
+      : this(baseStream, null, tabWidth) { }
 
   public SchemaTextReader(Stream baseStream,
-                          Encoding encoding,
+                          Encoding? fallbackEncoding,
                           int tabWidth = 4)
-      : this(new UnbufferedStreamReader(baseStream, encoding), tabWidth) { }
+      : this(new UnbufferedStreamReader(baseStream, fallbackEncoding),
+             tabWidth) { }
 
   private SchemaTextReader(UnbufferedStreamReader impl, int tabWidth = 4) {
     this.impl_ = impl;

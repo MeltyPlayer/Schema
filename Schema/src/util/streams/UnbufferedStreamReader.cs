@@ -17,27 +17,60 @@ public sealed class UnbufferedStreamReader : IDisposable {
 
   public Encoding Encoding { get; }
 
-  public UnbufferedStreamReader(
-      Stream impl,
-      Encoding encoding,
-      bool skipPreamble = true) {
+  public UnbufferedStreamReader(Stream impl, Encoding? fallbackEncoding) {
     this.impl_ = impl;
-    this.Encoding = encoding;
-    this.decoder_ = encoding.GetDecoder();
 
-    if (skipPreamble && this.Position == 0) {
-      var preamble = encoding.GetPreamble();
-      if (preamble.Length > 0 && this.Length >= preamble.Length) {
-        Span<byte> header = stackalloc byte[preamble.Length];
-        var read = impl.Read(header);
-        if (read == preamble.Length && header.SequenceEqual(preamble)) {
-          this.baseOffset_ = impl.Position;
-          // Leave Position right after the BOM
-        } else {
-          impl.Position = 0;
-        }
+    this.Encoding = GetEncoding_(impl, fallbackEncoding);
+    this.baseOffset_ = impl.Position;
+
+    this.decoder_ = this.Encoding.GetDecoder();
+  }
+
+  private static Encoding GetEncoding_(
+      Stream stream,
+      Encoding? fallbackEncoding = null) {
+    long originalPosition = stream.Position;
+    Span<byte> bom = stackalloc byte[4];
+    int bytesRead = stream.Read(bom);
+
+    if (bytesRead >= 4) {
+      if (bom[0] == 0x00 &&
+          bom[1] == 0x00 &&
+          bom[2] == 0xFE &&
+          bom[3] == 0xFF) {
+        stream.Position = originalPosition + 4;
+        return new UTF32Encoding(bigEndian: true, byteOrderMark: true);
+      }
+
+      if (bom[0] == 0xFF &&
+          bom[1] == 0xFE &&
+          bom[2] == 0x00 &&
+          bom[3] == 0x00) {
+        stream.Position = originalPosition + 4;
+        return Encoding.UTF32;
       }
     }
+
+    if (bytesRead >= 3 && bom[0] == 0xEF && bom[1] == 0xBB && bom[2] == 0xBF) {
+      stream.Position = originalPosition + 3;
+      return Encoding.UTF8;
+    }
+
+    if (bytesRead >= 2) {
+      if (bom[0] == 0xFE && bom[1] == 0xFF) {
+        stream.Position = originalPosition + 2;
+        return Encoding.BigEndianUnicode;
+      }
+
+      if (bom[0] == 0xFF && bom[1] == 0xFE) {
+        stream.Position = originalPosition + 2;
+        return Encoding.Unicode;
+      }
+    }
+
+    stream.Position = originalPosition;
+    return fallbackEncoding ??
+           new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
   }
 
   public void Dispose() => this.impl_.Dispose();
